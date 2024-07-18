@@ -1,0 +1,24 @@
+{
+  "name": "@readable/api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./trpc": "./src/router.ts"
+  },
+  "scripts": {
+    "dev": "bun run --hot src/main.ts"
+  },
+  "dependencies": {
+    "@hono/trpc-server": "^0.3.2",
+    "@trpc/server": "^11.0.0-rc.466",
+    "hono": "^4.5.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@readable/lintconfig": "workspace:*",
+    "@readable/tsconfig": "workspace:*",
+    "@types/bun": "^1.1.6",
+    "typescript": "^5.5.3"
+  }
+}

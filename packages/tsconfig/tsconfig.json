@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "strict": true,
+
+    "target": "esnext",
+    "lib": ["esnext", "dom", "dom.iterable"],
+
+    "module": "esnext",
+    "moduleResolution": "bundler",
+
+    "noEmit": true,
+    "skipLibCheck": true,
+
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitOverride": true,
+
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true
+  }
+}

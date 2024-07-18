@@ -1,0 +1,9 @@
+{
+  "allowCompoundWords": true,
+  "enableFiletypes": ["*"],
+  "enableGlobDot": true,
+  "ignorePaths": [".git", ".gitignore", ".vscode", "drizzle"],
+  "numSuggestions": 0,
+  "useGitignore": true,
+  "words": ["dotenv", "hono", "pulumi", "trpc"]
+}

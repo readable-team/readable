@@ -1,0 +1,27 @@
+{
+  "name": "@readable/monorepo",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "bootstrap": "husky && doppler setup --no-interactive",
+    "dev": "turbo run dev"
+  },
+  "devDependencies": {
+    "@readable/lintconfig": "workspace:*",
+    "cspell": "^8.11.0",
+    "eslint": "^8.57.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.7",
+    "prettier": "^3.3.3",
+    "syncpack": "^12.3.3",
+    "tsx": "^4.16.2",
+    "turbo": "^2.0.7",
+    "typescript": "^5.5.3"
+  },
+  "packageManager": "bun@1.0.0"
+}

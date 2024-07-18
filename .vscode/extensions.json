@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "github.copilot",
+    "rohit-gohri.format-code-action",
+    "streetsidesoftware.code-spell-checker",
+    "svelte.svelte-vscode",
+    "EditorConfig.EditorConfig"
+  ]
+}
