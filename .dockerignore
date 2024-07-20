@@ -10,3 +10,7 @@ dist/
 Dockerfile
 .dockerignore
 .gitignore
+
+.github
+.husky
+.vscode

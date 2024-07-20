@@ -8,8 +8,10 @@
     "dev": "vite dev"
   },
   "devDependencies": {
+    "@pulumi/pulumi": "^3.125.0",
     "@readable/adapter-bun": "workspace:*",
     "@readable/lintconfig": "workspace:*",
+    "@readable/pulumi": "workspace:*",
     "@readable/tsconfig": "workspace:*",
     "@sveltejs/kit": "^2.5.18",
     "@sveltejs/vite-plugin-svelte": "^3.1.1",

@@ -1,4 +1,8 @@
 setup:
   - project: api
     path: apps/api
-    config: dev
+    config: dev_local
+
+  - project: dashboard
+    path: apps/dashboard
+    config: dev_local

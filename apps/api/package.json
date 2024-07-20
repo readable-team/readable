@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "doppler run -- bun run --bun --watch src/main.ts"
+    "dev": "doppler run -- bun --watch src/main.ts"
   },
   "dependencies": {
     "@hono/trpc-server": "^0.3.2",
@@ -22,7 +22,9 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@pulumi/pulumi": "^3.125.0",
     "@readable/lintconfig": "workspace:*",
+    "@readable/pulumi": "workspace:*",
     "@readable/tsconfig": "workspace:*",
     "@types/bun": "^1.1.6",
     "drizzle-kit": "^0.23.0",

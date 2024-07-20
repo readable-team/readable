@@ -37,10 +37,13 @@ export const serve = async ({ Server, manifest, prerendered }) => {
         const filePath = path.join(basePath, 'client', relativePath);
 
         const file = Bun.file(filePath);
+        const buffer = await file.arrayBuffer();
 
-        return new Response(file, {
+        return new Response(buffer, {
           headers: {
             'cache-control': immutable ? 'public, max-age=31536000, immutable' : 'public, max-age=0, must-revalidate',
+            'content-type': file.type,
+            'content-length': file.size,
           },
         });
       }
@@ -49,10 +52,13 @@ export const serve = async ({ Server, manifest, prerendered }) => {
         const filePath = path.join(basePath, 'client', prerendered[url.pathname]);
 
         const file = Bun.file(filePath);
+        const buffer = await file.arrayBuffer();
 
-        return new Response(file, {
+        return new Response(buffer, {
           headers: {
             'cache-control': 'public, max-age=0, must-revalidate',
+            'content-type': file.type,
+            'content-length': file.size,
           },
         });
       }

@@ -14,6 +14,8 @@ app.use(
   }),
 );
 
+app.get('/healthz', (c) => c.json({ '*': true }));
+
 app.use(
   '/trpc/*',
   trpcServer({

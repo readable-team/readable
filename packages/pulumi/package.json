@@ -1,0 +1,21 @@
+{
+  "name": "@readable/pulumi",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint:typecheck": "tsc"
+  },
+  "dependencies": {
+    "@pulumi/aws": "^6.45.0",
+    "@pulumi/kubernetes": "^4.15.0",
+    "@pulumi/pulumi": "^3.125.0",
+    "ts-pattern": "^5.2.0"
+  },
+  "devDependencies": {
+    "@readable/tsconfig": "workspace:*"
+  }
+}

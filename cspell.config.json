@@ -6,6 +6,7 @@
   "numSuggestions": 0,
   "useGitignore": true,
   "words": [
+    "argoproj",
     "buildx",
     "bytea",
     "dotenv",
@@ -19,6 +20,7 @@
     "penxle",
     "pulumi",
     "rdbl",
+    "tini",
     "trpc",
     "vcpu"
   ]

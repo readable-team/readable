@@ -187,6 +187,41 @@ new aws.ec2.SecurityGroupRule('internal.egress', {
   cidrBlocks: ['0.0.0.0/0'],
 });
 
+const publicWebSecurityGroup = new aws.ec2.SecurityGroup('public-web', {
+  name: 'public-web',
+  description: 'Security group for public websites',
+  vpcId: vpc.id,
+
+  tags: { Name: 'public-web' },
+});
+
+new aws.ec2.SecurityGroupRule('public-web.ingress[tcp:80]', {
+  securityGroupId: publicWebSecurityGroup.id,
+  type: 'ingress',
+  protocol: 'tcp',
+  fromPort: 80,
+  toPort: 80,
+  cidrBlocks: ['0.0.0.0/0'],
+});
+
+new aws.ec2.SecurityGroupRule('public-web.ingress[tcp:443]', {
+  securityGroupId: publicWebSecurityGroup.id,
+  type: 'ingress',
+  protocol: 'tcp',
+  fromPort: 443,
+  toPort: 443,
+  cidrBlocks: ['0.0.0.0/0'],
+});
+
+new aws.ec2.SecurityGroupRule('public-web.egress', {
+  securityGroupId: publicWebSecurityGroup.id,
+  type: 'egress',
+  protocol: '-1',
+  fromPort: 0,
+  toPort: 0,
+  cidrBlocks: ['0.0.0.0/0'],
+});
+
 export { vpc };
 
 export const subnets = {
