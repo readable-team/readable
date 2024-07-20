@@ -64,7 +64,7 @@ export const serve = async ({ Server, manifest, prerendered }) => {
       }
 
       const protocol = request.headers.get('x-forwarded-proto') ?? 'https';
-      const host = process.env.HTTP_HOST ?? request.headers.get('host');
+      const host = request.headers.get('host') ?? process.env.HTTP_HOST;
 
       const effectiveRequest = new Request(`${protocol}://${host}${url.pathname}${url.search}`, request);
 
