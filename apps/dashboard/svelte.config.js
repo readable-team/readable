@@ -7,5 +7,8 @@ export default {
 
   kit: {
     adapter: adapter(),
+    alias: {
+      '@/*': '../api/src/*',
+    },
   },
 };

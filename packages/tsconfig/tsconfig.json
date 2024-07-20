@@ -3,16 +3,21 @@
     "strict": true,
 
     "target": "esnext",
-    "lib": ["esnext", "dom", "dom.iterable"],
+    "lib": ["esnext"],
 
     "module": "esnext",
+    "moduleDetection": "force",
     "moduleResolution": "bundler",
+
+    "allowImportingTsExtensions": true,
+    "allowJs": true,
 
     "noEmit": true,
     "skipLibCheck": true,
 
     "forceConsistentCasingInFileNames": true,
     "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
 
     "isolatedModules": true,
     "verbatimModuleSyntax": true

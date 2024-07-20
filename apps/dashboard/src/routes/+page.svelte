@@ -1,9 +1,12 @@
 <script lang="ts">
-  export let data;
-
-  $: console.log(data.user);
+  import { trpc } from '$lib/trpc';
 </script>
 
 dashboard
 <br />
-{data.user}
+
+{#await trpc.getUserById.query('1')}
+  loading...
+{:then value}
+  {value}
+{/await}

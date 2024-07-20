@@ -1,14 +1,13 @@
 import { initTRPC } from '@trpc/server';
+import { parse, stringify } from 'devalue';
+import type { Context } from './context';
 
-/**
- * Initialization of tRPC backend
- * Should be done only once per backend!
- */
-const t = initTRPC.create();
+const t = initTRPC.context<Context>().create({
+  transformer: {
+    serialize: stringify,
+    deserialize: parse,
+  },
+});
 
-/**
- * Export reusable router and procedure helpers
- * that can be used throughout the router
- */
 export const router = t.router;
 export const publicProcedure = t.procedure;

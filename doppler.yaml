@@ -1,8 +1,4 @@
 setup:
-  - project: web
-    path: apps/web
-    config: dev
-
   - project: api
     path: apps/api
     config: dev
