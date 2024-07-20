@@ -1,8 +1,49 @@
+import { eq } from 'drizzle-orm';
+import { getCookie } from 'hono/cookie';
+import { db, UserSessions } from './db';
+import { decodeAccessToken } from './utils/access-token';
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
+import type { Context as HonoContext } from 'hono';
 
-export async function createContext({ req, resHeaders }: FetchCreateContextFnOptions) {
-  const user = { name: req.headers.get('username') ?? 'anonymous' };
-  return { req, resHeaders, user };
-}
+export type Context = {
+  req: Request;
+  resHeaders: Headers;
 
-export type Context = Awaited<ReturnType<typeof createContext>>;
+  honoCtx: HonoContext;
+
+  session?: {
+    id: string;
+    userId: string;
+  };
+};
+
+export const createContext = async ({ req, resHeaders }: FetchCreateContextFnOptions, honoCtx: HonoContext) => {
+  const ctx: Context = {
+    req,
+    resHeaders,
+    honoCtx,
+  };
+
+  const accessToken = getCookie(honoCtx, 'rdbl-at');
+  if (accessToken) {
+    const sessionId = await decodeAccessToken(accessToken);
+
+    if (sessionId) {
+      const sessions = await db
+        .select({ id: UserSessions.id, userId: UserSessions.userId })
+        .from(UserSessions)
+        .where(eq(UserSessions.id, sessionId));
+
+      if (sessions.length > 0) {
+        const [session] = sessions;
+
+        ctx.session = {
+          id: session.id,
+          userId: session.userId,
+        };
+      }
+    }
+  }
+
+  return ctx;
+};

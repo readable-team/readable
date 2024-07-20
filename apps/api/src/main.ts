@@ -1,12 +1,19 @@
 import { trpcServer } from '@hono/trpc-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { createContext } from './context';
-import { appRouter } from './router';
+import { createContext } from '@/context';
+import { appRouter } from '@/router';
 
 const app = new Hono();
 
-app.use('*', cors());
+app.use(
+  '*',
+  cors({
+    origin: (origin) => origin,
+    allowHeaders: [],
+    credentials: true,
+  }),
+);
 
 app.use(
   '/trpc/*',

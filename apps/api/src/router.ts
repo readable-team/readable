@@ -1,13 +1,10 @@
-import { eq } from 'drizzle-orm';
-import { z } from 'zod';
-import { db, Users } from '@/db';
-import { publicProcedure, router } from './trpc';
+import { router } from '@/trpc';
+import { authRouter } from './routers/auth';
+import { userRouter } from './routers/user';
 
 export const appRouter = router({
-  getUserById: publicProcedure.input(z.string()).query(async ({ input }) => {
-    const b = await db.select({ id: Users.id }).from(Users).where(eq(Users.id, input));
-    return b.length > 0 ? b[0] : null;
-  }),
+  auth: authRouter,
+  user: userRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "doppler run -- bun run --hot src/main.ts"
+    "dev": "doppler run -- bun run --watch src/main.ts"
   },
   "dependencies": {
     "@hono/trpc-server": "^0.3.2",
@@ -13,8 +13,12 @@
     "dayjs": "^1.11.12",
     "devalue": "^5.0.0",
     "drizzle-orm": "^0.32.0",
+    "google-auth-library": "^9.11.0",
     "hono": "^4.5.0",
+    "jose": "^5.6.3",
+    "nanoid": "^5.0.7",
     "postgres": "^3.4.4",
+    "ts-pattern": "^5.2.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
