@@ -1,6 +1,6 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation';
-  import { trpc } from '$lib/trpc';
+  import { accessToken, trpc } from '$lib/trpc';
 </script>
 
 dashboard
@@ -15,6 +15,8 @@ dashboard
     type="button"
     on:click={async () => {
       await trpc.auth.logout.mutate();
+      $accessToken = null;
+
       await invalidateAll();
     }}
   >

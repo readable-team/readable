@@ -1,5 +1,4 @@
 import { eq } from 'drizzle-orm';
-import { getCookie } from 'hono/cookie';
 import { db, UserSessions } from './db';
 import { decodeAccessToken } from './utils/access-token';
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
@@ -24,7 +23,7 @@ export const createContext = async ({ req, resHeaders }: FetchCreateContextFnOpt
     honoCtx,
   };
 
-  const accessToken = getCookie(honoCtx, 'rdbl-at');
+  const accessToken = req.headers.get('authorization')?.split(' ')[1];
   if (accessToken) {
     const sessionId = await decodeAccessToken(accessToken);
 

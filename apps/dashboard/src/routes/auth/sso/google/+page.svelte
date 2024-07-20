@@ -3,15 +3,19 @@
   import { SingleSignOnProvider } from '@/enums';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { trpc } from '$lib/trpc';
+  import { accessToken, trpc } from '$lib/trpc';
 
   onMount(async () => {
-    await trpc.auth.authorizeSingleSignOn.mutate({
+    const resp = await trpc.auth.authorizeSingleSignOn.mutate({
       provider: SingleSignOnProvider.GOOGLE,
       origin: $page.url.origin,
       params: Object.fromEntries($page.url.searchParams),
     });
 
+    $accessToken = resp.accessToken;
+
     await goto('/');
   });
 </script>
+
+logging in...

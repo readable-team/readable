@@ -1,6 +1,4 @@
-import dayjs from 'dayjs';
 import { eq } from 'drizzle-orm';
-import { deleteCookie, setCookie } from 'hono/cookie';
 import { match } from 'ts-pattern';
 import { z } from 'zod';
 import { db, Users, UserSessions, UserSingleSignOns } from '@/db';
@@ -24,7 +22,7 @@ export const authRouter = router({
 
   authorizeSingleSignOn: publicProcedure
     .input(z.object({ provider: z.nativeEnum(SingleSignOnProvider), origin: z.string(), params: z.record(z.any()) }))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input }) => {
       const externalUser = await match(input.provider)
         .with(SingleSignOnProvider.GOOGLE, () => google.authorizeUser(input.origin, input.params.code))
         .exhaustive();
@@ -58,18 +56,12 @@ export const authRouter = router({
       const [session] = await db.insert(UserSessions).values({ userId: user.id }).returning({ id: UserSessions.id });
       const accessToken = await createAccessToken(session.id);
 
-      setCookie(ctx.honoCtx, 'rdbl-at', accessToken, {
-        httpOnly: true,
-        secure: true,
-        expires: dayjs().add(1, 'year').toDate(),
-      });
-
-      return user;
+      return {
+        accessToken,
+      };
     }),
 
   logout: sessionProcedure.mutation(async ({ ctx }) => {
     await db.delete(UserSessions).where(eq(UserSessions.id, ctx.session.id));
-
-    deleteCookie(ctx.honoCtx, 'rdbl-at');
   }),
 });
