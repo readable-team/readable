@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "bootstrap": "husky && doppler setup --no-interactive",
+    "build": "turbo run build",
     "dev": "turbo run dev"
   },
   "devDependencies": {

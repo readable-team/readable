@@ -5,5 +5,21 @@
   "ignorePaths": [".git", ".gitignore", ".vscode", "drizzle"],
   "numSuggestions": 0,
   "useGitignore": true,
-  "words": ["bytea", "dotenv", "hono", "karpenter", "natgw", "oidc", "oidcs", "penxle", "pulumi", "rdbl", "trpc"]
+  "words": [
+    "buildx",
+    "bytea",
+    "dotenv",
+    "healthz",
+    "hono",
+    "karpenter",
+    "lockb",
+    "natgw",
+    "oidc",
+    "oidcs",
+    "penxle",
+    "pulumi",
+    "rdbl",
+    "trpc",
+    "vcpu"
+  ]
 }

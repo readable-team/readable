@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "doppler run -- bun run --watch src/main.ts"
+    "dev": "doppler run -- bun run --bun --watch src/main.ts"
   },
   "dependencies": {
     "@hono/trpc-server": "^0.3.2",

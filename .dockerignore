@@ -5,3 +5,8 @@ dist/
 .turbo/
 
 .env.local
+
+.git
+Dockerfile
+.dockerignore
+.gitignore

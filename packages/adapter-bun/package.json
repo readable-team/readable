@@ -1,0 +1,22 @@
+{
+  "name": "@readable/adapter-bun",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./server": "./src/server.js"
+  },
+  "scripts": {
+    "lint:typecheck": "tsc"
+  },
+  "devDependencies": {
+    "@readable/tsconfig": "workspace:*",
+    "@sveltejs/kit": "^2.5.18",
+    "@types/bun": "^1.1.6",
+    "typescript": "^5.5.3"
+  }
+}

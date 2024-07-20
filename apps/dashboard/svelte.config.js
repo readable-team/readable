@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-auto';
+import { bun } from '@readable/adapter-bun';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -6,9 +6,15 @@ export default {
   preprocess: vitePreprocess(),
 
   kit: {
-    adapter: adapter(),
+    adapter: bun(),
     alias: {
       '@/*': '../api/src/*',
+    },
+    files: {
+      hooks: {
+        server: 'src/hooks/server',
+        client: 'src/hooks/client',
+      },
     },
   },
 };

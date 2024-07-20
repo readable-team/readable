@@ -34,6 +34,10 @@ export const trpcS = (event: LoadEvent) => {
           return event.fetch(input, {
             ...init,
             credentials: 'include',
+            headers: {
+              ...init?.headers,
+              'x-use-credentials': '1',
+            },
           });
         },
       }),

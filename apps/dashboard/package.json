@@ -5,10 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "dev": "vite dev",
-    "preview": "vite preview"
+    "dev": "vite dev"
   },
   "dependencies": {
     "@trpc/client": "^11.0.0-rc.466",
@@ -17,10 +14,10 @@
     "devalue": "^5.0.0"
   },
   "devDependencies": {
+    "@readable/adapter-bun": "workspace:*",
     "@readable/api": "workspace:*",
     "@readable/lintconfig": "workspace:*",
     "@readable/tsconfig": "workspace:*",
-    "@sveltejs/adapter-auto": "^3.2.2",
     "@sveltejs/kit": "^2.5.18",
     "@sveltejs/vite-plugin-svelte": "^3.1.1",
     "svelte": "^4.2.18",
