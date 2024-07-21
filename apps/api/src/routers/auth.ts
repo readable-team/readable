@@ -1,4 +1,3 @@
-import { TRPCError } from '@trpc/server';
 import { eq } from 'drizzle-orm';
 import { match } from 'ts-pattern';
 import { z } from 'zod';
@@ -16,27 +15,17 @@ export const authRouter = router({
 
   generateSingleSignOnAuthorizationUrl: publicProcedure
     .input(z.object({ provider: z.nativeEnum(SingleSignOnProvider) }))
-    .mutation(({ input, ctx }) => {
-      const origin = ctx.req.headers.get('origin');
-      if (!origin) {
-        throw new TRPCError({ code: 'BAD_REQUEST' });
-      }
-
+    .mutation(({ input }) => {
       return match(input.provider)
-        .with(SingleSignOnProvider.GOOGLE, () => google.generateAuthorizationUrl(origin))
+        .with(SingleSignOnProvider.GOOGLE, () => google.generateAuthorizationUrl())
         .exhaustive();
     }),
 
   authorizeSingleSignOn: publicProcedure
     .input(z.object({ provider: z.nativeEnum(SingleSignOnProvider), params: z.record(z.any()) }))
-    .mutation(async ({ input, ctx }) => {
-      const origin = ctx.req.headers.get('origin');
-      if (!origin) {
-        throw new TRPCError({ code: 'BAD_REQUEST' });
-      }
-
+    .mutation(async ({ input }) => {
       const externalUser = await match(input.provider)
-        .with(SingleSignOnProvider.GOOGLE, () => google.authorizeUser(origin, input.params.code))
+        .with(SingleSignOnProvider.GOOGLE, () => google.authorizeUser(input.params.code))
         .exhaustive();
 
       const users = await db

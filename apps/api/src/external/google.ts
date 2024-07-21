@@ -2,23 +2,23 @@ import { OAuth2Client } from 'google-auth-library';
 import { SingleSignOnProvider } from '@/enums';
 import { env } from '@/env';
 
-const createOAuthClient = (origin: string) => {
+const createOAuthClient = () => {
   return new OAuth2Client({
     clientId: env.GOOGLE_OAUTH_CLIENT_ID,
     clientSecret: env.GOOGLE_OAUTH_CLIENT_SECRET,
-    redirectUri: `${origin}/auth/sso/google`,
+    redirectUri: `${env.DASHBOARD_URL}/auth/sso/google`,
   });
 };
 
-export const generateAuthorizationUrl = (origin: string) => {
-  const client = createOAuthClient(origin);
+export const generateAuthorizationUrl = () => {
+  const client = createOAuthClient();
   return client.generateAuthUrl({
     scope: ['email', 'profile'],
   });
 };
 
-export const authorizeUser = async (origin: string, code: string) => {
-  const client = createOAuthClient(origin);
+export const authorizeUser = async (code: string) => {
+  const client = createOAuthClient();
 
   const { tokens } = await client.getToken({ code });
   if (!tokens.access_token) {
