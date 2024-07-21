@@ -50,6 +50,7 @@ export class Site extends pulumi.ComponentResource {
   constructor(name: string, args: SiteArgs, opts?: pulumi.ComponentResourceOptions) {
     super('readable:index:Site', name, {}, opts);
 
+    const project = pulumi.getProject();
     const stack = pulumi.getStack();
     const isProd = stack === 'prod';
     const useCloudfront = isProd && args.cloudfront;
@@ -158,6 +159,8 @@ export class Site extends pulumi.ComponentResource {
                   env: [
                     { name: 'HTTP_HOST', value: domainName },
                     { name: 'HTTP_XFF_HOP', value: isProd ? '2' : '1' },
+                    { name: 'PUBLIC_PULUMI_PROJECT', value: project },
+                    { name: 'PUBLIC_PULUMI_STACK', value: stack },
                   ],
                   ...(secret && { envFrom: [{ secretRef: { name: secret.metadata.name } }] }),
                   resources: {

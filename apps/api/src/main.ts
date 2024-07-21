@@ -1,3 +1,5 @@
+import './instrument';
+
 import { trpcServer } from '@hono/trpc-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';

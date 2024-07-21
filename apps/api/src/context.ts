@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import { getConnInfo } from 'hono/bun';
 import { db, UserSessions } from './db';
 import { decodeAccessToken } from './utils/access-token';
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
@@ -8,7 +9,9 @@ export type Context = {
   req: Request;
   resHeaders: Headers;
 
-  honoCtx: HonoContext;
+  h: HonoContext;
+
+  clientAddress?: string;
 
   session?: {
     id: string;
@@ -17,10 +20,13 @@ export type Context = {
 };
 
 export const createContext = async ({ req, resHeaders }: FetchCreateContextFnOptions, honoCtx: HonoContext) => {
+  const connInfo = getConnInfo(honoCtx);
+
   const ctx: Context = {
     req,
     resHeaders,
-    honoCtx,
+    h: honoCtx,
+    clientAddress: connInfo.remote.address,
   };
 
   const accessToken = req.headers.get('authorization')?.split(' ')[1];
