@@ -1,4 +1,4 @@
-import { defineGlobalStyles } from '@pandacss/dev';
+import { defineGlobalFontface, defineGlobalStyles } from '@pandacss/dev';
 
 export const globalCss = defineGlobalStyles({
   '*': {
@@ -74,5 +74,26 @@ export const globalCss = defineGlobalStyles({
 
   '[hidden]': {
     display: 'none!',
+  },
+});
+
+export const globalFontface = defineGlobalFontface({
+  SUIT: {
+    src: 'url("https://cdn.rdbl.app/fonts/SUIT.woff2") format("woff2-variations")',
+    fontStyle: 'normal',
+    fontWeight: '100 900',
+    fontDisplay: 'swap',
+  },
+  Pretendard: {
+    src: 'url("https://cdn.rdbl.app/fonts/Pretendard.woff2") format("woff2-variations")',
+    fontStyle: 'normal',
+    fontWeight: '100 900',
+    fontDisplay: 'swap',
+  },
+  FiraCode: {
+    src: 'url("https://cdn.rdbl.app/fonts/FiraCode.woff2") format("woff2-variations")',
+    fontStyle: 'normal',
+    fontWeight: '100 900',
+    fontDisplay: 'swap',
   },
 });

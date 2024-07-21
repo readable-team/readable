@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
+    "codegen": "svelte-kit sync && panda codegen",
     "dev": "vite dev"
   },
   "devDependencies": {
