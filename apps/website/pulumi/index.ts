@@ -11,6 +11,11 @@ const site = new readable.Site('website', {
     dev: 'rdbl.ninja',
   },
 
+  cloudfront: {
+    certificateArnRef: 'AWS_ACM_CLOUDFRONT_RDBL_IO_CERTIFICATE_ARN',
+    domainZone: 'rdbl.io',
+  },
+
   image: {
     name: '637423633734.dkr.ecr.ap-northeast-2.amazonaws.com/readable',
     digest: config.require('digest'),

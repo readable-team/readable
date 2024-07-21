@@ -13,6 +13,11 @@ type SiteArgs = {
     dev: pulumi.Input<string>;
   };
 
+  cloudfront?: {
+    domainZone: pulumi.Input<string>;
+    certificateArnRef: pulumi.Input<string>;
+  };
+
   image: {
     name: pulumi.Input<string>;
     digest: pulumi.Input<string>;
@@ -46,8 +51,8 @@ export class Site extends pulumi.ComponentResource {
     super('readable:index:Site', name, {}, opts);
 
     const stack = pulumi.getStack();
-
     const isProd = stack === 'prod';
+    const useCloudfront = isProd && args.cloudfront;
 
     const domainName = match(stack)
       .with('prod', () => args.domain.production)
@@ -227,7 +232,7 @@ export class Site extends pulumi.ComponentResource {
       );
     }
 
-    new k8s.networking.v1.Ingress(
+    const ingress = new k8s.networking.v1.Ingress(
       name,
       {
         metadata: {
@@ -237,6 +242,7 @@ export class Site extends pulumi.ComponentResource {
             'alb.ingress.kubernetes.io/group.name': 'public-alb',
             'alb.ingress.kubernetes.io/listen-ports': JSON.stringify([{ HTTPS: 443 }]),
             'alb.ingress.kubernetes.io/healthcheck-path': '/healthz',
+            ...(useCloudfront && { 'external-dns.alpha.kubernetes.io/ingress-hostname-source': 'annotation-only' }),
           },
         },
         spec: {
@@ -264,5 +270,82 @@ export class Site extends pulumi.ComponentResource {
       },
       { parent: this },
     );
+
+    if (useCloudfront) {
+      const ref = new pulumi.StackReference('readable/infrastructure/base', {}, { parent: this });
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const zone = aws.route53.getZoneOutput({ name: args.cloudfront!.domainZone }, { parent: this });
+
+      const distribution = new aws.cloudfront.Distribution(
+        name,
+        {
+          enabled: true,
+          aliases: [domainName],
+          httpVersion: 'http2and3',
+
+          origins: [
+            {
+              originId: 'alb',
+              domainName: ingress.status.loadBalancer.ingress[0].hostname,
+              customOriginConfig: {
+                httpPort: 80,
+                httpsPort: 443,
+                originProtocolPolicy: 'https-only',
+                originSslProtocols: ['TLSv1.2'],
+                originReadTimeout: 60,
+                originKeepaliveTimeout: 60,
+              },
+              originShield: {
+                enabled: true,
+                originShieldRegion: 'ap-northeast-2',
+              },
+            },
+          ],
+
+          defaultCacheBehavior: {
+            targetOriginId: 'alb',
+            compress: true,
+            viewerProtocolPolicy: 'redirect-to-https',
+            allowedMethods: ['GET', 'HEAD', 'OPTIONS', 'PUT', 'POST', 'PATCH', 'DELETE'],
+            cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
+            cachePolicyId: ref.requireOutput('AWS_CLOUDFRONT_DYNAMIC_CACHE_POLICY_ID'),
+            originRequestPolicyId: ref.requireOutput('AWS_CLOUDFRONT_DYNAMIC_ORIGIN_REQUEST_POLICY_ID'),
+            responseHeadersPolicyId: ref.requireOutput('AWS_CLOUDFRONT_DYNAMIC_RESPONSE_HEADERS_POLICY_ID'),
+          },
+
+          restrictions: {
+            geoRestriction: {
+              restrictionType: 'none',
+            },
+          },
+
+          viewerCertificate: {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            acmCertificateArn: ref.requireOutput(args.cloudfront!.certificateArnRef),
+            sslSupportMethod: 'sni-only',
+            minimumProtocolVersion: 'TLSv1.2_2021',
+          },
+        },
+        { parent: this },
+      );
+
+      new aws.route53.Record(
+        name,
+        {
+          name: domainName,
+          type: 'A',
+          zoneId: zone.zoneId,
+          aliases: [
+            {
+              name: distribution.domainName,
+              zoneId: distribution.hostedZoneId,
+              evaluateTargetHealth: false,
+            },
+          ],
+        },
+        { parent: this },
+      );
+    }
   }
 }
