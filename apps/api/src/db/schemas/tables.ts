@@ -1,18 +1,41 @@
 import { init } from '@paralleldrive/cuid2';
 import { sql } from 'drizzle-orm';
-import { index, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
+import { index, integer, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
 import * as E from './enums';
 import { datetime } from './types';
+import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 
-const createId = init({ length: 16 });
+export const createDbId = init({ length: 16 });
+
+export const Images = pgTable('images', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId()),
+  name: text('name').notNull(),
+  format: text('format').notNull(),
+  size: integer('size').notNull(),
+  width: integer('width').notNull(),
+  height: integer('height').notNull(),
+  path: text('path').notNull(),
+  color: text('color').notNull(),
+  placeholder: text('placeholder').notNull(),
+  hash: text('hash').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
 
 export const Users = pgTable(
   'users',
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createId()),
+      .$defaultFn(() => createDbId()),
     email: text('email').notNull(),
+    name: text('name').notNull(),
+    avatarId: text('avatar_id')
+      .notNull()
+      .references((): AnyPgColumn => Images.id),
     state: E._UserState('state').notNull().default('ACTIVE'),
     createdAt: datetime('created_at')
       .notNull()
@@ -26,7 +49,7 @@ export const Users = pgTable(
 export const UserSessions = pgTable('user_sessions', {
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => createId()),
+    .$defaultFn(() => createDbId()),
   userId: text('user_id')
     .notNull()
     .references(() => Users.id),
@@ -40,7 +63,7 @@ export const UserSingleSignOns = pgTable(
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createId()),
+      .$defaultFn(() => createDbId()),
     userId: text('user_id')
       .notNull()
       .unique()

@@ -6,6 +6,7 @@ import { SingleSignOnProvider } from '@/enums';
 import * as google from '@/external/google';
 import { publicProcedure, router, sessionProcedure } from '@/trpc';
 import { createAccessToken } from '@/utils/access-token';
+import { uploadImage } from '@/utils/image';
 
 export const authRouter = router({
   isAuthenticated: publicProcedure.query(async ({ ctx }) => {
@@ -37,9 +38,22 @@ export const authRouter = router({
         user = users[0];
       } else {
         user = await db.transaction(async (tx) => {
+          const avatarResp = await fetch(externalUser.avatarUrl);
+          const avatarBuffer = await avatarResp.arrayBuffer();
+
+          const avatarId = await uploadImage({
+            tx,
+            name: 'avatar',
+            source: avatarBuffer,
+          });
+
           const [user] = await tx
             .insert(Users)
-            .values({ email: externalUser.email.toLowerCase() })
+            .values({
+              email: externalUser.email.toLowerCase(),
+              name: externalUser.name,
+              avatarId,
+            })
             .returning({ id: Users.id });
 
           await tx.insert(UserSingleSignOns).values({
