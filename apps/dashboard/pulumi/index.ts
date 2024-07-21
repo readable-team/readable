@@ -18,8 +18,8 @@ const site = new readable.Site('dashboard', {
   },
 
   resources: {
-    cpu: '200m',
-    memory: '500Mi',
+    cpu: '100m',
+    memory: '200Mi',
   },
 
   autoscale: {
