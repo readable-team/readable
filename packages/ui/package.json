@@ -1,0 +1,13 @@
+{
+  "name": "@readable/ui",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./styles": "./src/styles/index.ts",
+    "./styles.css": "./src/styles/index.css"
+  },
+  "devDependencies": {
+    "@pandacss/dev": "^0.43.0"
+  }
+}

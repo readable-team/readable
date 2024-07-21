@@ -3,5 +3,10 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [sveltekit()],
-  server: { port: 4100 },
+  server: {
+    port: 4100,
+    fs: {
+      allow: ['styled-system'],
+    },
+  },
 });

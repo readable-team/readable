@@ -9,6 +9,7 @@ export default {
     adapter: bun(),
     alias: {
       '@/*': '../api/src/*',
+      '$styled-system': './styled-system/*',
     },
     files: {
       hooks: {
@@ -16,5 +17,14 @@ export default {
         client: 'src/hooks/client',
       },
     },
+    paths: { relative: false },
+    output: { preloadStrategy: 'preload-mjs' },
+    typescript: {
+      config: (config) => ({
+        ...config,
+        include: [...config.include, '../pulumi/**/*.ts', '../scripts/**/*.ts'],
+      }),
+    },
+    version: { pollInterval: 60 * 1000 },
   },
 };

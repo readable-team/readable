@@ -12,6 +12,7 @@
     "buildx",
     "bytea",
     "dotenv",
+    "fira",
     "healthz",
     "hono",
     "karpenter",
