@@ -48,8 +48,7 @@ export const globalCss = defineGlobalStyles({
 
   'input': {
     _disabled: {
-      'opacity': '100',
-      '::-webkit-text-fill-color': '{colors.gray.300}',
+      opacity: '100',
     },
   },
 
