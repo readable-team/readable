@@ -145,7 +145,7 @@ export class Site extends pulumi.ComponentResource {
           },
         },
         spec: {
-          ...(!isProd && { replicas: 2 }),
+          ...(!isProd && { replicas: 1 }),
           selector: { matchLabels: labels },
           template: {
             metadata: { labels },
