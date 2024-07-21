@@ -8,7 +8,6 @@
   onMount(async () => {
     const resp = await trpc.auth.authorizeSingleSignOn.mutate({
       provider: SingleSignOnProvider.GOOGLE,
-      origin: $page.url.origin,
       params: Object.fromEntries($page.url.searchParams),
     });
 
