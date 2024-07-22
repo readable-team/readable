@@ -18,7 +18,7 @@
   on:click={async () => {
     const workspace = await trpc.workspace.createDefault.mutate();
     const site = await trpc.site.create.mutate({ workspaceId: workspace.id, name });
-    await goto(`/workspace/${workspace.id}/site/${site.id}/dashboard`);
+    await goto(`/workspace/${workspace.id}/site/${site.id}`);
   }}
 >
   만들기
