@@ -3,6 +3,8 @@ import * as readable from '@readable/pulumi';
 
 const config = new pulumi.Config('readable');
 
+const ref = new pulumi.StackReference('readable/infrastructure/base');
+
 const site = new readable.Site('api', {
   name: 'api',
 
@@ -26,6 +28,29 @@ const site = new readable.Site('api', {
     minCount: 2,
     maxCount: 10,
     averageCpuUtilization: 50,
+  },
+
+  iam: {
+    policy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: ['s3:GetObject', 's3:PutObject'],
+          Resource: [pulumi.concat(ref.requireOutput('AWS_S3_BUCKET_USERCONTENTS_ARN'), '/*')],
+        },
+        {
+          Effect: 'Allow',
+          Action: ['s3:DeleteObject'],
+          Resource: [pulumi.concat(ref.requireOutput('AWS_S3_BUCKET_USERCONTENTS_ARN'), '/uploads/*')],
+        },
+        {
+          Effect: 'Allow',
+          Action: ['ses:SendEmail'],
+          Resource: ['*'],
+        },
+      ],
+    },
   },
 
   secret: {
