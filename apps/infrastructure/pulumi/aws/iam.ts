@@ -42,6 +42,19 @@ new aws.iam.GroupPolicy('team', {
         ],
         Resource: 'arn:aws:iam::*:user/${aws:username}',
       },
+    ],
+  },
+});
+
+const developer = new aws.iam.User('developer@team', {
+  name: 'developer@team',
+});
+
+new aws.iam.UserPolicy('developer@team', {
+  user: developer.name,
+  policy: {
+    Version: '2012-10-17',
+    Statement: [
       {
         Effect: 'Allow',
         Action: ['s3:GetObject', 's3:PutObject'],
@@ -59,6 +72,10 @@ new aws.iam.GroupPolicy('team', {
       },
     ],
   },
+});
+
+const developerAccessKey = new aws.iam.AccessKey('developer@team', {
+  user: developer.name,
 });
 
 const datadogIntegration = new aws.iam.Role('integration@datadog', {
@@ -210,3 +227,8 @@ new aws.iam.RolePolicy('actions@github', {
     ],
   },
 });
+
+export const outputs = {
+  AWS_IAM_DEVELOPER_ACCESS_KEY_ID: developerAccessKey.id,
+  AWS_IAM_DEVELOPER_SECRET_ACCESS_KEY: developerAccessKey.secret,
+};
