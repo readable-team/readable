@@ -8,7 +8,7 @@ export const load = async () => {
   }
 
   const hasWorkspace = await trpc.workspace.hasAny.query();
-  if (!hasWorkspace) {
-    redirect(302, '/new');
+  if (hasWorkspace) {
+    redirect(302, '/');
   }
 };

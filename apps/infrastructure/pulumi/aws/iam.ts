@@ -1,4 +1,6 @@
 import * as aws from '@pulumi/aws';
+import * as pulumi from '@pulumi/pulumi';
+import { buckets } from '$aws/s3';
 
 const admin = new aws.iam.Group('admin', {
   name: 'admin',
@@ -42,8 +44,18 @@ new aws.iam.GroupPolicy('team', {
       },
       {
         Effect: 'Allow',
+        Action: ['s3:GetObject', 's3:PutObject'],
+        Resource: [pulumi.concat(buckets.usercontents.arn, '/*')],
+      },
+      {
+        Effect: 'Allow',
+        Action: ['s3:DeleteObject'],
+        Resource: [pulumi.concat(buckets.usercontents.arn, '/uploads/*')],
+      },
+      {
+        Effect: 'Allow',
         Action: ['ses:SendEmail'],
-        Resource: ['*'],
+        Resource: '*',
       },
     ],
   },

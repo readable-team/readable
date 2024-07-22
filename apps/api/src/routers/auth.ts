@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { match } from 'ts-pattern';
 import { z } from 'zod';
-import { db, Users, UserSessions, UserSingleSignOns } from '@/db';
+import { db, first, firstOrThrow, Users, UserSessions, UserSingleSignOns } from '@/db';
 import { SingleSignOnProvider } from '@/enums';
 import * as google from '@/external/google';
 import { publicProcedure, router, sessionProcedure } from '@/trpc';
@@ -28,15 +28,13 @@ export const authRouter = router({
         .with(SingleSignOnProvider.GOOGLE, () => google.authorizeUser(input.params.code))
         .exhaustive();
 
-      const users = await db
+      let user = await db
         .select({ id: Users.id })
         .from(Users)
-        .where(eq(Users.email, externalUser.email.toLowerCase()));
+        .where(eq(Users.email, externalUser.email.toLowerCase()))
+        .then(first);
 
-      let user;
-      if (users.length > 0) {
-        user = users[0];
-      } else {
+      if (!user) {
         user = await db.transaction(async (tx) => {
           const avatarResp = await fetch(externalUser.avatarUrl);
           const avatarBuffer = await avatarResp.arrayBuffer();
@@ -47,14 +45,15 @@ export const authRouter = router({
             source: avatarBuffer,
           });
 
-          const [user] = await tx
+          const user = await tx
             .insert(Users)
             .values({
               email: externalUser.email.toLowerCase(),
               name: externalUser.name,
               avatarId,
             })
-            .returning({ id: Users.id });
+            .returning({ id: Users.id })
+            .then(firstOrThrow);
 
           await tx.insert(UserSingleSignOns).values({
             userId: user.id,
@@ -67,7 +66,12 @@ export const authRouter = router({
         });
       }
 
-      const [session] = await db.insert(UserSessions).values({ userId: user.id }).returning({ id: UserSessions.id });
+      const session = await db
+        .insert(UserSessions)
+        .values({ userId: user.id })
+        .returning({ id: UserSessions.id })
+        .then(firstOrThrow);
+
       const accessToken = await createAccessToken(session.id);
 
       return {
