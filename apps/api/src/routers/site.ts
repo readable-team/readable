@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
-import { and, eq } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 import { z } from 'zod';
-import { db, firstOrThrow, Sites, WorkspaceMembers } from '@/db';
-import { WorkspaceMemberRole } from '@/enums';
+import { db, firstOrThrow, Sites, WorkspaceMembers, Workspaces } from '@/db';
+import { SiteState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
 
@@ -40,4 +40,25 @@ export const siteRouter = router({
 
       return site;
     }),
+
+  list: sessionProcedure.input(z.object({ workspaceId: z.string() })).query(async ({ input, ctx }) => {
+    await db
+      .select({ id: Workspaces.id })
+      .from(Workspaces)
+      .innerJoin(WorkspaceMembers, eq(Workspaces.id, WorkspaceMembers.workspaceId))
+      .where(
+        and(
+          eq(WorkspaceMembers.userId, ctx.session.userId),
+          eq(Workspaces.id, input.workspaceId),
+          eq(Workspaces.state, WorkspaceState.ACTIVE),
+        ),
+      )
+      .then(firstOrThrow);
+
+    return await db
+      .select({ id: Sites.id, name: Sites.name, slug: Sites.slug })
+      .from(Sites)
+      .where(and(eq(Sites.workspaceId, input.workspaceId), eq(Sites.state, SiteState.ACTIVE)))
+      .orderBy(asc(Sites.name));
+  }),
 });

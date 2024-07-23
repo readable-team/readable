@@ -1,9 +1,12 @@
+<script lang="ts">
+  export let data;
+</script>
+
 <h1>설정 페이지</h1>
 
 탭:
-<a href="/workspace/foo/site/bar/settings/general">일반</a>
-<a href="/workspace/foo/site/bar/settings/seo">SEO</a>
-<a href="/workspace/foo/site/bar/settings/others">기타</a>
+<a href={`/workspace/${data.workspaceId}/site/${data.siteId}/settings`}>일반</a>
+<a href={`/workspace/${data.workspaceId}/site/${data.siteId}/settings/seo`}>SEO</a>
 
 <br />
 <br />

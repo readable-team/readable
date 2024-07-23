@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 import { db, first, firstOrThrow, Users, WorkspaceMembers, Workspaces } from '@/db';
 import { WorkspaceMemberRole, WorkspaceState } from '@/enums';
 import { inputSchemas } from '@/schemas';
@@ -44,7 +44,8 @@ export const workspaceRouter = router({
       .select({ id: Workspaces.id, name: Workspaces.name })
       .from(Workspaces)
       .innerJoin(WorkspaceMembers, eq(Workspaces.id, WorkspaceMembers.workspaceId))
-      .where(and(eq(WorkspaceMembers.userId, ctx.session.userId), eq(Workspaces.state, WorkspaceState.ACTIVE)));
+      .where(and(eq(WorkspaceMembers.userId, ctx.session.userId), eq(Workspaces.state, WorkspaceState.ACTIVE)))
+      .orderBy(asc(Workspaces.createdAt));
   }),
 
   hasAny: sessionProcedure.query(async ({ ctx }) => {

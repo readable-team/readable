@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
 
-export const load = () => {
-  redirect(302, '/workspace/foo/site/bar/pages');
+export const load = ({ params }) => {
+  redirect(302, `/workspace/${params.workspaceId}/site/${params.siteId}/pages`);
 };
