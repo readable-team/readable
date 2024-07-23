@@ -4,9 +4,13 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./styles": "./src/styles/index.ts"
+    "./components": "./src/components/index.ts"
+  },
+  "dependencies": {
+    "@readable/styled-system": "workspace:*"
   },
   "devDependencies": {
-    "@pandacss/dev": "^0.43.0"
+    "@readable/tsconfig": "workspace:*",
+    "typescript": "^5.5.3"
   }
 }

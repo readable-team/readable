@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { css } from '@readable/styled-system/css';
   import { goto } from '$app/navigation';
   import { trpc } from '$lib/trpc';
-  import { css } from '$styled-system/css';
 
   let name: string;
 </script>

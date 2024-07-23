@@ -1,8 +1,8 @@
 <script lang="ts">
+  import { css } from '@readable/styled-system/css';
   import { PUBLIC_USERCONTENTS_URL } from '$env/static/public';
   import { trpc } from '$lib/trpc';
-  import { css } from '$styled-system/css';
-  import type { SystemStyleObject } from '$styled-system/types';
+  import type { SystemStyleObject } from '@readable/styled-system/types';
 
   export let id: string;
   export let alt: string;

@@ -1,0 +1,31 @@
+{
+  "name": "@readable/styled-system",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./css": {
+      "types": "./styled-system/css/index.d.ts",
+      "import": "./styled-system/css/index.js"
+    },
+    "./patterns": {
+      "types": "./styled-system/patterns/index.d.ts",
+      "import": "./styled-system/patterns/index.js"
+    },
+    "./tokens": {
+      "types": "./styled-system/tokens/index.d.ts",
+      "import": "./styled-system/tokens/index.js"
+    },
+    "./types": {
+      "types": "./styled-system/types/index.d.ts",
+      "import": "./styled-system/types/index.js"
+    }
+  },
+  "scripts": {
+    "codegen": "pandacss codegen"
+  },
+  "devDependencies": {
+    "@pandacss/dev": "^0.43.0"
+  }
+}

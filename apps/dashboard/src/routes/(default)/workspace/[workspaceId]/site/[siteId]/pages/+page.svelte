@@ -1,8 +1,9 @@
 <script lang="ts">
+  import { css } from '@readable/styled-system/css';
+  import { Test } from '@readable/ui/components';
   import { invalidateAll } from '$app/navigation';
   import Img from '$lib/components/Img.svelte';
   import { accessToken, trpc } from '$lib/trpc';
-  import { css } from '$styled-system/css';
 </script>
 
 <div class={css({ fontSize: '32px', fontWeight: 'bold', marginBottom: '12px' })}>dashboard</div>
@@ -35,3 +36,5 @@
     Logout
   </button>
 {/await}
+
+<Test />

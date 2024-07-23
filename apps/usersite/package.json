@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "codegen": "svelte-kit sync && panda codegen",
+    "codegen": "svelte-kit sync",
     "dev": "doppler run -- vite dev"
   },
   "dependencies": {
+    "@readable/styled-system": "workspace:*",
     "@trpc/client": "^11.0.0-rc.466",
     "@trpc/server": "^11.0.0-rc.466",
     "dayjs": "^1.11.12",

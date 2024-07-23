@@ -1,13 +1,5 @@
 # Output
-.output
-.vercel
 /.svelte-kit
-/build
 
 # Vite
-vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-
-## Panda
-styled-system
-styled-system-studio
