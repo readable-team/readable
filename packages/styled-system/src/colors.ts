@@ -56,16 +56,18 @@ export const colors = defineTokens.colors({
 
 export const semanticColors = defineSemanticTokens.colors({
   text: {
-    main1: { value: { base: '{colors.gray.0}', _dark: '{colors.gray.700}' } },
-    main2: { value: { base: '{colors.gray.150}', _dark: '{colors.gray.500}' } },
-    main3: { value: { base: '{colors.gray.200}', _dark: '{colors.gray.550}' } },
-    main4: { value: { base: '{colors.gray.300}', _dark: '{colors.gray.600}' } },
-    main5: { value: { base: '{colors.gray.450}', _dark: '{colors.gray.500}' } },
-    main6: { value: { base: '{colors.gray.950}', _dark: '{colors.gray.0}' } },
-
     primary: { value: { base: '{colors.primary.600}', _dark: '{colors.primary.500}' } },
+
+    main1: { value: { base: '{colors.gray.0}', _dark: '{colors.gray.700}' } },
+    main2: { value: { base: '{colors.gray.200}', _dark: '{colors.gray.550}' } },
+    main3: { value: { base: '{colors.gray.300}', _dark: '{colors.gray.450}' } },
+    main4: { value: { base: '{colors.gray.450}', _dark: '{colors.gray.400}' } },
+    main5: { value: { base: '{colors.gray.950}', _dark: '{colors.gray.0}' } },
+
+    disabled: { value: { base: '{colors.gray.250}', _dark: '{colors.gray.500}' } },
+
     danger: {
-      default: { value: { base: '{colors.red.600}', _dark: '{colors.red.500}' } },
+      DEFAULT: { value: { base: '{colors.red.600}', _dark: '{colors.red.500}' } },
       hover: { value: { base: '{colors.red.400}', _dark: '{colors.red.700}' } },
       pressed: { value: { base: '{colors.red.800}', _dark: '{colors.red.400}' } },
     },
@@ -74,17 +76,17 @@ export const semanticColors = defineSemanticTokens.colors({
       main: {
         primary: { value: { base: '{colors.primary.600}', _dark: '{colors.primary.500}' } },
         hover: { value: { base: '{colors.primary.400}', _dark: '{colors.primary.700}' } },
-        pressed: { value: { base: '{colors.primary.700}', _dark: '{colors.primary.600}' } },
+        pressed: { value: { base: '{colors.primary.700}', _dark: '{colors.primary.800}' } },
       },
-      outline: {
-        primary: { value: { base: 'colors.gray.450', _dark: '{colors.gray.500}' } },
-        hover: { value: { base: '{colors.gray.300}', _dark: '{colors.gray.600}' } },
-        pressed: { value: { base: '{colors.gray.550}', _dark: '{colors.gray.450}' } },
+      sub: {
+        primary: { value: { base: 'colors.gray.450', _dark: '{colors.gray.400}' } },
+        hover: { value: { base: '{colors.gray.450}', _dark: '{colors.gray.400}' } },
+        pressed: { value: { base: '{colors.gray.450}', _dark: '{colors.gray.400}' } },
       },
     },
 
     link: {
-      default: { value: { base: '{colors.primary.600}', _dark: '{colors.primary.500}' } },
+      primary: { value: { base: '{colors.primary.600}', _dark: '{colors.primary.500}' } },
       hover: { value: { base: '{colors.primary.400}', _dark: '{colors.primary.700}' } },
       pressed: { value: { base: '{colors.primary.700}', _dark: '{colors.primary.600}' } },
     },
@@ -93,34 +95,55 @@ export const semanticColors = defineSemanticTokens.colors({
   surface: {
     main: { value: { base: '{colors.gray.0}', _dark: '{colors.gray.950}' } },
     sub: { value: { base: '{colors.gray.50}', _dark: '{colors.gray.750}' } },
-    hover: { value: { base: '{colors.gray.200}', _dark: '{colors.gray.550}' } },
+    sub2: { value: { base: '{colors.gray.20}', _dark: '{colors.gray.600}' } },
     pressed: { value: { base: '{colors.gray.200}', _dark: '{colors.gray.550}' } },
-    disabled: { value: { base: '{colors.gray.150}', _dark: '{colors.gray.500}' } },
-    danger: { value: { base: '{colors.red.100}', _dark: '{colors.red.700}' } },
+    hover: { value: { base: '{colors.gray.200}', _dark: '{colors.gray.550}' } },
+    hover2: { value: { base: '{colors.gray.50}', _dark: '{colors.gray.700}' } },
+    disabled: { value: { base: '{colors.gray.50}', _dark: '{colors.gray.600}' } },
 
-    primary: {
-      default: { value: { base: '{colors.primary.600}', _dark: '{colors.primary.500}' } },
-      hover: { value: { base: '{colors.primary.400}', _dark: '{colors.primary.700}' } },
-      pressed: { value: { base: '{colors.primary.700}', _dark: '{colors.primary.600}' } },
-      selected: { value: { base: '{colors.primary.100}', _dark: '{colors.primary.700}' } },
+    button: {
+      primary: {
+        DEFAULT: { value: { base: '{colors.primary.600}', _dark: '{colors.primary.500}' } },
+        hover: { value: { base: '{colors.primary.400}', _dark: '{colors.primary.700}' } },
+        pressed: { value: { base: '{colors.primary.700}', _dark: '{colors.primary.800}' } },
+        selected: { value: { base: '{colors.primary.100}', _dark: '{colors.primary.900}' } },
+      },
+      danger: {
+        DEFAULT: { value: { base: '{colors.red.600}', _dark: '{colors.red.500}' } },
+        hover: { value: { base: '{colors.red.400}', _dark: '{colors.red.700}' } },
+        pressed: { value: { base: '{colors.red.700}', _dark: '{colors.red.800}' } },
+        selected: { value: { base: '{colors.red.100}', _dark: '{colors.red.900}' } },
+      },
+      sub: {
+        main: { value: { base: '{colors.gray.0}', _dark: '{colors.gray.20}' } },
+        hover: { value: { base: '{colors.gray.20}', _dark: '{colors.gray.200}' } },
+        pressed: { value: { base: '{colors.gray.250}', _dark: '{colors.gray.300}' } },
+        button: { value: { base: '{colors.gray.0}', _dark: '{colors.gray.20}' } },
+      },
     },
   },
 
   border: {
+    primary: {
+      DEFAULT: { value: { base: '{colors.primary.600}', _dark: '{colors.primary.500}' } },
+      hover: { value: { base: '{colors.primary.400}', _dark: '{colors.primary.700}' } },
+      pressed: { value: { base: '{colors.primary.700}', _dark: '{colors.primary.800}' } },
+    },
+
     main: { value: { base: '{colors.gray.20}', _dark: '{colors.gray.900}' } },
-    sub1: { value: { base: '{colors.gray.50}', _dark: '{colors.gray.750}' } },
-    sub2: { value: { base: '{colors.gray.150}', _dark: '{colors.gray.650}' } },
-    hover: { value: { base: '{colors.gray.200}', _dark: '{colors.gray.550}' } },
-    pressed: { value: { base: '{colors.gray.200}', _dark: '{colors.gray.550}' } },
-    disabled: { value: { base: '{colors.gray.150}', _dark: '{colors.gray.500}' } },
+    sub: { value: { base: '{colors.gray.50}', _dark: '{colors.gray.700}' } },
+    sub2: { value: { base: '{colors.gray.150}', _dark: '{colors.gray.500}' } },
+    sub3: { value: { base: '{colors.gray.950}', _dark: '{colors.gray.20}' } },
+    hover: { value: { base: '{colors.gray.150}', _dark: '{colors.gray.600}' } },
+    pressed: { value: { base: '{colors.gray.150}', _dark: '{colors.gray.500}' } },
+    disabled: { value: { base: '{colors.gray.200}', _dark: '{colors.gray.550}' } },
 
     button: { value: { base: '{colors.gray.0}', _dark: '{colors.gray.950}' } },
-    danger: { value: { base: '{colors.red.600}', _dark: '{colors.red.500}' } },
 
-    primary: {
-      default: { value: { base: '{colors.primary.600}', _dark: '{colors.primary.500}' } },
-      hover: { value: { base: '{colors.primary.400}', _dark: '{colors.primary.700}' } },
-      pressed: { value: { base: '{colors.primary.700}', _dark: '{colors.primary.600}' } },
+    danger: {
+      DEFAULT: { value: { base: '{colors.red.600}', _dark: '{colors.red.500}' } },
+      hover: { value: { base: '{colors.red.100}', _dark: '{colors.red.900}' } },
+      pressed: { value: { base: '{colors.red.100}', _dark: '{colors.red.900}' } },
     },
   },
 });
