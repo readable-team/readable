@@ -3,6 +3,7 @@ import { breakpoints } from './breakpoints';
 import { conditions } from './conditions';
 import { globalCss, globalFontface } from './global';
 import { semanticTokens } from './semantic-tokens';
+import { textStyles } from './text-styles';
 import { tokens } from './tokens';
 import { utilities } from './utilities';
 
@@ -15,6 +16,7 @@ export const preset = definePreset({
     breakpoints,
     tokens,
     semanticTokens,
+    textStyles,
   },
 
   conditions,
