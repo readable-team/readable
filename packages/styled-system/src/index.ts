@@ -2,6 +2,7 @@ import { definePreset } from '@pandacss/dev';
 import { breakpoints } from './breakpoints';
 import { conditions } from './conditions';
 import { globalCss, globalFontface } from './global';
+import { semanticTokens } from './semantic-tokens';
 import { tokens } from './tokens';
 import { utilities } from './utilities';
 
@@ -13,6 +14,7 @@ export const preset = definePreset({
   theme: {
     breakpoints,
     tokens,
+    semanticTokens,
   },
 
   conditions,
