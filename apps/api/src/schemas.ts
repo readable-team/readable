@@ -28,7 +28,7 @@ const dataSchemas = {
 
 export const inputSchemas = {
   user: {
-    setProfile: z.object({
+    updateProfile: z.object({
       name: dataSchemas.user.name,
     }),
   },

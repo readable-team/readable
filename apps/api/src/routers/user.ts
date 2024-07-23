@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { db, firstOrThrow, Users } from '@/db';
+import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
 
 export const userRouter = router({
@@ -9,5 +10,9 @@ export const userRouter = router({
       .from(Users)
       .where(eq(Users.id, ctx.session.userId))
       .then(firstOrThrow);
+  }),
+
+  updateProfile: sessionProcedure.input(inputSchemas.user.updateProfile).mutation(async ({ input, ctx }) => {
+    await db.update(Users).set({ name: input.name }).where(eq(Users.id, ctx.session.userId));
   }),
 });
