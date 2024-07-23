@@ -5,4 +5,4 @@
 usersite
 <br />
 <br />
-current site: {data.site}
+current site name: {data.site.name}

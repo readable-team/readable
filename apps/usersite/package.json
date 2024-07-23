@@ -6,7 +6,14 @@
   "scripts": {
     "build": "vite build",
     "codegen": "svelte-kit sync && panda codegen",
-    "dev": "vite dev"
+    "dev": "doppler run -- vite dev"
+  },
+  "dependencies": {
+    "@trpc/client": "^11.0.0-rc.466",
+    "@trpc/server": "^11.0.0-rc.466",
+    "dayjs": "^1.11.12",
+    "devalue": "^5.0.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@pandacss/dev": "^0.43.0",

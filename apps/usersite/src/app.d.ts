@@ -2,7 +2,11 @@
 // for information about these interfaces
 declare global {
   namespace App {
-    // interface Error {}
+    // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+    interface Error {
+      code: string;
+    }
+
     // interface Locals {}
     // interface PageData {}
     // interface PageState {}

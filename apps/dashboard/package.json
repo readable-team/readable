@@ -19,7 +19,6 @@
     "@pandacss/dev": "^0.43.0",
     "@pulumi/pulumi": "^3.125.0",
     "@readable/adapter-bun": "workspace:*",
-    "@readable/api": "workspace:*",
     "@readable/lintconfig": "workspace:*",
     "@readable/pulumi": "workspace:*",
     "@readable/tsconfig": "workspace:*",

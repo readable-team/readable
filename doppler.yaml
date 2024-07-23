@@ -1,8 +1,12 @@
 setup:
-  - project: api
-    path: apps/api
+  - path: apps/api
+    project: api
     config: dev_local
 
-  - project: dashboard
-    path: apps/dashboard
+  - path: apps/dashboard
+    project: dashboard
+    config: dev_local
+
+  - path: apps/usersite
+    project: usersite
     config: dev_local
