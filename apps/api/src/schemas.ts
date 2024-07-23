@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { WorkspaceMemberRole } from './enums';
 
 const dataSchemas = {
   email: z
@@ -53,6 +54,12 @@ export const inputSchemas = {
     createInvite: z.object({
       workspaceId: z.string(),
       email: dataSchemas.email,
+    }),
+
+    updateRole: z.object({
+      workspaceId: z.string(),
+      userId: z.string(),
+      role: z.nativeEnum(WorkspaceMemberRole),
     }),
   },
 };

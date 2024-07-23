@@ -1,7 +1,7 @@
 import { createId } from '@paralleldrive/cuid2';
 import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
-import { and, asc, eq, gt } from 'drizzle-orm';
+import { and, asc, count, eq, gt } from 'drizzle-orm';
 import { z } from 'zod';
 import { db, first, firstOrThrow, Users, WorkspaceInvites, WorkspaceMembers, Workspaces } from '@/db';
 import { sendEmail } from '@/email';
@@ -133,6 +133,36 @@ export const workspaceRouter = router({
       });
 
       await tx.delete(WorkspaceInvites).where(eq(WorkspaceInvites.code, input.code));
+    });
+  }),
+
+  updateRole: sessionProcedure.input(inputSchemas.workspace.updateRole).mutation(async ({ input, ctx }) => {
+    await checkWorkspaceRole({
+      workspaceId: input.workspaceId,
+      userId: ctx.session.userId,
+      role: 'ADMIN',
+    });
+
+    await db.transaction(async (tx) => {
+      await tx
+        .update(WorkspaceMembers)
+        .set({ role: input.role })
+        .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, input.userId)));
+
+      if (input.role !== 'ADMIN') {
+        const adminCount = await db
+          .select({ count: count(WorkspaceMembers.id) })
+          .from(WorkspaceMembers)
+          .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.role, 'ADMIN')))
+          .then((rows) => rows[0]?.count ?? 0);
+
+        if (adminCount === 0) {
+          throw new TRPCError({
+            code: 'CONFLICT',
+            message: '워크스페이스에는 최소 1명의 관리자가 있어야 합니다',
+          });
+        }
+      }
     });
   }),
 });
