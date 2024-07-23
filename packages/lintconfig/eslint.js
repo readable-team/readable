@@ -90,7 +90,7 @@ export default [
     },
   },
   {
-    files: ['**/*.config.[jt]s'],
+    files: ['**/*.config.[jt]s', '**/*.[jt]sx'],
     rules: {
       'import/no-default-export': 'off',
     },

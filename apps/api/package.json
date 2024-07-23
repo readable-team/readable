@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "doppler run -- bun --watch src/main.ts",
+    "dev:email": "email dev --port 3001 --dir src/email/templates",
     "lint:typecheck": "tsc"
   },
   "dependencies": {
@@ -13,6 +14,7 @@
     "@faker-js/faker": "^8.4.1",
     "@hono/trpc-server": "^0.3.2",
     "@paralleldrive/cuid2": "^2.2.2",
+    "@react-email/components": "^0.0.21",
     "@sentry/bun": "^8.19.0",
     "@trpc/server": "^11.0.0-rc.466",
     "dayjs": "^1.11.12",
@@ -25,6 +27,7 @@
     "pino": "^9.3.1",
     "postgres": "^3.4.4",
     "radash": "^12.1.0",
+    "react-email": "^2.1.5",
     "sharp": "^0.33.4",
     "thumbhash": "^0.1.1",
     "ts-pattern": "^5.2.0",
@@ -36,6 +39,7 @@
     "@readable/pulumi": "workspace:*",
     "@readable/tsconfig": "workspace:*",
     "@types/bun": "^1.1.6",
+    "@types/react": "^18.3.3",
     "drizzle-kit": "^0.23.0",
     "typescript": "^5.5.3"
   }

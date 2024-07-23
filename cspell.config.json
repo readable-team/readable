@@ -11,6 +11,7 @@
     "brotli",
     "buildx",
     "bytea",
+    "dmarc",
     "dotenv",
     "fira",
     "healthz",

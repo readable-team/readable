@@ -12,6 +12,8 @@
     "allowImportingTsExtensions": true,
     "allowJs": true,
 
+    "jsx": "react-jsx",
+
     "noEmit": true,
     "skipLibCheck": true,
 

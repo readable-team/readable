@@ -11,3 +11,11 @@ export const zones = {
   rdbl_app: createZone('rdbl.app'),
   rdbl_ninja: createZone('rdbl.ninja'),
 };
+
+new aws.route53.Record('_dmarc.rdbl.io|txt', {
+  zoneId: zones.rdbl_io.zoneId,
+  type: 'TXT',
+  name: '_dmarc.rdbl.io',
+  records: ['v=DMARC1; p=none;'],
+  ttl: 300,
+});
