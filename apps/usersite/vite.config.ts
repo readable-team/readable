@@ -5,8 +5,5 @@ export default defineConfig({
   plugins: [sveltekit()],
   server: {
     port: 4200,
-    fs: {
-      allow: ['styled-system'],
-    },
   },
 });
