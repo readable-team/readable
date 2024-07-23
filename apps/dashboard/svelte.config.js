@@ -1,9 +1,9 @@
 import { bun } from '@readable/adapter-bun';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { sveltePreprocess } from 'svelte-preprocess';
 
 /** @type {import('@sveltejs/kit').Config} */
 export default {
-  preprocess: vitePreprocess(),
+  preprocess: sveltePreprocess(),
 
   kit: {
     adapter: bun(),
