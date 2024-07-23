@@ -4,14 +4,19 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./components": "./src/components/index.ts"
+    "./components": "./src/components/index.ts",
+    "./icons": {
+      "types": "./src/icons/index.d.ts",
+      "import": "./src/icons/index.js"
+    }
   },
   "scripts": {
     "lint:svelte": "svelte-check --fail-on-warnings"
   },
   "dependencies": {
     "@readable/styled-system": "workspace:*",
-    "svelte": "^4.2.18"
+    "svelte": "^4.2.18",
+    "unplugin-icons": "^0.19.0"
   },
   "devDependencies": {
     "@readable/tsconfig": "workspace:*",

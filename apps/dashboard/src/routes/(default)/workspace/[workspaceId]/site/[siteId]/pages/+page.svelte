@@ -1,12 +1,17 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { Test } from '@readable/ui/components';
+  import { flex } from '@readable/styled-system/patterns';
+  import { Icon, Test } from '@readable/ui/components';
+  import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import { invalidateAll } from '$app/navigation';
   import Img from '$lib/components/Img.svelte';
   import { accessToken, trpc } from '$lib/trpc';
 </script>
 
-<div class={css({ fontSize: '32px', fontWeight: 'bold', marginBottom: '12px' })}>dashboard</div>
+<div class={flex({ align: 'center', gap: '4px', fontSize: '32px', fontWeight: 'bold', marginBottom: '12px' })}>
+  <Icon icon={LayoutDashboardIcon} size={32} />
+  dashboard
+</div>
 
 {#await trpc.user.me.query() then me}
   <Img

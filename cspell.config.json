@@ -15,8 +15,10 @@
     "fira",
     "healthz",
     "hono",
+    "iconify",
     "karpenter",
     "lockb",
+    "lucide",
     "mmcq",
     "natgw",
     "oidc",
@@ -27,6 +29,7 @@
     "rdbl",
     "tini",
     "trpc",
+    "unplugin",
     "vcpu"
   ]
 }

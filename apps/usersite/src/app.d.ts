@@ -1,8 +1,9 @@
-// See https://kit.svelte.dev/docs/types#app
-// for information about these interfaces
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
+
+import 'unplugin-icons/types/svelte';
+
 declare global {
   namespace App {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
     interface Error {
       code: string;
     }
@@ -13,5 +14,3 @@ declare global {
     // interface Platform {}
   }
 }
-
-export {};
