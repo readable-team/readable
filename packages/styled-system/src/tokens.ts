@@ -9,6 +9,7 @@ import { fonts } from './fonts';
 import { lineHeights } from './line-heights';
 import { opacity } from './opacity';
 import { radii } from './radii';
+import { shadows } from './shadows';
 import { sizes } from './sizes';
 import { spacing } from './spacing';
 import { zIndex } from './z-index';
@@ -24,6 +25,7 @@ export const tokens = defineTokens({
   lineHeights,
   opacity,
   radii,
+  shadows,
   sizes,
   spacing,
   zIndex,
