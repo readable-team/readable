@@ -1,8 +1,15 @@
-import { and, asc, eq } from 'drizzle-orm';
-import { db, first, firstOrThrow, Users, WorkspaceMembers, Workspaces } from '@/db';
+import { createId } from '@paralleldrive/cuid2';
+import { TRPCError } from '@trpc/server';
+import dayjs from 'dayjs';
+import { and, asc, eq, gt } from 'drizzle-orm';
+import { z } from 'zod';
+import { db, first, firstOrThrow, Users, WorkspaceInvites, WorkspaceMembers, Workspaces } from '@/db';
+import { sendEmail } from '@/email';
+import WorkspaceInvite from '@/email/workspace-invite';
 import { WorkspaceMemberRole, WorkspaceState } from '@/enums';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
+import { checkWorkspaceRole } from '@/utils/role';
 
 const createWorkspace = async (userId: string, workspaceName: string) => {
   return await db.transaction(async (tx) => {
@@ -58,5 +65,74 @@ export const workspaceRouter = router({
       .then(first);
 
     return !!workspace;
+  }),
+
+  createInvite: sessionProcedure.input(inputSchemas.workspace.createInvite).query(async ({ input, ctx }) => {
+    await checkWorkspaceRole({
+      workspaceId: input.workspaceId,
+      userId: ctx.session.userId,
+      role: 'ADMIN',
+    });
+
+    const [inviter, workspace, invitee] = await Promise.all([
+      db.select({ name: Users.name }).from(Users).where(eq(Users.id, ctx.session.userId)).then(firstOrThrow),
+      db
+        .select({ name: Workspaces.name })
+        .from(Workspaces)
+        .where(eq(Workspaces.id, input.workspaceId))
+        .then(firstOrThrow),
+      db.select({ id: Users.id, name: Users.name }).from(Users).where(eq(Users.email, input.email)).then(first),
+    ]);
+
+    const code = createId();
+
+    await db.insert(WorkspaceInvites).values({
+      workspaceId: input.workspaceId,
+      inviterId: ctx.session.userId,
+      inviteeId: invitee?.id,
+      code,
+      email: input.email,
+      expiresAt: dayjs().add(1, 'day'),
+    });
+
+    await sendEmail({
+      recipient: input.email,
+      subject: `[Readable] ${inviter.name}님이 워크스페이스에 초대했습니다`,
+      body: WorkspaceInvite({
+        inviterName: inviter.name,
+        workspaceName: workspace.name,
+      }),
+    });
+  }),
+
+  acceptInvite: sessionProcedure.input(z.object({ code: z.string() })).mutation(async ({ input, ctx }) => {
+    const invite = await db
+      .select({ workspaceId: WorkspaceInvites.workspaceId, inviterId: WorkspaceInvites.inviterId })
+      .from(WorkspaceInvites)
+      .where(and(eq(WorkspaceInvites.code, input.code), gt(WorkspaceInvites.expiresAt, dayjs())))
+      .then(firstOrThrow);
+
+    if (
+      !(await checkWorkspaceRole({
+        workspaceId: invite.workspaceId,
+        userId: ctx.session.userId,
+        error: null,
+      }))
+    ) {
+      throw new TRPCError({
+        code: 'CONFLICT',
+        message: '이미 해당 워크스페이스에 가입되어 있습니다',
+      });
+    }
+
+    await db.transaction(async (tx) => {
+      await tx.insert(WorkspaceMembers).values({
+        workspaceId: invite.workspaceId,
+        userId: ctx.session.userId,
+        role: WorkspaceMemberRole.MEMBER,
+      });
+
+      await tx.delete(WorkspaceInvites).where(eq(WorkspaceInvites.code, input.code));
+    });
   }),
 });

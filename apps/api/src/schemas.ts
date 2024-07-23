@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
 const dataSchemas = {
+  email: z
+    .string({ required_error: '올바른 이메일 주소를 입력해 주세요' })
+    .trim()
+    .email({ message: '올바른 이메일 주소를 입력해 주세요' })
+    .toLowerCase(),
+
   user: {
     name: z
       .string({ required_error: '이름을 입력해 주세요' })
@@ -42,6 +48,11 @@ export const inputSchemas = {
   workspace: {
     create: z.object({
       name: dataSchemas.workspace.name,
+    }),
+
+    createInvite: z.object({
+      workspaceId: z.string(),
+      email: dataSchemas.email,
     }),
   },
 };
