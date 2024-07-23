@@ -6,11 +6,16 @@
   "exports": {
     "./components": "./src/components/index.ts"
   },
+  "scripts": {
+    "lint:svelte": "svelte-check --fail-on-warnings"
+  },
   "dependencies": {
-    "@readable/styled-system": "workspace:*"
+    "@readable/styled-system": "workspace:*",
+    "svelte": "^4.2.18"
   },
   "devDependencies": {
     "@readable/tsconfig": "workspace:*",
+    "svelte-check": "^3.8.4",
     "typescript": "^5.5.3"
   }
 }

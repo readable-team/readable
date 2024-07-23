@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "doppler run -- bun --watch src/main.ts"
+    "dev": "doppler run -- bun --watch src/main.ts",
+    "lint:typecheck": "tsc"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.616.0",

@@ -1,0 +1,3 @@
+{
+  "extends": ["@readable/tsconfig"]
+}

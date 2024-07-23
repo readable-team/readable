@@ -16,6 +16,7 @@
     "ts-pattern": "^5.2.0"
   },
   "devDependencies": {
-    "@readable/tsconfig": "workspace:*"
+    "@readable/tsconfig": "workspace:*",
+    "typescript": "^5.5.3"
   }
 }

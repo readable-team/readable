@@ -6,7 +6,8 @@
   "scripts": {
     "build": "vite build",
     "codegen": "svelte-kit sync",
-    "dev": "vite dev"
+    "dev": "vite dev",
+    "lint:svelte": "svelte-check --fail-on-warnings"
   },
   "dependencies": {
     "@readable/styled-system": "workspace:*"

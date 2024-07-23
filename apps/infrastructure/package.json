@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "scripts": {
+    "lint:typecheck": "tsc"
+  },
   "devDependencies": {
     "@pulumi/aws": "^6.45.0",
     "@pulumi/kubernetes": "^4.15.0",

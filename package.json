@@ -10,7 +10,13 @@
   "scripts": {
     "bootstrap": "husky && doppler setup --no-interactive",
     "build": "turbo run build",
-    "dev": "turbo run dev"
+    "dev": "turbo run dev",
+    "lint:eslint": "eslint --max-warnings 0 .",
+    "lint:prettier": "prettier --check --ignore-unknown '**/*'",
+    "lint:spellcheck": "cspell --no-progress --relative '**/*'",
+    "lint:svelte": "turbo run lint:svelte",
+    "lint:syncpack": "syncpack lint",
+    "lint:typecheck": "turbo run lint:typecheck"
   },
   "devDependencies": {
     "@readable/lintconfig": "workspace:*",

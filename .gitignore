@@ -5,3 +5,9 @@ dist/
 .turbo/
 
 .env.local
+
+.svelte-kit/
+styled-system/
+!packages/styled-system/
+
+vite.config.ts.timestamp-*

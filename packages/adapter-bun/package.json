@@ -7,8 +7,7 @@
     ".": {
       "types": "./src/index.d.ts",
       "default": "./src/index.js"
-    },
-    "./server": "./src/server.js"
+    }
   },
   "scripts": {
     "lint:typecheck": "tsc"

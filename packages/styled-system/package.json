@@ -23,9 +23,12 @@
     }
   },
   "scripts": {
-    "codegen": "pandacss codegen"
+    "codegen": "pandacss codegen",
+    "lint:typecheck": "tsc"
   },
   "devDependencies": {
-    "@pandacss/dev": "^0.43.0"
+    "@pandacss/dev": "^0.43.0",
+    "@readable/tsconfig": "workspace:*",
+    "typescript": "^5.5.3"
   }
 }
