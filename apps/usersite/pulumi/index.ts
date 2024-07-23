@@ -27,6 +27,10 @@ const site = new readable.Site('usersite', {
     maxCount: 10,
     averageCpuUtilization: 50,
   },
+
+  secret: {
+    project: 'usersite',
+  },
 });
 
 export const SITE_URL = site.url;
