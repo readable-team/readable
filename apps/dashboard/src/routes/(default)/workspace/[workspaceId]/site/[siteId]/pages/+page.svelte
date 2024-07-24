@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon, Test } from '@readable/ui/components';
+  import { Button, Icon, Test } from '@readable/ui/components';
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import { invalidateAll } from '$app/navigation';
   import Img from '$lib/components/Img.svelte';
@@ -28,9 +28,11 @@
   <div>Name: {me.name}</div>
   <div>Email: {me.email}</div>
 
-  <button
-    class={css({ marginTop: '12px' })}
+  <Button
+    style={{ marginTop: '12px' }}
+    size="sm"
     type="button"
+    variant="primary"
     on:click={async () => {
       await trpc.auth.logout.mutate();
       $accessToken = null;
@@ -39,7 +41,7 @@
     }}
   >
     Logout
-  </button>
+  </Button>
 {/await}
 
 <Test />
