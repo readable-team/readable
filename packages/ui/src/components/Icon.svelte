@@ -19,6 +19,7 @@
     variants: {
       size: {
         12: { 'size': '12px', '& *': { strokeWidth: '[1.5]' } },
+        14: { 'size': '14px', '& *': { strokeWidth: '[1.5]' } },
         16: { 'size': '16px', '& *': { strokeWidth: '[1.5]' } },
         18: { 'size': '18px', '& *': { strokeWidth: '[1.5]' } },
         20: { 'size': '20px', '& *': { strokeWidth: '[1.5]' } },

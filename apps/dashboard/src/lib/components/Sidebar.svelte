@@ -1,6 +1,10 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import FileTextIcon from '~icons/lucide/file-text';
+  import PaintRollerIcon from '~icons/lucide/paint-roller';
+  import SettingsIcon from '~icons/lucide/settings';
+  import NavItem from './NavItem.svelte';
 
   export let sitePath: string;
 </script>
@@ -19,12 +23,19 @@
     <ul
       class={flex({
         flexDirection: 'column',
-        gap: '2px',
+        gap: '3px',
       })}
     >
-      <li><a href={`${sitePath}/pages`}>페이지</a></li>
-      <li><a href={`${sitePath}/design`}>디자인</a></li>
-      <li><a href={`${sitePath}/settings`}>설정</a></li>
+      <li>
+        <!-- FIXME: count -->
+        <NavItem count={99} icon={FileTextIcon} path={`${sitePath}/pages`} title="페이지" />
+      </li>
+      <li>
+        <NavItem icon={PaintRollerIcon} path={`${sitePath}/design`} title="디자인" />
+      </li>
+      <li>
+        <NavItem icon={SettingsIcon} path={`${sitePath}/settings`} title="설정" />
+      </li>
     </ul>
   </nav>
   <div
