@@ -8,15 +8,44 @@
     "./icons": {
       "types": "./src/icons/index.d.ts",
       "import": "./src/icons/index.js"
-    }
+    },
+    "./tiptap": "./src/tiptap/index.ts"
   },
   "scripts": {
+    "codegen": "svelte-kit sync",
     "lint:svelte": "svelte-check --fail-on-warnings"
   },
   "dependencies": {
     "@readable/styled-system": "workspace:*",
+    "@tiptap/extension-blockquote": "^2.5.5",
+    "@tiptap/extension-bold": "^2.5.5",
+    "@tiptap/extension-bullet-list": "^2.5.5",
+    "@tiptap/extension-code": "^2.5.5",
+    "@tiptap/extension-color": "^2.5.5",
+    "@tiptap/extension-document": "^2.5.5",
+    "@tiptap/extension-dropcursor": "^2.5.5",
+    "@tiptap/extension-gapcursor": "^2.5.5",
+    "@tiptap/extension-hard-break": "^2.5.5",
+    "@tiptap/extension-horizontal-rule": "^2.5.5",
+    "@tiptap/extension-italic": "^2.5.5",
+    "@tiptap/extension-link": "^2.5.5",
+    "@tiptap/extension-list-item": "^2.5.5",
+    "@tiptap/extension-list-keymap": "^2.5.5",
+    "@tiptap/extension-ordered-list": "^2.5.5",
+    "@tiptap/extension-paragraph": "^2.5.5",
+    "@tiptap/extension-placeholder": "^2.5.5",
+    "@tiptap/extension-strike": "^2.5.5",
+    "@tiptap/extension-text": "^2.5.5",
+    "@tiptap/extension-text-align": "^2.5.5",
+    "@tiptap/extension-text-style": "^2.5.5",
+    "@tiptap/extension-underline": "^2.5.5",
+    "@tiptap/html": "^2.5.5",
+    "async-mutex": "^0.5.0",
     "svelte": "^4.2.18",
-    "unplugin-icons": "^0.19.0"
+    "unplugin-icons": "^0.19.0",
+    "y-prosemirror": "^1.2.9",
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.18"
   },
   "devDependencies": {
     "@readable/tsconfig": "workspace:*",
