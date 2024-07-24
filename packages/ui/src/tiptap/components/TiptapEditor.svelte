@@ -4,7 +4,8 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import * as YAwareness from 'y-protocols/awareness';
   import * as Y from 'yjs';
-  import { Collaboration, Freeze } from '../extensions';
+  import { Collaboration } from '../extensions/collaboration';
+  import { Freeze } from '../extensions/freeze';
   import { extensions } from '../preset';
   import type { SystemStyleObject } from '@readable/styled-system/types';
 

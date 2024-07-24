@@ -1,0 +1,23 @@
+.ProseMirror {
+  /* & [data-drag-handle] {
+    cursor: grab;
+  } */
+
+  line-height: 1.6;
+
+  & *::selection {
+    background-color: #b3d4fc;
+  }
+}
+
+/* .ProseMirror-focused {
+  outline: none;
+} */
+
+.ProseMirror-hideselection {
+  caret-color: transparent;
+
+  & *::selection {
+    background-color: transparent;
+  }
+}

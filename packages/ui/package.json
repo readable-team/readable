@@ -9,7 +9,8 @@
       "types": "./src/icons/index.d.ts",
       "import": "./src/icons/index.js"
     },
-    "./tiptap": "./src/tiptap/index.ts"
+    "./tiptap": "./src/tiptap/index.ts",
+    "./styles.css": "./styles/index.css"
   },
   "scripts": {
     "codegen": "svelte-kit sync",

@@ -22,6 +22,7 @@ import { Text } from '@tiptap/extension-text';
 import { TextAlign } from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
+import { BlockSelectionHelper } from './extensions/block-selection';
 import { SlashMenu } from './menus/slash';
 
 export const extensions = [
@@ -30,7 +31,7 @@ export const extensions = [
   Text,
 
   // nodes
-  Paragraph,
+  Paragraph.configure({ HTMLAttributes: { class: css({ marginY: '2px' }) } }),
   Heading.configure({
     levels: [1, 2, 3],
     HTMLAttributes: {
@@ -76,13 +77,20 @@ export const extensions = [
         pointerEvents: 'none',
       },
     }),
-    placeholder: '내용을 입력하거나 /를 입력해 명령어 사용하기...',
+    placeholder: ({ editor }) => {
+      if (!editor.state.selection.empty) {
+        return '';
+      }
+
+      return '내용을 입력하거나 /를 입력해 명령어 사용하기...';
+    },
   }),
   ListKeymap,
   TextAlign,
   TextStyle,
 
   SlashMenu,
+  BlockSelectionHelper,
 
   // node views
 ];
