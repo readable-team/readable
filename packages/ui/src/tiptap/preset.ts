@@ -8,6 +8,7 @@ import { Document } from '@tiptap/extension-document';
 import { Dropcursor } from '@tiptap/extension-dropcursor';
 import { Gapcursor } from '@tiptap/extension-gapcursor';
 import { HardBreak } from '@tiptap/extension-hard-break';
+import { Heading } from '@tiptap/extension-heading';
 import { HorizontalRule } from '@tiptap/extension-horizontal-rule';
 import { Italic } from '@tiptap/extension-italic';
 import { Link } from '@tiptap/extension-link';
@@ -21,6 +22,7 @@ import { Text } from '@tiptap/extension-text';
 import { TextAlign } from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
+import { SlashMenu } from './menus/slash';
 
 export const extensions = [
   // special nodes
@@ -29,6 +31,16 @@ export const extensions = [
 
   // nodes
   Paragraph,
+  Heading.configure({
+    levels: [1, 2, 3],
+    HTMLAttributes: {
+      class: css({
+        'h1&': { fontSize: '32px', fontWeight: 'bold' },
+        'h2&': { fontSize: '26px', fontWeight: 'bold' },
+        'h3&': { fontSize: '20px', fontWeight: 'bold' },
+      }),
+    },
+  }),
   HardBreak,
   HorizontalRule,
   Blockquote.configure({
@@ -64,10 +76,13 @@ export const extensions = [
         pointerEvents: 'none',
       },
     }),
+    placeholder: '내용을 입력하거나 /를 입력해 명령어 사용하기...',
   }),
   ListKeymap,
   TextAlign,
   TextStyle,
+
+  SlashMenu,
 
   // node views
 ];

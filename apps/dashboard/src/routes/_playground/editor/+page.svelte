@@ -4,5 +4,5 @@
 </script>
 
 <div class={css({ margin: '100px', borderWidth: '4px', padding: '20px' })}>
-  <TiptapEditor style={css.raw({ height: '500px' })} />
+  <TiptapEditor style={css.raw({ height: '[2000px]' })} />
 </div>
