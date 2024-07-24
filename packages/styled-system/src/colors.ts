@@ -126,12 +126,12 @@ export const semanticColors = defineSemanticTokens.colors({
   'text-field': {
     border: {
       'primary-inactive': { value: { base: '{colors.gray.500}', _dark: '{colors.darkgray.600}' } },
-      'primary-hover': { value: { base: '{colors.gray.300}', _dark: '{colors.darkgray.400}' } },
+      'primary-hover': { value: { base: '{colors.gray.500}', _dark: '{colors.darkgray.600}' } },
       'primary-active': { value: { base: '{colors.gray.1000}', _dark: '{colors.darkgray.800}' } },
       'primary-filled': { value: { base: '{colors.gray.1000}', _dark: '{colors.darkgray.800}' } },
       'primary-disabled': { value: { base: '{colors.gray.300}', _dark: '{colors.darkgray.300}' } },
       'danger-inactive': { value: { base: '{colors.red.600}', _dark: '{colors.red.500}' } },
-      'danger-hover': { value: { base: '{colors.red.300}', _dark: '{colors.red.800}' } },
+      'danger-hover': { value: { base: '{colors.red.600}', _dark: '{colors.red.500}' } },
       'danger-active': { value: { base: '{colors.red.600}', _dark: '{colors.red.500}' } },
       'danger-filled': { value: { base: '{colors.red.600}', _dark: '{colors.darkgray.800}' } },
       'danger-disabled': { value: { base: '{colors.gray.300}', _dark: '{colors.darkgray.300}' } },
@@ -159,6 +159,18 @@ export const semanticColors = defineSemanticTokens.colors({
       'danger-active': { value: { base: '{colors.gray.0}', _dark: '{colors.darkgray.0}' } },
       'danger-filled': { value: { base: '{colors.gray.0}', _dark: '{colors.darkgray.0}' } },
       'danger-disabled': { value: { base: '{colors.gray.200}', _dark: '{colors.gray.300}' } },
+    },
+    outline: {
+      'primary-inactive': { value: { base: '{colors.transparent}', _dark: '{colors.transparent}' } },
+      'primary-hover': { value: { base: '{colors.gray.300}', _dark: '{colors.darkgray.400}' } },
+      'primary-active': { value: { base: '{colors.gray.300}', _dark: '{colors.darkgray.400}' } },
+      'primary-filled': { value: { base: '{colors.transparent}', _dark: '{colors.transparent}' } },
+      'primary-disabled': { value: { base: '{colors.transparent}', _dark: '{colors.transparent}' } },
+      'danger-inactive': { value: { base: '{colors.transparent}', _dark: '{colors.transparent}' } },
+      'danger-hover': { value: { base: '{colors.red.300}', _dark: '{colors.red.800}' } },
+      'danger-active': { value: { base: '{colors.red.300}', _dark: '{colors.red.800}' } },
+      'danger-filled': { value: { base: '{colors.transparent}', _dark: '{colors.transparent}' } },
+      'danger-disabled': { value: { base: '{colors.transparent}', _dark: '{colors.transparent}' } },
     },
     message: {
       DEFAULT: { value: { base: '{colors.gray.700}', _dark: '{colors.darkgray.500}' } },

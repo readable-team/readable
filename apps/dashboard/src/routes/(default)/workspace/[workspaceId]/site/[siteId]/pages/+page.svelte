@@ -1,8 +1,10 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Icon, Test } from '@readable/ui/components';
+  import { Button, Icon, Test, TextInput } from '@readable/ui/components';
+  import ChevronDownIcon from '~icons/lucide/chevron-down';
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
+  import MailIcon from '~icons/lucide/mail';
   import { invalidateAll } from '$app/navigation';
   import Img from '$lib/components/Img.svelte';
   import { accessToken, trpc } from '$lib/trpc';
@@ -27,6 +29,23 @@
   <div>ID: {me.id}</div>
   <div>Name: {me.name}</div>
   <div>Email: {me.email}</div>
+
+  <div
+    class={css({
+      width: '400px',
+      padding: '4px',
+    })}
+  >
+    <TextInput leftIcon={MailIcon} message="Oh yeah" placeholder="이메일을 입력해주세요" rightIcon={ChevronDownIcon} />
+    <TextInput
+      error
+      leftIcon={MailIcon}
+      message="이메일이 올바르지 않습니다"
+      placeholder="이메일을 입력해주세요"
+      rightIcon={ChevronDownIcon}
+      value="asdf"
+    />
+  </div>
 
   <Button
     style={{ marginTop: '12px' }}
