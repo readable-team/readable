@@ -15,7 +15,7 @@ type SiteArgs = {
 
   cloudfront?: {
     domainZone: pulumi.Input<string>;
-    certificateArnRef: pulumi.Input<string>;
+    certificateArn: pulumi.Input<string>;
   };
 
   image: {
@@ -325,7 +325,7 @@ export class Site extends pulumi.ComponentResource {
 
           viewerCertificate: {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            acmCertificateArn: ref.requireOutput(args.cloudfront!.certificateArnRef),
+            acmCertificateArn: args.cloudfront!.certificateArn,
             sslSupportMethod: 'sni-only',
             minimumProtocolVersion: 'TLSv1.2_2021',
           },

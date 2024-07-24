@@ -3,6 +3,8 @@ import * as readable from '@readable/pulumi';
 
 const config = new pulumi.Config('readable');
 
+const ref = new pulumi.StackReference('readable/infrastructure/base');
+
 const site = new readable.Site('website', {
   name: 'website',
 
@@ -12,7 +14,7 @@ const site = new readable.Site('website', {
   },
 
   cloudfront: {
-    certificateArnRef: 'AWS_ACM_CLOUDFRONT_RDBL_IO_CERTIFICATE_ARN',
+    certificateArn: ref.requireOutput('AWS_ACM_CLOUDFRONT_RDBL_IO_CERTIFICATE_ARN'),
     domainZone: 'rdbl.io',
   },
 

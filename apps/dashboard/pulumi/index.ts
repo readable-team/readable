@@ -3,16 +3,18 @@ import * as readable from '@readable/pulumi';
 
 const config = new pulumi.Config('readable');
 
+const ref = new pulumi.StackReference('readable/infrastructure/base');
+
 const site = new readable.Site('dashboard', {
   name: 'dashboard',
 
   domain: {
-    production: 'app.rdbl.io',
-    dev: 'app.rdbl.ninja',
+    production: 'dashboard.rdbl.io',
+    dev: 'dashboard.rdbl.ninja',
   },
 
   cloudfront: {
-    certificateArnRef: 'AWS_ACM_CLOUDFRONT_RDBL_IO_CERTIFICATE_ARN',
+    certificateArn: ref.requireOutput('AWS_ACM_CLOUDFRONT_RDBL_IO_CERTIFICATE_ARN'),
     domainZone: 'rdbl.io',
   },
 
