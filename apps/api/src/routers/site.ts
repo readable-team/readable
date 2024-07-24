@@ -1,26 +1,21 @@
 import { faker } from '@faker-js/faker';
 import { and, asc, eq } from 'drizzle-orm';
 import { z } from 'zod';
-import { db, firstOrThrow, Sites, WorkspaceMembers, Workspaces } from '@/db';
-import { SiteState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
+import { db, firstOrThrow, Sites } from '@/db';
+import { SiteState, WorkspaceMemberRole } from '@/enums';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
+import { checkWorkspaceRole } from '@/utils/role';
 
 export const siteRouter = router({
   create: sessionProcedure
     .input(inputSchemas.site.create.extend({ workspaceId: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      await db
-        .select({ role: WorkspaceMembers.role })
-        .from(WorkspaceMembers)
-        .where(
-          and(
-            eq(WorkspaceMembers.workspaceId, input.workspaceId),
-            eq(WorkspaceMembers.userId, ctx.session.userId),
-            eq(WorkspaceMembers.role, WorkspaceMemberRole.ADMIN),
-          ),
-        )
-        .then(firstOrThrow);
+      await checkWorkspaceRole({
+        workspaceId: input.workspaceId,
+        userId: ctx.session.userId,
+        role: WorkspaceMemberRole.ADMIN,
+      });
 
       const slug = [
         faker.word.adjective({ length: { min: 3, max: 5 } }),
@@ -42,18 +37,10 @@ export const siteRouter = router({
     }),
 
   list: sessionProcedure.input(z.object({ workspaceId: z.string() })).query(async ({ input, ctx }) => {
-    await db
-      .select({ id: Workspaces.id })
-      .from(Workspaces)
-      .innerJoin(WorkspaceMembers, eq(Workspaces.id, WorkspaceMembers.workspaceId))
-      .where(
-        and(
-          eq(WorkspaceMembers.userId, ctx.session.userId),
-          eq(Workspaces.id, input.workspaceId),
-          eq(Workspaces.state, WorkspaceState.ACTIVE),
-        ),
-      )
-      .then(firstOrThrow);
+    await checkWorkspaceRole({
+      workspaceId: input.workspaceId,
+      userId: ctx.session.userId,
+    });
 
     return await db
       .select({ id: Sites.id, name: Sites.name, slug: Sites.slug })
