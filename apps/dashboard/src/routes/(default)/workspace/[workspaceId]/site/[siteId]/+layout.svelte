@@ -10,7 +10,7 @@
     height: 'screen',
   })}
 >
-  <Sidebar sitePath={`/workspace/${data.workspaceId}/site/${data.siteId}`} />
+  <Sidebar sitePath={`/workspace/${data.workspaceId}/site/${data.siteId}`} usersiteUrl={data.usersiteUrl} />
   <div
     class={flex({
       flexDirection: 'column',
