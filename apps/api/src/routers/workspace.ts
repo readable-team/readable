@@ -73,7 +73,7 @@ export const workspaceRouter = router({
       await checkWorkspaceRole({
         workspaceId: input.workspaceId,
         userId: ctx.session.userId,
-        role: 'ADMIN',
+        role: WorkspaceMemberRole.ADMIN,
       });
 
       const [inviter, workspace, invitee] = await Promise.all([
@@ -138,13 +138,72 @@ export const workspaceRouter = router({
     });
   }),
 
+  leave: sessionProcedure.input(z.object({ workspaceId: z.string() })).mutation(async ({ input, ctx }) => {
+    await checkWorkspaceRole({
+      workspaceId: input.workspaceId,
+      userId: ctx.session.userId,
+    });
+
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(WorkspaceMembers)
+        .where(
+          and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, ctx.session.userId)),
+        );
+
+      const adminCount = await db
+        .select({ count: count(WorkspaceMembers.id) })
+        .from(WorkspaceMembers)
+        .where(
+          and(
+            eq(WorkspaceMembers.workspaceId, input.workspaceId),
+            eq(WorkspaceMembers.role, WorkspaceMemberRole.ADMIN),
+          ),
+        )
+        .then((rows) => rows[0]?.count ?? 0);
+
+      if (adminCount === 0) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: '워크스페이스에는 최소 1명의 관리자가 있어야 합니다',
+        });
+      }
+    });
+  }),
+
+  removeMember: sessionProcedure
+    .input(
+      z.object({
+        workspaceId: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      if (input.userId === ctx.session.userId) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: '자신을 탈퇴시킬 수 없습니다',
+        });
+      }
+
+      await checkWorkspaceRole({
+        workspaceId: input.workspaceId,
+        userId: ctx.session.userId,
+        role: WorkspaceMemberRole.ADMIN,
+      });
+
+      await db
+        .delete(WorkspaceMembers)
+        .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, input.userId)));
+    }),
+
   updateMemberRole: sessionProcedure
     .input(z.object({ workspaceId: z.string(), userId: z.string(), role: z.nativeEnum(WorkspaceMemberRole) }))
     .mutation(async ({ input, ctx }) => {
       await checkWorkspaceRole({
         workspaceId: input.workspaceId,
         userId: ctx.session.userId,
-        role: 'ADMIN',
+        role: WorkspaceMemberRole.ADMIN,
       });
 
       await db.transaction(async (tx) => {
@@ -153,11 +212,16 @@ export const workspaceRouter = router({
           .set({ role: input.role })
           .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, input.userId)));
 
-        if (input.role !== 'ADMIN') {
+        if (input.role !== WorkspaceMemberRole.ADMIN) {
           const adminCount = await db
             .select({ count: count(WorkspaceMembers.id) })
             .from(WorkspaceMembers)
-            .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.role, 'ADMIN')))
+            .where(
+              and(
+                eq(WorkspaceMembers.workspaceId, input.workspaceId),
+                eq(WorkspaceMembers.role, WorkspaceMemberRole.ADMIN),
+              ),
+            )
             .then((rows) => rows[0]?.count ?? 0);
 
           if (adminCount === 0) {
