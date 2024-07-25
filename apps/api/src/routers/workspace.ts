@@ -1,15 +1,14 @@
-import { createId } from '@paralleldrive/cuid2';
 import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
-import { and, asc, count, eq, gt } from 'drizzle-orm';
+import { and, asc, count, eq } from 'drizzle-orm';
 import { z } from 'zod';
-import { db, first, firstOrThrow, Sites, Users, WorkspaceInvites, WorkspaceMembers, Workspaces } from '@/db';
+import { db, first, firstOrThrow, Sites, Users, WorkspaceMemberInvitations, WorkspaceMembers, Workspaces } from '@/db';
 import { sendEmail } from '@/email';
-import WorkspaceMemberInvitation from '@/email/templates/WorkspaceMemberInvitation';
+import WorkspaceMemberInvitationEmail from '@/email/templates/WorkspaceMemberInvitation';
 import { SiteState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
-import { checkWorkspaceRole } from '@/utils/role';
+import { assertWorkspacePermission } from '@/utils/permissions';
 
 const createWorkspace = async (userId: string, workspaceName: string) => {
   return await db.transaction(async (tx) => {
@@ -68,7 +67,7 @@ export const workspaceRouter = router({
   }),
 
   delete: sessionProcedure.input(z.object({ workspaceId: z.string() })).mutation(async ({ input, ctx }) => {
-    await checkWorkspaceRole({
+    await assertWorkspacePermission({
       workspaceId: input.workspaceId,
       userId: ctx.session.userId,
       role: 'ADMIN',
@@ -92,127 +91,57 @@ export const workspaceRouter = router({
   inviteMember: sessionProcedure
     .input(inputSchemas.workspace.inviteMember.extend({ workspaceId: z.string() }))
     .query(async ({ input, ctx }) => {
-      await checkWorkspaceRole({
+      await assertWorkspacePermission({
         workspaceId: input.workspaceId,
         userId: ctx.session.userId,
         role: WorkspaceMemberRole.ADMIN,
       });
 
-      const [inviter, workspace, invitee] = await Promise.all([
-        db.select({ name: Users.name }).from(Users).where(eq(Users.id, ctx.session.userId)).then(firstOrThrow),
-        db
-          .select({ name: Workspaces.name })
-          .from(Workspaces)
-          .where(eq(Workspaces.id, input.workspaceId))
-          .then(firstOrThrow),
-        db.select({ id: Users.id, name: Users.name }).from(Users).where(eq(Users.email, input.email)).then(first),
-      ]);
+      const invitedUser = await db.select({ id: Users.id }).from(Users).where(eq(Users.email, input.email)).then(first);
+      const workspace = await db
+        .select({ name: Workspaces.name })
+        .from(Workspaces)
+        .where(eq(Workspaces.id, input.workspaceId))
+        .then(firstOrThrow);
 
-      const code = createId();
+      if (invitedUser) {
+        await db.insert(WorkspaceMembers).values({
+          workspaceId: input.workspaceId,
+          userId: invitedUser.id,
+          role: WorkspaceMemberRole.MEMBER,
+        });
+      } else {
+        await db.insert(WorkspaceMemberInvitations).values({
+          workspaceId: input.workspaceId,
+          email: input.email,
+          expiresAt: dayjs().add(1, 'day'),
+        });
 
-      await db.insert(WorkspaceInvites).values({
-        workspaceId: input.workspaceId,
-        inviterId: ctx.session.userId,
-        inviteeId: invitee?.id,
-        code,
-        email: input.email,
-        expiresAt: dayjs().add(1, 'day'),
-      });
-
-      await sendEmail({
-        recipient: input.email,
-        subject: `[Readable] ${inviter.name}님이 워크스페이스에 초대했습니다`,
-        body: WorkspaceMemberInvitation({
-          inviterName: inviter.name,
-          workspaceName: workspace.name,
-        }),
-      });
-    }),
-
-  acceptMemberInvitation: sessionProcedure.input(z.object({ code: z.string() })).mutation(async ({ input, ctx }) => {
-    const invite = await db
-      .select({ workspaceId: WorkspaceInvites.workspaceId, inviterId: WorkspaceInvites.inviterId })
-      .from(WorkspaceInvites)
-      .where(and(eq(WorkspaceInvites.code, input.code), gt(WorkspaceInvites.expiresAt, dayjs())))
-      .then(firstOrThrow);
-
-    if (
-      !(await checkWorkspaceRole({
-        workspaceId: invite.workspaceId,
-        userId: ctx.session.userId,
-        error: null,
-      }))
-    ) {
-      throw new TRPCError({
-        code: 'CONFLICT',
-        message: '이미 해당 워크스페이스에 가입되어 있습니다',
-      });
-    }
-
-    await db.transaction(async (tx) => {
-      await tx.insert(WorkspaceMembers).values({
-        workspaceId: invite.workspaceId,
-        userId: ctx.session.userId,
-        role: WorkspaceMemberRole.MEMBER,
-      });
-
-      await tx.delete(WorkspaceInvites).where(eq(WorkspaceInvites.code, input.code));
-    });
-  }),
-
-  leave: sessionProcedure.input(z.object({ workspaceId: z.string() })).mutation(async ({ input, ctx }) => {
-    await checkWorkspaceRole({
-      workspaceId: input.workspaceId,
-      userId: ctx.session.userId,
-    });
-
-    await db.transaction(async (tx) => {
-      await tx
-        .delete(WorkspaceMembers)
-        .where(
-          and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, ctx.session.userId)),
-        );
-
-      const adminCount = await db
-        .select({ count: count(WorkspaceMembers.id) })
-        .from(WorkspaceMembers)
-        .where(
-          and(
-            eq(WorkspaceMembers.workspaceId, input.workspaceId),
-            eq(WorkspaceMembers.role, WorkspaceMemberRole.ADMIN),
-          ),
-        )
-        .then((rows) => rows[0]?.count ?? 0);
-
-      if (adminCount === 0) {
-        throw new TRPCError({
-          code: 'CONFLICT',
-          message: '워크스페이스에는 최소 1명의 관리자가 있어야 합니다',
+        await sendEmail({
+          recipient: input.email,
+          subject: `[Readable] ${workspace.name} 워크스페이스에 참여하세요`,
+          body: WorkspaceMemberInvitationEmail({
+            workspaceName: workspace.name,
+          }),
         });
       }
-    });
-  }),
+    }),
 
   removeMember: sessionProcedure
-    .input(
-      z.object({
-        workspaceId: z.string(),
-        userId: z.string(),
-      }),
-    )
+    .input(z.object({ workspaceId: z.string(), userId: z.string() }))
     .mutation(async ({ input, ctx }) => {
+      await assertWorkspacePermission({
+        workspaceId: input.workspaceId,
+        userId: ctx.session.userId,
+        role: WorkspaceMemberRole.ADMIN,
+      });
+
       if (input.userId === ctx.session.userId) {
         throw new TRPCError({
           code: 'CONFLICT',
           message: '자신을 탈퇴시킬 수 없습니다',
         });
       }
-
-      await checkWorkspaceRole({
-        workspaceId: input.workspaceId,
-        userId: ctx.session.userId,
-        role: WorkspaceMemberRole.ADMIN,
-      });
 
       await db
         .delete(WorkspaceMembers)
@@ -222,7 +151,7 @@ export const workspaceRouter = router({
   updateMemberRole: sessionProcedure
     .input(z.object({ workspaceId: z.string(), userId: z.string(), role: z.nativeEnum(WorkspaceMemberRole) }))
     .mutation(async ({ input, ctx }) => {
-      await checkWorkspaceRole({
+      await assertWorkspacePermission({
         workspaceId: input.workspaceId,
         userId: ctx.session.userId,
         role: WorkspaceMemberRole.ADMIN,

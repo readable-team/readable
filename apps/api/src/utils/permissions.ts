@@ -5,21 +5,19 @@ import { WorkspaceMemberRole, WorkspaceState } from '../enums';
 
 type WorkspaceMemberRole = keyof typeof WorkspaceMemberRole;
 
-const roleOrder: WorkspaceMemberRole[] = [WorkspaceMemberRole.MEMBER, WorkspaceMemberRole.ADMIN];
+const workspaceMemberRolePrecedences: WorkspaceMemberRole[] = [WorkspaceMemberRole.MEMBER, WorkspaceMemberRole.ADMIN];
 
-type CheckWorkspaceRoleOptions = {
+type AssertWorkspacePermissionParams = {
   workspaceId: string;
   userId: string;
   role?: WorkspaceMemberRole;
-  error?: Error | null;
 };
 
-export const checkWorkspaceRole = async ({
+export const assertWorkspacePermission = async ({
   workspaceId,
   userId,
   role = WorkspaceMemberRole.MEMBER,
-  error,
-}: CheckWorkspaceRoleOptions) => {
+}: AssertWorkspacePermissionParams) => {
   const member = await db
     .select({ role: WorkspaceMembers.role })
     .from(WorkspaceMembers)
@@ -33,30 +31,22 @@ export const checkWorkspaceRole = async ({
     )
     .then(first);
 
-  if (!member || roleOrder.indexOf(member.role) < roleOrder.indexOf(role)) {
-    if (error === null) {
-      return false;
-    } else {
-      throw error === undefined ? new TRPCError({ code: 'FORBIDDEN' }) : error;
-    }
+  if (!member || workspaceMemberRolePrecedences.indexOf(member.role) < workspaceMemberRolePrecedences.indexOf(role)) {
+    throw new TRPCError({ code: 'FORBIDDEN' });
   }
-
-  return true;
 };
 
-type CheckSiteRoleOptions = {
+type AssertSitePermissionParams = {
   siteId: string;
   userId: string;
   role?: WorkspaceMemberRole;
-  error?: Error | null;
 };
 
-export const checkSiteRole = async ({
+export const assertSitePermission = async ({
   siteId,
   userId,
   role = WorkspaceMemberRole.MEMBER,
-  error,
-}: CheckSiteRoleOptions) => {
+}: AssertSitePermissionParams) => {
   // 사실 지금은 사이트별 권한이 없어서 워크스페이스 권한만 봄
   const member = await db
     .select({ role: WorkspaceMembers.role })
@@ -66,11 +56,7 @@ export const checkSiteRole = async ({
     .where(and(eq(Sites.id, siteId), eq(WorkspaceMembers.userId, userId), eq(Workspaces.state, WorkspaceState.ACTIVE)))
     .then(first);
 
-  if (!member || roleOrder.indexOf(member.role) < roleOrder.indexOf(role)) {
-    if (error === null) {
-      return false;
-    } else {
-      throw error === undefined ? new TRPCError({ code: 'FORBIDDEN' }) : error;
-    }
+  if (!member || workspaceMemberRolePrecedences.indexOf(member.role) < workspaceMemberRolePrecedences.indexOf(role)) {
+    throw new TRPCError({ code: 'FORBIDDEN' });
   }
 };

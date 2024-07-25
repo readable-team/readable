@@ -23,25 +23,6 @@ export const Workspaces = pgTable(
   }),
 );
 
-export const WorkspaceInvites = pgTable('workspace_invites', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => createDbId()),
-  workspaceId: text('workspace_id')
-    .notNull()
-    .references(() => Workspaces.id),
-  inviterId: text('inviter_id')
-    .notNull()
-    .references(() => Users.id),
-  inviteeId: text('invitee_id').references(() => Users.id),
-  code: text('code').notNull(),
-  email: text('email').notNull(),
-  createdAt: datetime('created_at')
-    .notNull()
-    .default(sql`now()`),
-  expiresAt: datetime('expires_at').notNull(),
-});
-
 export const WorkspaceMembers = pgTable('workspace_members', {
   id: text('id')
     .primaryKey()
@@ -56,6 +37,20 @@ export const WorkspaceMembers = pgTable('workspace_members', {
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),
+});
+
+export const WorkspaceMemberInvitations = pgTable('workspace_member_invitations', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId()),
+  workspaceId: text('workspace_id')
+    .notNull()
+    .references(() => Workspaces.id),
+  email: text('email').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+  expiresAt: datetime('expires_at').notNull(),
 });
 
 export const Sites = pgTable(

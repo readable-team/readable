@@ -6,13 +6,13 @@ import { db, first, firstOrThrow, Sites, WorkspaceMembers, Workspaces } from '@/
 import { SiteState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
-import { checkSiteRole, checkWorkspaceRole } from '@/utils/role';
+import { assertSitePermission, assertWorkspacePermission } from '@/utils/permissions';
 
 export const siteRouter = router({
   create: sessionProcedure
     .input(inputSchemas.site.create.extend({ workspaceId: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      await checkWorkspaceRole({
+      await assertWorkspacePermission({
         workspaceId: input.workspaceId,
         userId: ctx.session.userId,
         role: WorkspaceMemberRole.ADMIN,
@@ -64,7 +64,7 @@ export const siteRouter = router({
   }),
 
   list: sessionProcedure.input(z.object({ workspaceId: z.string() })).query(async ({ input, ctx }) => {
-    await checkWorkspaceRole({
+    await assertWorkspacePermission({
       workspaceId: input.workspaceId,
       userId: ctx.session.userId,
     });
@@ -79,7 +79,7 @@ export const siteRouter = router({
   update: sessionProcedure
     .input(inputSchemas.site.update.extend({ siteId: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      await checkSiteRole({
+      await assertSitePermission({
         siteId: input.siteId,
         userId: ctx.session.userId,
         role: WorkspaceMemberRole.ADMIN,
@@ -102,7 +102,7 @@ export const siteRouter = router({
     }),
 
   delete: sessionProcedure.input(z.object({ siteId: z.string() })).mutation(async ({ input, ctx }) => {
-    await checkSiteRole({
+    await assertSitePermission({
       siteId: input.siteId,
       userId: ctx.session.userId,
       role: WorkspaceMemberRole.ADMIN,

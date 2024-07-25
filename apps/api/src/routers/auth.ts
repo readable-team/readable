@@ -1,9 +1,19 @@
 import path from 'node:path';
-import { eq } from 'drizzle-orm';
+import dayjs from 'dayjs';
+import { and, eq, gt } from 'drizzle-orm';
 import { match } from 'ts-pattern';
 import { z } from 'zod';
-import { db, first, firstOrThrow, Users, UserSessions, UserSingleSignOns } from '@/db';
-import { SingleSignOnProvider } from '@/enums';
+import {
+  db,
+  first,
+  firstOrThrow,
+  Users,
+  UserSessions,
+  UserSingleSignOns,
+  WorkspaceMemberInvitations,
+  WorkspaceMembers,
+} from '@/db';
+import { SingleSignOnProvider, WorkspaceMemberRole } from '@/enums';
 import * as aws from '@/external/aws';
 import * as google from '@/external/google';
 import { publicProcedure, router, sessionProcedure } from '@/trpc';
@@ -29,11 +39,7 @@ export const authRouter = router({
         .with(SingleSignOnProvider.GOOGLE, () => google.authorizeUser(input.params.code))
         .exhaustive();
 
-      let user = await db
-        .select({ id: Users.id })
-        .from(Users)
-        .where(eq(Users.email, externalUser.email.toLowerCase()))
-        .then(first);
+      let user = await db.select({ id: Users.id }).from(Users).where(eq(Users.email, externalUser.email)).then(first);
 
       if (!user) {
         user = await db.transaction(async (tx) => {
@@ -48,7 +54,7 @@ export const authRouter = router({
           const user = await tx
             .insert(Users)
             .values({
-              email: externalUser.email.toLowerCase(),
+              email: externalUser.email,
               name: externalUser.name,
               avatarUrl,
             })
@@ -59,8 +65,26 @@ export const authRouter = router({
             userId: user.id,
             provider: externalUser.provider,
             principal: externalUser.id,
-            email: externalUser.email.toLowerCase(),
+            email: externalUser.email,
           });
+
+          const invitations = await tx
+            .delete(WorkspaceMemberInvitations)
+            .where(
+              and(
+                eq(WorkspaceMemberInvitations.email, externalUser.email),
+                gt(WorkspaceMemberInvitations.expiresAt, dayjs()),
+              ),
+            )
+            .returning({ workspaceId: WorkspaceMemberInvitations.workspaceId });
+
+          await tx.insert(WorkspaceMembers).values(
+            invitations.map((invitation) => ({
+              workspaceId: invitation.workspaceId,
+              userId: user.id,
+              role: WorkspaceMemberRole.MEMBER,
+            })),
+          );
 
           return user;
         });
