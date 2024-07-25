@@ -3,10 +3,10 @@ import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
 import { and, asc, count, eq, gt } from 'drizzle-orm';
 import { z } from 'zod';
-import { db, first, firstOrThrow, Users, WorkspaceInvites, WorkspaceMembers, Workspaces } from '@/db';
+import { db, first, firstOrThrow, Sites, Users, WorkspaceInvites, WorkspaceMembers, Workspaces } from '@/db';
 import { sendEmail } from '@/email';
 import WorkspaceMemberInvitation from '@/email/templates/WorkspaceMemberInvitation';
-import { WorkspaceMemberRole, WorkspaceState } from '@/enums';
+import { SiteState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
 import { checkWorkspaceRole } from '@/utils/role';
@@ -65,6 +65,28 @@ export const workspaceRouter = router({
       .then(first);
 
     return !!workspace;
+  }),
+
+  delete: sessionProcedure.input(z.object({ workspaceId: z.string() })).mutation(async ({ input, ctx }) => {
+    await checkWorkspaceRole({
+      workspaceId: input.workspaceId,
+      userId: ctx.session.userId,
+      role: 'ADMIN',
+    });
+
+    const sites = await db
+      .select({ id: Sites.id })
+      .from(Sites)
+      .where(and(eq(Sites.workspaceId, input.workspaceId), eq(Sites.state, SiteState.ACTIVE)));
+
+    if (sites.length > 0) {
+      throw new TRPCError({
+        code: 'CONFLICT',
+        message: '먼저 워크스페이스에 속한 사이트를 삭제해주세요',
+      });
+    }
+
+    await db.update(Workspaces).set({ state: WorkspaceState.DELETED }).where(eq(Workspaces.id, input.workspaceId));
   }),
 
   inviteMember: sessionProcedure
