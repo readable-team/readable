@@ -1,11 +1,12 @@
 import { Button, Heading, Section } from '@react-email/components';
+import * as React from 'react';
 
 type Props = {
   workspaceName: string;
   inviterName: string;
 };
 
-const WorkspaceInvite = (props: Props) => {
+const WorkspaceMemberInvitation: React.FC<Props> = (props) => {
   return (
     <Section>
       <Heading as="h1">축하합니다</Heading>
@@ -18,4 +19,4 @@ const WorkspaceInvite = (props: Props) => {
   );
 };
 
-export default WorkspaceInvite;
+export default WorkspaceMemberInvitation;

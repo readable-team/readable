@@ -5,7 +5,7 @@ import { and, asc, count, eq, gt } from 'drizzle-orm';
 import { z } from 'zod';
 import { db, first, firstOrThrow, Users, WorkspaceInvites, WorkspaceMembers, Workspaces } from '@/db';
 import { sendEmail } from '@/email';
-import WorkspaceInvite from '@/email/workspace-invite';
+import WorkspaceMemberInvitation from '@/email/templates/WorkspaceMemberInvitation';
 import { WorkspaceMemberRole, WorkspaceState } from '@/enums';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
@@ -100,7 +100,7 @@ export const workspaceRouter = router({
       await sendEmail({
         recipient: input.email,
         subject: `[Readable] ${inviter.name}님이 워크스페이스에 초대했습니다`,
-        body: WorkspaceInvite({
+        body: WorkspaceMemberInvitation({
           inviterName: inviter.name,
           workspaceName: workspace.name,
         }),

@@ -90,9 +90,16 @@ export default [
     },
   },
   {
-    files: ['**/*.config.[jt]s', '**/*.[jt]sx'],
+    files: ['**/*.config.[jt]s'],
     rules: {
       'import/no-default-export': 'off',
+    },
+  },
+  {
+    files: ['**/*.[jt]sx'],
+    rules: {
+      'import/no-default-export': 'off',
+      'unicorn/filename-case': ['error', { cases: { kebabCase: true, pascalCase: true } }],
     },
   },
   {

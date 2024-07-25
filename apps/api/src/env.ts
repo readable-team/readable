@@ -8,6 +8,7 @@ const schema = z.object({
   GOOGLE_OAUTH_CLIENT_SECRET: z.string(),
   PUBLIC_PULUMI_PROJECT: z.string().optional(),
   PUBLIC_PULUMI_STACK: z.string().optional(),
+  RESEND_API_KEY: z.string(),
   SENTRY_DSN: z.string().optional(),
 });
 

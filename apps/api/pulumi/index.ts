@@ -39,11 +39,6 @@ const site = new readable.Site('api', {
           Action: ['s3:GetObject', 's3:PutObject'],
           Resource: [pulumi.concat(ref.requireOutput('AWS_S3_BUCKET_USERCONTENTS_ARN'), '/*')],
         },
-        {
-          Effect: 'Allow',
-          Action: ['ses:SendEmail'],
-          Resource: ['*'],
-        },
       ],
     },
   },
