@@ -16,6 +16,6 @@
     "@readable/tsconfig": "workspace:*",
     "@sveltejs/kit": "^2.5.18",
     "@types/bun": "^1.1.6",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.4"
   }
 }

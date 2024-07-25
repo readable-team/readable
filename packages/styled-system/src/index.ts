@@ -10,6 +10,7 @@ import { utilities } from './utilities';
 export * as hooks from './hooks';
 
 export const preset = definePreset({
+  name: '@readable/styled-system/preset',
   presets: ['@pandacss/preset-base'],
 
   theme: {

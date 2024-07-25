@@ -10,13 +10,13 @@
     "lint:typecheck": "tsc"
   },
   "dependencies": {
-    "@pulumi/aws": "^6.45.0",
+    "@pulumi/aws": "^6.46.0",
     "@pulumi/kubernetes": "^4.15.0",
-    "@pulumi/pulumi": "^3.125.0",
+    "@pulumi/pulumi": "^3.126.0",
     "ts-pattern": "^5.2.0"
   },
   "devDependencies": {
     "@readable/tsconfig": "workspace:*",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.4"
   }
 }

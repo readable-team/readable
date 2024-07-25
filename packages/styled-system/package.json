@@ -27,8 +27,8 @@
     "lint:typecheck": "tsc"
   },
   "devDependencies": {
-    "@pandacss/dev": "^0.43.0",
+    "@pandacss/dev": "^0.44.0",
     "@readable/tsconfig": "workspace:*",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.4"
   }
 }
