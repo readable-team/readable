@@ -100,4 +100,14 @@ export const siteRouter = router({
 
       await db.update(Sites).set({ name: input.name, slug: input.slug }).where(eq(Sites.id, input.siteId));
     }),
+
+  delete: sessionProcedure.input(z.object({ siteId: z.string() })).mutation(async ({ input, ctx }) => {
+    await checkSiteRole({
+      siteId: input.siteId,
+      userId: ctx.session.userId,
+      role: WorkspaceMemberRole.ADMIN,
+    });
+
+    await db.update(Sites).set({ state: SiteState.DELETED }).where(eq(Sites.id, input.siteId));
+  }),
 });
