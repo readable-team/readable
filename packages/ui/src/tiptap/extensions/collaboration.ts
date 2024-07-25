@@ -128,7 +128,7 @@ export const Collaboration = Extension.create<CollaborationOptions>({
           fontSize: '13px',
           lineHeight: 'none',
           textIndent: '0',
-          color: 'gray.0',
+          color: 'gray.100',
           backgroundColor: 'var(--user-color)',
           translate: 'auto',
           translateY: '-full',

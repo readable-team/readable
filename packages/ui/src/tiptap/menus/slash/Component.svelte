@@ -43,7 +43,7 @@
   class={css({
     width: '300px',
     borderRadius: '4px',
-    backgroundColor: 'gray.0',
+    backgroundColor: 'gray.100',
     borderWidth: '1px',
     boxShadow: '[0px 4px 10px 0 {colors.gray.1000/30}]',
     padding: '4px',

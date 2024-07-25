@@ -90,7 +90,7 @@
             _disabled: 'button.background.secondary-disabled',
           },
           outlineWidth: '1px',
-          outlineColor: 'button.border.primary',
+          outlineColor: 'button.border.secondary',
         },
         danger: {
           color: {
