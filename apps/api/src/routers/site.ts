@@ -2,8 +2,8 @@ import { faker } from '@faker-js/faker';
 import { TRPCError } from '@trpc/server';
 import { and, asc, eq } from 'drizzle-orm';
 import { z } from 'zod';
-import { db, first, firstOrThrow, Sites } from '@/db';
-import { SiteState, WorkspaceMemberRole } from '@/enums';
+import { db, first, firstOrThrow, Sites, WorkspaceMembers, Workspaces } from '@/db';
+import { SiteState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
 import { checkSiteRole, checkWorkspaceRole } from '@/utils/role';
@@ -36,6 +36,32 @@ export const siteRouter = router({
 
       return site;
     }),
+
+  get: sessionProcedure.input(z.object({ siteId: z.string() })).query(async ({ input, ctx }) => {
+    const site = await db
+      .select({
+        id: Sites.id,
+        name: Sites.name,
+        slug: Sites.slug,
+        workspaceId: Sites.workspaceId,
+      })
+      .from(Sites)
+      .innerJoin(Workspaces, eq(Sites.workspaceId, Workspaces.id))
+      .leftJoin(
+        WorkspaceMembers,
+        and(eq(WorkspaceMembers.userId, ctx.session.userId), eq(WorkspaceMembers.workspaceId, Sites.workspaceId)),
+      )
+      .where(
+        and(eq(Sites.id, input.siteId), eq(Sites.state, SiteState.ACTIVE), eq(Workspaces.state, WorkspaceState.ACTIVE)),
+      )
+      .then(firstOrThrow);
+
+    return {
+      ...site,
+      // TODO: 나중에 릴리즈 환경 & 커스텀 도메인 고려 필요
+      usersiteUrl: `https://${site.slug}.rdbl.ninja`,
+    };
+  }),
 
   list: sessionProcedure.input(z.object({ workspaceId: z.string() })).query(async ({ input, ctx }) => {
     await checkWorkspaceRole({
