@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Icon, Test, TextInput } from '@readable/ui/components';
+  import { Button, Chip, Icon, Test, TextInput } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import MailIcon from '~icons/lucide/mail';
@@ -29,6 +29,9 @@
   <div>ID: {me.id}</div>
   <div>Name: {me.name}</div>
   <div>Email: {me.email}</div>
+
+  <br />
+  <div class={flex({ alignItems: 'center', gap: '8px' })}><Chip>초안</Chip> 어쩌구</div>
 
   <div
     class={css({
