@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 const dataSchemas = {
+  fileKey: z.string().regex(/^\w+(?:\/\w+)*(?:\.\w+)?$/),
+
   email: z
     .string({ required_error: '올바른 이메일 주소를 입력해 주세요' })
     .trim()
@@ -56,6 +58,7 @@ export const inputSchemas = {
   user: {
     update: z.object({
       name: dataSchemas.user.name,
+      avatarUrl: dataSchemas.fileKey,
     }),
   },
 

@@ -13,6 +13,9 @@ export const userRouter = router({
   }),
 
   update: sessionProcedure.input(inputSchemas.user.update).mutation(async ({ input, ctx }) => {
-    await db.update(Users).set({ name: input.name }).where(eq(Users.id, ctx.session.userId));
+    await db
+      .update(Users)
+      .set({ name: input.name, avatarUrl: input.avatarUrl })
+      .where(eq(Users.id, ctx.session.userId));
   }),
 });
