@@ -26,7 +26,7 @@ const usercontents = new aws.s3.Bucket('usercontents', {
     {
       allowedHeaders: ['*'],
       allowedMethods: ['PUT'],
-      allowedOrigins: ['https://app.rdbl.io', 'https://app.rdbl.ninja', 'http://localhost:4100'],
+      allowedOrigins: ['https://dashboard.rdbl.io', 'https://dashboard.rdbl.ninja', 'http://localhost:4100'],
     },
   ],
 });
