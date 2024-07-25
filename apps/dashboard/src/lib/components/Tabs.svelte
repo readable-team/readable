@@ -33,11 +33,11 @@
     <a
       class={css({
         'zIndex': '10',
-        'height': '40px',
+        'height': '36px',
         'paddingBottom': '4px',
         '_selected': {
           'borderBottomWidth': '[1.5px]',
-          'borderColor': 'tab.border',
+          'borderColor': 'tab.border.selected',
           'color': 'tab.foreground.selected',
           '& > span': {
             backgroundColor: 'tab.background.selected',
@@ -61,11 +61,11 @@
       <span
         class={css({
           display: 'flex',
-          height: '36px',
+          height: '31px',
           paddingX: '14px',
           alignItems: 'center',
           justifyContent: 'center',
-          textStyle: '14b',
+          textStyle: '16b',
           borderRadius: '4px',
         })}
       >
