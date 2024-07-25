@@ -2,15 +2,12 @@ import { createTRPCClient, httpBatchLink, splitLink, unstable_httpSubscriptionLi
 import { parse, stringify } from 'devalue';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { get } from 'svelte/store';
-import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import { persisted } from '$lib/svelte/stores/persisted';
 import type { AppRouter } from '@/router';
 
-if (browser) {
-  // @ts-expect-error - monkey patch
-  window.EventSource = EventSourcePolyfill;
-}
+// @ts-expect-error - monkey patch
+globalThis.EventSource = EventSourcePolyfill;
 
 export const accessToken = persisted<string>('at');
 
