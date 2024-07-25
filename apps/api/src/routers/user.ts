@@ -12,7 +12,7 @@ export const userRouter = router({
       .then(firstOrThrow);
   }),
 
-  updateProfile: sessionProcedure.input(inputSchemas.user.updateProfile).mutation(async ({ input, ctx }) => {
+  update: sessionProcedure.input(inputSchemas.user.update).mutation(async ({ input, ctx }) => {
     await db.update(Users).set({ name: input.name }).where(eq(Users.id, ctx.session.userId));
   }),
 });

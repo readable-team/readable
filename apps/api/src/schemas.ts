@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { WorkspaceMemberRole } from './enums';
 
 const dataSchemas = {
   email: z
@@ -7,14 +6,6 @@ const dataSchemas = {
     .trim()
     .email({ message: '올바른 이메일 주소를 입력해 주세요' })
     .toLowerCase(),
-
-  user: {
-    name: z
-      .string({ required_error: '이름을 입력해 주세요' })
-      .trim()
-      .min(1, { message: '이름을 입력해 주세요' })
-      .max(60, { message: '이름은 60글자를 넘을 수 없어요' }),
-  },
 
   site: {
     name: z
@@ -33,6 +24,14 @@ const dataSchemas = {
       .regex(/^[\da-z][\da-z-]*[\da-z]$/, { message: '사이트 slug는 하이픈으로 시작하거나 끝날 수 없어요' }),
   },
 
+  user: {
+    name: z
+      .string({ required_error: '이름을 입력해 주세요' })
+      .trim()
+      .min(1, { message: '이름을 입력해 주세요' })
+      .max(60, { message: '이름은 60글자를 넘을 수 없어요' }),
+  },
+
   workspace: {
     name: z
       .string({ required_error: '워크스페이스 이름을 입력해 주세요' })
@@ -43,12 +42,6 @@ const dataSchemas = {
 };
 
 export const inputSchemas = {
-  user: {
-    updateProfile: z.object({
-      name: dataSchemas.user.name,
-    }),
-  },
-
   site: {
     create: z.object({
       name: dataSchemas.site.name,
@@ -60,20 +53,19 @@ export const inputSchemas = {
     }),
   },
 
+  user: {
+    update: z.object({
+      name: dataSchemas.user.name,
+    }),
+  },
+
   workspace: {
     create: z.object({
       name: dataSchemas.workspace.name,
     }),
 
-    createInvite: z.object({
-      workspaceId: z.string(),
+    inviteMember: z.object({
       email: dataSchemas.email,
-    }),
-
-    updateRole: z.object({
-      workspaceId: z.string(),
-      userId: z.string(),
-      role: z.nativeEnum(WorkspaceMemberRole),
     }),
   },
 };

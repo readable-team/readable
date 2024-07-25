@@ -67,45 +67,47 @@ export const workspaceRouter = router({
     return !!workspace;
   }),
 
-  createInvite: sessionProcedure.input(inputSchemas.workspace.createInvite).query(async ({ input, ctx }) => {
-    await checkWorkspaceRole({
-      workspaceId: input.workspaceId,
-      userId: ctx.session.userId,
-      role: 'ADMIN',
-    });
+  inviteMember: sessionProcedure
+    .input(inputSchemas.workspace.inviteMember.extend({ workspaceId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      await checkWorkspaceRole({
+        workspaceId: input.workspaceId,
+        userId: ctx.session.userId,
+        role: 'ADMIN',
+      });
 
-    const [inviter, workspace, invitee] = await Promise.all([
-      db.select({ name: Users.name }).from(Users).where(eq(Users.id, ctx.session.userId)).then(firstOrThrow),
-      db
-        .select({ name: Workspaces.name })
-        .from(Workspaces)
-        .where(eq(Workspaces.id, input.workspaceId))
-        .then(firstOrThrow),
-      db.select({ id: Users.id, name: Users.name }).from(Users).where(eq(Users.email, input.email)).then(first),
-    ]);
+      const [inviter, workspace, invitee] = await Promise.all([
+        db.select({ name: Users.name }).from(Users).where(eq(Users.id, ctx.session.userId)).then(firstOrThrow),
+        db
+          .select({ name: Workspaces.name })
+          .from(Workspaces)
+          .where(eq(Workspaces.id, input.workspaceId))
+          .then(firstOrThrow),
+        db.select({ id: Users.id, name: Users.name }).from(Users).where(eq(Users.email, input.email)).then(first),
+      ]);
 
-    const code = createId();
+      const code = createId();
 
-    await db.insert(WorkspaceInvites).values({
-      workspaceId: input.workspaceId,
-      inviterId: ctx.session.userId,
-      inviteeId: invitee?.id,
-      code,
-      email: input.email,
-      expiresAt: dayjs().add(1, 'day'),
-    });
+      await db.insert(WorkspaceInvites).values({
+        workspaceId: input.workspaceId,
+        inviterId: ctx.session.userId,
+        inviteeId: invitee?.id,
+        code,
+        email: input.email,
+        expiresAt: dayjs().add(1, 'day'),
+      });
 
-    await sendEmail({
-      recipient: input.email,
-      subject: `[Readable] ${inviter.name}님이 워크스페이스에 초대했습니다`,
-      body: WorkspaceInvite({
-        inviterName: inviter.name,
-        workspaceName: workspace.name,
-      }),
-    });
-  }),
+      await sendEmail({
+        recipient: input.email,
+        subject: `[Readable] ${inviter.name}님이 워크스페이스에 초대했습니다`,
+        body: WorkspaceInvite({
+          inviterName: inviter.name,
+          workspaceName: workspace.name,
+        }),
+      });
+    }),
 
-  acceptInvite: sessionProcedure.input(z.object({ code: z.string() })).mutation(async ({ input, ctx }) => {
+  acceptMemberInvitation: sessionProcedure.input(z.object({ code: z.string() })).mutation(async ({ input, ctx }) => {
     const invite = await db
       .select({ workspaceId: WorkspaceInvites.workspaceId, inviterId: WorkspaceInvites.inviterId })
       .from(WorkspaceInvites)
@@ -136,33 +138,35 @@ export const workspaceRouter = router({
     });
   }),
 
-  updateRole: sessionProcedure.input(inputSchemas.workspace.updateRole).mutation(async ({ input, ctx }) => {
-    await checkWorkspaceRole({
-      workspaceId: input.workspaceId,
-      userId: ctx.session.userId,
-      role: 'ADMIN',
-    });
+  updateMemberRole: sessionProcedure
+    .input(z.object({ workspaceId: z.string(), userId: z.string(), role: z.nativeEnum(WorkspaceMemberRole) }))
+    .mutation(async ({ input, ctx }) => {
+      await checkWorkspaceRole({
+        workspaceId: input.workspaceId,
+        userId: ctx.session.userId,
+        role: 'ADMIN',
+      });
 
-    await db.transaction(async (tx) => {
-      await tx
-        .update(WorkspaceMembers)
-        .set({ role: input.role })
-        .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, input.userId)));
+      await db.transaction(async (tx) => {
+        await tx
+          .update(WorkspaceMembers)
+          .set({ role: input.role })
+          .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, input.userId)));
 
-      if (input.role !== 'ADMIN') {
-        const adminCount = await db
-          .select({ count: count(WorkspaceMembers.id) })
-          .from(WorkspaceMembers)
-          .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.role, 'ADMIN')))
-          .then((rows) => rows[0]?.count ?? 0);
+        if (input.role !== 'ADMIN') {
+          const adminCount = await db
+            .select({ count: count(WorkspaceMembers.id) })
+            .from(WorkspaceMembers)
+            .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.role, 'ADMIN')))
+            .then((rows) => rows[0]?.count ?? 0);
 
-        if (adminCount === 0) {
-          throw new TRPCError({
-            code: 'CONFLICT',
-            message: '워크스페이스에는 최소 1명의 관리자가 있어야 합니다',
-          });
+          if (adminCount === 0) {
+            throw new TRPCError({
+              code: 'CONFLICT',
+              message: '워크스페이스에는 최소 1명의 관리자가 있어야 합니다',
+            });
+          }
         }
-      }
-    });
-  }),
+      });
+    }),
 });
