@@ -22,6 +22,15 @@ const dataSchemas = {
       .trim()
       .min(1, { message: '사이트 이름을 한 글자 이상 입력해 주세요' })
       .max(50, { message: '사이트 이름은 50글자를 넘을 수 없어요' }),
+
+    slug: z
+      .string({ required_error: '사이트 slug를 입력해 주세요' })
+      .trim()
+      .toLowerCase()
+      .min(4, { message: '사이트 slug는 4글자 이상이여야 해요' })
+      .max(63, { message: '사이트 slug는 63글자를 넘을 수 없어요' })
+      .regex(/^[\da-z-]+$/, { message: '사이트 slug는 소문자, 숫자, 하이픈만 사용할 수 있어요' })
+      .regex(/^[\da-z][\da-z-]*[\da-z]$/, { message: '사이트 slug는 하이픈으로 시작하거나 끝날 수 없어요' }),
   },
 
   workspace: {
@@ -43,6 +52,11 @@ export const inputSchemas = {
   site: {
     create: z.object({
       name: dataSchemas.site.name,
+    }),
+
+    update: z.object({
+      name: dataSchemas.site.name,
+      slug: dataSchemas.site.slug,
     }),
   },
 

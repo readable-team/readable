@@ -1,11 +1,12 @@
 import { faker } from '@faker-js/faker';
+import { TRPCError } from '@trpc/server';
 import { and, asc, eq } from 'drizzle-orm';
 import { z } from 'zod';
-import { db, firstOrThrow, Sites } from '@/db';
+import { db, first, firstOrThrow, Sites } from '@/db';
 import { SiteState, WorkspaceMemberRole } from '@/enums';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
-import { checkWorkspaceRole } from '@/utils/role';
+import { checkSiteRole, checkWorkspaceRole } from '@/utils/role';
 
 export const siteRouter = router({
   create: sessionProcedure
@@ -48,4 +49,29 @@ export const siteRouter = router({
       .where(and(eq(Sites.workspaceId, input.workspaceId), eq(Sites.state, SiteState.ACTIVE)))
       .orderBy(asc(Sites.name));
   }),
+
+  update: sessionProcedure
+    .input(inputSchemas.site.update.extend({ siteId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      await checkSiteRole({
+        siteId: input.siteId,
+        userId: ctx.session.userId,
+        role: WorkspaceMemberRole.ADMIN,
+      });
+
+      const slugConflict = await db
+        .select({ id: Sites.id })
+        .from(Sites)
+        .where(and(eq(Sites.slug, input.slug), eq(Sites.state, SiteState.ACTIVE)))
+        .then(first);
+
+      if (slugConflict) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: '이미 다른 사이트에서 사용 중인 slug입니다',
+        });
+      }
+
+      await db.update(Sites).set({ name: input.name, slug: input.slug }).where(eq(Sites.id, input.siteId));
+    }),
 });
