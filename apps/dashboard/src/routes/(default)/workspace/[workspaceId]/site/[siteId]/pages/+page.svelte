@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Chip, Icon, Test, TextInput } from '@readable/ui/components';
+  import { Button, Chip, Icon, LogoPlaceholder, Test, TextInput } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import MailIcon from '~icons/lucide/mail';
@@ -14,6 +14,9 @@
   <Icon icon={LayoutDashboardIcon} size={32} />
   dashboard
 </div>
+
+<LogoPlaceholder size={20} />
+<LogoPlaceholder size={32} />
 
 {#await trpc.user.me.query() then me}
   <Img
