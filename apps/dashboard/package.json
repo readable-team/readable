@@ -16,6 +16,7 @@
     "dayjs": "^1.11.12",
     "devalue": "^5.0.0",
     "event-source-polyfill": "^1.0.31",
+    "ky": "^1.4.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

@@ -62,11 +62,6 @@ new aws.iam.UserPolicy('developer@team', {
       },
       {
         Effect: 'Allow',
-        Action: ['s3:DeleteObject'],
-        Resource: [pulumi.concat(buckets.usercontents.arn, '/uploads/*')],
-      },
-      {
-        Effect: 'Allow',
         Action: ['ses:SendEmail'],
         Resource: '*',
       },

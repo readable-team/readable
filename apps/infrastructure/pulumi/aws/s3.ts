@@ -40,7 +40,7 @@ new aws.s3.BucketPolicy('usercontents', {
         Effect: 'Allow',
         Principal: { Service: 'cloudfront.amazonaws.com' },
         Action: ['s3:GetObject'],
-        Resource: [pulumi.interpolate`${usercontents.arn}/public/*`],
+        Resource: [pulumi.interpolate`${usercontents.arn}/*`],
       },
     ],
   },

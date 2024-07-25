@@ -1,9 +1,8 @@
 import { init } from '@paralleldrive/cuid2';
 import { sql } from 'drizzle-orm';
-import { index, integer, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
+import { index, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
 import * as E from './enums';
 import { datetime } from './types';
-import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 
 export const createDbId = init({ length: 16 });
 
@@ -80,24 +79,6 @@ export const Sites = pgTable(
   }),
 );
 
-export const Images = pgTable('images', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => createDbId()),
-  name: text('name').notNull(),
-  format: text('format').notNull(),
-  size: integer('size').notNull(),
-  width: integer('width').notNull(),
-  height: integer('height').notNull(),
-  path: text('path').notNull(),
-  color: text('color').notNull(),
-  placeholder: text('placeholder').notNull(),
-  hash: text('hash').notNull(),
-  createdAt: datetime('created_at')
-    .notNull()
-    .default(sql`now()`),
-});
-
 export const Users = pgTable(
   'users',
   {
@@ -106,9 +87,7 @@ export const Users = pgTable(
       .$defaultFn(() => createDbId()),
     email: text('email').notNull(),
     name: text('name').notNull(),
-    avatarId: text('avatar_id')
-      .notNull()
-      .references((): AnyPgColumn => Images.id),
+    avatarUrl: text('avatar_url').notNull(),
     state: E._UserState('state').notNull().default('ACTIVE'),
     createdAt: datetime('created_at')
       .notNull()

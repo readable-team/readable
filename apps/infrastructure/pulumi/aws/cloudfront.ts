@@ -165,7 +165,6 @@ const usercontents = new aws.cloudfront.Distribution('usercontents', {
     {
       originId: 'usercontents',
       domainName: buckets.usercontents.bucketRegionalDomainName,
-      originPath: '/public',
       originAccessControlId: s3OriginAccessControl.id,
       originShield: { enabled: true, originShieldRegion: 'ap-northeast-2' },
     },

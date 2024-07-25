@@ -1,12 +1,13 @@
+import path from 'node:path';
 import { eq } from 'drizzle-orm';
 import { match } from 'ts-pattern';
 import { z } from 'zod';
 import { db, first, firstOrThrow, Users, UserSessions, UserSingleSignOns } from '@/db';
 import { SingleSignOnProvider } from '@/enums';
+import * as aws from '@/external/aws';
 import * as google from '@/external/google';
 import { publicProcedure, router, sessionProcedure } from '@/trpc';
 import { createAccessToken } from '@/utils/access-token';
-import { uploadImage } from '@/utils/image';
 
 export const authRouter = router({
   isAuthenticated: publicProcedure.query(async ({ ctx }) => {
@@ -39,10 +40,9 @@ export const authRouter = router({
           const avatarResp = await fetch(externalUser.avatarUrl);
           const avatarBuffer = await avatarResp.arrayBuffer();
 
-          const avatarId = await uploadImage({
-            tx,
-            name: 'avatar',
-            source: avatarBuffer,
+          const avatarUrl = await aws.uploadUserContents({
+            filename: path.basename(externalUser.avatarUrl),
+            source: Buffer.from(avatarBuffer),
           });
 
           const user = await tx
@@ -50,7 +50,7 @@ export const authRouter = router({
             .values({
               email: externalUser.email.toLowerCase(),
               name: externalUser.name,
-              avatarId,
+              avatarUrl,
             })
             .returning({ id: Users.id })
             .then(firstOrThrow);

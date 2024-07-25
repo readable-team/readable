@@ -17,13 +17,13 @@
 
 {#await trpc.user.me.query() then me}
   <Img
-    id={me.avatarId}
     style={css.raw({
       borderRadius: 'full',
       size: '64px',
       marginBottom: '4px',
     })}
     alt={`${me.name}의 아바타`}
+    url={me.avatarUrl}
   />
 
   <div>ID: {me.id}</div>
