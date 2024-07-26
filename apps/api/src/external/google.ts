@@ -39,7 +39,7 @@ export const authorizeUser = async (code: string) => {
 
   return {
     provider: SingleSignOnProvider.GOOGLE,
-    id: userinfo.data.sub,
+    principal: userinfo.data.sub,
     email: userinfo.data.email.toLowerCase(),
     name: userinfo.data.name,
     avatarUrl: userinfo.data.picture,

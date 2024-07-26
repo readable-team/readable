@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
 import { and, eq, gt } from 'drizzle-orm';
 import { match } from 'ts-pattern';
@@ -13,11 +14,21 @@ import {
   WorkspaceMemberInvitations,
   WorkspaceMembers,
 } from '@/db';
-import { SingleSignOnProvider, WorkspaceMemberRole } from '@/enums';
+import { SingleSignOnProvider, UserState, WorkspaceMemberRole } from '@/enums';
 import * as aws from '@/external/aws';
 import * as google from '@/external/google';
 import { publicProcedure, router, sessionProcedure } from '@/trpc';
 import { createAccessToken } from '@/utils/access-token';
+
+const createSessionAndReturnAccessToken = async (userId: string) => {
+  const session = await db
+    .insert(UserSessions)
+    .values({ userId })
+    .returning({ id: UserSessions.id })
+    .then(firstOrThrow);
+
+  return await createAccessToken(session.id);
+};
 
 export const authRouter = router({
   isAuthenticated: publicProcedure.query(async ({ ctx }) => {
@@ -39,67 +50,82 @@ export const authRouter = router({
         .with(SingleSignOnProvider.GOOGLE, () => google.authorizeUser(input.params.code))
         .exhaustive();
 
-      let user = await db.select({ id: Users.id }).from(Users).where(eq(Users.email, externalUser.email)).then(first);
+      const sso = await db
+        .select({ userId: UserSingleSignOns.userId })
+        .from(UserSingleSignOns)
+        .where(
+          and(
+            eq(UserSingleSignOns.provider, externalUser.provider),
+            eq(UserSingleSignOns.principal, externalUser.principal),
+          ),
+        )
+        .then(first);
 
-      if (!user) {
-        user = await db.transaction(async (tx) => {
-          const avatarResp = await fetch(externalUser.avatarUrl);
-          const avatarBuffer = await avatarResp.arrayBuffer();
-
-          const avatarUrl = await aws.uploadUserContents({
-            filename: path.basename(externalUser.avatarUrl),
-            source: Buffer.from(avatarBuffer),
-          });
-
-          const user = await tx
-            .insert(Users)
-            .values({
-              email: externalUser.email,
-              name: externalUser.name,
-              avatarUrl,
-            })
-            .returning({ id: Users.id })
-            .then(firstOrThrow);
-
-          await tx.insert(UserSingleSignOns).values({
-            userId: user.id,
-            provider: externalUser.provider,
-            principal: externalUser.id,
-            email: externalUser.email,
-          });
-
-          const invitations = await tx
-            .delete(WorkspaceMemberInvitations)
-            .where(
-              and(
-                eq(WorkspaceMemberInvitations.email, externalUser.email),
-                gt(WorkspaceMemberInvitations.expiresAt, dayjs()),
-              ),
-            )
-            .returning({ workspaceId: WorkspaceMemberInvitations.workspaceId });
-
-          await tx.insert(WorkspaceMembers).values(
-            invitations.map((invitation) => ({
-              workspaceId: invitation.workspaceId,
-              userId: user.id,
-              role: WorkspaceMemberRole.MEMBER,
-            })),
-          );
-
-          return user;
-        });
+      if (sso) {
+        return {
+          accessToken: await createSessionAndReturnAccessToken(sso.userId),
+        };
       }
 
-      const session = await db
-        .insert(UserSessions)
-        .values({ userId: user.id })
-        .returning({ id: UserSessions.id })
-        .then(firstOrThrow);
+      const existingUser = await db
+        .select({ id: Users.id })
+        .from(Users)
+        .where(and(eq(Users.email, externalUser.email), eq(Users.state, UserState.ACTIVE)))
+        .then(first);
 
-      const accessToken = await createAccessToken(session.id);
+      if (existingUser) {
+        throw new TRPCError({ code: 'CONFLICT', message: '이미 가입되어 있는 이메일이에요' });
+      }
+
+      const user = await db.transaction(async (tx) => {
+        const avatarResp = await fetch(externalUser.avatarUrl);
+        const avatarBuffer = await avatarResp.arrayBuffer();
+
+        const avatarUrl = await aws.uploadUserContents({
+          filename: path.basename(externalUser.avatarUrl),
+          source: Buffer.from(avatarBuffer),
+        });
+
+        const user = await tx
+          .insert(Users)
+          .values({
+            email: externalUser.email,
+            name: externalUser.name,
+            avatarUrl,
+          })
+          .returning({ id: Users.id })
+          .then(firstOrThrow);
+
+        await tx.insert(UserSingleSignOns).values({
+          userId: user.id,
+          provider: externalUser.provider,
+          principal: externalUser.principal,
+          email: externalUser.email,
+        });
+
+        const invitations = await tx
+          .delete(WorkspaceMemberInvitations)
+          .where(
+            and(
+              eq(WorkspaceMemberInvitations.email, externalUser.email),
+              gt(WorkspaceMemberInvitations.expiresAt, dayjs()),
+            ),
+          )
+          .returning({ workspaceId: WorkspaceMemberInvitations.workspaceId });
+
+        await tx.insert(WorkspaceMembers).values(
+          invitations.map((invitation) => ({
+            workspaceId: invitation.workspaceId,
+            userId: user.id,
+            role: WorkspaceMemberRole.MEMBER,
+          })),
+        );
+
+        return user;
+      });
 
       return {
-        accessToken,
+        accessToken: await createSessionAndReturnAccessToken(user.id),
       };
     }),
 
