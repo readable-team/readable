@@ -28,6 +28,7 @@
     "pino",
     "pulumi",
     "rdbl",
+    "sortablejs",
     "tini",
     "trpc",
     "unplugin",

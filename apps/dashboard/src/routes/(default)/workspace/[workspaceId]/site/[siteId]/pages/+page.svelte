@@ -1,13 +1,14 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Chip, Icon, LogoPlaceholder, Test, TextInput } from '@readable/ui/components';
+  import { Button, Chip, Icon, LogoPlaceholder, TextInput } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import MailIcon from '~icons/lucide/mail';
   import { invalidateAll } from '$app/navigation';
   import Img from '$lib/components/Img.svelte';
   import { accessToken, trpc } from '$lib/trpc';
+  import Pages from './Pages.svelte';
 </script>
 
 <div class={flex({ align: 'center', gap: '4px', fontSize: '32px', fontWeight: 'bold', marginBottom: '12px' })}>
@@ -53,6 +54,14 @@
     />
   </div>
 
+  <br />
+  <br />
+
+  <Pages />
+
+  <br />
+  <br />
+
   <Button
     style={{ marginTop: '12px' }}
     size="sm"
@@ -68,5 +77,3 @@
     Logout
   </Button>
 {/await}
-
-<Test />
