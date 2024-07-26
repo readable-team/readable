@@ -59,7 +59,7 @@ export const siteRouter = router({
     return {
       ...site,
       // TODO: 나중에 릴리즈 환경 & 커스텀 도메인 고려 필요
-      usersiteUrl: `https://${site.slug}.rdbl.ninja`,
+      url: `https://${site.slug}.rdbl.ninja`,
     };
   }),
 
