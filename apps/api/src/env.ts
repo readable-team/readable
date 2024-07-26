@@ -10,6 +10,7 @@ const schema = z.object({
   PUBLIC_PULUMI_STACK: z.string().optional(),
   RESEND_API_KEY: z.string(),
   SENTRY_DSN: z.string().optional(),
+  USERSITE_DEFAULT_HOST: z.string(),
 });
 
 export const env = schema.parse(process.env);

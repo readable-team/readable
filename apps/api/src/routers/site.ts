@@ -4,6 +4,7 @@ import { and, asc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db, first, firstOrThrow, Sites } from '@/db';
 import { SiteState, WorkspaceMemberRole } from '@/enums';
+import { env } from '@/env';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
 import { assertSitePermission, assertWorkspacePermission } from '@/utils/permissions';
@@ -56,8 +57,7 @@ export const siteRouter = router({
 
     return {
       ...site,
-      // TODO: 나중에 릴리즈 환경 & 커스텀 도메인 고려 필요
-      url: `https://${site.slug}.rdbl.ninja`,
+      url: `https://${site.slug}.${env.USERSITE_DEFAULT_HOST}`,
     };
   }),
 
