@@ -12,12 +12,12 @@
 
   export const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'ArrowDown') {
-      selectedIdx = Math.min(selectedIdx + 1, items.length - 1);
+      selectedIdx = (selectedIdx + 1) % items.length;
       return true;
     }
 
     if (event.key === 'ArrowUp') {
-      selectedIdx = Math.max(selectedIdx - 1, 0);
+      selectedIdx = (selectedIdx - 1 + items.length) % items.length;
       return true;
     }
 
@@ -64,6 +64,12 @@
         paddingY: '6px',
         backgroundColor: selectedIdx === idx ? 'gray.200' : undefined,
       })}
+      role="menuitem"
+      tabindex="-1"
+      on:focus={null}
+      on:mouseover={() => (selectedIdx = idx)}
+      on:click={() => item.command({ editor, range })}
+      on:keydown={null}
     >
       <div class={center({ size: '40px', borderRadius: '4px', backgroundColor: 'gray.200' })}>
         <Icon icon={item.icon} size={20} />

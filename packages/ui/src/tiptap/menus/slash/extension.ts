@@ -65,7 +65,14 @@ export const SlashMenu = Extension.create({
             },
 
             onKeyDown: ({ event }) => {
-              return component?.handleKeyDown(event) ?? false;
+              if (event.key === 'Escape') {
+                component?.$destroy();
+                dom?.remove();
+
+                return true;
+              }
+
+              return component?.handleKeyDown?.(event) ?? false;
             },
 
             onExit: () => {

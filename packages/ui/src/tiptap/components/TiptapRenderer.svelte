@@ -43,15 +43,12 @@
 
 <article
   bind:this={element}
-  class={cx(
-    'tiptap',
-    css({
-      display: 'contents',
-      fontFamily: 'prose',
-      whiteSpace: 'pre-wrap',
-      overflowWrap: 'break-word',
-    }),
-  )}
+  class={css({
+    display: 'contents',
+    fontFamily: 'prose',
+    whiteSpace: 'pre-wrap',
+    overflowWrap: 'break-word',
+  })}
 >
   {#if !loaded}
     <div class={cx('ProseMirror', css(style))}>

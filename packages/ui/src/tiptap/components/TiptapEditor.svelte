@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { css, cx } from '@readable/styled-system/css';
+  import { css } from '@readable/styled-system/css';
   import { Editor } from '@tiptap/core';
   import { createEventDispatcher, onMount } from 'svelte';
   import * as YAwareness from 'y-protocols/awareness';
@@ -74,10 +74,7 @@
 
 <div
   bind:this={element}
-  class={cx(
-    'tiptap tiptap-editor',
-    css({ display: 'contents', fontFamily: 'prose', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }),
-  )}
+  class={css({ display: 'contents', fontFamily: 'prose', whiteSpace: 'pre-wrap', wordBreak: 'break-all' })}
   autocapitalize="off"
   autocorrect="off"
   spellcheck="false"
