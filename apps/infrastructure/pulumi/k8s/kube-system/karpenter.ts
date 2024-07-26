@@ -218,10 +218,10 @@ const nodeClass = new k8s.apiextensions.CustomResource('default', {
         // spell-checker:disable-next-line
         deviceName: '/dev/xvda',
         ebs: {
-          volumeSize: '200Gi',
+          volumeSize: '20Gi',
           volumeType: 'gp3',
-          iops: 5000,
-          throughput: 300,
+          iops: 3000,
+          throughput: 125,
         },
       },
     ],
