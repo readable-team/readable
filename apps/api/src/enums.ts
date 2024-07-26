@@ -8,6 +8,12 @@ export const WorkspaceState = {
   DELETED: 'DELETED',
 } as const;
 
+export const PageState = {
+  PUBLISHED: 'PUBLISHED',
+  DRAFT: 'DRAFT',
+  DELETED: 'DELETED',
+} as const;
+
 export const SingleSignOnProvider = {
   GOOGLE: 'GOOGLE',
 } as const;

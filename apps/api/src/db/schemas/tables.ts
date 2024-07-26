@@ -1,8 +1,9 @@
 import { init } from '@paralleldrive/cuid2';
 import { sql } from 'drizzle-orm';
-import { index, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
+import { bigserial, index, json, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
 import * as E from './enums';
-import { datetime } from './types';
+import { bytea, datetime } from './types';
+import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 
 export const createDbId = init({ length: 16 });
 
@@ -73,6 +74,98 @@ export const Sites = pgTable(
     slugStateIdx: index().on(t.slug, t.state),
   }),
 );
+
+export const Pages = pgTable(
+  'pages',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId()),
+    siteId: text('site_id')
+      .notNull()
+      .references(() => Sites.id),
+    parentId: text('parent_id').references((): AnyPgColumn => Pages.id),
+    state: E._PageState('state').notNull(),
+    permalink: text('permalink').unique().notNull(),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+    updatedAt: datetime('updated_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    sitePermalinkIdx: index().on(t.siteId, t.permalink),
+  }),
+);
+
+export const PageContents = pgTable('page_contents', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId()),
+  pageId: text('page_id')
+    .notNull()
+    .unique()
+    .references(() => Pages.id),
+  data: json('data').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
+
+export const PageContentSnapshots = pgTable(
+  'page_content_snapshots',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId()),
+    pageId: text('page_id')
+      .notNull()
+      .references(() => Pages.id),
+    data: bytea('data').notNull(),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    pageIdCreatedAtIdx: index().on(t.pageId, t.createdAt),
+  }),
+);
+
+export const PageContentStates = pgTable('page_content_states', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId()),
+  pageId: text('page_id')
+    .notNull()
+    .unique()
+    .references(() => Pages.id),
+  update: bytea('update').notNull(),
+  vector: bytea('vector').notNull(),
+  upToSeq: bigserial('up_to_seq', { mode: 'bigint' }).notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+  updatedAt: datetime('updated_at'),
+});
+
+export const PageContentUpdates = pgTable('page_content_updates', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId()),
+  pageId: text('page_id')
+    .notNull()
+    .references(() => Pages.id),
+  userId: text('user_id')
+    .notNull()
+    .references(() => Users.id),
+  clientId: text('client_id').notNull(),
+  data: bytea('data').notNull(),
+  seq: bigserial('seq', { mode: 'bigint' }).notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
 
 export const Users = pgTable(
   'users',
