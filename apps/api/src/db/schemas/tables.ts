@@ -1,79 +1,11 @@
 import { init } from '@paralleldrive/cuid2';
 import { sql } from 'drizzle-orm';
-import { bigserial, index, json, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
+import { bigint, bigserial, index, json, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
 import * as E from './enums';
 import { bytea, datetime } from './types';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 
 export const createDbId = init({ length: 16 });
-
-export const Workspaces = pgTable(
-  'workspaces',
-  {
-    id: text('id')
-      .primaryKey()
-      .$defaultFn(() => createDbId()),
-    name: text('name').notNull(),
-    state: E._WorkspaceState('state').notNull().default('ACTIVE'),
-    createdAt: datetime('created_at')
-      .notNull()
-      .default(sql`now()`),
-  },
-  (t) => ({
-    stateIdx: index().on(t.state),
-  }),
-);
-
-export const WorkspaceMembers = pgTable('workspace_members', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => createDbId()),
-  workspaceId: text('workspace_id')
-    .notNull()
-    .references(() => Workspaces.id),
-  userId: text('user_id')
-    .notNull()
-    .references(() => Users.id),
-  role: E._WorkspaceMemberRole('role').notNull(),
-  createdAt: datetime('created_at')
-    .notNull()
-    .default(sql`now()`),
-});
-
-export const WorkspaceMemberInvitations = pgTable('workspace_member_invitations', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => createDbId()),
-  workspaceId: text('workspace_id')
-    .notNull()
-    .references(() => Workspaces.id),
-  email: text('email').notNull(),
-  createdAt: datetime('created_at')
-    .notNull()
-    .default(sql`now()`),
-  expiresAt: datetime('expires_at').notNull(),
-});
-
-export const Sites = pgTable(
-  'sites',
-  {
-    id: text('id')
-      .primaryKey()
-      .$defaultFn(() => createDbId()),
-    workspaceId: text('workspace_id')
-      .notNull()
-      .references(() => Workspaces.id),
-    slug: text('slug').notNull(),
-    name: text('name').notNull(),
-    state: E._SiteState('state').notNull().default('ACTIVE'),
-    createdAt: datetime('created_at')
-      .notNull()
-      .default(sql`now()`),
-  },
-  (t) => ({
-    slugStateIdx: index().on(t.slug, t.state),
-  }),
-);
 
 export const Pages = pgTable(
   'pages',
@@ -86,16 +18,12 @@ export const Pages = pgTable(
       .references(() => Sites.id),
     parentId: text('parent_id').references((): AnyPgColumn => Pages.id),
     state: E._PageState('state').notNull(),
-    permalink: text('permalink').unique().notNull(),
     createdAt: datetime('created_at')
-      .notNull()
-      .default(sql`now()`),
-    updatedAt: datetime('updated_at')
       .notNull()
       .default(sql`now()`),
   },
   (t) => ({
-    sitePermalinkIdx: index().on(t.siteId, t.permalink),
+    siteIdStateIdx: index().on(t.siteId, t.state),
   }),
 );
 
@@ -122,7 +50,7 @@ export const PageContentSnapshots = pgTable(
     pageId: text('page_id')
       .notNull()
       .references(() => Pages.id),
-    data: bytea('data').notNull(),
+    snapshot: bytea('snapshot').notNull(),
     createdAt: datetime('created_at')
       .notNull()
       .default(sql`now()`),
@@ -142,7 +70,7 @@ export const PageContentStates = pgTable('page_content_states', {
     .references(() => Pages.id),
   update: bytea('update').notNull(),
   vector: bytea('vector').notNull(),
-  upToSeq: bigserial('up_to_seq', { mode: 'bigint' }).notNull(),
+  upToSeq: bigint('up_to_seq', { mode: 'bigint' }).notNull(),
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),
@@ -159,13 +87,33 @@ export const PageContentUpdates = pgTable('page_content_updates', {
   userId: text('user_id')
     .notNull()
     .references(() => Users.id),
-  clientId: text('client_id').notNull(),
   data: bytea('data').notNull(),
   seq: bigserial('seq', { mode: 'bigint' }).notNull(),
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),
 });
+
+export const Sites = pgTable(
+  'sites',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId()),
+    workspaceId: text('workspace_id')
+      .notNull()
+      .references(() => Workspaces.id),
+    slug: text('slug').notNull(),
+    name: text('name').notNull(),
+    state: E._SiteState('state').notNull().default('ACTIVE'),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    slugStateIdx: index().on(t.slug, t.state),
+  }),
+);
 
 export const Users = pgTable(
   'users',
@@ -186,17 +134,23 @@ export const Users = pgTable(
   }),
 );
 
-export const UserSessions = pgTable('user_sessions', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => createDbId()),
-  userId: text('user_id')
-    .notNull()
-    .references(() => Users.id),
-  createdAt: datetime('created_at')
-    .notNull()
-    .default(sql`now()`),
-});
+export const UserSessions = pgTable(
+  'user_sessions',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId()),
+    userId: text('user_id')
+      .notNull()
+      .references(() => Users.id),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    userIdIdx: index().on(t.userId),
+  }),
+);
 
 export const UserSingleSignOns = pgTable(
   'user_single_sign_ons',
@@ -219,3 +173,57 @@ export const UserSingleSignOns = pgTable(
     providerPrincipalUniqIdx: uniqueIndex().on(t.provider, t.principal),
   }),
 );
+
+export const Workspaces = pgTable(
+  'workspaces',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId()),
+    name: text('name').notNull(),
+    state: E._WorkspaceState('state').notNull().default('ACTIVE'),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    stateIdx: index().on(t.state),
+  }),
+);
+
+export const WorkspaceMembers = pgTable(
+  'workspace_members',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId()),
+    workspaceId: text('workspace_id')
+      .notNull()
+      .references(() => Workspaces.id),
+    userId: text('user_id')
+      .notNull()
+      .references(() => Users.id),
+    role: E._WorkspaceMemberRole('role').notNull(),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    userIdWorkspaceIdUniqIdx: uniqueIndex().on(t.userId, t.workspaceId),
+    workspaceIdUserIdRoleIdx: index().on(t.workspaceId, t.userId, t.role),
+  }),
+);
+
+export const WorkspaceMemberInvitations = pgTable('workspace_member_invitations', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId()),
+  workspaceId: text('workspace_id')
+    .notNull()
+    .references(() => Workspaces.id),
+  email: text('email').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+  expiresAt: datetime('expires_at').notNull(),
+});

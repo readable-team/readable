@@ -2,8 +2,8 @@ import { faker } from '@faker-js/faker';
 import { TRPCError } from '@trpc/server';
 import { and, asc, eq } from 'drizzle-orm';
 import { z } from 'zod';
-import { db, first, firstOrThrow, Sites, WorkspaceMembers, Workspaces } from '@/db';
-import { SiteState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
+import { db, first, firstOrThrow, Sites } from '@/db';
+import { SiteState, WorkspaceMemberRole } from '@/enums';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
 import { assertSitePermission, assertWorkspacePermission } from '@/utils/permissions';
@@ -38,6 +38,11 @@ export const siteRouter = router({
     }),
 
   get: sessionProcedure.input(z.object({ siteId: z.string() })).query(async ({ input, ctx }) => {
+    await assertSitePermission({
+      siteId: input.siteId,
+      userId: ctx.session.userId,
+    });
+
     const site = await db
       .select({
         id: Sites.id,
@@ -46,14 +51,7 @@ export const siteRouter = router({
         workspaceId: Sites.workspaceId,
       })
       .from(Sites)
-      .innerJoin(Workspaces, eq(Sites.workspaceId, Workspaces.id))
-      .leftJoin(
-        WorkspaceMembers,
-        and(eq(WorkspaceMembers.userId, ctx.session.userId), eq(WorkspaceMembers.workspaceId, Sites.workspaceId)),
-      )
-      .where(
-        and(eq(Sites.id, input.siteId), eq(Sites.state, SiteState.ACTIVE), eq(Workspaces.state, WorkspaceState.ACTIVE)),
-      )
+      .where(and(eq(Sites.id, input.siteId)))
       .then(firstOrThrow);
 
     return {
@@ -85,16 +83,16 @@ export const siteRouter = router({
         role: WorkspaceMemberRole.ADMIN,
       });
 
-      const slugConflict = await db
+      const existingSite = await db
         .select({ id: Sites.id })
         .from(Sites)
         .where(and(eq(Sites.slug, input.slug), eq(Sites.state, SiteState.ACTIVE)))
         .then(first);
 
-      if (slugConflict) {
+      if (existingSite) {
         throw new TRPCError({
           code: 'CONFLICT',
-          message: '이미 다른 사이트에서 사용 중인 slug입니다',
+          message: '이미 사용중인 주소예요',
         });
       }
 

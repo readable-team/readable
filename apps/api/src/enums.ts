@@ -1,16 +1,6 @@
-export const WorkspaceMemberRole = {
-  ADMIN: 'ADMIN',
-  MEMBER: 'MEMBER',
-} as const;
-
-export const WorkspaceState = {
-  ACTIVE: 'ACTIVE',
-  DELETED: 'DELETED',
-} as const;
-
 export const PageState = {
-  PUBLISHED: 'PUBLISHED',
   DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED',
   DELETED: 'DELETED',
 } as const;
 
@@ -26,4 +16,14 @@ export const SiteState = {
 export const UserState = {
   ACTIVE: 'ACTIVE',
   DEACTIVATED: 'DEACTIVATED',
+} as const;
+
+export const WorkspaceMemberRole = {
+  ADMIN: 'ADMIN',
+  MEMBER: 'MEMBER',
+} as const;
+
+export const WorkspaceState = {
+  ACTIVE: 'ACTIVE',
+  DELETED: 'DELETED',
 } as const;

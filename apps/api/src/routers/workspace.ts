@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { db, first, firstOrThrow, Sites, Users, WorkspaceMemberInvitations, WorkspaceMembers, Workspaces } from '@/db';
 import { sendEmail } from '@/email';
 import WorkspaceMemberInvitationEmail from '@/email/templates/WorkspaceMemberInvitation';
-import { SiteState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
+import { SiteState, UserState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
 import { assertWorkspacePermission } from '@/utils/permissions';
@@ -80,8 +80,8 @@ export const workspaceRouter = router({
 
     if (sites.length > 0) {
       throw new TRPCError({
-        code: 'CONFLICT',
-        message: '먼저 워크스페이스에 속한 사이트를 삭제해주세요',
+        code: 'PRECONDITION_FAILED',
+        message: '아직 운영중인 사이트가 남아있어요',
       });
     }
 
@@ -97,7 +97,12 @@ export const workspaceRouter = router({
         role: WorkspaceMemberRole.ADMIN,
       });
 
-      const invitedUser = await db.select({ id: Users.id }).from(Users).where(eq(Users.email, input.email)).then(first);
+      const invitedUser = await db
+        .select({ id: Users.id })
+        .from(Users)
+        .where(and(eq(Users.email, input.email), eq(Users.state, UserState.ACTIVE)))
+        .then(first);
+
       const workspace = await db
         .select({ name: Workspaces.name })
         .from(Workspaces)
@@ -110,6 +115,8 @@ export const workspaceRouter = router({
           userId: invitedUser.id,
           role: WorkspaceMemberRole.MEMBER,
         });
+
+        // TODO: 워크스페이스에 추가되었다는 이메일 보내기
       } else {
         await db.insert(WorkspaceMemberInvitations).values({
           workspaceId: input.workspaceId,
@@ -138,8 +145,8 @@ export const workspaceRouter = router({
 
       if (input.userId === ctx.session.userId) {
         throw new TRPCError({
-          code: 'CONFLICT',
-          message: '자신을 탈퇴시킬 수 없습니다',
+          code: 'BAD_REQUEST',
+          message: '자기 자신을 워크스페이스에서 제거할 수 없어요',
         });
       }
 
@@ -163,24 +170,22 @@ export const workspaceRouter = router({
           .set({ role: input.role })
           .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, input.userId)));
 
-        if (input.role !== WorkspaceMemberRole.ADMIN) {
-          const adminCount = await db
-            .select({ count: count(WorkspaceMembers.id) })
-            .from(WorkspaceMembers)
-            .where(
-              and(
-                eq(WorkspaceMembers.workspaceId, input.workspaceId),
-                eq(WorkspaceMembers.role, WorkspaceMemberRole.ADMIN),
-              ),
-            )
-            .then((rows) => rows[0]?.count ?? 0);
+        const adminCount = await tx
+          .select({ count: count(WorkspaceMembers.id) })
+          .from(WorkspaceMembers)
+          .where(
+            and(
+              eq(WorkspaceMembers.workspaceId, input.workspaceId),
+              eq(WorkspaceMembers.role, WorkspaceMemberRole.ADMIN),
+            ),
+          )
+          .then(first);
 
-          if (adminCount === 0) {
-            throw new TRPCError({
-              code: 'CONFLICT',
-              message: '워크스페이스에는 최소 1명의 관리자가 있어야 합니다',
-            });
-          }
+        if (adminCount?.count === 0) {
+          throw new TRPCError({
+            code: 'PRECONDITION_FAILED',
+            message: '워크스페이스에는 최소 1명의 관리자가 있어야 해요',
+          });
         }
       });
     }),

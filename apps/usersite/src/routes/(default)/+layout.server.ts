@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { trpcS } from '$lib/trpc.js';
+import { trpcS } from '$lib/trpc';
 
 export const load = async (event) => {
   let host = event.url.hostname;

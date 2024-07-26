@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
 import { db, first, Sites, WorkspaceMembers, Workspaces } from '@/db';
-import { WorkspaceMemberRole, WorkspaceState } from '../enums';
+import { SiteState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
 
 type WorkspaceMemberRole = keyof typeof WorkspaceMemberRole;
 
@@ -53,7 +53,14 @@ export const assertSitePermission = async ({
     .from(WorkspaceMembers)
     .innerJoin(Workspaces, eq(WorkspaceMembers.workspaceId, Workspaces.id))
     .innerJoin(Sites, eq(WorkspaceMembers.workspaceId, Sites.workspaceId))
-    .where(and(eq(Sites.id, siteId), eq(WorkspaceMembers.userId, userId), eq(Workspaces.state, WorkspaceState.ACTIVE)))
+    .where(
+      and(
+        eq(Sites.id, siteId),
+        eq(WorkspaceMembers.userId, userId),
+        eq(Workspaces.state, WorkspaceState.ACTIVE),
+        eq(Sites.state, SiteState.ACTIVE),
+      ),
+    )
     .then(first);
 
   if (!member || workspaceMemberRolePrecedences.indexOf(member.role) < workspaceMemberRolePrecedences.indexOf(role)) {
