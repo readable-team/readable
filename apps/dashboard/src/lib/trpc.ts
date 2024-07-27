@@ -1,7 +1,7 @@
 import { createTRPCClient, httpBatchLink, splitLink, unstable_httpSubscriptionLink } from '@trpc/client';
-import { parse, stringify } from 'devalue';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { get } from 'svelte/store';
+import { transformer } from '@/transformer';
 import { env } from '$env/dynamic/public';
 import { persisted } from '$lib/svelte/stores/persisted';
 import type { AppRouter } from '@/router';
@@ -17,10 +17,7 @@ export const trpc = createTRPCClient<AppRouter>({
       condition: (op) => op.type === 'subscription',
       true: unstable_httpSubscriptionLink({
         url: `${env.PUBLIC_API_URL}/trpc`,
-        transformer: {
-          serialize: stringify,
-          deserialize: parse,
-        },
+        transformer,
         eventSourceOptions: () => {
           const token = get(accessToken);
 
@@ -33,10 +30,7 @@ export const trpc = createTRPCClient<AppRouter>({
       }),
       false: httpBatchLink({
         url: `${env.PUBLIC_API_URL}/trpc`,
-        transformer: {
-          serialize: stringify,
-          deserialize: parse,
-        },
+        transformer,
         fetch: (input, init) => {
           const token = get(accessToken);
 

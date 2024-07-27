@@ -1,14 +1,11 @@
 import * as Sentry from '@sentry/bun';
 import { initTRPC, TRPCError } from '@trpc/server';
-import { parse, stringify } from 'devalue';
 import { logger } from '@/logging';
+import { transformer } from '@/transformer';
 import type { Context } from '@/context';
 
 const t = initTRPC.context<Context>().create({
-  transformer: {
-    serialize: stringify,
-    deserialize: parse,
-  },
+  transformer,
 });
 
 const sentryMiddleware = t.middleware(

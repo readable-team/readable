@@ -1,5 +1,5 @@
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
-import { parse, stringify } from 'devalue';
+import { transformer } from '@/transformer';
 import { env } from '$env/dynamic/public';
 import type { LoadEvent, ServerLoadEvent } from '@sveltejs/kit';
 import type { AppRouter } from '@/router';
@@ -9,10 +9,7 @@ export const trpcS = (event: LoadEvent | ServerLoadEvent) => {
     links: [
       httpBatchLink({
         url: `${env.PUBLIC_API_URL}/trpc`,
-        transformer: {
-          serialize: stringify,
-          deserialize: parse,
-        },
+        transformer,
         fetch: event.fetch,
       }),
     ],
