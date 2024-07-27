@@ -4,7 +4,8 @@ import { and, asc, count, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db, first, firstOrThrow, Sites, Users, WorkspaceMemberInvitations, WorkspaceMembers, Workspaces } from '@/db';
 import { sendEmail } from '@/email';
-import WorkspaceMemberInvitationEmail from '@/email/templates/WorkspaceMemberInvitation';
+import WorkspaceMemberAddedEmail from '@/email/templates/WorkspaceMemberAdded.tsx';
+import WorkspaceMemberInvitedEmail from '@/email/templates/WorkspaceMemberInvited.tsx';
 import { SiteState, UserState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
@@ -116,7 +117,13 @@ export const workspaceRouter = router({
           role: WorkspaceMemberRole.MEMBER,
         });
 
-        // TODO: 워크스페이스에 추가되었다는 이메일 보내기
+        await sendEmail({
+          recipient: input.email,
+          subject: `[Readable] ${workspace.name} 워크스페이스에 추가되었어요`,
+          body: WorkspaceMemberAddedEmail({
+            workspaceName: workspace.name,
+          }),
+        });
       } else {
         await db.insert(WorkspaceMemberInvitations).values({
           workspaceId: input.workspaceId,
@@ -127,7 +134,7 @@ export const workspaceRouter = router({
         await sendEmail({
           recipient: input.email,
           subject: `[Readable] ${workspace.name} 워크스페이스에 참여하세요`,
-          body: WorkspaceMemberInvitationEmail({
+          body: WorkspaceMemberInvitedEmail({
             workspaceName: workspace.name,
           }),
         });
