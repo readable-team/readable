@@ -12,18 +12,18 @@
   export let style: SystemStyleObject | undefined = undefined;
   export let size: Variants['size'] = 'lg';
   export let inputEl: HTMLInputElement | undefined = undefined;
-  export let leftIcon: ComponentType;
-  export let rightIcon: ComponentType;
-  export let error: boolean;
-  export let message: string;
+  export let leftIcon: ComponentType | undefined = undefined;
+  export let rightIcon: ComponentType | undefined = undefined;
+  export let error: boolean | undefined = undefined;
+  export let message: string | undefined = undefined;
   export let hidden = false;
 
   type $$Props = RecipeVariantProps<typeof recipe> &
     Omit<HTMLInputAttributes, 'class' | 'style' | 'size'> & {
       style?: SystemStyleObject;
       inputEl?: HTMLInputElement;
-      leftIcon: ComponentType;
-      rightIcon: ComponentType;
+      leftIcon?: ComponentType;
+      rightIcon?: ComponentType;
       error?: boolean;
       message?: string;
       hidden?: boolean;
