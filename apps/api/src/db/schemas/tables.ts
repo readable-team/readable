@@ -1,6 +1,6 @@
 import { init } from '@paralleldrive/cuid2';
 import { sql } from 'drizzle-orm';
-import { bigint, bigserial, index, json, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
+import { bigint, bigserial, index, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
 import * as E from './enums';
 import { bytea, datetime } from './types';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
@@ -26,20 +26,6 @@ export const Pages = pgTable(
     siteIdStateIdx: index().on(t.siteId, t.state),
   }),
 );
-
-export const PageContents = pgTable('page_contents', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => createDbId()),
-  pageId: text('page_id')
-    .notNull()
-    .unique()
-    .references(() => Pages.id),
-  data: json('data').notNull(),
-  createdAt: datetime('created_at')
-    .notNull()
-    .default(sql`now()`),
-});
 
 export const PageContentSnapshots = pgTable(
   'page_content_snapshots',
@@ -87,7 +73,7 @@ export const PageContentUpdates = pgTable('page_content_updates', {
   userId: text('user_id')
     .notNull()
     .references(() => Users.id),
-  data: bytea('data').notNull(),
+  update: bytea('update').notNull(),
   seq: bigserial('seq', { mode: 'bigint' }).notNull(),
   createdAt: datetime('created_at')
     .notNull()
