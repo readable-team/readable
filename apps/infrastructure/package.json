@@ -7,14 +7,13 @@
     "lint:typecheck": "tsc"
   },
   "devDependencies": {
-    "@pulumi/aws": "^6.46.0",
+    "@pulumi/aws": "^6.47.0",
     "@pulumi/kubernetes": "^4.15.0",
-    "@pulumi/pulumi": "^3.126.0",
+    "@pulumi/pulumi": "^3.127.0",
     "@pulumi/random": "^4.16.3",
     "@pulumi/tailscale": "^0.16.1",
     "@pulumi/tls": "^5.0.4",
     "@readable/tsconfig": "workspace:*",
-    "@types/node": "^20.14.12",
     "fast-glob": "^3.3.2",
     "tsx": "^4.16.2"
   }
