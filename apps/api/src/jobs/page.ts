@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { and, asc, eq, gt } from 'drizzle-orm';
+import { and, asc, eq, gt, lte } from 'drizzle-orm';
 import * as Y from 'yjs';
 import { db, firstOrThrow, PageContentSnapshots, PageContentStates, PageContentUpdates } from '@/db';
 import { defineJob } from './types';
@@ -59,5 +59,9 @@ export const PageContentStateUpdateJob = defineJob('post:content:state-update', 
         updatedAt: dayjs(),
       })
       .where(eq(PageContentStates.pageId, pageId));
+
+    await tx
+      .delete(PageContentUpdates)
+      .where(and(eq(PageContentUpdates.pageId, pageId), lte(PageContentUpdates.seq, updatedUpToSeq)));
   });
 });
