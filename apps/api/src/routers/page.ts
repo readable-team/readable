@@ -1,3 +1,4 @@
+import { init } from '@paralleldrive/cuid2';
 import { and, desc, eq, gt, isNull } from 'drizzle-orm';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { fromUint8Array, toUint8Array } from 'js-base64';
@@ -11,6 +12,8 @@ import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { router, sessionProcedure } from '@/trpc';
 import { assertSitePermission } from '@/utils/permissions';
+
+const createPageSlug = init({ length: 8 });
 
 export const pageRouter = router({
   create: sessionProcedure
@@ -48,6 +51,7 @@ export const pageRouter = router({
           .values({
             siteId: input.siteId,
             parentId: input.parentId,
+            slug: createPageSlug(),
             order: generateJitteredKeyBetween(last?.order ?? null, null),
             state: 'DRAFT',
           })

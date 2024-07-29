@@ -17,6 +17,7 @@ export const Pages = pgTable(
       .notNull()
       .references(() => Sites.id),
     parentId: text('parent_id').references((): AnyPgColumn => Pages.id),
+    slug: text('slug').notNull(),
     state: E._PageState('state').notNull(),
     order: text('order').notNull(),
     createdAt: datetime('created_at')
@@ -25,6 +26,7 @@ export const Pages = pgTable(
   },
   (t) => ({
     siteIdStateIdx: index().on(t.siteId, t.state),
+    siteIdSlugUniq: unique().on(t.siteId, t.slug),
     siteIdParentIdOrderUniq: unique().on(t.siteId, t.parentId, t.order).nullsNotDistinct(),
   }),
 );
