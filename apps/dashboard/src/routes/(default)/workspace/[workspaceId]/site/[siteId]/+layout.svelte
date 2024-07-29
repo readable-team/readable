@@ -1,8 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon, LogoPlaceholder } from '@readable/ui/components';
-  import ExternalLinkIcon from '~icons/lucide/external-link';
+  import { Button, LogoPlaceholder } from '@readable/ui/components';
   import { trpc } from '$lib/trpc';
 
   export let data;
@@ -10,79 +9,94 @@
 
 <div
   class={flex({
+    flexDirection: 'column',
     height: 'screen',
   })}
 >
-  <aside
+  <header
     class={flex({
-      flexDirection: 'column',
-      gap: '10px',
-      width: '232px',
-      padding: '20px',
-      backgroundColor: 'sidebar.surface',
+      justifyContent: 'space-between',
+      borderBottomWidth: '1px',
+      borderColor: 'border.primary',
+      height: '60px',
+      padding: '8px',
     })}
   >
-    <div>사이트(메뉴버튼)</div>
-
     {#await trpc.site.get.query({ siteId: data.siteId }) then site}
-      <a
-        class={css({
-          'display': 'flex',
-          'gap': '6px',
-          'height': '40px',
-          'paddingX': '12px',
-          'alignItems': 'center',
-          'borderRadius': '8px',
-          'backgroundColor': 'neutral.10',
-          'color': 'neutral.90',
-          '&:hover': {
-            backgroundColor: 'neutral.40',
-          },
+      <div
+        class={flex({
+          width: '200px',
         })}
-        href={site.url}
-        rel="noopener noreferrer"
-        target="_blank"
       >
         <LogoPlaceholder size={20} />
-        <span>사이트 바로가기</span>
-        <Icon
-          style={{
-            marginLeft: 'auto',
-            color: 'neutral.50',
-          }}
-          icon={ExternalLinkIcon}
-          size={16}
-        />
-      </a>
-    {/await}
+        <h1>
+          {site.name}
+        </h1>
+      </div>
 
-    <nav>
-      <ul
-        class={flex({
-          flexDirection: 'column',
-          gap: '2px',
+      <div
+        class={css({
+          left: '0',
+          right: '0',
+          marginX: 'auto',
+          width: '400px',
+          backgroundColor: 'surface.secondary',
+          borderRadius: '8px',
         })}
       >
-        <li><a href={`/workspace/${data.workspaceId}/site/${data.siteId}/pages`}>페이지</a></li>
-        <li><a href={`/workspace/${data.workspaceId}/site/${data.siteId}/designs`}>디자인</a></li>
-        <li><a href={`/workspace/${data.workspaceId}/site/${data.siteId}/settings`}>설정</a></li>
-      </ul>
-    </nav>
-    <div
-      class={css({
-        marginTop: 'auto',
-      })}
-    >
-      유저 프로필
-    </div>
-  </aside>
+        {site.url}
+      </div>
+
+      <div
+        class={flex({
+          width: '200px',
+        })}
+      >
+        <Button href={site.url} rel="noopener noreferrer" target="_blank" type="link" variant="secondary">
+          사이트 바로가기
+        </Button>
+        <div>프로필</div>
+      </div>
+    {/await}
+  </header>
 
   <div
     class={flex({
-      flexDirection: 'column',
-      flexGrow: 1,
+      height: 'full',
     })}
   >
-    <slot />
+    <aside
+      class={flex({
+        flexDirection: 'column',
+        gap: '10px',
+        width: '232px',
+        padding: '20px',
+        backgroundColor: 'sidebar.surface',
+        flexShrink: 0,
+      })}
+    >
+      <nav>
+        <ul
+          class={flex({
+            flexDirection: 'column',
+            gap: '2px',
+          })}
+        >
+          <li><a href={`/workspace/${data.workspaceId}/site/${data.siteId}/pages`}>페이지</a></li>
+          <li><a href={`/workspace/${data.workspaceId}/site/${data.siteId}/designs`}>디자인</a></li>
+          <li><a href={`/workspace/${data.workspaceId}/site/${data.siteId}/settings`}>설정</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <div
+      class={flex({
+        width: 'full',
+        flexDirection: 'column',
+        flexGrow: 1,
+      })}
+    >
+      <slot />
+    </div>
   </div>
 </div>
