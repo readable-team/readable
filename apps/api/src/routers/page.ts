@@ -1,10 +1,10 @@
-import { and, eq, gt, isNull } from 'drizzle-orm';
+import { and, desc, eq, gt, isNull } from 'drizzle-orm';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { fromUint8Array, toUint8Array } from 'js-base64';
 import { prosemirrorToYDoc } from 'y-prosemirror';
 import * as Y from 'yjs';
 import { z } from 'zod';
-import { db, firstOrThrow, PageContentSnapshots, PageContentStates, PageContentUpdates, Pages } from '@/db';
+import { db, first, firstOrThrow, PageContentSnapshots, PageContentStates, PageContentUpdates, Pages } from '@/db';
 import { PageContentSyncKind } from '@/enums';
 import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
@@ -29,26 +29,26 @@ export const pageRouter = router({
       const vector = Y.encodeStateVector(doc);
       const snapshot = Y.encodeSnapshotV2(Y.snapshot(doc));
 
-      return await db.transaction(async (tx) => {
-        const firstPageOrder = await tx
-          .select({ order: Pages.order })
-          .from(Pages)
-          .where(
-            and(
-              eq(Pages.siteId, input.siteId),
-              input.parentId ? eq(Pages.parentId, input.parentId) : isNull(Pages.parentId),
-            ),
-          )
-          .orderBy(Pages.order)
-          .limit(1)
-          .then((rows) => rows[0]?.order ?? null);
+      const last = await db
+        .select({ order: Pages.order })
+        .from(Pages)
+        .where(
+          and(
+            eq(Pages.siteId, input.siteId),
+            input.parentId ? eq(Pages.parentId, input.parentId) : isNull(Pages.parentId),
+          ),
+        )
+        .orderBy(desc(Pages.order))
+        .limit(1)
+        .then(first);
 
+      return await db.transaction(async (tx) => {
         const page = await tx
           .insert(Pages)
           .values({
             siteId: input.siteId,
             parentId: input.parentId,
-            order: generateJitteredKeyBetween(null, firstPageOrder),
+            order: generateJitteredKeyBetween(last?.order ?? null, null),
             state: 'DRAFT',
           })
           .returning({ id: Pages.id, order: Pages.order })
