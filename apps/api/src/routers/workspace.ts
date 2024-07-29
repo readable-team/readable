@@ -90,6 +90,25 @@ export const workspaceRouter = router({
     await db.update(Workspaces).set({ state: WorkspaceState.DELETED }).where(eq(Workspaces.id, input.workspaceId));
   }),
 
+  listMembers: sessionProcedure.input(z.object({ workspaceId: z.string() })).query(async ({ input, ctx }) => {
+    await assertWorkspacePermission({
+      workspaceId: input.workspaceId,
+      userId: ctx.session.userId,
+    });
+
+    return await db
+      .select({
+        id: Users.id,
+        name: Users.name,
+        email: Users.email,
+        avatarUrl: Users.avatarUrl,
+        role: WorkspaceMembers.role,
+      })
+      .from(WorkspaceMembers)
+      .innerJoin(Users, eq(WorkspaceMembers.userId, Users.id))
+      .where(eq(WorkspaceMembers.workspaceId, input.workspaceId));
+  }),
+
   inviteMember: sessionProcedure
     .input(inputSchemas.workspace.inviteMember.extend({ workspaceId: z.string() }))
     .query(async ({ input, ctx }) => {
