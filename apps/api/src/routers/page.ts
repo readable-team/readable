@@ -70,6 +70,26 @@ export const pageRouter = router({
       });
     }),
 
+  list: sessionProcedure
+    .input(z.object({ siteId: z.string(), parentId: z.string().optional() }))
+    .query(async ({ input, ctx }) => {
+      await assertSitePermission({
+        siteId: input.siteId,
+        userId: ctx.session.userId,
+      });
+
+      return db
+        .select({ id: Pages.id, state: Pages.state, order: Pages.order })
+        .from(Pages)
+        .where(
+          and(
+            eq(Pages.siteId, input.siteId),
+            input.parentId ? eq(Pages.parentId, input.parentId) : isNull(Pages.parentId),
+          ),
+        )
+        .orderBy(Pages.order);
+    }),
+
   content: router({
     sync: sessionProcedure
       .input(
