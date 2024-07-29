@@ -3,8 +3,6 @@ import { and, eq } from 'drizzle-orm';
 import { db, first, Sites, WorkspaceMembers, Workspaces } from '@/db';
 import { SiteState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
 
-type WorkspaceMemberRole = keyof typeof WorkspaceMemberRole;
-
 const workspaceMemberRolePrecedences: WorkspaceMemberRole[] = [WorkspaceMemberRole.MEMBER, WorkspaceMemberRole.ADMIN];
 
 type AssertWorkspacePermissionParams = {

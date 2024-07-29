@@ -3,7 +3,7 @@
   import { Editor } from '@tiptap/core';
   import { generateHTML } from '@tiptap/html';
   import { onMount } from 'svelte';
-  import { extensions } from '../preset';
+  import { extensions } from '../schema';
   import type { SystemStyleObject } from '@readable/styled-system/types';
   import type { JSONContent } from '@tiptap/core';
 

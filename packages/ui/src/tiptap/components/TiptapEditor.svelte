@@ -6,10 +6,10 @@
   import * as Y from 'yjs';
   import { Collaboration } from '../extensions/collaboration';
   import { Freeze } from '../extensions/freeze';
-  import { extensions } from '../preset';
+  import { extensions } from '../schema';
   import type { SystemStyleObject } from '@readable/styled-system/types';
 
-  const dispatch = createEventDispatcher<{ file: { pos: number; files: File[] } }>();
+  const dispatch = createEventDispatcher<{ initialize: null; file: { pos: number; files: File[] } }>();
 
   export let style: SystemStyleObject | undefined = undefined;
 
@@ -64,6 +64,8 @@
         editor = editor_;
       },
     });
+
+    dispatch('initialize');
 
     return () => {
       editor?.destroy();
