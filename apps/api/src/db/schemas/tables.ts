@@ -18,12 +18,14 @@ export const Pages = pgTable(
       .references(() => Sites.id),
     parentId: text('parent_id').references((): AnyPgColumn => Pages.id),
     state: E._PageState('state').notNull(),
+    order: text('order').notNull(),
     createdAt: datetime('created_at')
       .notNull()
       .default(sql`now()`),
   },
   (t) => ({
     siteIdStateIdx: index().on(t.siteId, t.state),
+    parentIdOrderUniqueIdx: uniqueIndex().on(t.parentId, t.order),
   }),
 );
 
