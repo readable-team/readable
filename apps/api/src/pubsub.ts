@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid';
 import { dev, env } from '@/env';
 import { pub, rabbit } from '@/mq';
 import { createPubSub } from './utils/pubsub';
+import type { PageContentSyncKind } from '@/enums';
 import type { TypedEventTarget } from './utils/pubsub';
 
 const key = nanoid();
@@ -55,6 +56,8 @@ export const createEventTarget = async <T extends CustomEvent>(): Promise<TypedE
   };
 };
 
-export const pubsub = createPubSub({
+export const pubsub = createPubSub<{
+  'page:content:sync': [pageId: string, { pageId: string; kind: PageContentSyncKind; data: string }];
+}>({
   eventTarget: await createEventTarget(),
 });

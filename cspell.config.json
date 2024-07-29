@@ -2,7 +2,7 @@
   "allowCompoundWords": true,
   "enableFiletypes": ["*"],
   "enableGlobDot": true,
-  "ignorePaths": [".git", ".gitignore", ".vscode", "drizzle"],
+  "ignorePaths": [".git", ".gitignore", ".vscode", "drizzle", "*.json", "*.sql"],
   "numSuggestions": 0,
   "useGitignore": true,
   "words": [

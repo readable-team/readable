@@ -1,4 +1,5 @@
 import './instrument';
+import './jobs';
 
 import { trpcServer } from '@hono/trpc-server';
 import { Hono } from 'hono';

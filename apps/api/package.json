@@ -24,6 +24,7 @@
     "google-auth-library": "^9.11.0",
     "hono": "^4.5.1",
     "jose": "^5.6.3",
+    "js-base64": "^3.7.7",
     "nanoid": "^5.0.7",
     "pino": "^9.3.1",
     "postgres": "^3.4.4",
@@ -34,6 +35,7 @@
     "sharp": "^0.33.4",
     "thumbhash": "^0.1.1",
     "ts-pattern": "^5.2.0",
+    "yjs": "^13.6.18",
     "zod": "^3.23.8"
   },
   "devDependencies": {
