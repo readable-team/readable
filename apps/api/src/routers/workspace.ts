@@ -7,6 +7,7 @@ import { sendEmail } from '@/email';
 import WorkspaceMemberAddedEmail from '@/email/templates/WorkspaceMemberAdded.tsx';
 import WorkspaceMemberInvitedEmail from '@/email/templates/WorkspaceMemberInvited.tsx';
 import { SiteState, UserState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
+import { env } from '@/env';
 import { inputSchemas } from '@/schemas';
 import { router, sessionProcedure } from '@/trpc';
 import { assertWorkspacePermission } from '@/utils/permissions';
@@ -119,8 +120,10 @@ export const workspaceRouter = router({
 
         await sendEmail({
           recipient: input.email,
-          subject: `[Readable] ${workspace.name} 워크스페이스에 추가되었어요`,
+          subject: `[Readable] ${workspace.name}에 추가되었어요`,
           body: WorkspaceMemberAddedEmail({
+            dashboardUrl: env.DASHBOARD_URL,
+            workspaceId: input.workspaceId,
             workspaceName: workspace.name,
           }),
         });
@@ -133,8 +136,9 @@ export const workspaceRouter = router({
 
         await sendEmail({
           recipient: input.email,
-          subject: `[Readable] ${workspace.name} 워크스페이스에 참여하세요`,
+          subject: `[Readable] ${workspace.name}에 참여하세요`,
           body: WorkspaceMemberInvitedEmail({
+            dashboardUrl: env.DASHBOARD_URL,
             workspaceName: workspace.name,
           }),
         });
