@@ -113,9 +113,11 @@ export const authRouter = router({
           )
           .returning({ workspaceId: WorkspaceMemberInvitations.workspaceId });
 
+        const workspaceIds = new Set(invitations.map((invitation) => invitation.workspaceId));
+
         await tx.insert(WorkspaceMembers).values(
-          invitations.map((invitation) => ({
-            workspaceId: invitation.workspaceId,
+          [...workspaceIds].map((workspaceId) => ({
+            workspaceId,
             userId: user.id,
             role: WorkspaceMemberRole.MEMBER,
           })),
