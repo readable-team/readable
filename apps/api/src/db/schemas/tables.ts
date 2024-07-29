@@ -1,6 +1,6 @@
 import { init } from '@paralleldrive/cuid2';
 import { sql } from 'drizzle-orm';
-import { bigint, bigserial, index, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
+import { bigint, index, pgTable, text, unique, uniqueIndex } from 'drizzle-orm/pg-core';
 import * as E from './enums';
 import { bytea, datetime } from './types';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
@@ -25,7 +25,7 @@ export const Pages = pgTable(
   },
   (t) => ({
     siteIdStateIdx: index().on(t.siteId, t.state),
-    parentIdOrderUniqueIdx: uniqueIndex().on(t.parentId, t.order),
+    siteIdParentIdOrderUniq: unique().on(t.siteId, t.parentId, t.order).nullsNotDistinct(),
   }),
 );
 
@@ -65,22 +65,28 @@ export const PageContentStates = pgTable('page_content_states', {
   updatedAt: datetime('updated_at'),
 });
 
-export const PageContentUpdates = pgTable('page_content_updates', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => createDbId()),
-  pageId: text('page_id')
-    .notNull()
-    .references(() => Pages.id),
-  userId: text('user_id')
-    .notNull()
-    .references(() => Users.id),
-  update: bytea('update').notNull(),
-  seq: bigserial('seq', { mode: 'bigint' }).notNull(),
-  createdAt: datetime('created_at')
-    .notNull()
-    .default(sql`now()`),
-});
+export const PageContentUpdates = pgTable(
+  'page_content_updates',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId()),
+    pageId: text('page_id')
+      .notNull()
+      .references(() => Pages.id),
+    userId: text('user_id')
+      .notNull()
+      .references(() => Users.id),
+    update: bytea('update').notNull(),
+    seq: bigint('seq', { mode: 'bigint' }).notNull().generatedAlwaysAsIdentity(),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    pageIdSeqIdx: index().on(t.pageId, t.seq),
+  }),
+);
 
 export const Sites = pgTable(
   'sites',
@@ -100,6 +106,9 @@ export const Sites = pgTable(
   },
   (t) => ({
     slugStateIdx: index().on(t.slug, t.state),
+    slugUniqIdx: uniqueIndex()
+      .on(t.slug)
+      .where(sql`${t.state} = 'ACTIVE'`),
   }),
 );
 
@@ -119,6 +128,9 @@ export const Users = pgTable(
   },
   (t) => ({
     emailStateIdx: index().on(t.email, t.state),
+    emailUniqIdx: uniqueIndex()
+      .on(t.email)
+      .where(sql`${t.state} = 'ACTIVE'`),
   }),
 );
 
@@ -158,7 +170,7 @@ export const UserSingleSignOns = pgTable(
       .default(sql`now()`),
   },
   (t) => ({
-    providerPrincipalUniqIdx: uniqueIndex().on(t.provider, t.principal),
+    providerPrincipalUniq: unique().on(t.provider, t.principal),
   }),
 );
 
@@ -197,7 +209,7 @@ export const WorkspaceMembers = pgTable(
       .default(sql`now()`),
   },
   (t) => ({
-    userIdWorkspaceIdUniqIdx: uniqueIndex().on(t.userId, t.workspaceId),
+    userIdWorkspaceIdUniq: unique().on(t.userId, t.workspaceId),
     workspaceIdUserIdRoleIdx: index().on(t.workspaceId, t.userId, t.role),
   }),
 );
