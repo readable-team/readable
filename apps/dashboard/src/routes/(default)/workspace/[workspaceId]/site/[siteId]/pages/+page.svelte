@@ -5,10 +5,12 @@
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import MailIcon from '~icons/lucide/mail';
-  import { invalidateAll } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
   import Img from '$lib/components/Img.svelte';
   import { accessToken, trpc } from '$lib/trpc';
   import Pages from './Pages.svelte';
+
+  export let data;
 </script>
 
 <div class={flex({ align: 'center', gap: '4px', fontSize: '32px', fontWeight: 'bold', marginBottom: '12px' })}>
@@ -33,6 +35,19 @@
   <div>ID: {me.id}</div>
   <div>Name: {me.name}</div>
   <div>Email: {me.email}</div>
+
+  <button
+    type="button"
+    on:click={async () => {
+      const page = await trpc.page.create.mutate({
+        siteId: data.siteId,
+      });
+
+      await goto(`/workspace/${data.workspaceId}/site/${data.siteId}/pages/${page.id}`);
+    }}
+  >
+    새 페이지
+  </button>
 
   <br />
   <div class={flex({ alignItems: 'center', gap: '8px' })}><Chip>초안</Chip> 어쩌구</div>

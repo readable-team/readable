@@ -1,0 +1,55 @@
+{
+  "topNode": "doc",
+  "nodes": {
+    "paragraph": { "content": "inline*", "group": "block", "parseDOM": [{ "tag": "p" }] },
+    "doc": { "content": "block+" },
+    "text": { "group": "inline" },
+    "heading": {
+      "content": "inline*",
+      "group": "block",
+      "defining": true,
+      "attrs": { "level": { "default": 1 } },
+      "parseDOM": [
+        { "tag": "h1", "attrs": { "level": 1 } },
+        { "tag": "h2", "attrs": { "level": 2 } },
+        { "tag": "h3", "attrs": { "level": 3 } }
+      ]
+    },
+    "hardBreak": { "group": "inline", "inline": true, "selectable": false, "parseDOM": [{ "tag": "br" }] },
+    "horizontalRule": { "group": "block", "parseDOM": [{ "tag": "hr" }] },
+    "blockquote": { "content": "block+", "group": "block", "defining": true, "parseDOM": [{ "tag": "blockquote" }] },
+    "bulletList": { "content": "listItem+", "group": "block list", "parseDOM": [{ "tag": "ul" }] },
+    "orderedList": {
+      "content": "listItem+",
+      "group": "block list",
+      "attrs": { "start": { "default": 1 } },
+      "parseDOM": [{ "tag": "ol" }]
+    },
+    "listItem": { "content": "paragraph block*", "defining": true, "parseDOM": [{ "tag": "li" }] }
+  },
+  "marks": {
+    "link": {
+      "inclusive": true,
+      "attrs": {
+        "href": { "default": null },
+        "target": { "default": "_blank" },
+        "rel": { "default": "noopener noreferrer nofollow" },
+        "class": { "default": null }
+      },
+      "parseDOM": [{ "tag": "a[href]" }]
+    },
+    "bold": { "parseDOM": [{ "tag": "strong" }, { "tag": "b" }, { "style": "font-weight" }] },
+    "italic": { "parseDOM": [{ "tag": "em" }, { "tag": "i" }, { "style": "font-style=italic" }] },
+    "strike": {
+      "parseDOM": [
+        { "tag": "s" },
+        { "tag": "del" },
+        { "tag": "strike" },
+        { "style": "text-decoration", "consuming": false }
+      ]
+    },
+    "underline": { "parseDOM": [{ "tag": "u" }, { "style": "text-decoration", "consuming": false }] },
+    "code": { "excludes": "_", "code": true, "parseDOM": [{ "tag": "code" }] },
+    "textStyle": { "attrs": { "color": { "default": null } }, "parseDOM": [{ "tag": "span" }] }
+  }
+}

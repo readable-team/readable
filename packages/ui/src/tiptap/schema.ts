@@ -1,4 +1,5 @@
 import { css } from '@readable/styled-system/css';
+import { getSchema } from '@tiptap/core';
 import { Blockquote } from '@tiptap/extension-blockquote';
 import { Bold } from '@tiptap/extension-bold';
 import { BulletList } from '@tiptap/extension-bullet-list';
@@ -94,3 +95,5 @@ export const extensions = [
 
   // node views
 ];
+
+export const schema = getSchema(extensions);

@@ -1,14 +1,54 @@
 import { and, eq, gt } from 'drizzle-orm';
 import { fromUint8Array, toUint8Array } from 'js-base64';
+import { prosemirrorToYDoc } from 'y-prosemirror';
 import * as Y from 'yjs';
 import { z } from 'zod';
-import { db, firstOrThrow, PageContentStates, PageContentUpdates } from '@/db';
+import { db, firstOrThrow, PageContentSnapshots, PageContentStates, PageContentUpdates, Pages } from '@/db';
 import { PageContentSyncKind } from '@/enums';
 import { enqueueJob } from '@/jobs';
+import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { router, sessionProcedure } from '@/trpc';
+import { assertSitePermission } from '@/utils/permissions';
 
 export const pageRouter = router({
+  create: sessionProcedure.input(z.object({ siteId: z.string() })).mutation(async ({ input, ctx }) => {
+    await assertSitePermission({
+      siteId: input.siteId,
+      userId: ctx.session.userId,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const node = schema.topNodeType.createAndFill()!;
+
+    const doc = prosemirrorToYDoc(node, 'content');
+    const update = Y.encodeStateAsUpdateV2(doc);
+    const vector = Y.encodeStateVector(doc);
+    const snapshot = Y.encodeSnapshotV2(Y.snapshot(doc));
+
+    return await db.transaction(async (tx) => {
+      const page = await tx
+        .insert(Pages)
+        .values({ siteId: input.siteId, state: 'DRAFT' })
+        .returning({ id: Pages.id })
+        .then(firstOrThrow);
+
+      await tx.insert(PageContentStates).values({
+        pageId: page.id,
+        update,
+        vector,
+        upToSeq: 0n,
+      });
+
+      await tx.insert(PageContentSnapshots).values({
+        pageId: page.id,
+        snapshot,
+      });
+
+      return page;
+    });
+  }),
+
   content: router({
     sync: sessionProcedure
       .input(
