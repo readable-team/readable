@@ -3,6 +3,8 @@ export const conditions = {
     busy: '&:is([aria-busy="true"])',
     light: '[data-theme=light] &',
     dark: '[data-theme=dark] &',
+    enabled: '&:is(:enabled, a[aria-disabled="false"])',
+    disabled: '&:is(:disabled, [aria-disabled="true"])',
     hasDisabledInput: '&:has(input:disabled)',
     hasFocusedInput: '&:has(input:focus)',
     hasInvalidInput: '&:has(input[aria-invalid])',
