@@ -1,6 +1,9 @@
 import './objects';
 import './errors';
 import './enums';
+import './auth';
+import './blob';
+import './workspace';
 
 import { builder } from '@/builder';
 import { dev } from '@/env';

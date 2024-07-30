@@ -2,6 +2,7 @@ import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
 import { and, asc, count, eq } from 'drizzle-orm';
 import { z } from 'zod';
+import { builder } from '@/builder';
 import { db, first, firstOrThrow, Sites, Users, WorkspaceMemberInvitations, WorkspaceMembers, Workspaces } from '@/db';
 import { sendEmail } from '@/email';
 import WorkspaceMemberAddedEmail from '@/email/templates/WorkspaceMemberAdded.tsx';
@@ -9,16 +10,17 @@ import WorkspaceMemberInvitedEmail from '@/email/templates/WorkspaceMemberInvite
 import { SiteState, UserState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
 import { env } from '@/env';
 import { inputSchemas } from '@/schemas';
-import { router, sessionProcedure } from '@/trpc';
 import { assertWorkspacePermission } from '@/utils/permissions';
+import {
+  WorkspaceMemberAlreadyExistsFailure,
+  WorkspaceMemberRequiredFailure,
+  WorkspaceNotEmptyFailure,
+} from './failures';
+import { User, Workspace, WorkspaceMember, WorkspaceMemberInvitation } from './objects';
 
 const createWorkspace = async (userId: string, workspaceName: string) => {
   return await db.transaction(async (tx) => {
-    const workspace = await tx
-      .insert(Workspaces)
-      .values({ name: workspaceName })
-      .returning({ id: Workspaces.id })
-      .then(firstOrThrow);
+    const workspace = await tx.insert(Workspaces).values({ name: workspaceName }).returning().then(firstOrThrow);
 
     await tx.insert(WorkspaceMembers).values({
       workspaceId: workspace.id,
@@ -30,91 +32,139 @@ const createWorkspace = async (userId: string, workspaceName: string) => {
   });
 };
 
-export const workspaceRouter = router({
-  create: sessionProcedure.input(inputSchemas.workspace.create).mutation(async ({ input, ctx }) => {
-    return await createWorkspace(ctx.session.userId, input.name);
+/**
+ * * Types
+ */
+
+Workspace.implement({
+  fields: (t) => ({
+    name: t.exposeString('name'),
+    state: t.expose('state', { type: WorkspaceState }),
+
+    members: t.withAuth({ session: true }).field({
+      type: [WorkspaceMember],
+      resolve: async (workspace, _, { session }) => {
+        await assertWorkspacePermission({
+          workspaceId: workspace.id,
+          userId: session.userId,
+        });
+
+        return await db.select().from(WorkspaceMembers).where(eq(WorkspaceMembers.workspaceId, workspace.id));
+      },
+    }),
+  }),
+});
+
+WorkspaceMember.implement({
+  fields: (t) => ({
+    role: t.expose('role', { type: WorkspaceMemberRole }),
+
+    user: t.field({ type: User, resolve: (member) => member.userId }),
+  }),
+});
+
+/**
+ * * Queries
+ */
+
+builder.queryFields((t) => ({
+  workspaces: t.withAuth({ session: true }).field({
+    type: [Workspace],
+    resolve: async (_, __, { session }) => {
+      return await db
+        .select({ id: Workspaces.id })
+        .from(Workspaces)
+        .innerJoin(WorkspaceMembers, eq(Workspaces.id, WorkspaceMembers.workspaceId))
+        .where(and(eq(WorkspaceMembers.userId, session.userId), eq(Workspaces.state, WorkspaceState.ACTIVE)))
+        .orderBy(asc(Workspaces.createdAt))
+        .then((workspaces) => workspaces.map((workspace) => workspace.id));
+    },
+  }),
+  hasAnyWorkspace: t.withAuth({ session: true }).boolean({
+    resolve: async (_, __, { session }) => {
+      const workspace = await db
+        .select({ id: Workspaces.id })
+        .from(Workspaces)
+        .innerJoin(WorkspaceMembers, eq(Workspaces.id, WorkspaceMembers.workspaceId))
+        .where(and(eq(WorkspaceMembers.userId, session.userId), eq(Workspaces.state, WorkspaceState.ACTIVE)))
+        .limit(1)
+        .then(first);
+
+      return !!workspace;
+    },
+  }),
+}));
+
+/**
+ * * Mutations
+ */
+
+builder.mutationFields((t) => ({
+  createWorkspace: t.withAuth({ session: true }).fieldWithInput({
+    type: Workspace,
+    input: { name: t.input.string() },
+    validate: { schema: z.object({ input: inputSchemas.workspace.create }) },
+    errors: { dataField: { name: 'workspace' } },
+    resolve: async (_, { input }, { session }) => {
+      return await createWorkspace(session.userId, input.name);
+    },
   }),
 
-  createDefault: sessionProcedure.mutation(async ({ ctx }) => {
-    const user = await db
-      .select({ name: Users.name })
-      .from(Users)
-      .where(eq(Users.id, ctx.session.userId))
-      .then(firstOrThrow);
+  createDefaultWorkspace: t.withAuth({ session: true }).field({
+    type: Workspace,
+    errors: { dataField: { name: 'workspace' } },
+    resolve: async (_, __, { session }) => {
+      const user = await db
+        .select({ name: Users.name })
+        .from(Users)
+        .where(eq(Users.id, session.userId))
+        .then(firstOrThrow);
 
-    const name = `${user.name}의 워크스페이스`;
-
-    return await createWorkspace(ctx.session.userId, name);
+      return await createWorkspace(session.userId, `${user.name}의 워크스페이스`);
+    },
   }),
 
-  list: sessionProcedure.query(async ({ ctx }) => {
-    return await db
-      .select({ id: Workspaces.id, name: Workspaces.name })
-      .from(Workspaces)
-      .innerJoin(WorkspaceMembers, eq(Workspaces.id, WorkspaceMembers.workspaceId))
-      .where(and(eq(WorkspaceMembers.userId, ctx.session.userId), eq(Workspaces.state, WorkspaceState.ACTIVE)))
-      .orderBy(asc(Workspaces.createdAt));
-  }),
-
-  hasAny: sessionProcedure.query(async ({ ctx }) => {
-    const workspace = await db
-      .select({ id: Workspaces.id })
-      .from(Workspaces)
-      .innerJoin(WorkspaceMembers, eq(Workspaces.id, WorkspaceMembers.workspaceId))
-      .where(and(eq(WorkspaceMembers.userId, ctx.session.userId), eq(Workspaces.state, WorkspaceState.ACTIVE)))
-      .limit(1)
-      .then(first);
-
-    return !!workspace;
-  }),
-
-  delete: sessionProcedure.input(z.object({ workspaceId: z.string() })).mutation(async ({ input, ctx }) => {
-    await assertWorkspacePermission({
-      workspaceId: input.workspaceId,
-      userId: ctx.session.userId,
-      role: 'ADMIN',
-    });
-
-    const sites = await db
-      .select({ id: Sites.id })
-      .from(Sites)
-      .where(and(eq(Sites.workspaceId, input.workspaceId), eq(Sites.state, SiteState.ACTIVE)));
-
-    if (sites.length > 0) {
-      throw new TRPCError({
-        code: 'PRECONDITION_FAILED',
-        message: '아직 운영중인 사이트가 남아있어요',
-      });
-    }
-
-    await db.update(Workspaces).set({ state: WorkspaceState.DELETED }).where(eq(Workspaces.id, input.workspaceId));
-  }),
-
-  listMembers: sessionProcedure.input(z.object({ workspaceId: z.string() })).query(async ({ input, ctx }) => {
-    await assertWorkspacePermission({
-      workspaceId: input.workspaceId,
-      userId: ctx.session.userId,
-    });
-
-    return await db
-      .select({
-        id: Users.id,
-        name: Users.name,
-        email: Users.email,
-        avatarUrl: Users.avatarUrl,
-        role: WorkspaceMembers.role,
-      })
-      .from(WorkspaceMembers)
-      .innerJoin(Users, eq(WorkspaceMembers.userId, Users.id))
-      .where(eq(WorkspaceMembers.workspaceId, input.workspaceId));
-  }),
-
-  inviteMember: sessionProcedure
-    .input(inputSchemas.workspace.inviteMember.extend({ workspaceId: z.string() }))
-    .query(async ({ input, ctx }) => {
+  deleteWorkspace: t.withAuth({ session: true }).fieldWithInput({
+    type: Workspace,
+    input: { workspaceId: t.input.string() },
+    errors: { dataField: { name: 'workspace' }, types: [WorkspaceNotEmptyFailure] },
+    resolve: async (_, { input }, { session }) => {
       await assertWorkspacePermission({
         workspaceId: input.workspaceId,
-        userId: ctx.session.userId,
+        userId: session.userId,
+        role: 'ADMIN',
+      });
+
+      const sites = await db
+        .select({ id: Sites.id })
+        .from(Sites)
+        .where(and(eq(Sites.workspaceId, input.workspaceId), eq(Sites.state, SiteState.ACTIVE)));
+
+      if (sites.length > 0) {
+        throw new WorkspaceNotEmptyFailure(sites.map((site) => site.id));
+      }
+
+      return await db
+        .update(Workspaces)
+        .set({ state: WorkspaceState.DELETED })
+        .where(eq(Workspaces.id, input.workspaceId))
+        .returning()
+        .then(firstOrThrow);
+    },
+  }),
+
+  inviteWorkspaceMember: t.withAuth({ session: true }).fieldWithInput({
+    type: t.builder.unionType('MemberOrInvitation', {
+      types: [WorkspaceMember, WorkspaceMemberInvitation],
+      resolveType: (object) => ('expiresAt' in object ? WorkspaceMemberInvitation : WorkspaceMember),
+    }),
+    input: { workspaceId: t.input.string(), email: t.input.string() },
+    validate: { schema: z.object({ input: inputSchemas.workspace.inviteMember.extend({ workspaceId: z.string() }) }) },
+    errors: { dataField: { name: 'memberOrInvitation' }, types: [WorkspaceMemberAlreadyExistsFailure] },
+    resolve: async (_, { input }, { session }) => {
+      await assertWorkspacePermission({
+        workspaceId: input.workspaceId,
+        userId: session.userId,
         role: WorkspaceMemberRole.ADMIN,
       });
 
@@ -131,11 +181,26 @@ export const workspaceRouter = router({
         .then(firstOrThrow);
 
       if (invitedUser) {
-        await db.insert(WorkspaceMembers).values({
-          workspaceId: input.workspaceId,
-          userId: invitedUser.id,
-          role: WorkspaceMemberRole.MEMBER,
-        });
+        const existingMember = await db
+          .select({ id: WorkspaceMembers.id })
+          .from(WorkspaceMembers)
+          .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, invitedUser.id)))
+          .then(first);
+
+        if (existingMember) {
+          throw new WorkspaceMemberAlreadyExistsFailure(existingMember.id);
+        }
+
+        const member = await db
+          .insert(WorkspaceMembers)
+          .values({
+            workspaceId: input.workspaceId,
+            userId: invitedUser.id,
+            role: WorkspaceMemberRole.MEMBER,
+          })
+          .onConflictDoNothing()
+          .returning()
+          .then(firstOrThrow);
 
         await sendEmail({
           recipient: input.email,
@@ -146,12 +211,18 @@ export const workspaceRouter = router({
             workspaceName: workspace.name,
           }),
         });
+
+        return member;
       } else {
-        await db.insert(WorkspaceMemberInvitations).values({
-          workspaceId: input.workspaceId,
-          email: input.email,
-          expiresAt: dayjs().add(1, 'day'),
-        });
+        const invitation = await db
+          .insert(WorkspaceMemberInvitations)
+          .values({
+            workspaceId: input.workspaceId,
+            email: input.email,
+            expiresAt: dayjs().add(1, 'day'),
+          })
+          .returning()
+          .then(firstOrThrow);
 
         await sendEmail({
           recipient: input.email,
@@ -161,44 +232,60 @@ export const workspaceRouter = router({
             workspaceName: workspace.name,
           }),
         });
-      }
-    }),
 
-  removeMember: sessionProcedure
-    .input(z.object({ workspaceId: z.string(), userId: z.string() }))
-    .mutation(async ({ input, ctx }) => {
+        return invitation;
+      }
+    },
+  }),
+
+  removeWorkspaceMember: t.withAuth({ session: true }).fieldWithInput({
+    type: WorkspaceMember,
+    input: { workspaceId: t.input.string(), userId: t.input.string() },
+    errors: { dataField: { name: 'member' } },
+    resolve: async (_, { input }, { session }) => {
       await assertWorkspacePermission({
         workspaceId: input.workspaceId,
-        userId: ctx.session.userId,
+        userId: session.userId,
         role: WorkspaceMemberRole.ADMIN,
       });
 
-      if (input.userId === ctx.session.userId) {
+      if (input.userId === session.userId) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: '자기 자신을 워크스페이스에서 제거할 수 없어요',
         });
       }
 
-      await db
+      return await db
         .delete(WorkspaceMembers)
-        .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, input.userId)));
-    }),
+        .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, input.userId)))
+        .returning()
+        .then(firstOrThrow);
+    },
+  }),
 
-  updateMemberRole: sessionProcedure
-    .input(z.object({ workspaceId: z.string(), userId: z.string(), role: z.nativeEnum(WorkspaceMemberRole) }))
-    .mutation(async ({ input, ctx }) => {
+  updateWorkspaceMemberRole: t.withAuth({ session: true }).fieldWithInput({
+    type: WorkspaceMember,
+    input: {
+      workspaceId: t.input.string(),
+      userId: t.input.string(),
+      role: t.input.field({ type: WorkspaceMemberRole }),
+    },
+    errors: { dataField: { name: 'member' } },
+    resolve: async (_, { input }, { session }) => {
       await assertWorkspacePermission({
         workspaceId: input.workspaceId,
-        userId: ctx.session.userId,
+        userId: session.userId,
         role: WorkspaceMemberRole.ADMIN,
       });
 
-      await db.transaction(async (tx) => {
-        await tx
+      return await db.transaction(async (tx) => {
+        const member = await tx
           .update(WorkspaceMembers)
           .set({ role: input.role })
-          .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, input.userId)));
+          .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, input.userId)))
+          .returning()
+          .then(firstOrThrow);
 
         const adminCount = await tx
           .select({ count: count(WorkspaceMembers.id) })
@@ -212,11 +299,11 @@ export const workspaceRouter = router({
           .then(first);
 
         if (adminCount?.count === 0) {
-          throw new TRPCError({
-            code: 'PRECONDITION_FAILED',
-            message: '워크스페이스에는 최소 1명의 관리자가 있어야 해요',
-          });
+          throw new WorkspaceMemberRequiredFailure();
         }
+
+        return member;
       });
-    }),
-});
+    },
+  }),
+}));

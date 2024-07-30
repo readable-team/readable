@@ -1,15 +1,107 @@
+type AccessToken {
+  accessToken: String!
+}
+
+input AuthorizeSingleSignOnInput {
+  params: JSON!
+  provider: SingleSignOnProvider!
+}
+
+union AuthorizeSingleSignOnResult = AuthorizeSingleSignOnSuccess | BaseMutationError
+
+type AuthorizeSingleSignOnSuccess {
+  data: AccessToken!
+}
+
 type BaseMutationError implements MutationError {
   message: String!
 }
 
+union CreateDefaultWorkspaceResult = BaseMutationError | CreateDefaultWorkspaceSuccess
+
+type CreateDefaultWorkspaceSuccess {
+  workspace: Workspace!
+}
+
+input CreateWorkspaceInput {
+  name: String!
+}
+
+union CreateWorkspaceResult = BaseMutationError | CreateWorkspaceSuccess
+
+type CreateWorkspaceSuccess {
+  workspace: Workspace!
+}
+
 scalar DateTime
+
+input DeleteWorkspaceInput {
+  workspaceId: String!
+}
+
+union DeleteWorkspaceResult = BaseMutationError | DeleteWorkspaceSuccess | WorkspaceNotEmptyFailure
+
+type DeleteWorkspaceSuccess {
+  workspace: Workspace!
+}
+
+input GenerateSingleSignOnAuthorizationUrlInput {
+  provider: SingleSignOnProvider!
+}
+
+union GenerateSingleSignOnAuthorizationUrlResult = BaseMutationError | GenerateSingleSignOnAuthorizationUrlSuccess
+
+type GenerateSingleSignOnAuthorizationUrlSuccess {
+  url: String!
+}
+
+input InviteWorkspaceMemberInput {
+  email: String!
+  workspaceId: String!
+}
+
+union InviteWorkspaceMemberResult = BaseMutationError | InviteWorkspaceMemberSuccess | WorkspaceMemberAlreadyExistsFailure
+
+type InviteWorkspaceMemberSuccess {
+  memberOrInvitation: MemberOrInvitation!
+}
+
+input IssueUploadUrlInput {
+  filename: String!
+}
+
+union IssueUploadUrlResult = BaseMutationError | IssueUploadUrlSuccess
+
+type IssueUploadUrlSuccess {
+  key: String!
+  presignedUrl: String!
+}
 
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
 scalar JSON
 
-type Mutation
+union LogoutResult = BaseMutationError | LogoutSuccess
+
+type LogoutSuccess {
+  success: Boolean!
+}
+
+union MemberOrInvitation = WorkspaceMember | WorkspaceMemberInvitation
+
+type Mutation {
+  authorizeSingleSignOn(input: AuthorizeSingleSignOnInput!): AuthorizeSingleSignOnResult!
+  createDefaultWorkspace: CreateDefaultWorkspaceResult!
+  createWorkspace(input: CreateWorkspaceInput!): CreateWorkspaceResult!
+  deleteWorkspace(input: DeleteWorkspaceInput!): DeleteWorkspaceResult!
+  generateSingleSignOnAuthorizationUrl(input: GenerateSingleSignOnAuthorizationUrlInput!): GenerateSingleSignOnAuthorizationUrlResult!
+  inviteWorkspaceMember(input: InviteWorkspaceMemberInput!): InviteWorkspaceMemberResult!
+  issueUploadUrl(input: IssueUploadUrlInput!): IssueUploadUrlResult!
+  logout: LogoutResult!
+  removeWorkspaceMember(input: RemoveWorkspaceMemberInput!): RemoveWorkspaceMemberResult!
+  updateWorkspaceMemberRole(input: UpdateWorkspaceMemberRoleInput!): UpdateWorkspaceMemberRoleResult!
+}
 
 interface MutationError {
   message: String!
@@ -47,8 +139,21 @@ enum PageState {
 }
 
 type Query {
+  hasAnyWorkspace: Boolean!
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
+  workspaces: [Workspace!]!
+}
+
+input RemoveWorkspaceMemberInput {
+  userId: String!
+  workspaceId: String!
+}
+
+union RemoveWorkspaceMemberResult = BaseMutationError | RemoveWorkspaceMemberSuccess
+
+type RemoveWorkspaceMemberSuccess {
+  member: WorkspaceMember!
 }
 
 enum SingleSignOnProvider {
@@ -65,6 +170,18 @@ enum SiteState {
 }
 
 type Subscription
+
+input UpdateWorkspaceMemberRoleInput {
+  role: WorkspaceMemberRole!
+  userId: String!
+  workspaceId: String!
+}
+
+union UpdateWorkspaceMemberRoleResult = BaseMutationError | UpdateWorkspaceMemberRoleSuccess
+
+type UpdateWorkspaceMemberRoleSuccess {
+  member: WorkspaceMember!
+}
 
 type User implements Node {
   id: ID!
@@ -85,19 +202,34 @@ enum UserState {
 
 type Workspace implements Node {
   id: ID!
+  members: [WorkspaceMember!]!
+  name: String!
+  state: WorkspaceState!
 }
 
 type WorkspaceMember implements Node {
   id: ID!
+  role: WorkspaceMemberRole!
+  user: User!
+}
+
+type WorkspaceMemberAlreadyExistsFailure {
+  member: WorkspaceMember!
 }
 
 type WorkspaceMemberInvitation implements Node {
   id: ID!
 }
 
+type WorkspaceMemberRequiredFailure
+
 enum WorkspaceMemberRole {
   ADMIN
   MEMBER
+}
+
+type WorkspaceNotEmptyFailure {
+  remainingSites: [Site!]!
 }
 
 enum WorkspaceState {
