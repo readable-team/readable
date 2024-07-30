@@ -3,7 +3,7 @@ import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
 import { and, eq, gt } from 'drizzle-orm';
 import { match } from 'ts-pattern';
-import { z } from 'zod';
+import { builder } from '@/builder';
 import {
   db,
   first,
@@ -17,35 +17,39 @@ import {
 import { SingleSignOnProvider, UserState, WorkspaceMemberRole } from '@/enums';
 import * as aws from '@/external/aws';
 import * as google from '@/external/google';
-import { publicProcedure, router, sessionProcedure } from '@/trpc';
 import { createAccessToken } from '@/utils/access-token';
 
-const createSessionAndReturnAccessToken = async (userId: string) => {
-  const session = await db
-    .insert(UserSessions)
-    .values({ userId })
-    .returning({ id: UserSessions.id })
-    .then(firstOrThrow);
+/**
+ * * Types
+ */
 
-  return await createAccessToken(session.id);
-};
-
-export const authRouter = router({
-  isAuthenticated: publicProcedure.query(async ({ ctx }) => {
-    return !!ctx.session;
+const AccessToken = builder.simpleObject('AccessToken', {
+  fields: (t) => ({
+    accessToken: t.string(),
   }),
+});
 
-  generateSingleSignOnAuthorizationUrl: publicProcedure
-    .input(z.object({ provider: z.nativeEnum(SingleSignOnProvider) }))
-    .mutation(({ input }) => {
+/**
+ * * Mutations
+ */
+
+builder.mutationFields((t) => ({
+  generateSingleSignOnAuthorizationUrl: t.fieldWithInput({
+    type: 'String',
+    input: { provider: t.input.field({ type: SingleSignOnProvider }) },
+    errors: { dataField: { name: 'url' } },
+    resolve: async (_, { input }) => {
       return match(input.provider)
         .with(SingleSignOnProvider.GOOGLE, () => google.generateAuthorizationUrl())
         .exhaustive();
-    }),
+    },
+  }),
 
-  authorizeSingleSignOn: publicProcedure
-    .input(z.object({ provider: z.nativeEnum(SingleSignOnProvider), params: z.record(z.any()) }))
-    .mutation(async ({ input }) => {
+  authorizeSingleSignOn: t.fieldWithInput({
+    type: AccessToken,
+    input: { provider: t.input.field({ type: SingleSignOnProvider }), params: t.input.field({ type: 'JSON' }) },
+    errors: {},
+    resolve: async (_, { input }) => {
       const externalUser = await match(input.provider)
         .with(SingleSignOnProvider.GOOGLE, () => google.authorizeUser(input.params.code))
         .exhaustive();
@@ -131,9 +135,29 @@ export const authRouter = router({
       return {
         accessToken: await createSessionAndReturnAccessToken(user.id),
       };
-    }),
-
-  logout: sessionProcedure.mutation(async ({ ctx }) => {
-    await db.delete(UserSessions).where(eq(UserSessions.id, ctx.session.id));
+    },
   }),
-});
+
+  logout: t.withAuth({ session: true }).field({
+    type: 'Boolean',
+    errors: { dataField: { name: 'success' } },
+    resolve: async (_, __, ctx) => {
+      await db.delete(UserSessions).where(eq(UserSessions.id, ctx.session.id));
+      return true;
+    },
+  }),
+}));
+
+/*
+ * * Utils
+ */
+
+const createSessionAndReturnAccessToken = async (userId: string) => {
+  const session = await db
+    .insert(UserSessions)
+    .values({ userId })
+    .returning({ id: UserSessions.id })
+    .then(firstOrThrow);
+
+  return await createAccessToken(session.id);
+};

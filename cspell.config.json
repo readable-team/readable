@@ -33,6 +33,7 @@
     "sortablejs",
     "tini",
     "trpc",
+    "tsup",
     "unplugin",
     "vcpu"
   ]

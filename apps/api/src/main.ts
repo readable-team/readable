@@ -1,33 +1,9 @@
 import './instrument';
 import './jobs';
 
-import { trpcServer } from '@hono/trpc-server';
-import { Hono } from 'hono';
-import { cors } from 'hono/cors';
-import { createContext } from '@/context';
-import { appRouter } from '@/router';
+import { yoga } from '@/handler';
 
-const app = new Hono();
-
-app.use(
-  '*',
-  cors({
-    origin: (origin) => origin || '*',
-    allowMethods: ['GET', 'POST', 'OPTIONS'],
-    allowHeaders: ['Authorization', 'Accept', 'Content-Type'],
-    credentials: true,
-  }),
-);
-
-app.get('/healthz', (c) => c.json({ '*': true }));
-
-app.use(
-  '/trpc/*',
-  trpcServer({
-    router: appRouter,
-    createContext,
-  }),
-);
-
-// eslint-disable-next-line import/no-default-export
-export default app;
+Bun.serve({
+  fetch: (req, server) => yoga.fetch(req, { server }),
+  port: 3000,
+});

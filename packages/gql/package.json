@@ -1,0 +1,45 @@
+{
+  "name": "@readable/gql",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/client/index.ts",
+    "./runtime": "./runtime/index.ts",
+    "./vite": {
+      "types": "./src/vite/index.ts",
+      "import": "./dist/vite.js"
+    }
+  },
+  "bin": {
+    "gql": "./bin/index.ts"
+  },
+  "scripts": {
+    "build": "bun build src/vite/index.ts --outdir=dist",
+    "lint:typecheck": "tsc",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@urql/core": "^5.0.5",
+    "@urql/exchange-graphcache": "^7.1.2",
+    "dataloader": "^2.2.2",
+    "deepmerge": "^4.3.1",
+    "fast-glob": "^3.3.2",
+    "fast-json-stable-stringify": "^2.1.0",
+    "graphql": "^16.9.0",
+    "graphql-request": "^6.1.0",
+    "graphql-sse": "^2.5.3",
+    "radash": "^12.1.0",
+    "recast": "^0.23.9",
+    "svelte": "^4.2.18",
+    "ts-pattern": "^5.2.0",
+    "tsup": "^8.2.3",
+    "wonka": "^6.3.4"
+  },
+  "devDependencies": {
+    "@readable/tsconfig": "workspace:*",
+    "typescript": "^5.5.4",
+    "vite": "^5.3.5",
+    "vitest": "^1.6.0"
+  }
+}

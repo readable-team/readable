@@ -1,0 +1,106 @@
+type BaseMutationError implements MutationError {
+  message: String!
+}
+
+scalar DateTime
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Mutation
+
+interface MutationError {
+  message: String!
+}
+
+interface Node {
+  id: ID!
+}
+
+type Page implements Node {
+  id: ID!
+}
+
+type PageContentSnapshot implements Node {
+  id: ID!
+}
+
+type PageContentState implements Node {
+  id: ID!
+}
+
+enum PageContentSyncKind {
+  AWARENESS
+  PING
+  SYNCHRONIZE_1
+  SYNCHRONIZE_2
+  SYNCHRONIZE_3
+  UPDATE
+}
+
+enum PageState {
+  DELETED
+  DRAFT
+  PUBLISHED
+}
+
+type Query {
+  node(id: ID!): Node
+  nodes(ids: [ID!]!): [Node]!
+}
+
+enum SingleSignOnProvider {
+  GOOGLE
+}
+
+type Site implements Node {
+  id: ID!
+}
+
+enum SiteState {
+  ACTIVE
+  DELETED
+}
+
+type Subscription
+
+type User implements Node {
+  id: ID!
+}
+
+type UserSession implements Node {
+  id: ID!
+}
+
+type UserSingleSignOn implements Node {
+  id: ID!
+}
+
+enum UserState {
+  ACTIVE
+  DEACTIVATED
+}
+
+type Workspace implements Node {
+  id: ID!
+}
+
+type WorkspaceMember implements Node {
+  id: ID!
+}
+
+type WorkspaceMemberInvitation implements Node {
+  id: ID!
+}
+
+enum WorkspaceMemberRole {
+  ADMIN
+  MEMBER
+}
+
+enum WorkspaceState {
+  ACTIVE
+  DELETED
+}
