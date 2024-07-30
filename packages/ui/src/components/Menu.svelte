@@ -1,14 +1,15 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
   import { setContext } from 'svelte';
   import { afterNavigate } from '$app/navigation';
   import { createFloatingActions, portal } from '../actions/index';
   import type { Placement } from '@floating-ui/dom';
+  import type { SystemStyleObject } from '@readable/styled-system/types';
 
   export let open = false;
   export let placement: Placement = 'bottom';
   export let offset = 4;
+  export let listStyle: SystemStyleObject | undefined = undefined;
 
   const { anchor, floating } = createFloatingActions({
     placement,
@@ -37,14 +38,18 @@
   />
 
   <div
-    class={flex({
-      direction: 'column',
-      borderRadius: '10px',
-      padding: '6px',
-      backgroundColor: 'surface.primary',
-      minWidth: '140px',
-      boxShadow: 'emphasize',
-    })}
+    class={css(
+      {
+        display: 'flex',
+        flexDirection: 'column',
+        borderRadius: '10px',
+        padding: '6px',
+        backgroundColor: 'surface.primary',
+        minWidth: '140px',
+        boxShadow: 'emphasize',
+      },
+      listStyle,
+    )}
     use:floating
   >
     <slot />
