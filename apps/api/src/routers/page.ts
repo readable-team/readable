@@ -1,5 +1,4 @@
 import { init } from '@paralleldrive/cuid2';
-import { TRPCError } from '@trpc/server';
 import { and, desc, eq, gt, inArray, isNull } from 'drizzle-orm';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { fromUint8Array, toUint8Array } from 'js-base64';
@@ -141,16 +140,16 @@ export const pageRouter = router({
     return result;
   }),
 
-  updateOrder: sessionProcedure
-    .input(z.object({ pageId: z.string(), previousOrder: z.string().optional(), nextOrder: z.string().optional() }))
+  updatePosition: sessionProcedure
+    .input(
+      z.object({
+        pageId: z.string(),
+        parentId: z.string().optional(),
+        previousOrder: z.string().optional(),
+        nextOrder: z.string().optional(),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
-      if (!input.previousOrder && !input.nextOrder) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: '최소 1개의 order 값이 필요합니다',
-        });
-      }
-
       await assertPagePermission({
         pageId: input.pageId,
         userId: ctx.session.userId,
@@ -160,6 +159,7 @@ export const pageRouter = router({
         .update(Pages)
         .set({
           order: generateJitteredKeyBetween(input.previousOrder ?? null, input.nextOrder ?? null),
+          parentId: input.parentId,
         })
         .where(eq(Pages.id, input.pageId));
     }),
