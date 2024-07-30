@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
-import { db, first, Sites, WorkspaceMembers, Workspaces } from '@/db';
+import { db, first, Pages, Sites, WorkspaceMembers, Workspaces } from '@/db';
 import { SiteState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
 
 const workspaceMemberRolePrecedences: WorkspaceMemberRole[] = [WorkspaceMemberRole.MEMBER, WorkspaceMemberRole.ADMIN];
@@ -54,6 +54,38 @@ export const assertSitePermission = async ({
     .where(
       and(
         eq(Sites.id, siteId),
+        eq(WorkspaceMembers.userId, userId),
+        eq(Workspaces.state, WorkspaceState.ACTIVE),
+        eq(Sites.state, SiteState.ACTIVE),
+      ),
+    )
+    .then(first);
+
+  if (!member || workspaceMemberRolePrecedences.indexOf(member.role) < workspaceMemberRolePrecedences.indexOf(role)) {
+    throw new TRPCError({ code: 'FORBIDDEN' });
+  }
+};
+
+type AssertPagePermissionParams = {
+  pageId: string;
+  userId: string;
+  role?: WorkspaceMemberRole;
+};
+
+export const assertPagePermission = async ({
+  pageId,
+  userId,
+  role = WorkspaceMemberRole.MEMBER,
+}: AssertPagePermissionParams) => {
+  const member = await db
+    .select({ role: WorkspaceMembers.role })
+    .from(WorkspaceMembers)
+    .innerJoin(Workspaces, eq(WorkspaceMembers.workspaceId, Workspaces.id))
+    .innerJoin(Sites, eq(Workspaces.id, Sites.workspaceId))
+    .innerJoin(Pages, eq(Pages.siteId, Sites.id))
+    .where(
+      and(
+        eq(Pages.id, pageId),
         eq(WorkspaceMembers.userId, userId),
         eq(Workspaces.state, WorkspaceState.ACTIVE),
         eq(Sites.state, SiteState.ACTIVE),

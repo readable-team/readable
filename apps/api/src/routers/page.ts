@@ -1,4 +1,5 @@
 import { init } from '@paralleldrive/cuid2';
+import { TRPCError } from '@trpc/server';
 import { and, desc, eq, gt, inArray, isNull } from 'drizzle-orm';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { fromUint8Array, toUint8Array } from 'js-base64';
@@ -12,7 +13,7 @@ import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { router, sessionProcedure } from '@/trpc';
-import { assertSitePermission } from '@/utils/permissions';
+import { assertPagePermission, assertSitePermission } from '@/utils/permissions';
 
 const createPageSlug = init({ length: 8 });
 
@@ -139,6 +140,29 @@ export const pageRouter = router({
 
     return result;
   }),
+
+  updateOrder: sessionProcedure
+    .input(z.object({ pageId: z.string(), previousOrder: z.string().optional(), nextOrder: z.string().optional() }))
+    .mutation(async ({ input, ctx }) => {
+      if (!input.previousOrder && !input.nextOrder) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: '최소 1개의 order 값이 필요합니다',
+        });
+      }
+
+      await assertPagePermission({
+        pageId: input.pageId,
+        userId: ctx.session.userId,
+      });
+
+      await db
+        .update(Pages)
+        .set({
+          order: generateJitteredKeyBetween(input.previousOrder ?? null, input.nextOrder ?? null),
+        })
+        .where(eq(Pages.id, input.pageId));
+    }),
 
   content: router({
     sync: sessionProcedure
