@@ -1,7 +1,8 @@
 import { init } from '@paralleldrive/cuid2';
-import { and, desc, eq, gt, isNull } from 'drizzle-orm';
+import { and, desc, eq, gt, inArray, isNull } from 'drizzle-orm';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { fromUint8Array, toUint8Array } from 'js-base64';
+import * as R from 'radash';
 import { prosemirrorToYDoc } from 'y-prosemirror';
 import * as Y from 'yjs';
 import { z } from 'zod';
@@ -93,6 +94,51 @@ export const pageRouter = router({
         )
         .orderBy(Pages.order);
     }),
+
+  listRecursive: sessionProcedure.input(z.object({ siteId: z.string() })).query(async ({ input, ctx }) => {
+    await assertSitePermission({
+      siteId: input.siteId,
+      userId: ctx.session.userId,
+    });
+
+    type PageObject = Pick<typeof Pages.$inferSelect, 'id' | 'state' | 'order' | 'slug' | 'parentId'> & {
+      children: PageObject[];
+    };
+
+    const result = (await db
+      .select({ id: Pages.id, state: Pages.state, order: Pages.order, slug: Pages.slug, parentId: Pages.parentId })
+      .from(Pages)
+      .where(and(eq(Pages.siteId, input.siteId), isNull(Pages.parentId)))
+      .orderBy(Pages.order)) as PageObject[];
+
+    const idToPageObjectRecord = R.objectify(result, (page) => page.id);
+    let parentIds = result.map((page) => page.id);
+
+    for (let recursiveAttempt = 0; recursiveAttempt < 10 && parentIds.length > 0; recursiveAttempt++) {
+      const children = (await db
+        .select({ id: Pages.id, state: Pages.state, order: Pages.order, slug: Pages.slug, parentId: Pages.parentId })
+        .from(Pages)
+        .where(inArray(Pages.parentId, parentIds))
+        .orderBy(Pages.order)) as (PageObject & { parentId: string })[];
+
+      if (children.length === 0) {
+        break;
+      }
+
+      parentIds = children.map((page) => page.id);
+
+      for (const child of children) {
+        if (!idToPageObjectRecord[child.parentId].children) {
+          idToPageObjectRecord[child.parentId].children = [];
+        }
+
+        idToPageObjectRecord[child.parentId].children.push(child);
+        idToPageObjectRecord[child.id] = child;
+      }
+    }
+
+    return result;
+  }),
 
   content: router({
     sync: sessionProcedure
