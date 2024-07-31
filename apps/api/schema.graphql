@@ -1,0 +1,217 @@
+input AuthorizeSingleSignOnInput {
+  params: JSON!
+  provider: SingleSignOnProvider!
+}
+
+input CreatePageInput {
+  parentId: ID
+  siteId: ID!
+}
+
+input CreateSiteInput {
+  name: String!
+  workspaceId: ID!
+}
+
+input CreateWorkspaceInput {
+  name: String!
+}
+
+scalar DateTime
+
+input DeleteSiteInput {
+  siteId: ID!
+}
+
+input DeleteWorkspaceInput {
+  workspaceId: String!
+}
+
+input GenerateSingleSignOnAuthorizationUrlInput {
+  provider: SingleSignOnProvider!
+}
+
+input InviteWorkspaceMemberInput {
+  email: String!
+  workspaceId: String!
+}
+
+union InviteWorkspaceMemberResult = WorkspaceMember | WorkspaceMemberInvitation
+
+input IssueBlobUploadUrlInput {
+  filename: String!
+}
+
+type IssueBlobUploadUrlResult {
+  key: String!
+  presignedUrl: String!
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Mutation {
+  authorizeSingleSignOn(input: AuthorizeSingleSignOnInput!): UserWithAccessToken!
+  createDefaultWorkspace: Workspace!
+  createPage(input: CreatePageInput!): Page!
+  createSite(input: CreateSiteInput!): Site!
+  createWorkspace(input: CreateWorkspaceInput!): Workspace!
+  deactivateUser: User!
+  deleteSite(input: DeleteSiteInput!): Site!
+  deleteWorkspace(input: DeleteWorkspaceInput!): Workspace!
+  generateSingleSignOnAuthorizationUrl(input: GenerateSingleSignOnAuthorizationUrlInput!): String!
+  inviteWorkspaceMember(input: InviteWorkspaceMemberInput!): InviteWorkspaceMemberResult!
+  issueBlobUploadUrl(input: IssueBlobUploadUrlInput!): IssueBlobUploadUrlResult!
+  logout: Boolean!
+  removeWorkspaceMember(input: RemoveWorkspaceMemberInput!): WorkspaceMember!
+  syncPageContent(input: SyncPageContentInput!): [PageContentSyncOperation!]!
+  updatePagePosition(input: UpdatePagePositionInput!): Page!
+  updateSite(input: UpdateSiteInput!): Site!
+  updateUser(input: UpdateUserInput!): User!
+  updateWorkspaceMemberRole(input: UpdateWorkspaceMemberRoleInput!): WorkspaceMember!
+}
+
+type Page {
+  id: ID!
+}
+
+type PageContentSnapshot {
+  id: ID!
+}
+
+type PageContentState {
+  id: ID!
+}
+
+enum PageContentSyncKind {
+  AWARENESS
+  PING
+  SYNCHRONIZE_1
+  SYNCHRONIZE_2
+  SYNCHRONIZE_3
+  UPDATE
+}
+
+type PageContentSyncOperation {
+  data: String!
+  kind: PageContentSyncKind!
+  pageId: ID!
+}
+
+enum PageState {
+  DELETED
+  DRAFT
+  PUBLISHED
+}
+
+type Query {
+  me: User
+  page(pageId: ID!): Page!
+  pages(parentId: ID, siteId: ID!): [Page!]!
+  site(siteId: ID!): Site!
+  workspace(workspaceId: ID!): Workspace!
+  workspaces: [Workspace!]!
+}
+
+input RemoveWorkspaceMemberInput {
+  userId: String!
+  workspaceId: String!
+}
+
+enum SingleSignOnProvider {
+  GOOGLE
+}
+
+type Site {
+  id: ID!
+  name: String!
+  url: String!
+}
+
+enum SiteState {
+  ACTIVE
+  DELETED
+}
+
+type Subscription {
+  pageContentSyncStream(pageId: ID!): PageContentSyncOperation!
+}
+
+input SyncPageContentInput {
+  clientId: String!
+  data: String!
+  kind: PageContentSyncKind!
+  pageId: ID!
+}
+
+input UpdatePagePositionInput {
+  nextOrder: String
+  pageId: String!
+  parentId: String
+  previousOrder: String
+}
+
+input UpdateSiteInput {
+  name: String!
+  siteId: ID!
+  slug: String!
+}
+
+input UpdateUserInput {
+  avatarUrl: String!
+  name: String!
+}
+
+input UpdateWorkspaceMemberRoleInput {
+  role: WorkspaceMemberRole!
+  userId: String!
+  workspaceId: String!
+}
+
+type User {
+  avatarUrl: String!
+  email: String!
+  id: ID!
+  name: String!
+  workspaces: [Workspace!]!
+}
+
+enum UserState {
+  ACTIVE
+  DEACTIVATED
+}
+
+type UserWithAccessToken {
+  accessToken: String!
+  user: User!
+}
+
+type Workspace {
+  id: ID!
+  members: [WorkspaceMember!]!
+  name: String!
+  sites: [Site!]!
+  state: WorkspaceState!
+}
+
+type WorkspaceMember {
+  id: ID!
+  role: WorkspaceMemberRole!
+  user: User!
+}
+
+type WorkspaceMemberInvitation {
+  id: ID!
+}
+
+enum WorkspaceMemberRole {
+  ADMIN
+  MEMBER
+}
+
+enum WorkspaceState {
+  ACTIVE
+  DELETED
+}

@@ -7,6 +7,7 @@ dist/
 .env.local
 
 .svelte-kit/
+.gql/
 styled-system/
 !packages/styled-system/
 

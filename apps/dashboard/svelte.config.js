@@ -9,6 +9,7 @@ export default {
     adapter: bun(),
     alias: {
       '@/*': '../api/src/*',
+      '$graphql': '.gql',
     },
     files: {
       hooks: {
@@ -20,7 +21,10 @@ export default {
     output: { preloadStrategy: 'preload-mjs' },
     typescript: {
       config: (config) => ({
-        ...config,
+        compilerOptions: {
+          ...config.compilerOptions,
+          rootDirs: [...config.compilerOptions.rootDirs, '../.gql/types'],
+        },
         include: [...config.include, '../pulumi/**/*.ts', '../scripts/**/*.ts'],
       }),
     },

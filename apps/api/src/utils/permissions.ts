@@ -1,7 +1,7 @@
-import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
 import { db, first, Pages, Sites, WorkspaceMembers, Workspaces } from '@/db';
 import { SiteState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
+import { ApiError } from '@/errors';
 
 const workspaceMemberRolePrecedences: WorkspaceMemberRole[] = [WorkspaceMemberRole.MEMBER, WorkspaceMemberRole.ADMIN];
 
@@ -30,7 +30,7 @@ export const assertWorkspacePermission = async ({
     .then(first);
 
   if (!member || workspaceMemberRolePrecedences.indexOf(member.role) < workspaceMemberRolePrecedences.indexOf(role)) {
-    throw new TRPCError({ code: 'FORBIDDEN' });
+    throw new ApiError({ code: 'forbidden' });
   }
 };
 
@@ -62,7 +62,7 @@ export const assertSitePermission = async ({
     .then(first);
 
   if (!member || workspaceMemberRolePrecedences.indexOf(member.role) < workspaceMemberRolePrecedences.indexOf(role)) {
-    throw new TRPCError({ code: 'FORBIDDEN' });
+    throw new ApiError({ code: 'forbidden' });
   }
 };
 
@@ -94,6 +94,6 @@ export const assertPagePermission = async ({
     .then(first);
 
   if (!member || workspaceMemberRolePrecedences.indexOf(member.role) < workspaceMemberRolePrecedences.indexOf(role)) {
-    throw new TRPCError({ code: 'FORBIDDEN' });
+    throw new ApiError({ code: 'forbidden' });
   }
 };

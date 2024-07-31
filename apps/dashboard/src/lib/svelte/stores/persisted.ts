@@ -1,4 +1,3 @@
-import { parse, stringify } from 'devalue';
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import type { Writable } from 'svelte/store';
@@ -9,7 +8,7 @@ export const persisted = <T>(key: string): Writable<T | null> => {
   }
 
   const value = localStorage.getItem(key);
-  const store = writable<T | null>(value === null ? null : parse(value));
+  const store = writable<T | null>(value === null ? null : JSON.parse(value));
 
   return {
     subscribe: store.subscribe,
@@ -19,7 +18,7 @@ export const persisted = <T>(key: string): Writable<T | null> => {
       if (value === null) {
         localStorage.removeItem(key);
       } else {
-        localStorage.setItem(key, stringify(value));
+        localStorage.setItem(key, JSON.stringify(value));
       }
     },
     update: (fn) => {
@@ -29,7 +28,7 @@ export const persisted = <T>(key: string): Writable<T | null> => {
         if (value === null) {
           localStorage.removeItem(key);
         } else {
-          localStorage.setItem(key, stringify(value));
+          localStorage.setItem(key, JSON.stringify(value));
         }
 
         return value;

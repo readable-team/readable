@@ -7,9 +7,66 @@
   import * as YAwareness from 'y-protocols/awareness';
   import * as Y from 'yjs';
   import { PageContentSyncKind } from '@/enums';
-  import { trpc } from '$lib/trpc.js';
+  import { graphql } from '$graphql';
 
-  export let data;
+  $: query = graphql(`
+    query PagePage_Query($pageId: ID!) {
+      me @required {
+        id
+        name
+      }
+
+      page(pageId: $pageId) {
+        id
+      }
+    }
+  `);
+
+  const syncPageContent = graphql(`
+    mutation PagePage_SyncPageContent_Mutation($input: SyncPageContentInput!) {
+      syncPageContent(input: $input) {
+        pageId
+        kind
+        data
+      }
+    }
+  `);
+
+  const pageContentSyncStream = graphql(`
+    subscription PagePage_PageContentSyncStream_Subscription($pageId: ID!) {
+      pageContentSyncStream(pageId: $pageId) {
+        pageId
+        kind
+        data
+      }
+    }
+  `);
+
+  pageContentSyncStream.on('data', ({ pageContentSyncStream: operation }) => {
+    if (operation.pageId !== $query.page.id) {
+      return;
+    }
+
+    // eslint-disable-next-line unicorn/prefer-switch
+    if (operation.kind === PageContentSyncKind.PING) {
+      // TODO: PONG
+    } else if (operation.kind === PageContentSyncKind.SYNCHRONIZE_3) {
+      if (operation.data === clientId) {
+        // TODO: Update connection state
+      }
+
+      syncPageContent({
+        pageId: $query.page.id,
+        clientId,
+        kind: PageContentSyncKind.AWARENESS,
+        data: fromUint8Array(YAwareness.encodeAwarenessUpdate(yAwareness, [yDoc.clientID])),
+      });
+    } else if (operation.kind === PageContentSyncKind.UPDATE) {
+      Y.applyUpdateV2(yDoc, toUint8Array(operation.data), 'NETWORK');
+    } else if (operation.kind === PageContentSyncKind.AWARENESS) {
+      YAwareness.applyAwarenessUpdate(yAwareness, toUint8Array(operation.data), 'NETWORK');
+    }
+  });
 
   const yDoc = new Y.Doc();
   const yAwareness = new YAwareness.Awareness(yDoc);
@@ -18,8 +75,8 @@
 
   yDoc.on('updateV2', async (update, origin) => {
     if (origin !== 'NETWORK') {
-      await trpc.page.content.sync.mutate({
-        pageId: data.pageId,
+      await syncPageContent({
+        pageId: $query.page.id,
         clientId,
         kind: PageContentSyncKind.UPDATE,
         data: fromUint8Array(update),
@@ -40,8 +97,8 @@
         ...states.removed,
       ]);
 
-      await trpc.page.content.sync.mutate({
-        pageId: data.pageId,
+      await syncPageContent({
+        pageId: $query.page.id,
         clientId,
         kind: PageContentSyncKind.AWARENESS,
         data: fromUint8Array(update),
@@ -50,10 +107,8 @@
   );
 
   const setupLocalAwareness = async () => {
-    const me = await trpc.user.me.query();
-
     yAwareness.setLocalStateField('user', {
-      name: me.name,
+      name: $query.me.name,
       color: '#000000',
     });
   };
@@ -61,8 +116,8 @@
   const fullSync = async () => {
     const clientStateVector = Y.encodeStateVector(yDoc);
 
-    const results = await trpc.page.content.sync.mutate({
-      pageId: data.pageId,
+    const results = await syncPageContent({
+      pageId: $query.page.id,
       clientId,
       kind: PageContentSyncKind.SYNCHRONIZE_1,
       data: fromUint8Array(clientStateVector),
@@ -77,8 +132,8 @@
         const serverStateVector = toUint8Array(data_);
         const serverMissingUpdate = Y.encodeStateAsUpdateV2(yDoc, serverStateVector);
 
-        await trpc.page.content.sync.mutate({
-          pageId: data.pageId,
+        await syncPageContent({
+          pageId: $query.page.id,
           clientId,
           kind: PageContentSyncKind.SYNCHRONIZE_2,
           data: fromUint8Array(serverMissingUpdate),
@@ -92,42 +147,13 @@
   };
 
   onMount(() => {
-    const stream = trpc.page.content.stream.subscribe(
-      { pageId: data.pageId },
-      {
-        onData: (resp) => {
-          if (resp.pageId !== data.pageId) {
-            return;
-          }
-
-          // eslint-disable-next-line unicorn/prefer-switch
-          if (resp.kind === PageContentSyncKind.PING) {
-            // TODO: PONG
-          } else if (resp.kind === PageContentSyncKind.SYNCHRONIZE_3) {
-            if (resp.data === clientId) {
-              // TODO: Update connection state
-            }
-
-            trpc.page.content.sync.mutate({
-              pageId: data.pageId,
-              clientId,
-              kind: PageContentSyncKind.AWARENESS,
-              data: fromUint8Array(YAwareness.encodeAwarenessUpdate(yAwareness, [yDoc.clientID])),
-            });
-          } else if (resp.kind === PageContentSyncKind.UPDATE) {
-            Y.applyUpdateV2(yDoc, toUint8Array(resp.data), 'NETWORK');
-          } else if (resp.kind === PageContentSyncKind.AWARENESS) {
-            YAwareness.applyAwarenessUpdate(yAwareness, toUint8Array(resp.data), 'NETWORK');
-          }
-        },
-      },
-    );
+    const unsubscribe = pageContentSyncStream.subscribe({ pageId: $query.page.id });
 
     setupLocalAwareness();
     fullSync();
 
     return () => {
-      stream.unsubscribe();
+      unsubscribe();
       YAwareness.removeAwarenessStates(yAwareness, [yDoc.clientID], 'NETWORK');
       yDoc.destroy();
     };

@@ -1,35 +1,101 @@
+import DataLoader from 'dataloader';
 import { eq } from 'drizzle-orm';
-import { getConnInfo } from 'hono/bun';
+import stringify from 'fast-json-stable-stringify';
+import * as R from 'radash';
 import { db, UserSessions } from './db';
 import { decodeAccessToken } from './utils/access-token';
-import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
-import type { Context as HonoContext } from 'hono';
+import type { Server } from 'bun';
+import type { YogaInitialContext } from 'graphql-yoga';
 
-export type Context = {
-  req: Request;
-  resHeaders: Headers;
+type LoaderParams<T, R, S, N extends boolean, M extends boolean> = {
+  name: string;
+  nullable?: N;
+  many?: M;
+  key: (value: N extends true ? R | null : R) => N extends true ? S | null : S;
+  load: (keys: T[]) => Promise<R[]>;
+};
 
-  h: HonoContext;
+type ServerContext = YogaInitialContext & {
+  server: Server;
+};
 
-  clientAddress?: string;
+type DefaultContext = {
+  'req': Request;
+  'clientAddress'?: string;
 
-  session?: {
+  'loader': <T, R, S, N extends boolean = false, M extends boolean = false, RR = N extends true ? R | null : R>(
+    params: LoaderParams<T, R, S, N, M>,
+  ) => DataLoader<T, M extends true ? RR[] : RR, string>;
+  ' $loaders': Map<string, DataLoader<unknown, unknown>>;
+};
+
+export type UserContext = {
+  session: {
     id: string;
     userId: string;
   };
 };
 
-export const createContext = async ({ req, resHeaders }: FetchCreateContextFnOptions, honoCtx: HonoContext) => {
-  const connInfo = getConnInfo(honoCtx);
+export type Context = DefaultContext & Partial<UserContext>;
 
+export const createContext = async ({ request, server }: ServerContext) => {
   const ctx: Context = {
-    req,
-    resHeaders,
-    h: honoCtx,
-    clientAddress: connInfo.remote.address,
+    'req': request,
+    'clientAddress': server.requestIP(request)?.address,
+
+    'loader': <
+      T,
+      R,
+      S,
+      N extends boolean = false,
+      M extends boolean = false,
+      RR = N extends true ? R | null : R,
+      F = M extends true ? RR[] : RR,
+    >({
+      name,
+      nullable,
+      many,
+      load,
+      key,
+    }: LoaderParams<T, R, S, N, M>) => {
+      const cached = ctx[' $loaders'].get(name);
+      if (cached) {
+        return cached as DataLoader<T, F, string>;
+      }
+
+      const loader = new DataLoader<T, F, string>(
+        async (keys) => {
+          const rows = await load(keys as T[]);
+          const values = R.group(rows, (row) => stringify(key(row)));
+          return keys.map((key) => {
+            const value = values[stringify(key)];
+
+            if (value?.length) {
+              return many ? value : value[0];
+            }
+
+            if (nullable) {
+              return null;
+            }
+
+            if (many) {
+              return [];
+            }
+
+            return new Error(`DataLoader(${name}): Missing key`);
+          }) as (F | Error)[];
+        },
+        { cacheKeyFn: (key) => stringify(key) },
+      );
+
+      ctx[' $loaders'].set(name, loader);
+
+      return loader;
+    },
+    ' $loaders': new Map(),
   };
 
-  const accessToken = req.headers.get('authorization')?.split(' ')[1];
+  const accessToken = request.headers.get('authorization')?.split(' ')[1];
   if (accessToken) {
     const sessionId = await decodeAccessToken(accessToken);
 

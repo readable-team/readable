@@ -4,9 +4,26 @@
   import { Button, Icon, LogoPlaceholder, Menu, MenuItem } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import { goto } from '$app/navigation';
-  import { trpc } from '$lib/trpc';
+  import { graphql } from '$graphql';
 
-  export let data;
+  $: query = graphql(`
+    query SiteLayout_Query($workspaceId: ID!, $siteId: ID!) {
+      workspace(workspaceId: $workspaceId) {
+        id
+
+        sites {
+          id
+          name
+        }
+      }
+
+      site(siteId: $siteId) {
+        id
+        name
+        url
+      }
+    }
+  `);
 </script>
 
 <div
@@ -24,57 +41,53 @@
       padding: '8px',
     })}
   >
-    {#await trpc.site.get.query({ siteId: data.siteId }) then site}
-      {#await trpc.site.list.query({ workspaceId: data.workspaceId }) then sites}
-        <Menu listStyle={css.raw({ width: '200px' })} placement="bottom-start">
-          <div
-            slot="button"
-            class={flex({
-              justify: 'space-between',
-              width: '200px',
-            })}
-          >
-            <div class={css({ display: 'flex' })}>
-              <LogoPlaceholder size={20} />
-              <h1>
-                {site.name}
-              </h1>
-            </div>
-            <Icon icon={ChevronDownIcon} size={20} />
-          </div>
-
-          {#each sites as site (site.id)}
-            <MenuItem on:click={async () => await goto(`/workspace/${data.workspaceId}/site/${site.id}`)}>
-              {site.name}
-            </MenuItem>
-          {/each}
-        </Menu>
-      {/await}
-
+    <Menu listStyle={css.raw({ width: '200px' })} placement="bottom-start">
       <div
-        class={css({
-          left: '0',
-          right: '0',
-          marginX: 'auto',
-          width: '400px',
-          backgroundColor: 'surface.secondary',
-          borderRadius: '8px',
-        })}
-      >
-        {site.url}
-      </div>
-
-      <div
+        slot="button"
         class={flex({
+          justify: 'space-between',
           width: '200px',
         })}
       >
-        <Button href={site.url} rel="noopener noreferrer" target="_blank" type="link" variant="secondary">
-          사이트 바로가기
-        </Button>
-        <div>프로필</div>
+        <div class={css({ display: 'flex' })}>
+          <LogoPlaceholder size={20} />
+          <h1>
+            {$query.site.name}
+          </h1>
+        </div>
+        <Icon icon={ChevronDownIcon} size={20} />
       </div>
-    {/await}
+
+      {#each $query.workspace.sites as site (site.id)}
+        <MenuItem on:click={async () => await goto(`/workspace/${$query.workspace.id}/site/${site.id}`)}>
+          {site.name}
+        </MenuItem>
+      {/each}
+    </Menu>
+
+    <div
+      class={css({
+        left: '0',
+        right: '0',
+        marginX: 'auto',
+        width: '400px',
+        backgroundColor: 'surface.secondary',
+        borderRadius: '8px',
+      })}
+    >
+      {$query.site.url}
+    </div>
+
+    <div
+      class={flex({
+        width: '200px',
+      })}
+    >
+      <Button href={$query.site.url} rel="noopener noreferrer" target="_blank" type="link" variant="secondary">
+        사이트 바로가기
+      </Button>
+      <div>프로필</div>
+    </div>
   </header>
 
   <div
@@ -99,9 +112,9 @@
             gap: '2px',
           })}
         >
-          <li><a href={`/workspace/${data.workspaceId}/site/${data.siteId}/pages`}>페이지</a></li>
-          <li><a href={`/workspace/${data.workspaceId}/site/${data.siteId}/designs`}>디자인</a></li>
-          <li><a href={`/workspace/${data.workspaceId}/site/${data.siteId}/settings`}>설정</a></li>
+          <li><a href={`/workspace/${$query.workspace.id}/site/${$query.site.id}/pages`}>페이지</a></li>
+          <li><a href={`/workspace/${$query.workspace.id}/site/${$query.site.id}/designs`}>디자인</a></li>
+          <li><a href={`/workspace/${$query.workspace.id}/site/${$query.site.id}/settings`}>설정</a></li>
         </ul>
       </nav>
     </aside>

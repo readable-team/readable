@@ -3,7 +3,7 @@
   "globalEnv": ["NODE_ENV"],
   "tasks": {
     "codegen": {
-      "outputs": [".svelte-kit/**", "styled-system/**"]
+      "outputs": [".svelte-kit/**", ".gql/**", "styled-system/**"]
     },
     "build": {
       "dependsOn": ["codegen", "^build"],

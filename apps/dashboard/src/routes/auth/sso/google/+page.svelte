@@ -3,10 +3,19 @@
   import { SingleSignOnProvider } from '@/enums';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { accessToken, trpc } from '$lib/trpc';
+  import { graphql } from '$graphql';
+  import { accessToken } from '$lib/graphql';
+
+  const authorizeSingleSignOn = graphql(`
+    mutation SSOGooglePage_AuthorizeSingleSignOn_Mutation($input: AuthorizeSingleSignOnInput!) {
+      authorizeSingleSignOn(input: $input) {
+        accessToken
+      }
+    }
+  `);
 
   onMount(async () => {
-    const resp = await trpc.auth.authorizeSingleSignOn.mutate({
+    const resp = await authorizeSingleSignOn({
       provider: SingleSignOnProvider.GOOGLE,
       params: Object.fromEntries($page.url.searchParams),
     });

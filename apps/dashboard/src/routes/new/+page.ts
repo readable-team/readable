@@ -1,14 +1,12 @@
 import { redirect } from '@sveltejs/kit';
-import { trpc } from '$lib/trpc';
+import type { NewPage_Query_AfterLoad } from './$graphql';
 
-export const load = async () => {
-  const isAuthenticated = await trpc.auth.isAuthenticated.query();
-  if (!isAuthenticated) {
+export const _NewPage_Query_AfterLoad: NewPage_Query_AfterLoad = async (query) => {
+  if (!query.me) {
     redirect(302, '/auth/login');
   }
 
-  const hasWorkspace = await trpc.workspace.hasAny.query();
-  if (hasWorkspace) {
+  if (query.me.workspaces.length > 0) {
     redirect(302, '/');
   }
 };

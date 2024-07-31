@@ -1,12 +1,20 @@
 <script lang="ts">
   import { SingleSignOnProvider } from '@/enums';
-  import { trpc } from '$lib/trpc';
+  import { graphql } from '$graphql';
+
+  const generateSingleSignOnAuthorizationUrl = graphql(`
+    mutation LoginPage_GenerateSingleSignOnAuthorizationUrl_Mutation(
+      $input: GenerateSingleSignOnAuthorizationUrlInput!
+    ) {
+      generateSingleSignOnAuthorizationUrl(input: $input)
+    }
+  `);
 </script>
 
 <button
   type="button"
   on:click={async () => {
-    const url = await trpc.auth.generateSingleSignOnAuthorizationUrl.mutate({
+    const url = await generateSingleSignOnAuthorizationUrl({
       provider: SingleSignOnProvider.GOOGLE,
     });
 

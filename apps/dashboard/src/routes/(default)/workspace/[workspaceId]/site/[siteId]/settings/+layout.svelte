@@ -1,15 +1,14 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import Tabs from '$lib/components/Tabs.svelte';
-
-  export let data;
 </script>
 
 <h1>설정 페이지</h1>
 
 <Tabs
   tabs={[
-    { title: '일반', path: `/workspace/${data.workspaceId}/site/${data.siteId}/settings` },
-    { title: 'SEO', path: `/workspace/${data.workspaceId}/site/${data.siteId}/settings/seo` },
+    { title: '일반', path: `/workspace/${$page.params.workspaceId}/site/${$page.params.siteId}/settings` },
+    { title: 'SEO', path: `/workspace/${$page.params.workspaceId}/site/${$page.params.siteId}/settings/seo` },
   ]}
 />
 

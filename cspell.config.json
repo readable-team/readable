@@ -32,8 +32,10 @@
     "repeaterjs",
     "sortablejs",
     "tini",
-    "trpc",
+    "tsup",
     "unplugin",
-    "vcpu"
+    "urql",
+    "vcpu",
+    "wonka"
   ]
 }

@@ -1,7 +1,35 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { goto } from '$app/navigation';
-  import { trpc } from '$lib/trpc';
+  import { graphql } from '$graphql';
+
+  $: graphql(`
+    query NewPage_Query {
+      me {
+        id
+
+        workspaces {
+          id
+        }
+      }
+    }
+  `);
+
+  const createDefaultWorkspace = graphql(`
+    mutation NewPage_CreateDefaultWorkspace_Mutation {
+      createDefaultWorkspace {
+        id
+      }
+    }
+  `);
+
+  const createSite = graphql(`
+    mutation NewPage_CreateSite_Mutation($input: CreateSiteInput!) {
+      createSite(input: $input) {
+        id
+      }
+    }
+  `);
 
   let name: string;
 </script>
@@ -16,8 +44,8 @@
 <button
   type="button"
   on:click={async () => {
-    const workspace = await trpc.workspace.createDefault.mutate();
-    const site = await trpc.site.create.mutate({ workspaceId: workspace.id, name });
+    const workspace = await createDefaultWorkspace();
+    const site = await createSite({ workspaceId: workspace.id, name });
     await goto(`/workspace/${workspace.id}/site/${site.id}`);
   }}
 >
