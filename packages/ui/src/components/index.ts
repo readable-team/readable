@@ -1,5 +1,6 @@
 export { default as Button } from './Button.svelte';
 export { default as Chip } from './Chip.svelte';
+export { default as HorizontalDivider } from './HorizontalDivider.svelte';
 export { default as Icon } from './Icon.svelte';
 export { default as LogoPlaceholder } from './LogoPlaceholder.svelte';
 export { default as Menu } from './Menu.svelte';
