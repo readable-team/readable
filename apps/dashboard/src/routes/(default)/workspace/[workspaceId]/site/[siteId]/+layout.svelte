@@ -88,7 +88,7 @@
 
   $: sidebarMenu = [
     {
-      href: `/workspace/${$query.workspace.id}/site/${$query.site.id}/pages`, // FIXME: '홈' 페이지 필요
+      href: `/workspace/${$query.workspace.id}/site/${$query.site.id}`,
       text: '홈',
       icon: HouseIcon,
     },

@@ -8,6 +8,7 @@
 <Tabs
   tabs={[
     { title: '일반', path: `/workspace/${$page.params.workspaceId}/site/${$page.params.siteId}/settings` },
+    { title: '디자인', path: `/workspace/${$page.params.workspaceId}/site/${$page.params.siteId}/settings/designs` },
     { title: 'SEO', path: `/workspace/${$page.params.workspaceId}/site/${$page.params.siteId}/settings/seo` },
   ]}
 />

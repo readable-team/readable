@@ -1,5 +1,6 @@
-import { redirect } from '@sveltejs/kit';
+import type { SitePage_Query_Variables } from './$graphql';
 
-export const load = ({ params }) => {
-  redirect(302, `/workspace/${params.workspaceId}/site/${params.siteId}/pages`);
-};
+export const _SitePage_Query_Variables: SitePage_Query_Variables = ({ params }) => ({
+  workspaceId: params.workspaceId,
+  siteId: params.siteId,
+});

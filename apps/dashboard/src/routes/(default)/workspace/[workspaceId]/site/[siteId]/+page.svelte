@@ -9,10 +9,10 @@
   import { graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
   import { accessToken } from '$lib/graphql';
-  import Pages from './Pages.svelte';
+  import Pages from './pages/Pages.svelte';
 
   $: query = graphql(`
-    query SitePagesPage_Query($workspaceId: ID!, $siteId: ID!) {
+    query SitePage_Query($workspaceId: ID!, $siteId: ID!) {
       me @required {
         id
         name
@@ -33,7 +33,7 @@
   `);
 
   const createPage = graphql(`
-    mutation SitePagesPage_CreatePage_Mutation($input: CreatePageInput!) {
+    mutation SitePage_CreatePage_Mutation($input: CreatePageInput!) {
       createPage(input: $input) {
         id
       }
@@ -41,7 +41,7 @@
   `);
 
   const logout = graphql(`
-    mutation SitePagesPage_Logout_Mutation {
+    mutation SitePage_Logout_Mutation {
       logout
     }
   `);
