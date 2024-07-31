@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { Button, TextInput } from '@readable/ui/components';
+  import { Button, Modal, TextInput } from '@readable/ui/components';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
 
   let siteName = '';
   let inviteMemberEmail = '';
+  let open = false;
 
   $: query = graphql(`
     query WorkspacePage_Query($workspaceId: ID!) {
@@ -47,6 +48,9 @@
 </script>
 
 워크스페이스 메인 페이지
+
+<br />
+<Button on:click={() => (open = true)}>modal open</Button>
 
 <br />
 <br />
@@ -115,3 +119,5 @@
     </li>
   {/each}
 </ul>
+
+<Modal bind:open>asdf</Modal>
