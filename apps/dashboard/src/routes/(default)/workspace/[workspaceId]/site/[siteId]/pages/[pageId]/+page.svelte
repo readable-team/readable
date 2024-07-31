@@ -176,7 +176,7 @@
     width: '[fit-content]',
     height: '58px',
     borderRadius: '12px',
-    backgroundColor: { base: 'white', _dark: 'darkgray.700' }, // FIXME: surface.tertiary
+    backgroundColor: 'surface.tertiary',
     alignItems: 'center',
     shadow: 'strong',
   })}

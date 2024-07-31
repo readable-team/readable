@@ -40,7 +40,7 @@
           flexDirection: 'column',
           flexGrow: '1',
           borderRadius: '16px',
-          backgroundColor: { base: 'white', _dark: 'darkgray.700' },
+          backgroundColor: 'surface.tertiary',
           pointerEvents: 'auto',
           size: 'full',
           maxWidth: '946px',

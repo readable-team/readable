@@ -45,7 +45,7 @@
         gap: '4px',
         borderRadius: '10px',
         padding: '6px',
-        backgroundColor: { base: 'white', _dark: 'darkgray.700' },
+        backgroundColor: 'surface.tertiary',
         minWidth: '140px',
         boxShadow: 'emphasize',
       },
