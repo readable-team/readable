@@ -43,7 +43,7 @@ export const addIdAndTypenameField = (
   schema: graphql.GraphQLSchema,
   node: graphql.OperationDefinitionNode | graphql.FragmentDefinitionNode,
 ) => {
-  return graphql.visit(node, {
+  const newNode = graphql.visit(node, {
     SelectionSet: {
       enter: (selectionSet) => {
         const fields = selectionSet.selections.filter((selection) => selection.kind === 'Field') as graphql.FieldNode[];
@@ -63,6 +63,14 @@ export const addIdAndTypenameField = (
       },
     },
   });
+
+  if (newNode.kind === 'OperationDefinition') {
+    newNode.selectionSet.selections = newNode.selectionSet.selections.filter(
+      (selection) => selection.kind === 'Field' && selection.name.value !== '__typename',
+    );
+  }
+
+  return newNode;
 };
 
 export const writeFile = async (path_: string, content: string) => {
