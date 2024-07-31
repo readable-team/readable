@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Icon } from '@readable/ui/components';
+  import { Button, Icon, VerticalDivider } from '@readable/ui/components';
   import { TiptapEditor } from '@readable/ui/tiptap';
   import { fromUint8Array, toUint8Array } from 'js-base64';
   import { nanoid } from 'nanoid';
@@ -206,13 +206,7 @@
     </Button>
   </div>
 
-  <hr
-    class={css({
-      borderColor: 'divider.secondary',
-      borderLeftWidth: '1px',
-      height: 'full',
-    })}
-  />
+  <VerticalDivider color="secondary" />
 
   <div
     class={flex({
