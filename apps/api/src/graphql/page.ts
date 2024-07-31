@@ -13,8 +13,6 @@ import { pubsub } from '@/pubsub';
 import { assertPagePermission, assertSitePermission } from '@/utils/permissions';
 import { Page, PageContentSnapshot, PageContentState } from './objects';
 
-const createPageSlug = init({ length: 8 });
-
 /**
  * * Types
  */
@@ -23,6 +21,8 @@ Page.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     state: t.expose('state', { type: PageState }),
+
+    order: t.string({ resolve: (page) => decoder.decode(page.order) }),
 
     parent: t.field({ type: Page, nullable: true, resolve: (page) => page.parentId }),
     children: t.field({
@@ -119,7 +119,7 @@ builder.mutationFields((t) => ({
             siteId: input.siteId,
             parentId: input.parentId,
             slug: createPageSlug(),
-            order: generateJitteredKeyBetween(last?.order ?? null, null),
+            order: encoder.encode(generateJitteredKeyBetween(last ? decoder.decode(last.order) : null, null)),
             state: 'DRAFT',
           })
           .returning()
@@ -147,8 +147,8 @@ builder.mutationFields((t) => ({
     input: {
       pageId: t.input.string(),
       parentId: t.input.string({ required: false }),
-      previousOrder: t.input.string({ required: false }),
-      nextOrder: t.input.string({ required: false }),
+      lower: t.input.string({ required: false }),
+      upper: t.input.string({ required: false }),
     },
     resolve: async (_, { input }, ctx) => {
       await assertPagePermission({
@@ -159,8 +159,8 @@ builder.mutationFields((t) => ({
       return await db
         .update(Pages)
         .set({
-          order: generateJitteredKeyBetween(input.previousOrder ?? null, input.nextOrder ?? null),
-          parentId: input.parentId,
+          order: encoder.encode(generateJitteredKeyBetween(input.lower ?? null, input.upper ?? null)),
+          parentId: input.parentId ?? null,
         })
         .where(eq(Pages.id, input.pageId))
         .returning()
@@ -291,3 +291,11 @@ const getLatestPageContentState = async (pageId: string) => {
     vector: updatedVector,
   };
 };
+
+/**
+ * * Utils
+ */
+
+const createPageSlug = init({ length: 8 });
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();

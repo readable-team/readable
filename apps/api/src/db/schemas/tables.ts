@@ -19,7 +19,7 @@ export const Pages = pgTable(
     parentId: text('parent_id').references((): AnyPgColumn => Pages.id),
     slug: text('slug').notNull(),
     state: E._PageState('state').notNull(),
-    order: text('order').notNull(),
+    order: bytea('order').notNull(),
     createdAt: datetime('created_at')
       .notNull()
       .default(sql`now()`),

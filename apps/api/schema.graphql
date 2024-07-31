@@ -76,6 +76,7 @@ type Mutation {
 type Page {
   children: [Page!]!
   id: ID!
+  order: String!
   parent: Page
   state: PageState!
 }
@@ -149,10 +150,10 @@ input SyncPageContentInput {
 }
 
 input UpdatePagePositionInput {
-  nextOrder: String
+  lower: String
   pageId: String!
   parentId: String
-  previousOrder: String
+  upper: String
 }
 
 input UpdateSiteInput {
