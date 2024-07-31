@@ -92,17 +92,19 @@
 
   <div
     class={flex({
-      height: 'full',
+      flex: '1',
+      overflow: 'auto',
     })}
   >
     <aside
       class={flex({
         flexDirection: 'column',
         gap: '10px',
-        width: '232px',
-        padding: '20px',
-        backgroundColor: 'sidebar.surface',
+        width: '280px',
+        padding: '16px',
+        backgroundColor: 'white',
         flexShrink: 0,
+        overflowY: 'auto',
       })}
     >
       <nav>
@@ -121,9 +123,10 @@
 
     <div
       class={flex({
-        width: 'full',
         flexDirection: 'column',
+        overflowY: 'auto',
         flexGrow: 1,
+        flexShrink: 0,
       })}
     >
       <slot />
