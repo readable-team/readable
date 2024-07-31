@@ -34,11 +34,12 @@
   class={css(
     {
       borderRadius: '8px',
-      padding: '12px',
-      width: 'full',
+      paddingX: '12px',
+      paddingY: '9px',
       textStyle: '16sb',
       textAlign: 'left',
       color: 'text.secondary',
+      width: 'full',
       _hover: {
         backgroundColor: 'neutral.10',
       },
@@ -46,7 +47,7 @@
         color: 'text.accent',
         backgroundColor: {
           base: 'accent.20',
-          _hover: 'accent.30',
+          _hover: 'accent.10',
         },
       },
     },

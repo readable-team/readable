@@ -42,9 +42,10 @@
       {
         display: 'flex',
         flexDirection: 'column',
+        gap: '4px',
         borderRadius: '10px',
         padding: '6px',
-        backgroundColor: 'surface.primary',
+        backgroundColor: { base: 'white', _dark: 'darkgray.700' },
         minWidth: '140px',
         boxShadow: 'emphasize',
       },
