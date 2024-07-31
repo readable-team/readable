@@ -1,9 +1,9 @@
+import { createPubSub } from 'graphql-yoga';
 import { nanoid } from 'nanoid';
 import { dev, env } from '@/env';
 import { pub, rabbit } from '@/mq';
-import { createPubSub } from './utils/pubsub';
+import type { TypedEventTarget } from '@graphql-yoga/typed-event-target';
 import type { PageContentSyncKind } from '@/enums';
-import type { TypedEventTarget } from './utils/pubsub';
 
 const key = nanoid();
 const exchange = 'pubsub';
