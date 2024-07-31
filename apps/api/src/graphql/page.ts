@@ -1,6 +1,8 @@
 import { init } from '@paralleldrive/cuid2';
+import dayjs from 'dayjs';
 import { and, asc, desc, eq, gt, isNull, ne } from 'drizzle-orm';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
+import { Repeater } from 'graphql-yoga';
 import { fromUint8Array, toUint8Array } from 'js-base64';
 import { prosemirrorToYDoc } from 'y-prosemirror';
 import * as Y from 'yjs';
@@ -253,10 +255,27 @@ builder.subscriptionFields((t) => ({
   pageContentSyncStream: t.withAuth({ session: true }).field({
     type: PageContentSyncOperation,
     args: { pageId: t.arg.id() },
-    subscribe: (_, args) => {
-      return pubsub.subscribe('page:content:sync', args.pageId);
+    subscribe: (_, args, ctx) => {
+      const repeater = Repeater.merge([
+        pubsub.subscribe('page:content:sync', args.pageId),
+        new Repeater<typeof PageContentSyncOperation.$inferType>(async (push, stop) => {
+          const timer = setInterval(() => {
+            push({ pageId: args.pageId, kind: PageContentSyncKind.PING, data: dayjs().unix().toString() });
+          }, 1000);
+          await stop;
+          clearInterval(timer);
+        }),
+      ]);
+
+      ctx.req.signal.addEventListener('abort', () => {
+        repeater.return();
+      });
+
+      return repeater;
     },
-    resolve: (payload) => payload,
+    resolve: (payload) => {
+      return payload;
+    },
   }),
 }));
 

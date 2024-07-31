@@ -1,5 +1,5 @@
 import { useGraphQlJit } from '@envelop/graphql-jit';
-import { createYoga } from 'graphql-yoga';
+import { createYoga, useExecutionCancellation } from 'graphql-yoga';
 import { createContext } from '@/context';
 import { schema } from './graphql';
 
@@ -11,5 +11,5 @@ export const yoga = createYoga({
   maskedErrors: false,
   landingPage: false,
   healthCheckEndpoint: '/healthz',
-  plugins: [useGraphQlJit()],
+  plugins: [useGraphQlJit(), useExecutionCancellation()],
 });
