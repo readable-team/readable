@@ -26,6 +26,39 @@
         id
         name
         url
+        # NOTE: depth 0부터 최대 3
+        pages {
+          id
+          order
+          parent {
+            id
+          }
+          state
+          children {
+            id
+            order
+            parent {
+              id
+            }
+            state
+            children {
+              id
+              order
+              parent {
+                id
+              }
+              state
+              children {
+                id
+                order
+                parent {
+                  id
+                }
+                state
+              }
+            }
+          }
+        }
       }
 
       me {
@@ -35,46 +68,46 @@
     }
   `);
 
-  const dummyPages = [
-    {
-      id: '더미 페이지',
-      order: 'a0',
-      parentId: null,
-      children: [
-        {
-          order: 'a0',
-          id: '페이지 2',
-          parentId: '더미 페이지',
-          children: [
-            {
-              order: 'a0',
-              id: '페이지 3',
-              parentId: '페이지 2',
-            },
-          ],
-        },
-        {
-          order: 'a1',
-          id: '페이지 4',
-          parentId: '더미 페이지',
-        },
-        {
-          order: 'a2',
-          id: '페이지 5',
-          parentId: '더미 페이지',
-        },
-      ],
-    },
-    {
-      id: '페이지 1',
-      order: 'a1',
-      parentId: null,
-      state: 'DRAFT',
-    },
-  ];
+  // NOTE: fragment를 쓰면 output 타입이 제대로 안 나오고 있음
+  // let _pageChildren: Page_Children_page;
+  // fragment(
+  //   // @ts-expect-error Argument of type '_pageChildren' is not assignable to parameter of type 'never'.
+  //   _pageChildren,
+  //   graphql(`
+  //     fragment Page_Children_page on Page {
+  //       id
+  //       order
+  //       parent {
+  //         id
+  //       }
+  //       state
+  //     }
+  //   `),
+  // );
+
+  const createPage = graphql(`
+    mutation SiteLayout_CreatePage_Mutation($input: CreatePageInput!) {
+      createPage(input: $input) {
+        id
+      }
+    }
+  `);
+
+  const updatePagePosition = graphql(`
+    mutation SiteLayout_UpdatePagePosition_Mutation($input: UpdatePagePositionInput!) {
+      updatePagePosition(input: $input) {
+        id
+      }
+    }
+  `);
 
   async function onCreatePage(parentId: string | null) {
-    console.log('onCreatePage', parentId);
+    const page = await createPage({
+      siteId: $query.site.id,
+      parentId,
+    });
+
+    await goto(`/workspace/${$query.workspace.id}/site/${$query.site.id}/pages/${page.id}`);
   }
 
   async function onDropPage(target: {
@@ -83,7 +116,16 @@
     previousOrder?: string;
     nextOrder?: string;
   }) {
-    console.log('onDropPage', target);
+    await updatePagePosition({
+      pageId: target.pageId,
+      parentId: target.parentId,
+      lower: target.previousOrder,
+      upper: target.nextOrder,
+    });
+
+    query.refetch(); // FIXME: cache invalidation
+
+    return true;
   }
 
   $: sidebarMenu = [
@@ -291,8 +333,7 @@
         <div role="tree">
           <PageList
             getPageUrl={(pageId) => `/workspace/${$query.workspace.id}/site/${$query.site.id}/pages/${pageId}`}
-            items={dummyPages}
-            onCancel={console.log}
+            items={$query.site.pages}
             onCreate={onCreatePage}
             onDrop={onDropPage}
           />

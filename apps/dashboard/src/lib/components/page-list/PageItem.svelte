@@ -88,23 +88,26 @@
       href={getPageUrl(item.id)}
       role="tab"
     >
-      <button
-        class={css({
-          color: 'neutral.70',
-          borderRadius: '2px',
-          _hover: {
-            backgroundColor: 'neutral.30',
-          },
-        })}
-        aria-expanded={openState[item.id] ? 'true' : 'false'}
-        type="button"
-        on:click={(e) => {
-          e.preventDefault();
-          openState[item.id] = !openState[item.id];
-        }}
-      >
-        <Icon icon={openState[item.id] ? ChevronDownIcon : ChevronRightIcon} size={16} />
-      </button>
+      <!-- NOTE: depth 0부터 최대 3 -->
+      {#if depth < 3}
+        <button
+          class={css({
+            color: 'neutral.70',
+            borderRadius: '2px',
+            _hover: {
+              backgroundColor: 'neutral.30',
+            },
+          })}
+          aria-expanded={openState[item.id] ? 'true' : 'false'}
+          type="button"
+          on:click={(e) => {
+            e.preventDefault();
+            openState[item.id] = !openState[item.id];
+          }}
+        >
+          <Icon icon={openState[item.id] ? ChevronDownIcon : ChevronRightIcon} size={16} />
+        </button>
+      {/if}
       {#if item.state === 'DRAFT'}
         <Chip>초안</Chip>
       {/if}
@@ -123,7 +126,7 @@
                 },
               },
             },
-          }).raw({ root: item.parentId === null }),
+          }).raw({ root: item.parent?.id === null }),
         )}
       >
         <!-- FIXME: 제목을 표시해야 함 -->

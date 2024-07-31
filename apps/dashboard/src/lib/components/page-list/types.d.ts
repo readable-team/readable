@@ -1,15 +1,17 @@
-// FIXME: 서버에서 쓰는 타입 받아오기?
 export type PageData = {
   id: string;
-  text: string;
-  parentId: string | null;
-  children?: PageData[];
   order: string;
-  open: boolean;
-  state: 'DRAFT' | 'IDK' | 'FIXME';
+  parent?:
+    | {
+        id: string;
+      }
+    | undefined
+    | null;
+  state: 'DELETED' | 'DRAFT' | 'PUBLISHED';
+  children?: PageData[];
 };
 
 export type VirtualRootPageData = {
-  id: 'root';
+  id: null;
   children: PageData[];
 };

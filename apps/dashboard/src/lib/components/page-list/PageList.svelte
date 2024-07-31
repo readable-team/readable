@@ -31,8 +31,8 @@
     parentId: string | null;
     previousOrder?: string;
     nextOrder?: string;
-  }) => Promise<void>;
-  export let onCancel: (item: T) => void;
+  }) => Promise<boolean>;
+  export let onCancel: ((item: T) => void) | undefined = undefined;
   export let onCreate: (parentId: string | null) => Promise<void>;
   export let getPageUrl: (pageId: string) => string;
   export let indicatorElem: HTMLElement | null = null;
@@ -48,7 +48,7 @@
     if (parent) {
       registerNode(listElem, parent);
     } else {
-      registerNode(listElem, { id: 'root', children: items });
+      registerNode(listElem, { id: null, children: items });
     }
   });
 
@@ -60,7 +60,7 @@
 
       dragging.elem.releasePointerCapture(dragging.pointerId);
 
-      onCancel(dragging.item);
+      onCancel?.(dragging.item);
 
       dragging.ghost.remove();
       dragging = null;
@@ -188,7 +188,7 @@
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onPointerUp = (event: PointerEvent) => {
+  const onPointerUp = async (event: PointerEvent) => {
     document.removeEventListener('pointermove', onPointerMove);
     document.removeEventListener('pointerup', onPointerUp);
 
@@ -202,18 +202,22 @@
 
     if (dropTarget) {
       if (isTargetItself(dropTarget, dragging)) {
-        onCancel(dragging.item);
+        onCancel?.(dragging.item);
       } else {
         if (dropTarget.targetElem && dragging.elem !== dropTarget.targetElem) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const targetItem = nodeMap.get(dropTarget.targetElem)!;
 
-          onDrop({
+          const success = await onDrop({
             pageId: dragging.item.id,
             parentId: targetItem.id,
             // 맨 앞에 추가
             nextOrder: targetItem.children ? targetItem.children[0]?.order : undefined,
           });
+
+          if (success && targetItem.id !== null) {
+            openState[targetItem.id] = true;
+          }
         } else {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const targetItem = nodeMap.get(dropTarget.list)!;
