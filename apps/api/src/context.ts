@@ -1,4 +1,3 @@
-import cookie from 'cookie';
 import DataLoader from 'dataloader';
 import { eq } from 'drizzle-orm';
 import stringify from 'fast-json-stable-stringify';
@@ -18,13 +17,10 @@ type LoaderParams<T, R, S, N extends boolean, M extends boolean> = {
 
 type ServerContext = YogaInitialContext & {
   server: Server;
-  resHeaders: Headers;
 };
 
 type DefaultContext = {
   'req': Request;
-  'resHeaders': Headers;
-
   'clientAddress'?: string;
 
   'loader': <T, R, S, N extends boolean = false, M extends boolean = false, RR = N extends true ? R | null : R>(
@@ -42,11 +38,9 @@ export type UserContext = {
 
 export type Context = DefaultContext & Partial<UserContext>;
 
-export const createContext = async ({ request, server, resHeaders }: ServerContext) => {
+export const createContext = async ({ request, server }: ServerContext) => {
   const ctx: Context = {
     'req': request,
-    resHeaders,
-
     'clientAddress': server.requestIP(request)?.address,
 
     'loader': <
@@ -101,9 +95,7 @@ export const createContext = async ({ request, server, resHeaders }: ServerConte
     ' $loaders': new Map(),
   };
 
-  const cookies = cookie.parse(request.headers.get('cookie') ?? '');
-
-  const accessToken: string | undefined = cookies['rdbl-at'];
+  const accessToken = request.headers.get('authorization')?.split(' ')[1];
   if (accessToken) {
     const sessionId = await decodeAccessToken(accessToken);
 
