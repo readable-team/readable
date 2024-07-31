@@ -5,6 +5,7 @@
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
+  import { PageList } from '$lib/components/page-list';
 
   $: query = graphql(`
     query SiteLayout_Query($workspaceId: ID!, $siteId: ID!) {
@@ -24,6 +25,57 @@
       }
     }
   `);
+
+  const dummyPages = [
+    {
+      id: '더미 페이지',
+      order: 'a0',
+      parentId: null,
+      children: [
+        {
+          order: 'a0',
+          id: '페이지 2',
+          parentId: '더미 페이지',
+          children: [
+            {
+              order: 'a0',
+              id: '페이지 3',
+              parentId: '페이지 2',
+            },
+          ],
+        },
+        {
+          order: 'a1',
+          id: '페이지 4',
+          parentId: '더미 페이지',
+        },
+        {
+          order: 'a2',
+          id: '페이지 5',
+          parentId: '더미 페이지',
+        },
+      ],
+    },
+    {
+      id: '페이지 1',
+      order: 'a1',
+      parentId: null,
+      state: 'DRAFT',
+    },
+  ];
+
+  async function onCreatePage(parentId: string | null) {
+    console.log('onCreatePage', parentId);
+  }
+
+  async function onDropPage(target: {
+    pageId: string;
+    parentId: string | null;
+    previousOrder?: string;
+    nextOrder?: string;
+  }) {
+    console.log('onDropPage', target);
+  }
 </script>
 
 <div
@@ -118,6 +170,16 @@
           <li><a href={`/workspace/${$query.workspace.id}/site/${$query.site.id}/designs`}>디자인</a></li>
           <li><a href={`/workspace/${$query.workspace.id}/site/${$query.site.id}/settings`}>설정</a></li>
         </ul>
+
+        <div role="tree">
+          <PageList
+            getPageUrl={(pageId) => `/workspace/${$query.workspace.id}/site/${$query.site.id}/pages/${pageId}`}
+            items={dummyPages}
+            onCancel={console.log}
+            onCreate={onCreatePage}
+            onDrop={onDropPage}
+          />
+        </div>
       </nav>
     </aside>
 
