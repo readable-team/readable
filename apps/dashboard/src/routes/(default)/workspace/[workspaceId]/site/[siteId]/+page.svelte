@@ -5,10 +5,9 @@
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import MailIcon from '~icons/lucide/mail';
-  import { goto, invalidateAll } from '$app/navigation';
+  import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
-  import { accessToken } from '$lib/graphql';
   import Pages from './pages/Pages.svelte';
 
   $: query = graphql(`
@@ -117,9 +116,7 @@
   variant="primary"
   on:click={async () => {
     await logout();
-    $accessToken = null;
-
-    await invalidateAll();
+    location.href = '/';
   }}
 >
   Logout
