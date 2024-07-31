@@ -11,20 +11,22 @@
 
   const recipe = cva({
     base: {
-      display: 'block',
-      verticalAlign: 'middle',
-      flex: 'none',
-      transition: 'common',
+      'display': 'block',
+      'verticalAlign': 'middle',
+      'flex': 'none',
+      'transition': 'common',
+      '& *': { strokeWidth: '[2]' },
     },
     variants: {
       size: {
-        12: { 'size': '12px', '& *': { strokeWidth: '[1.5]' } },
-        16: { 'size': '16px', '& *': { strokeWidth: '[1.5]' } },
-        18: { 'size': '18px', '& *': { strokeWidth: '[1.5]' } },
-        20: { 'size': '20px', '& *': { strokeWidth: '[1.5]' } },
-        24: { 'size': '24px', '& *': { strokeWidth: '[1.5]' } },
-        28: { 'size': '28px', '& *': { strokeWidth: '[2]' } },
-        32: { 'size': '32px', '& *': { strokeWidth: '[2]' } },
+        12: { size: '12px' },
+        14: { size: '14px' },
+        16: { size: '16px' },
+        18: { size: '18px' },
+        20: { size: '20px' },
+        24: { size: '24px' },
+        28: { size: '28px' },
+        32: { size: '32px' },
       },
     },
   });
