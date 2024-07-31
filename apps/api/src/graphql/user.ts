@@ -3,6 +3,7 @@ import { builder } from '@/builder';
 import { db, firstOrThrow, Users, UserSessions, UserSingleSignOns, WorkspaceMembers, Workspaces } from '@/db';
 import { UserState, WorkspaceState } from '@/enums';
 import { ApiError } from '@/errors';
+import { dataSchemas } from '@/schemas';
 import { User, Workspace } from './objects';
 
 /**
@@ -51,7 +52,10 @@ builder.queryFields((t) => ({
 builder.mutationFields((t) => ({
   updateUser: t.withAuth({ session: true }).fieldWithInput({
     type: User,
-    input: { name: t.input.string(), avatarUrl: t.input.string() },
+    input: {
+      name: t.input.string({ validate: { schema: dataSchemas.user.name } }),
+      avatarUrl: t.input.string({ validate: { schema: dataSchemas.blob.url } }),
+    },
     resolve: async (_, { input }, ctx) => {
       return await db
         .update(Users)

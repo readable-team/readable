@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const dataSchemas = {
+export const dataSchemas = {
   email: z
     .string({ required_error: '이메일 주소를 입력해 주세요' })
     .trim()

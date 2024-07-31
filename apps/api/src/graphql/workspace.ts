@@ -8,6 +8,7 @@ import WorkspaceMemberInvitedEmail from '@/email/templates/WorkspaceMemberInvite
 import { SiteState, UserState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
+import { dataSchemas } from '@/schemas';
 import { assertWorkspacePermission } from '@/utils/permissions';
 import { Site, User, Workspace, WorkspaceMember, WorkspaceMemberInvitation } from './objects';
 
@@ -87,7 +88,7 @@ builder.queryFields((t) => ({
 builder.mutationFields((t) => ({
   createWorkspace: t.withAuth({ session: true }).fieldWithInput({
     type: Workspace,
-    input: { name: t.input.string() },
+    input: { name: t.input.string({ validate: { schema: dataSchemas.workspace.name } }) },
     resolve: async (_, { input }, ctx) => {
       return await createWorkspace(ctx.session.userId, input.name);
     },
@@ -139,7 +140,7 @@ builder.mutationFields((t) => ({
       types: [WorkspaceMember, WorkspaceMemberInvitation],
       resolveType: (object) => ('expiresAt' in object ? WorkspaceMemberInvitation : WorkspaceMember),
     }),
-    input: { workspaceId: t.input.string(), email: t.input.string() },
+    input: { workspaceId: t.input.string(), email: t.input.string({ validate: { schema: dataSchemas.email } }) },
     resolve: async (_, { input }, ctx) => {
       await assertWorkspacePermission({
         workspaceId: input.workspaceId,

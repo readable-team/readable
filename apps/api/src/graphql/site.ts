@@ -5,6 +5,7 @@ import { db, first, firstOrThrow, Pages, Sites } from '@/db';
 import { PageState, SiteState, WorkspaceMemberRole } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
+import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertWorkspacePermission } from '@/utils/permissions';
 import { Page, Site } from './objects';
 
@@ -58,7 +59,10 @@ builder.queryFields((t) => ({
 builder.mutationFields((t) => ({
   createSite: t.withAuth({ session: true }).fieldWithInput({
     type: Site,
-    input: { workspaceId: t.input.id(), name: t.input.string() },
+    input: {
+      workspaceId: t.input.id(),
+      name: t.input.string({ validate: { schema: dataSchemas.site.name } }),
+    },
     resolve: async (_, { input }, ctx) => {
       await assertWorkspacePermission({
         workspaceId: input.workspaceId,
@@ -88,7 +92,11 @@ builder.mutationFields((t) => ({
 
   updateSite: t.withAuth({ session: true }).fieldWithInput({
     type: Site,
-    input: { siteId: t.input.id(), name: t.input.string(), slug: t.input.string() },
+    input: {
+      siteId: t.input.id(),
+      name: t.input.string({ validate: { schema: dataSchemas.site.name } }),
+      slug: t.input.string({ validate: { schema: dataSchemas.site.slug } }),
+    },
     resolve: async (_, { input }, ctx) => {
       await assertSitePermission({
         siteId: input.siteId,
