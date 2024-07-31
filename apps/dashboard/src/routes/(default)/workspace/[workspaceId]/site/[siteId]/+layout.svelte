@@ -10,6 +10,9 @@
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
   import { PageList } from '$lib/components/page-list';
+  import SettingModal from './SettingModal.svelte';
+
+  let open = false;
 
   $: query = graphql(`
     query SiteLayout_Query($workspaceId: ID!, $siteId: ID!) {
@@ -63,7 +66,7 @@
 
       me {
         id
-        avatarUrl
+        ...SettingModal_user
       }
     }
   `);
@@ -128,18 +131,28 @@
     return true;
   }
 
-  $: sidebarMenu = [
-    {
-      href: `/workspace/${$query.workspace.id}/site/${$query.site.id}`,
-      text: '홈',
-      icon: HouseIcon,
+  const sidebarMenuItemStyle = flex({
+    alignItems: 'center',
+    gap: '6px',
+    flex: '1',
+    paddingX: '6px',
+    textStyle: '15sb',
+    color: 'text.primary',
+    width: 'full',
+    height: '34px',
+    _hover: {
+      borderRadius: '6px',
+      backgroundColor: 'neutral.10',
     },
-    {
-      href: `/workspace/${$query.workspace.id}/site/${$query.site.id}/settings`,
-      text: '설정',
-      icon: SettingsIcon,
+    _selected: {
+      'borderRadius': '6px',
+      'backgroundColor': 'accent.10',
+      'color': 'text.accent',
+      '& svg': {
+        color: 'text.accent',
+      },
     },
-  ];
+  });
 </script>
 
 <div
@@ -283,52 +296,28 @@
             gap: '2px',
           })}
         >
-          {#each sidebarMenu as item (item.href)}
-            <li>
-              <a
-                class={flex({
-                  width: 'full',
-                  height: '34px',
-                  paddingX: '6px',
-                  flex: '1',
-                  alignItems: 'center',
-                  gap: '6px',
-                  _hover: {
-                    borderRadius: '6px',
-                    backgroundColor: 'neutral.10',
-                  },
-                  _selected: {
-                    borderRadius: '6px',
-                    backgroundColor: 'accent.10',
-                    color: 'text.accent',
-                  },
-                })}
-                aria-current={$page.url.pathname.startsWith(item.href) ? 'page' : undefined}
-                aria-selected={$page.url.pathname.startsWith(item.href) ? 'true' : 'false'}
-                href={item.href}
-                role="tab"
-              >
-                <Icon
-                  style={css.raw({
-                    color: 'text.secondary',
-                  })}
-                  icon={item.icon}
-                  size={16}
-                />
-                <span
-                  class={css({
-                    textStyle: '15sb',
-                    color: 'text.primary',
-                  })}
-                >
-                  {item.text}
-                </span>
-              </a>
-            </li>
-          {/each}
+          <li>
+            <a
+              class={sidebarMenuItemStyle}
+              aria-selected={$page.url.pathname.startsWith(`/workspace/${$query.workspace.id}/site/${$query.site.id}`)
+                ? 'true'
+                : 'false'}
+              href={`/workspace/${$query.workspace.id}/site/${$query.site.id}`}
+              role="tab"
+            >
+              <Icon style={css.raw({ color: 'text.secondary' })} icon={HouseIcon} />
+              <span>홈</span>
+            </a>
+          </li>
+          <li>
+            <button class={sidebarMenuItemStyle} role="tab" type="button" on:click={() => (open = true)}>
+              <Icon style={css.raw({ color: 'text.secondary' })} icon={SettingsIcon} />
+              <span>설정</span>
+            </button>
+          </li>
         </ul>
 
-        <hr class={css({ marginY: '10px', borderColor: 'divider.primary' })} />
+        <HorizontalDivider style={css.raw({ marginY: '10px' })} />
 
         <div role="tree">
           <PageList
@@ -353,3 +342,7 @@
     </div>
   </div>
 </div>
+
+{#if $query.me}
+  <SettingModal $user={$query.me} bind:open />
+{/if}
