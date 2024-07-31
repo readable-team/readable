@@ -3,7 +3,10 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Button, Icon, LogoPlaceholder, Menu, MenuItem } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
+  import HouseIcon from '~icons/lucide/house';
+  import SettingsIcon from '~icons/lucide/settings';
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { graphql } from '$graphql';
   import { PageList } from '$lib/components/page-list';
 
@@ -76,6 +79,19 @@
   }) {
     console.log('onDropPage', target);
   }
+
+  $: sidebarMenu = [
+    {
+      href: `/workspace/${$query.workspace.id}/site/${$query.site.id}/pages`, // FIXME: '홈' 페이지 필요
+      text: '홈',
+      icon: HouseIcon,
+    },
+    {
+      href: `/workspace/${$query.workspace.id}/site/${$query.site.id}/settings`,
+      text: '설정',
+      icon: SettingsIcon,
+    },
+  ];
 </script>
 
 <div
@@ -160,6 +176,8 @@
         backgroundColor: 'white',
         flexShrink: 0,
         overflowY: 'auto',
+        borderRightWidth: '1px',
+        borderColor: 'divider.secondary',
       })}
     >
       <nav>
@@ -169,10 +187,52 @@
             gap: '2px',
           })}
         >
-          <li><a href={`/workspace/${$query.workspace.id}/site/${$query.site.id}/pages`}>페이지</a></li>
-          <li><a href={`/workspace/${$query.workspace.id}/site/${$query.site.id}/designs`}>디자인</a></li>
-          <li><a href={`/workspace/${$query.workspace.id}/site/${$query.site.id}/settings`}>설정</a></li>
+          {#each sidebarMenu as item (item.href)}
+            <li>
+              <a
+                class={flex({
+                  width: 'full',
+                  height: '34px',
+                  paddingX: '6px',
+                  flex: '1',
+                  alignItems: 'center',
+                  gap: '6px',
+                  _hover: {
+                    borderRadius: '6px',
+                    backgroundColor: 'neutral.10',
+                  },
+                  _selected: {
+                    borderRadius: '6px',
+                    backgroundColor: 'accent.10',
+                    color: 'text.accent',
+                  },
+                })}
+                aria-current={$page.url.pathname.startsWith(item.href) ? 'page' : undefined}
+                aria-selected={$page.url.pathname.startsWith(item.href) ? 'true' : 'false'}
+                href={item.href}
+                role="tab"
+              >
+                <Icon
+                  style={css.raw({
+                    color: 'text.secondary',
+                  })}
+                  icon={item.icon}
+                  size={16}
+                />
+                <span
+                  class={css({
+                    textStyle: '15sb',
+                    color: 'text.primary',
+                  })}
+                >
+                  {item.text}
+                </span>
+              </a>
+            </li>
+          {/each}
         </ul>
+
+        <hr class={css({ marginY: '10px', borderColor: 'divider.primary' })} />
 
         <div role="tree">
           <PageList
