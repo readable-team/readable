@@ -53,7 +53,7 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 scalar JSON
 
 type Mutation {
-  authorizeSingleSignOn(input: AuthorizeSingleSignOnInput!): UserWithAccessToken!
+  authorizeSingleSignOn(input: AuthorizeSingleSignOnInput!): User!
   createDefaultWorkspace: Workspace!
   createPage(input: CreatePageInput!): Page!
   createSite(input: CreateSiteInput!): Site!
@@ -184,11 +184,6 @@ type User {
 enum UserState {
   ACTIVE
   DEACTIVATED
-}
-
-type UserWithAccessToken {
-  accessToken: String!
-  user: User!
 }
 
 type Workspace {

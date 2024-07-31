@@ -1,4 +1,5 @@
 import path from 'node:path';
+import cookie from 'cookie';
 import dayjs from 'dayjs';
 import { and, eq, gt } from 'drizzle-orm';
 import { match } from 'ts-pattern';
@@ -21,17 +22,6 @@ import { createAccessToken } from '@/utils/access-token';
 import { User } from './objects';
 
 /**
- * * Types
- */
-
-const UserWithAccessToken = builder.simpleObject('UserWithAccessToken', {
-  fields: (t) => ({
-    user: t.field({ type: User }),
-    accessToken: t.string(),
-  }),
-});
-
-/**
  * * Mutations
  */
 
@@ -47,9 +37,9 @@ builder.mutationFields((t) => ({
   }),
 
   authorizeSingleSignOn: t.fieldWithInput({
-    type: UserWithAccessToken,
+    type: User,
     input: { provider: t.input.field({ type: SingleSignOnProvider }), params: t.input.field({ type: 'JSON' }) },
-    resolve: async (_, { input }) => {
+    resolve: async (_, { input }, ctx) => {
       const externalUser = await match(input.provider)
         .with(SingleSignOnProvider.GOOGLE, () => google.authorizeUser(input.params.code))
         .exhaustive();
@@ -66,10 +56,19 @@ builder.mutationFields((t) => ({
         .then(first);
 
       if (sso) {
-        return {
-          accessToken: await createSessionAndReturnAccessToken(sso.userId),
-          user: sso.userId,
-        };
+        const accessToken = await createSessionAndReturnAccessToken(sso.userId);
+
+        ctx.resHeaders.set(
+          'Set-Cookie',
+          cookie.serialize('rdbl-at', accessToken, {
+            path: '/',
+            sameSite: 'none',
+            secure: true,
+            httpOnly: true,
+          }),
+        );
+
+        return sso.userId;
       }
 
       const existingUser = await db
@@ -133,10 +132,20 @@ builder.mutationFields((t) => ({
         return user;
       });
 
-      return {
-        accessToken: await createSessionAndReturnAccessToken(user.id),
-        user: user.id,
-      };
+      const accessToken = await createSessionAndReturnAccessToken(user.id);
+
+      ctx.resHeaders.set(
+        'Set-Cookie',
+        cookie.serialize('rdbl-at', accessToken, {
+          expires: dayjs().add(1, 'year').toDate(),
+          path: '/',
+          sameSite: 'none',
+          secure: true,
+          httpOnly: true,
+        }),
+      );
+
+      return user.id;
     },
   }),
 
@@ -144,6 +153,18 @@ builder.mutationFields((t) => ({
     type: 'Boolean',
     resolve: async (_, __, ctx) => {
       await db.delete(UserSessions).where(eq(UserSessions.id, ctx.session.id));
+
+      ctx.resHeaders.set(
+        'Set-Cookie',
+        cookie.serialize('rdbl-at', '', {
+          expires: new Date(0),
+          path: '/',
+          sameSite: 'none',
+          secure: true,
+          httpOnly: true,
+        }),
+      );
+
       return true;
     },
   }),
