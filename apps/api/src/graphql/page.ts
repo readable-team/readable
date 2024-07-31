@@ -238,6 +238,27 @@ builder.mutationFields((t) => ({
     },
   }),
 
+  updatePage: t.withAuth({ session: true }).fieldWithInput({
+    type: Page,
+    input: {
+      pageId: t.input.id(),
+      state: t.input.field({ type: PageState }),
+    },
+    resolve: async (_, { input }, ctx) => {
+      await assertPagePermission({
+        pageId: input.pageId,
+        userId: ctx.session.userId,
+      });
+
+      return await db
+        .update(Pages)
+        .set({ state: input.state })
+        .where(eq(Pages.id, input.pageId))
+        .returning()
+        .then(firstOrThrow);
+    },
+  }),
+
   deletePage: t.withAuth({ session: true }).fieldWithInput({
     type: Page,
     input: { pageId: t.input.id() },
