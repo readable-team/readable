@@ -193,6 +193,7 @@ type UserWithAccessToken {
 
 type Workspace {
   id: ID!
+  meAsMember: WorkspaceMember
   members: [WorkspaceMember!]!
   name: String!
   sites: [Site!]!

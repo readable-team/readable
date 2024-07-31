@@ -32,6 +32,22 @@ Workspace.implement({
       },
     }),
 
+    meAsMember: t.field({
+      type: WorkspaceMember,
+      nullable: true,
+      resolve: async (workspace, _, ctx) => {
+        if (!ctx.session) {
+          return;
+        }
+
+        return await db
+          .select()
+          .from(WorkspaceMembers)
+          .where(and(eq(WorkspaceMembers.workspaceId, workspace.id), eq(WorkspaceMembers.userId, ctx.session.userId)))
+          .then(first);
+      },
+    }),
+
     sites: t.field({
       type: [Site],
       resolve: async (workspace) => {
