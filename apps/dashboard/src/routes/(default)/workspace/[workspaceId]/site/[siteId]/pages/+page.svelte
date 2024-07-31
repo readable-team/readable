@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Chip, Icon, LogoPlaceholder, TextInput } from '@readable/ui/components';
+  import { Button, Chip, Icon, LogoPlaceholder, TextInput, Tooltip } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import MailIcon from '~icons/lucide/mail';
@@ -55,15 +55,17 @@
 <LogoPlaceholder size={20} />
 <LogoPlaceholder size={32} />
 
-<Img
-  style={css.raw({
-    borderRadius: 'full',
-    size: '64px',
-    marginBottom: '4px',
-  })}
-  alt={`${$query.me.name}의 아바타`}
-  url={$query.me.avatarUrl}
-/>
+<Tooltip message="안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요" placement="right">
+  <Img
+    style={css.raw({
+      borderRadius: 'full',
+      size: '64px',
+      marginBottom: '4px',
+    })}
+    alt={`${$query.me.name}의 아바타`}
+    url={$query.me.avatarUrl}
+  />
+</Tooltip>
 
 <div>ID: {$query.me.id}</div>
 <div>Name: {$query.me.name}</div>
