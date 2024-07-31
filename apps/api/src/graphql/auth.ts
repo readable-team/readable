@@ -20,6 +20,7 @@ import * as aws from '@/external/aws';
 import * as google from '@/external/google';
 import { createAccessToken } from '@/utils/access-token';
 import { User } from './objects';
+import type { Context } from '@/context';
 
 /**
  * * Mutations
@@ -56,17 +57,7 @@ builder.mutationFields((t) => ({
         .then(first);
 
       if (sso) {
-        const accessToken = await createSessionAndReturnAccessToken(sso.userId);
-
-        ctx.resHeaders.set(
-          'Set-Cookie',
-          cookie.serialize('rdbl-at', accessToken, {
-            path: '/',
-            sameSite: 'none',
-            secure: true,
-            httpOnly: true,
-          }),
-        );
+        await createSessionAndSetCookie(ctx, sso.userId);
 
         return sso.userId;
       }
@@ -132,18 +123,7 @@ builder.mutationFields((t) => ({
         return user;
       });
 
-      const accessToken = await createSessionAndReturnAccessToken(user.id);
-
-      ctx.resHeaders.set(
-        'Set-Cookie',
-        cookie.serialize('rdbl-at', accessToken, {
-          expires: dayjs().add(1, 'year').toDate(),
-          path: '/',
-          sameSite: 'none',
-          secure: true,
-          httpOnly: true,
-        }),
-      );
+      await createSessionAndSetCookie(ctx, user.id);
 
       return user.id;
     },
@@ -159,9 +139,6 @@ builder.mutationFields((t) => ({
         cookie.serialize('rdbl-at', '', {
           expires: new Date(0),
           path: '/',
-          sameSite: 'none',
-          secure: true,
-          httpOnly: true,
         }),
       );
 
@@ -174,12 +151,23 @@ builder.mutationFields((t) => ({
  * * Utils
  */
 
-const createSessionAndReturnAccessToken = async (userId: string) => {
+const createSessionAndSetCookie = async (ctx: Context, userId: string) => {
   const session = await db
     .insert(UserSessions)
     .values({ userId })
     .returning({ id: UserSessions.id })
     .then(firstOrThrow);
 
-  return await createAccessToken(session.id);
+  const accessToken = await createAccessToken(session.id);
+
+  ctx.resHeaders.set(
+    'Set-Cookie',
+    cookie.serialize('rdbl-at', accessToken, {
+      expires: dayjs().add(1, 'year').toDate(),
+      path: '/',
+      sameSite: 'none',
+      secure: true,
+      httpOnly: true,
+    }),
+  );
 };
