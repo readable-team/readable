@@ -128,6 +128,7 @@ enum SingleSignOnProvider {
 
 type Site {
   id: ID!
+  logoUrl: String
   name: String!
   pages: [Page!]!
   url: String!
@@ -157,6 +158,7 @@ input UpdatePagePositionInput {
 }
 
 input UpdateSiteInput {
+  logoUrl: String!
   name: String!
   siteId: ID!
   slug: String!

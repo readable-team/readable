@@ -102,6 +102,7 @@ export const Sites = pgTable(
     slug: text('slug').notNull(),
     name: text('name').notNull(),
     state: E._SiteState('state').notNull().default('ACTIVE'),
+    logoUrl: text('logo_url'),
     createdAt: datetime('created_at')
       .notNull()
       .default(sql`now()`),

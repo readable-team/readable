@@ -17,6 +17,7 @@ Site.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
+    logoUrl: t.exposeString('logoUrl', { nullable: true }),
 
     url: t.string({ resolve: (site) => `https://${site.slug}.${env.USERSITE_DEFAULT_HOST}` }),
 
@@ -96,6 +97,7 @@ builder.mutationFields((t) => ({
       siteId: t.input.id(),
       name: t.input.string({ validate: { schema: dataSchemas.site.name } }),
       slug: t.input.string({ validate: { schema: dataSchemas.site.slug } }),
+      logoUrl: t.input.string({ validate: { schema: dataSchemas.blob.url } }),
     },
     resolve: async (_, { input }, ctx) => {
       await assertSitePermission({
@@ -116,7 +118,7 @@ builder.mutationFields((t) => ({
 
       return await db
         .update(Sites)
-        .set({ name: input.name, slug: input.slug })
+        .set({ name: input.name, slug: input.slug, logoUrl: input.logoUrl })
         .where(eq(Sites.id, input.siteId))
         .returning()
         .then(firstOrThrow);
