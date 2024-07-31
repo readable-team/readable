@@ -15,7 +15,6 @@ import {
   WorkspaceMembers,
 } from '@/db';
 import { SingleSignOnProvider, UserState, WorkspaceMemberRole } from '@/enums';
-import { env } from '@/env';
 import { ApiError } from '@/errors';
 import * as aws from '@/external/aws';
 import * as google from '@/external/google';
@@ -165,7 +164,6 @@ const createSessionAndSetCookie = async (ctx: Context, userId: string) => {
     'Set-Cookie',
     cookie.serialize('rdbl-at', accessToken, {
       expires: dayjs().add(1, 'year').toDate(),
-      domain: new URL(env.DASHBOARD_URL).hostname,
       path: '/',
       sameSite: 'none',
       secure: true,

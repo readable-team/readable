@@ -25,6 +25,7 @@ export const createClient = <E>({ url, cache, headers, ...rest }: CreateClientPa
     const sseClient = createSSEClient({
       url,
       headers,
+      credentials: 'include',
       retry: () => new Promise((resolve) => setTimeout(resolve, 500)),
       retryAttempts: Number.POSITIVE_INFINITY,
     });
