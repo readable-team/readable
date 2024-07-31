@@ -19,12 +19,15 @@ Workspace.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
-    state: t.expose('state', { type: WorkspaceState }),
 
     members: t.field({
       type: [WorkspaceMember],
       resolve: async (workspace) => {
-        return await db.select().from(WorkspaceMembers).where(eq(WorkspaceMembers.workspaceId, workspace.id));
+        return await db
+          .select()
+          .from(WorkspaceMembers)
+          .where(eq(WorkspaceMembers.workspaceId, workspace.id))
+          .orderBy(asc(WorkspaceMembers.createdAt));
       },
     }),
 
@@ -34,7 +37,8 @@ Workspace.implement({
         return await db
           .select()
           .from(Sites)
-          .where(and(eq(Sites.workspaceId, workspace.id), eq(Sites.state, SiteState.ACTIVE)));
+          .where(and(eq(Sites.workspaceId, workspace.id), eq(Sites.state, SiteState.ACTIVE)))
+          .orderBy(asc(Sites.name));
       },
     }),
   }),
@@ -52,6 +56,8 @@ WorkspaceMember.implement({
 WorkspaceMemberInvitation.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
+    email: t.exposeString('email'),
+    createdAt: t.expose('createdAt', { type: 'DateTime' }),
   }),
 });
 
@@ -72,19 +78,6 @@ builder.queryFields((t) => ({
       return await db.select().from(Workspaces).where(eq(Workspaces.id, workspaceId)).then(firstOrThrow);
     },
   }),
-
-  workspaces: t.withAuth({ session: true }).field({
-    type: [Workspace],
-    resolve: async (_, __, { session }) => {
-      return await db
-        .select({ id: Workspaces.id })
-        .from(Workspaces)
-        .innerJoin(WorkspaceMembers, eq(Workspaces.id, WorkspaceMembers.workspaceId))
-        .where(and(eq(WorkspaceMembers.userId, session.userId), eq(Workspaces.state, WorkspaceState.ACTIVE)))
-        .orderBy(asc(Workspaces.createdAt))
-        .then((workspaces) => workspaces.map((workspace) => workspace.id));
-    },
-  }),
 }));
 
 /**
@@ -95,31 +88,31 @@ builder.mutationFields((t) => ({
   createWorkspace: t.withAuth({ session: true }).fieldWithInput({
     type: Workspace,
     input: { name: t.input.string() },
-    resolve: async (_, { input }, { session }) => {
-      return await createWorkspace(session.userId, input.name);
+    resolve: async (_, { input }, ctx) => {
+      return await createWorkspace(ctx.session.userId, input.name);
     },
   }),
 
   createDefaultWorkspace: t.withAuth({ session: true }).field({
     type: Workspace,
-    resolve: async (_, __, { session }) => {
+    resolve: async (_, __, ctx) => {
       const user = await db
         .select({ name: Users.name })
         .from(Users)
-        .where(eq(Users.id, session.userId))
+        .where(eq(Users.id, ctx.session.userId))
         .then(firstOrThrow);
 
-      return await createWorkspace(session.userId, `${user.name}의 워크스페이스`);
+      return await createWorkspace(ctx.session.userId, `${user.name}의 워크스페이스`);
     },
   }),
 
   deleteWorkspace: t.withAuth({ session: true }).fieldWithInput({
     type: Workspace,
     input: { workspaceId: t.input.string() },
-    resolve: async (_, { input }, { session }) => {
+    resolve: async (_, { input }, ctx) => {
       await assertWorkspacePermission({
         workspaceId: input.workspaceId,
-        userId: session.userId,
+        userId: ctx.session.userId,
         role: 'ADMIN',
       });
 
@@ -147,10 +140,10 @@ builder.mutationFields((t) => ({
       resolveType: (object) => ('expiresAt' in object ? WorkspaceMemberInvitation : WorkspaceMember),
     }),
     input: { workspaceId: t.input.string(), email: t.input.string() },
-    resolve: async (_, { input }, { session }) => {
+    resolve: async (_, { input }, ctx) => {
       await assertWorkspacePermission({
         workspaceId: input.workspaceId,
-        userId: session.userId,
+        userId: ctx.session.userId,
         role: WorkspaceMemberRole.ADMIN,
       });
 
@@ -227,11 +220,11 @@ builder.mutationFields((t) => ({
   removeWorkspaceMember: t.withAuth({ session: true }).fieldWithInput({
     type: WorkspaceMember,
     input: { workspaceId: t.input.string(), userId: t.input.string() },
-    resolve: async (_, { input }, { session }) => {
+    resolve: async (_, { input }, ctx) => {
       await assertWorkspacePermission({
         workspaceId: input.workspaceId,
-        userId: session.userId,
-        role: input.userId == session.userId ? WorkspaceMemberRole.MEMBER : WorkspaceMemberRole.ADMIN,
+        userId: ctx.session.userId,
+        role: input.userId == ctx.session.userId ? WorkspaceMemberRole.MEMBER : WorkspaceMemberRole.ADMIN,
       });
 
       return await db.transaction(async (tx) => {
@@ -268,10 +261,10 @@ builder.mutationFields((t) => ({
       userId: t.input.string(),
       role: t.input.field({ type: WorkspaceMemberRole }),
     },
-    resolve: async (_, { input }, { session }) => {
+    resolve: async (_, { input }, ctx) => {
       await assertWorkspacePermission({
         workspaceId: input.workspaceId,
-        userId: session.userId,
+        userId: ctx.session.userId,
         role: WorkspaceMemberRole.ADMIN,
       });
 

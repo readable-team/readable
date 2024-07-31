@@ -1,12 +1,12 @@
 import { init } from '@paralleldrive/cuid2';
-import { and, desc, eq, gt, isNull } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, isNull, ne } from 'drizzle-orm';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { fromUint8Array, toUint8Array } from 'js-base64';
 import { prosemirrorToYDoc } from 'y-prosemirror';
 import * as Y from 'yjs';
 import { builder } from '@/builder';
 import { db, first, firstOrThrow, PageContentSnapshots, PageContentStates, PageContentUpdates, Pages } from '@/db';
-import { PageContentSyncKind } from '@/enums';
+import { PageContentSyncKind, PageState } from '@/enums';
 import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
@@ -15,13 +15,26 @@ import { Page, PageContentSnapshot, PageContentState } from './objects';
 
 const createPageSlug = init({ length: 8 });
 
-/*
- * Types
+/**
+ * * Types
  */
 
 Page.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
+    state: t.expose('state', { type: PageState }),
+
+    parent: t.field({ type: Page, nullable: true, resolve: (page) => page.parentId }),
+    children: t.field({
+      type: [Page],
+      resolve: async (page) => {
+        return await db
+          .select()
+          .from(Pages)
+          .where(and(eq(Pages.parentId, page.id), ne(Pages.state, PageState.DELETED)))
+          .orderBy(asc(Pages.order));
+      },
+    }),
   }),
 });
 
@@ -45,8 +58,8 @@ const PageContentSyncOperation = builder.simpleObject('PageContentSyncOperation'
   }),
 });
 
-/*
- * Queries
+/**
+ * * Queries
  */
 
 builder.queryFields((t) => ({
@@ -62,32 +75,10 @@ builder.queryFields((t) => ({
       return args.pageId;
     },
   }),
-
-  pages: t.withAuth({ session: true }).field({
-    type: [Page],
-    args: { siteId: t.arg.id(), parentId: t.arg.id({ required: false }) },
-    resolve: async (_, args, ctx) => {
-      await assertSitePermission({
-        siteId: args.siteId,
-        userId: ctx.session.userId,
-      });
-
-      return db
-        .select()
-        .from(Pages)
-        .where(
-          and(
-            eq(Pages.siteId, args.siteId),
-            args.parentId ? eq(Pages.parentId, args.parentId) : isNull(Pages.parentId),
-          ),
-        )
-        .orderBy(Pages.order);
-    },
-  }),
 }));
 
-/*
- * Mutations
+/**
+ * * Mutations
  */
 
 builder.mutationFields((t) => ({
@@ -254,6 +245,10 @@ builder.mutationFields((t) => ({
   }),
 }));
 
+/**
+ * * Subscriptions
+ */
+
 builder.subscriptionFields((t) => ({
   pageContentSyncStream: t.withAuth({ session: true }).field({
     type: PageContentSyncOperation,
@@ -265,8 +260,8 @@ builder.subscriptionFields((t) => ({
   }),
 }));
 
-/*
- * Utils
+/**
+ * * Utils
  */
 
 const getLatestPageContentState = async (pageId: string) => {

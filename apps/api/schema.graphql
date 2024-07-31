@@ -74,7 +74,10 @@ type Mutation {
 }
 
 type Page {
+  children: [Page!]!
   id: ID!
+  parent: Page
+  state: PageState!
 }
 
 type PageContentSnapshot {
@@ -109,10 +112,8 @@ enum PageState {
 type Query {
   me: User
   page(pageId: ID!): Page!
-  pages(parentId: ID, siteId: ID!): [Page!]!
   site(siteId: ID!): Site!
   workspace(workspaceId: ID!): Workspace!
-  workspaces: [Workspace!]!
 }
 
 input RemoveWorkspaceMemberInput {
@@ -127,6 +128,7 @@ enum SingleSignOnProvider {
 type Site {
   id: ID!
   name: String!
+  pages: [Page!]!
   url: String!
 }
 
@@ -193,7 +195,6 @@ type Workspace {
   members: [WorkspaceMember!]!
   name: String!
   sites: [Site!]!
-  state: WorkspaceState!
 }
 
 type WorkspaceMember {
@@ -203,6 +204,8 @@ type WorkspaceMember {
 }
 
 type WorkspaceMemberInvitation {
+  createdAt: DateTime!
+  email: String!
   id: ID!
 }
 

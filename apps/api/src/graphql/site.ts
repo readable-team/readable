@@ -1,15 +1,15 @@
 import { faker } from '@faker-js/faker';
-import { and, eq } from 'drizzle-orm';
+import { and, asc, eq, isNull, ne } from 'drizzle-orm';
 import { builder } from '@/builder';
-import { db, first, firstOrThrow, Sites } from '@/db';
-import { SiteState, WorkspaceMemberRole } from '@/enums';
+import { db, first, firstOrThrow, Pages, Sites } from '@/db';
+import { PageState, SiteState, WorkspaceMemberRole } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
 import { assertSitePermission, assertWorkspacePermission } from '@/utils/permissions';
-import { Site } from './objects';
+import { Page, Site } from './objects';
 
-/*
- *Types
+/**
+ * * Types
  */
 
 Site.implement({
@@ -18,11 +18,22 @@ Site.implement({
     name: t.exposeString('name'),
 
     url: t.string({ resolve: (site) => `https://${site.slug}.${env.USERSITE_DEFAULT_HOST}` }),
+
+    pages: t.field({
+      type: [Page],
+      resolve: async (site) => {
+        return await db
+          .select()
+          .from(Pages)
+          .where(and(eq(Pages.siteId, site.id), isNull(Pages.parentId), ne(Pages.state, PageState.DELETED)))
+          .orderBy(asc(Pages.order));
+      },
+    }),
   }),
 });
 
-/*
- * Queries
+/**
+ * * Queries
  */
 
 builder.queryFields((t) => ({
@@ -40,8 +51,8 @@ builder.queryFields((t) => ({
   }),
 }));
 
-/*
- * Mutations
+/**
+ * * Mutations
  */
 
 builder.mutationFields((t) => ({
@@ -123,16 +134,3 @@ builder.mutationFields((t) => ({
     },
   }),
 }));
-
-//   list: sessionProcedure.input(z.object({ workspaceId: z.string() })).query(async ({ input, ctx }) => {
-//     await assertWorkspacePermission({
-//       workspaceId: input.workspaceId,
-//       userId: ctx.session.userId,
-//     });
-
-//     return await db
-//       .select({ id: Sites.id, name: Sites.name, slug: Sites.slug })
-//       .from(Sites)
-//       .where(and(eq(Sites.workspaceId, input.workspaceId), eq(Sites.state, SiteState.ACTIVE)))
-//       .orderBy(asc(Sites.name));
-//   }),

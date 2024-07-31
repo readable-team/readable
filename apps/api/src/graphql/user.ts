@@ -1,12 +1,12 @@
-import { and, eq, getTableColumns } from 'drizzle-orm';
+import { and, asc, eq, getTableColumns } from 'drizzle-orm';
 import { builder } from '@/builder';
 import { db, firstOrThrow, Users, UserSessions, UserSingleSignOns, WorkspaceMembers, Workspaces } from '@/db';
 import { UserState, WorkspaceState } from '@/enums';
 import { ApiError } from '@/errors';
 import { User, Workspace } from './objects';
 
-/*
- * Types
+/**
+ * * Types
  */
 
 User.implement({
@@ -23,14 +23,15 @@ User.implement({
           .select(getTableColumns(Workspaces))
           .from(Workspaces)
           .innerJoin(WorkspaceMembers, eq(Workspaces.id, WorkspaceMembers.workspaceId))
-          .where(and(eq(WorkspaceMembers.userId, user.id), eq(Workspaces.state, WorkspaceState.ACTIVE)));
+          .where(and(eq(WorkspaceMembers.userId, user.id), eq(Workspaces.state, WorkspaceState.ACTIVE)))
+          .orderBy(asc(WorkspaceMembers.createdAt));
       },
     }),
   }),
 });
 
-/*
- * Queries
+/**
+ * * Queries
  */
 
 builder.queryFields((t) => ({
@@ -43,8 +44,8 @@ builder.queryFields((t) => ({
   }),
 }));
 
-/*
- * Mutations
+/**
+ * * Mutations
  */
 
 builder.mutationFields((t) => ({

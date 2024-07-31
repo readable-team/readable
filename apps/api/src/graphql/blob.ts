@@ -17,7 +17,7 @@ builder.mutationFields((t) => ({
       }),
     }),
     input: { filename: t.input.string() },
-    resolve: async (_, { input }, context) => {
+    resolve: async (_, { input }, ctx) => {
       const ext = path.extname(input.filename);
       const key = aws.createFragmentedS3ObjectKey() + ext;
 
@@ -28,7 +28,7 @@ builder.mutationFields((t) => ({
           Key: key,
           Metadata: {
             name: encodeURIComponent(input.filename),
-            userId: context.session.userId,
+            userId: ctx.session.userId,
           },
         }),
         { expiresIn: 60 * 60 }, // 1 hour
