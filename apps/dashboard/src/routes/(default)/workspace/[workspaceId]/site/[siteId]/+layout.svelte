@@ -111,7 +111,10 @@
       </div>
 
       {#each $query.workspace.sites as site (site.id)}
-        <MenuItem on:click={async () => await goto(`/workspace/${$query.workspace.id}/site/${site.id}`)}>
+        <MenuItem
+          aria-selected={site.id === $query.site.id}
+          on:click={async () => await goto(`/workspace/${$query.workspace.id}/site/${site.id}`)}
+        >
           {site.name}
         </MenuItem>
       {/each}
