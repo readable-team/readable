@@ -1,9 +1,10 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Icon, LogoPlaceholder, Menu, MenuItem } from '@readable/ui/components';
+  import { Button, HorizontalDivider, Icon, LogoPlaceholder, Menu, MenuItem } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import HouseIcon from '~icons/lucide/house';
+  import PlusIcon from '~icons/lucide/plus';
   import SettingsIcon from '~icons/lucide/settings';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
@@ -25,6 +26,11 @@
         id
         name
         url
+      }
+
+      me {
+        id
+        avatarUrl
       }
     }
   `);
@@ -102,62 +108,110 @@
 >
   <header
     class={flex({
+      align: 'center',
       justifyContent: 'space-between',
+      position: 'relative',
       borderBottomWidth: '1px',
-      borderColor: 'border.primary',
+      borderColor: 'border.secondary',
       height: '60px',
-      padding: '8px',
+      paddingX: '10px',
+      paddingY: '11px',
     })}
   >
-    <Menu listStyle={css.raw({ width: '200px' })} placement="bottom-start">
+    <Menu listStyle={css.raw({ width: '234px' })} placement="bottom-start">
       <div
         slot="button"
-        class={flex({
-          justify: 'space-between',
-          width: '200px',
-        })}
+        class={css(
+          {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '10px',
+            borderRadius: '10px',
+            padding: '6px',
+            width: '234px',
+            _hover: { backgroundColor: 'neutral.10' },
+          },
+          open && { backgroundColor: 'neutral.10' },
+        )}
+        let:open
       >
-        <div class={css({ display: 'flex' })}>
-          <LogoPlaceholder size={20} />
-          <h1>
+        <div class={flex({ align: 'center', gap: '10px', truncate: true })}>
+          <LogoPlaceholder size={32} />
+          <h1 class={css({ textStyle: '16b', truncate: true })}>
             {$query.site.name}
           </h1>
         </div>
-        <Icon icon={ChevronDownIcon} size={20} />
+        <Icon style={css.raw({ color: 'neutral.70' })} icon={ChevronDownIcon} size={20} />
       </div>
 
       {#each $query.workspace.sites as site (site.id)}
         <MenuItem
+          style={flex.raw({ gap: '6px' })}
           aria-selected={site.id === $query.site.id}
           on:click={async () => await goto(`/workspace/${$query.workspace.id}/site/${site.id}`)}
         >
+          <LogoPlaceholder size={20} />
           {site.name}
         </MenuItem>
       {/each}
+
+      <HorizontalDivider />
+
+      <button
+        class={flex({
+          align: 'center',
+          gap: '6px',
+          borderRadius: '8px',
+          paddingX: '12px',
+          paddingY: '9px',
+          textStyle: '15sb',
+          color: 'text.tertiary',
+          _hover: { backgroundColor: 'neutral.10' },
+        })}
+        type="button"
+      >
+        <Icon icon={PlusIcon} size={20} />
+        <span>사이트 만들기</span>
+      </button>
     </Menu>
 
     <div
       class={css({
-        left: '0',
-        right: '0',
+        position: 'absolute',
+        translate: 'auto',
+        left: '1/2',
+        translateX: '-1/2',
         marginX: 'auto',
-        width: '400px',
-        backgroundColor: 'surface.secondary',
+        borderWidth: '1px',
+        borderColor: 'neutral.20',
         borderRadius: '8px',
+        paddingX: '14px',
+        paddingY: '9px',
+        textStyle: '14m',
+        textAlign: 'center',
+        color: 'text.secondary',
+        backgroundColor: 'neutral.10',
+        minWidth: '380px',
       })}
     >
       {$query.site.url}
     </div>
 
-    <div
-      class={flex({
-        width: '200px',
-      })}
-    >
+    <div class={flex({ align: 'center', gap: '20px' })}>
       <Button href={$query.site.url} rel="noopener noreferrer" target="_blank" type="link" variant="secondary">
         사이트 바로가기
       </Button>
-      <div>프로필</div>
+
+      <div
+        class={css({
+          borderWidth: '1px',
+          borderColor: 'border.image',
+          borderRadius: 'full',
+          size: '38px',
+          backgroundColor: 'gray.100',
+        })}
+      />
     </div>
   </header>
 

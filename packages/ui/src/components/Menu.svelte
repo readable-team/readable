@@ -24,7 +24,7 @@
 </script>
 
 <button type="button" on:click={() => (open = !open)} use:anchor>
-  <slot name="button" />
+  <slot name="button" {open} />
 </button>
 
 {#if open}
