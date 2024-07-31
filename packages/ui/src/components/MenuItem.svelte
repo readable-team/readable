@@ -47,7 +47,7 @@
         color: 'text.accent',
         backgroundColor: {
           base: 'accent.20',
-          _hover: 'accent.10',
+          _hover: 'accent.30',
         },
       },
     },
