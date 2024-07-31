@@ -231,18 +231,33 @@ builder.mutationFields((t) => ({
       await assertWorkspacePermission({
         workspaceId: input.workspaceId,
         userId: session.userId,
-        role: WorkspaceMemberRole.ADMIN,
+        role: input.userId == session.userId ? WorkspaceMemberRole.MEMBER : WorkspaceMemberRole.ADMIN,
       });
 
-      if (input.userId === session.userId) {
-        throw new ApiError({ code: 'workspace_cannot_remove_self' });
-      }
+      return await db.transaction(async (tx) => {
+        const member = await tx
+          .delete(WorkspaceMembers)
+          .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, input.userId)))
+          .returning()
+          .then(firstOrThrow);
 
-      return await db
-        .delete(WorkspaceMembers)
-        .where(and(eq(WorkspaceMembers.workspaceId, input.workspaceId), eq(WorkspaceMembers.userId, input.userId)))
-        .returning()
-        .then(firstOrThrow);
+        const adminCount = await tx
+          .select({ count: count(WorkspaceMembers.id) })
+          .from(WorkspaceMembers)
+          .where(
+            and(
+              eq(WorkspaceMembers.workspaceId, input.workspaceId),
+              eq(WorkspaceMembers.role, WorkspaceMemberRole.ADMIN),
+            ),
+          )
+          .then(first);
+
+        if (adminCount?.count === 0) {
+          throw new ApiError({ code: 'workspace_needs_admin' });
+        }
+
+        return member;
+      });
     },
   }),
 
