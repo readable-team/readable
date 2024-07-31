@@ -52,25 +52,6 @@
     }
   });
 
-  // ESC로 드래그 취소
-  window.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && dragging) {
-      document.removeEventListener('pointermove', onPointerMove);
-      document.removeEventListener('pointerup', onPointerUp);
-
-      dragging.elem.releasePointerCapture(dragging.pointerId);
-
-      onCancel?.(dragging.item);
-
-      dragging.ghost.remove();
-      dragging = null;
-      dropTarget = null;
-
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      indicatorElem!.style.display = 'none';
-    }
-  });
-
   function createGhost(draggingItem: HTMLElement) {
     const clone = draggingItem.cloneNode(true) as HTMLElement;
     const originalRect = draggingItem.getBoundingClientRect();
@@ -344,6 +325,27 @@
     registerNode,
   };
 </script>
+
+<svelte:window
+  on:keydown={(event) => {
+    if (!indicatorElem) return;
+
+    if (event.key === 'Escape' && dragging) {
+      document.removeEventListener('pointermove', onPointerMove);
+      document.removeEventListener('pointerup', onPointerUp);
+
+      dragging.elem.releasePointerCapture(dragging.pointerId);
+
+      onCancel?.(dragging.item);
+
+      dragging.ghost.remove();
+      dragging = null;
+      dropTarget = null;
+
+      indicatorElem.style.display = 'none';
+    }
+  }}
+/>
 
 <ul
   bind:this={listElem}
