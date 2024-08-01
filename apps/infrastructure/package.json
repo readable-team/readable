@@ -15,6 +15,6 @@
     "@pulumi/tls": "^5.0.4",
     "@readable/tsconfig": "workspace:*",
     "fast-glob": "^3.3.2",
-    "tsx": "^4.16.2"
+    "tsx": "^4.16.3"
   }
 }
