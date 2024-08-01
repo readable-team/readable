@@ -1,6 +1,9 @@
 export type PageData = {
   id: string;
   order: string;
+  content: {
+    title: string;
+  };
   parent?:
     | {
         id: string;

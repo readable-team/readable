@@ -33,32 +33,59 @@
         # NOTE: maxDepth = 3
         pages {
           id
+          state
           order
+
+          content {
+            id
+            title
+          }
+
           parent {
             id
           }
-          state
+
           children {
             id
+            state
             order
+
+            content {
+              id
+              title
+            }
+
             parent {
               id
             }
-            state
+
             children {
               id
               order
+              state
+
+              content {
+                id
+                title
+              }
+
               parent {
                 id
               }
-              state
+
               children {
                 id
                 order
+                state
+
+                content {
+                  id
+                  title
+                }
+
                 parent {
                   id
                 }
-                state
               }
             }
           }

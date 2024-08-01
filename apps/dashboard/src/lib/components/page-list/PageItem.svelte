@@ -136,7 +136,7 @@
         )}
       >
         <!-- FIXME: 제목을 표시해야 함 -->
-        {item.id}
+        {item.content.title}
       </span>
       <button
         class={css({
