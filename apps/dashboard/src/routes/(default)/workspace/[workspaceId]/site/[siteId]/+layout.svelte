@@ -21,7 +21,6 @@
       workspace(workspaceId: $workspaceId) {
         id
         ...SettingModal_workspace
-
         sites {
           id
           name
@@ -32,6 +31,7 @@
         id
         name
         url
+        ...SettingModal_site
         # NOTE: maxDepth = 3
         pages {
           id
@@ -407,4 +407,4 @@
   </div>
 </div>
 
-<SettingModal $user={$query.me} $workspace={$query.workspace} bind:open />
+<SettingModal $site={$query.site} $user={$query.me} $workspace={$query.workspace} bind:open />

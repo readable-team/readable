@@ -10,11 +10,12 @@
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
-  import type { SettingModal_user, SettingModal_workspace } from '$graphql';
+  import type { SettingModal_site, SettingModal_user, SettingModal_workspace } from '$graphql';
 
   let _user: SettingModal_user;
   let _workspace: SettingModal_workspace;
-  export { _user as $user, _workspace as $workspace };
+  let _site: SettingModal_site;
+  export { _site as $site, _user as $user, _workspace as $workspace };
 
   export let open = false;
 
@@ -54,6 +55,17 @@
     `),
   );
 
+  $: site = fragment(
+    _site,
+    graphql(`
+      fragment SettingModal_site on Site {
+        id
+        name
+        url
+      }
+    `),
+  );
+
   const inviteWorkspaceMember = graphql(`
     mutation SettingModal_InviteWorkspaceMember_Mutation($input: InviteWorkspaceMemberInput!) {
       inviteWorkspaceMember(input: $input) {
@@ -82,6 +94,14 @@
   const removeWorkspaceMember = graphql(`
     mutation SettingModal_RemoveWorkspaceMember_Mutation($input: RemoveWorkspaceMemberInput!) {
       removeWorkspaceMember(input: $input) {
+        id
+      }
+    }
+  `);
+
+  const deleteSite = graphql(`
+    mutation SettingModal_DeleteSite_Mutation($input: DeleteSiteInput!) {
+      deleteSite(input: $input) {
         id
       }
     }
@@ -204,7 +224,17 @@
   </div>
 
   <div class={css({ flexGrow: '1', padding: '32px', overflowY: 'auto' })}>
-    <div hidden={selectedTabIndex != 0}>기본정보 설정</div>
+    <div hidden={selectedTabIndex != 0}>
+      <h1>기본정보 설정</h1>
+      <Button
+        on:click={async () => {
+          await deleteSite({ siteId: $site.id });
+          await goto(`/workspace/${$workspace.id}`);
+        }}
+      >
+        사이트 삭제
+      </Button>
+    </div>
     <div hidden={selectedTabIndex != 1}>디자인 설정</div>
     <div hidden={selectedTabIndex != 2}>
       <!-- todo: form validation -->
