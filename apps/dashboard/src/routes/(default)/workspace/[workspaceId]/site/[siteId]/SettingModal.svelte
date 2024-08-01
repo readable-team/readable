@@ -1,17 +1,19 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon, Modal } from '@readable/ui/components';
+  import { Button, Icon, Modal, TextInput } from '@readable/ui/components';
   import BadgeCentIcon from '~icons/lucide/badge-cent';
   import PaintbrushIcon from '~icons/lucide/paintbrush';
   import ReceiptCentIcon from '~icons/lucide/receipt-cent';
   import SatelliteDishIcon from '~icons/lucide/satellite-dish';
   import UsersIcon from '~icons/lucide/users';
+  import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
-  import type { SettingModal_user } from '$graphql';
+  import type { SettingModal_user, SettingModal_workspace } from '$graphql';
 
   let _user: SettingModal_user;
-  export { _user as $user };
+  let _workspace: SettingModal_workspace;
+  export { _user as $user, _workspace as $workspace };
 
   export let open = false;
 
@@ -26,7 +28,65 @@
     `),
   );
 
+  $: workspace = fragment(
+    _workspace,
+    graphql(`
+      fragment SettingModal_workspace on Workspace {
+        id
+
+        meAsMember {
+          id
+          role
+        }
+
+        members {
+          id
+          role
+
+          user {
+            id
+            email
+          }
+        }
+      }
+    `),
+  );
+
+  const inviteWorkspaceMember = graphql(`
+    mutation SettingModal_InviteWorkspaceMember_Mutation($input: InviteWorkspaceMemberInput!) {
+      inviteWorkspaceMember(input: $input) {
+        ... on WorkspaceMember {
+          id
+        }
+
+        ... on WorkspaceMemberInvitation {
+          id
+          email
+          createdAt
+        }
+      }
+    }
+  `);
+
+  const updateWorkspaceMemberRole = graphql(`
+    mutation SettingModal_UpdateWorkspaceMemberRole_Mutation($input: UpdateWorkspaceMemberRoleInput!) {
+      updateWorkspaceMemberRole(input: $input) {
+        id
+        role
+      }
+    }
+  `);
+
+  const removeWorkspaceMember = graphql(`
+    mutation SettingModal_RemoveWorkspaceMember_Mutation($input: RemoveWorkspaceMemberInput!) {
+      removeWorkspaceMember(input: $input) {
+        id
+      }
+    }
+  `);
+
   let selectedTabIndex = 0;
+  let inviteMemberEmail = '';
 
   const siteSettings = [
     {
@@ -123,7 +183,7 @@
     </dl>
 
     <dl class={flex({ direction: 'column', gap: '4px', paddingTop: '16px', paddingBottom: '8px' })}>
-      <dt class={css({ textStyle: '12sb', color: 'text.tertiary' })}>사이트 설정</dt>
+      <dt class={css({ textStyle: '12sb', color: 'text.tertiary' })}>워크스페이스</dt>
       {#each workspaceSettings as setting (setting.text)}
         <dd>
           <button
@@ -140,10 +200,81 @@
     </dl>
   </div>
 
-  <div class={css({ flexGrow: '1', overflowY: 'auto' })}>
+  <div class={css({ flexGrow: '1', padding: '32px', overflowY: 'auto' })}>
     <div hidden={selectedTabIndex != 0}>기본정보 설정</div>
     <div hidden={selectedTabIndex != 1}>디자인 설정</div>
-    <div hidden={selectedTabIndex != 2}>멤버 관리</div>
+    <div hidden={selectedTabIndex != 2}>
+      <!-- todo: form validation -->
+      <form
+        class={flex({ align: 'center', gap: '10px' })}
+        on:submit|preventDefault={async () => {
+          await inviteWorkspaceMember({
+            workspaceId: $workspace.id,
+            email: inviteMemberEmail,
+          });
+          inviteMemberEmail = '';
+        }}
+      >
+        <TextInput name="email" placeholder="이메일" bind:value={inviteMemberEmail} />
+        <Button size="lg" type="submit">멤버 초대</Button>
+      </form>
+
+      <br />
+      <br />
+
+      <ul>
+        {#each $workspace.members as member (member.id)}
+          <li class={flex({ align: 'center', gap: '10px' })}>
+            <div>
+              <p>{member.user.email}</p>
+              <p>{member.role}</p>
+            </div>
+
+            {#if $workspace.meAsMember?.role === 'ADMIN' && member.id !== $workspace.meAsMember?.id}
+              <Button
+                size="sm"
+                variant="secondary"
+                on:click={async () =>
+                  await updateWorkspaceMemberRole({
+                    role: 'ADMIN',
+                    userId: member.user.id,
+                    workspaceId: $workspace.id,
+                  })}
+              >
+                ADMIN으로 변경
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                on:click={async () =>
+                  await updateWorkspaceMemberRole({
+                    role: 'MEMBER',
+                    userId: member.user.id,
+                    workspaceId: $workspace.id,
+                  })}
+              >
+                MEMBER로 변경
+              </Button>
+            {/if}
+
+            {#if $workspace.meAsMember?.role === 'ADMIN' || member.id === $workspace.meAsMember?.id}
+              <Button
+                size="sm"
+                on:click={async () => {
+                  // TODO: alert, cache invalidate
+                  await removeWorkspaceMember({ userId: member.user.id, workspaceId: $workspace.id });
+                  if (member.id === $workspace.meAsMember?.id) {
+                    await goto('/');
+                  }
+                }}
+              >
+                탈퇴
+              </Button>
+            {/if}
+          </li>
+        {/each}
+      </ul>
+    </div>
     <div hidden={selectedTabIndex != 3}>요금제 변경</div>
     <div hidden={selectedTabIndex != 4}>청구</div>
   </div>

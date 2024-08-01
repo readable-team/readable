@@ -18,6 +18,7 @@
     query SiteLayout_Query($workspaceId: ID!, $siteId: ID!) {
       workspace(workspaceId: $workspaceId) {
         id
+        ...SettingModal_workspace
 
         sites {
           id
@@ -344,5 +345,5 @@
 </div>
 
 {#if $query.me}
-  <SettingModal $user={$query.me} bind:open />
+  <SettingModal $user={$query.me} $workspace={$query.workspace} bind:open />
 {/if}
