@@ -273,11 +273,10 @@
 
       {#each $query.workspace.sites as site (site.id)}
         <MenuItem
-          style={flex.raw({ gap: '6px' })}
           aria-selected={site.id === $query.site.id}
           on:click={async () => await goto(`/workspace/${$query.workspace.id}/site/${site.id}`)}
         >
-          <LogoPlaceholder size={20} />
+          <LogoPlaceholder slot="prefix" size={20} />
           {site.name}
         </MenuItem>
       {/each}
