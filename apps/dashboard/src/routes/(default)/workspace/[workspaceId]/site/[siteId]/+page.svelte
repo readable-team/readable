@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Chip, Icon, LogoPlaceholder, TextInput, Tooltip } from '@readable/ui/components';
+  import { Button, Chip, Helmet, Icon, LogoPlaceholder, TextInput, Tooltip } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import MailIcon from '~icons/lucide/mail';
@@ -46,6 +46,8 @@
     }
   `);
 </script>
+
+<Helmet title="홈" trailing={$query.site.name} />
 
 <div class={flex({ align: 'center', gap: '4px', fontSize: '32px', fontWeight: 'bold', marginBottom: '12px' })}>
   <Icon icon={LayoutDashboardIcon} size={32} />

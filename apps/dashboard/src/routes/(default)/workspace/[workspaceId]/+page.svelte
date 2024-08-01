@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, TextInput } from '@readable/ui/components';
+  import { Button, Helmet, TextInput } from '@readable/ui/components';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
 
@@ -9,6 +9,7 @@
     query WorkspacePage_Query($workspaceId: ID!) {
       workspace(workspaceId: $workspaceId) {
         id
+        name
 
         sites {
           id
@@ -26,6 +27,8 @@
     }
   `);
 </script>
+
+<Helmet title={$query.workspace.name} />
 
 워크스페이스 메인 페이지
 
