@@ -365,9 +365,7 @@
           <li>
             <a
               class={sidebarMenuItemStyle}
-              aria-selected={$page.url.pathname.startsWith(`/workspace/${$query.workspace.id}/site/${$query.site.id}`)
-                ? 'true'
-                : 'false'}
+              aria-selected={$page.url.pathname === `/workspace/${$query.workspace.id}/site/${$query.site.id}`}
               href={`/workspace/${$query.workspace.id}/site/${$query.site.id}`}
               role="tab"
             >
