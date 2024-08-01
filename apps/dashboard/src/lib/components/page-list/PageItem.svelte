@@ -5,6 +5,7 @@
   import { onMount } from 'svelte';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
+  import DotIcon from '~icons/lucide/dot';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import { page } from '$app/stores';
   import { maxDepth } from './const';
@@ -110,6 +111,8 @@
         >
           <Icon icon={openState[item.id] ? ChevronDownIcon : ChevronRightIcon} size={16} />
         </button>
+      {:else}
+        <Icon icon={DotIcon} size={16} />
       {/if}
       {#if item.state === 'DRAFT'}
         <Chip>초안</Chip>
