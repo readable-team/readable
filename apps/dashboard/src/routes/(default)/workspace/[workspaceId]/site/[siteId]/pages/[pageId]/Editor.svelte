@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Icon, VerticalDivider } from '@readable/ui/components';
+  import { Button, Icon, Menu, MenuItem, VerticalDivider } from '@readable/ui/components';
   import { TiptapEditor } from '@readable/ui/tiptap';
   import { fromUint8Array, toUint8Array } from 'js-base64';
   import { nanoid } from 'nanoid';
@@ -10,7 +10,9 @@
   import * as Y from 'yjs';
   import { PageContentSyncKind } from '@/enums';
   import ClockIcon from '~icons/lucide/clock';
+  import CopyIcon from '~icons/lucide/copy';
   import EllipsisIcon from '~icons/lucide/ellipsis';
+  import TrashIcon from '~icons/lucide/trash';
   import { fragment, graphql } from '$graphql';
   import type { Writable } from 'svelte/store';
   import type { PagePage_Editor_query } from '$graphql';
@@ -264,14 +266,29 @@
     >
       <Icon icon={ClockIcon} size={18} />
     </Button>
-    <Button
-      style={css.raw({
-        paddingX: '9px',
-      })}
-      variant="secondary"
-    >
-      <Icon icon={EllipsisIcon} size={18} />
-    </Button>
+
+    <Menu listStyle={css.raw({ width: '148px' })} offset={16} placement="top-start">
+      <Button
+        slot="button"
+        style={css.raw({
+          paddingX: '9px',
+        })}
+        aria-pressed={open}
+        variant="secondary"
+        let:open
+      >
+        <Icon icon={EllipsisIcon} size={18} />
+      </Button>
+
+      <MenuItem>
+        <Icon slot="prefix" icon={CopyIcon} size={20} />
+        <span>복사</span>
+      </MenuItem>
+      <MenuItem variant="danger">
+        <Icon slot="prefix" icon={TrashIcon} size={20} />
+        <span>삭제</span>
+      </MenuItem>
+    </Menu>
   </div>
 
   <VerticalDivider color="secondary" />
