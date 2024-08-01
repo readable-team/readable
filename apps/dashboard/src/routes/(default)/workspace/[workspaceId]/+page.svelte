@@ -26,12 +26,31 @@
       }
     }
   `);
+
+  const deleteWorkspace = graphql(`
+    mutation WorkspacePage_DeleteWorkspace_Mutation($input: DeleteWorkspaceInput!) {
+      deleteWorkspace(input: $input) {
+        id
+      }
+    }
+  `);
 </script>
 
 <Helmet title={$query.workspace.name} />
 
 워크스페이스 메인 페이지
 
+<br />
+워크스페이스 이름: {$query.workspace.name}
+<br />
+<Button
+  on:click={async () => {
+    await deleteWorkspace({ workspaceId: $query.workspace.id });
+    await goto('/workspace');
+  }}
+>
+  워크스페이스 삭제
+</Button>
 <br />
 <br />
 
