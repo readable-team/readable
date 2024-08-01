@@ -4,6 +4,7 @@
   import { Icon } from '@readable/ui/components';
   import { onMount } from 'svelte';
   import PlusIcon from '~icons/lucide/plus';
+  import { maxDepth } from './const';
   import PageItem from './PageItem.svelte';
   import type { PageData, VirtualRootPageData } from './types';
 
@@ -19,7 +20,7 @@
   type DropTarget = {
     list: HTMLElement;
     parentId: string | null;
-    indicatorPosition: number;
+    indicatorPosition: number | null;
     targetElem: HTMLElement | null;
   };
 
@@ -37,8 +38,8 @@
   export let onCreate: (parentId: string | null) => Promise<void>;
   export let getPageUrl: (pageId: string) => string;
   export let indicatorElem: HTMLElement | null = null;
-  export let nodeMap = new Map<HTMLElement, T | VirtualRootPageData>();
-  export let registerNode = (node: HTMLElement, item: T | VirtualRootPageData) => {
+  export let nodeMap = new Map<HTMLElement, (T | VirtualRootPageData) & { depth: number }>();
+  export let registerNode = (node: HTMLElement, item: (T | VirtualRootPageData) & { depth: number }) => {
     nodeMap.set(node, item);
   };
   let listElem: HTMLElement;
@@ -47,9 +48,9 @@
 
   onMount(() => {
     if (parent) {
-      registerNode(listElem, parent);
+      registerNode(listElem, { ...parent, depth });
     } else {
-      registerNode(listElem, { id: null, children: items });
+      registerNode(listElem, { id: null, children: items, depth });
     }
   });
 
@@ -98,13 +99,21 @@
     );
   }
 
+  function findDeepestDepth(item: PageData, depth = 0): number {
+    if (!item.children || item.children.length === 0) {
+      return depth;
+    }
+
+    return Math.max(...item.children.map((child) => findDeepestDepth(child, depth + 1)));
+  }
+
   function updateIndicatorPosition(dragging: DraggingState, dropTarget: DropTarget) {
     if (!indicatorElem) {
       return;
     }
 
     // 제자리 바로 위에도 line indicator 표시함
-    if (isTargetItself(dropTarget, dragging, true)) {
+    if (isTargetItself(dropTarget, dragging, true) || dropTarget.indicatorPosition === null) {
       indicatorElem.style.display = 'none';
       return;
     }
@@ -182,6 +191,7 @@
         onCancel?.(dragging.item);
       } else {
         if (dropTarget.targetElem && dragging.elem !== dropTarget.targetElem) {
+          // selection indicator: targetElem이 있으면 해당 아이템의 children으로 들어감
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const targetItem = nodeMap.get(dropTarget.targetElem)!;
 
@@ -195,7 +205,9 @@
           if (success && targetItem.id !== null) {
             openState[targetItem.id] = true;
           }
-        } else {
+          // eslint-disable-next-line unicorn/no-negated-condition
+        } else if (dropTarget.indicatorPosition !== null) {
+          // line indicator
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const targetItem = nodeMap.get(dropTarget.list)!;
           let nextOrder;
@@ -219,6 +231,9 @@
             previousOrder,
             nextOrder,
           });
+        } else {
+          // invalid drop target
+          // TODO: 뭔가 피드백
         }
       }
     }
@@ -290,7 +305,8 @@
       const childRect = child.querySelector(':scope > .dnd-item-body')!.getBoundingClientRect();
       const childTop = childRect.top - pointerTargetList.getBoundingClientRect().top;
 
-      const item = childrenItems[i] as PageData;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const item = childrenItems[i]!;
 
       // 1/4 지점보다 위에 있으면 그 앞에 indicator를 표시
       if (pointerTopInList < childTop + childRect.height / 4) {
@@ -298,10 +314,16 @@
         break;
       } else if (pointerTopInList < childTop + (childRect.height / 4) * 3) {
         // 1/4 지점 ~ 3/4 지점 사이에 있으면 indicator를 item 위에 표시
+        // drop하면 해당 item의 children으로 들어감
         indicatorPositionDraft = i;
         targetElemDraft = child;
         break;
-      } else if (pointerTopInList < childTop + childRect.height && openState[item.id] && dragging.item.id !== item.id) {
+      } else if (
+        pointerTopInList < childTop + childRect.height &&
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        openState[item.id!] &&
+        dragging.item.id !== item.id
+      ) {
         // 3/4 지점보다 아래에 있고 children list가 열려있고 현재 드래그 중인 아이템이 아닌 경우
         pointerTargetList = child.querySelector('.dnd-list') as HTMLElement;
         pointerTargetListParentId = item.id;
@@ -313,6 +335,16 @@
     if (indicatorPositionDraft === null) {
       // 마지막 아이템인 경우 그 아래에 indicator를 표시
       indicatorPositionDraft = childrenElems.length;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const targetListDepth = nodeMap.get(pointerTargetList)!.depth + (targetElemDraft ? 1 : 0);
+    const draggingItemMaxDepth = findDeepestDepth(dragging.item);
+
+    // (들어갈 위치의 리스트의 depth + 현재 드래그 중인 아이템 트리의 최대 높이)가 maxDepth 초과면 드래그 불가
+    if (targetListDepth + draggingItemMaxDepth > maxDepth) {
+      indicatorPositionDraft = null;
+      targetElemDraft = null;
     }
 
     dropTarget = {

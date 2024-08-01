@@ -7,6 +7,7 @@
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import { page } from '$app/stores';
+  import { maxDepth } from './const';
   import PageList from './PageList.svelte';
   import type { ComponentProps } from 'svelte';
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -17,20 +18,23 @@
     item: T;
     openState: Record<string, boolean>;
     onPointerDown: (e: PointerEvent, item: T) => void;
-    registerNode: (node: HTMLElement, item: T) => void;
+    registerNode: (node: HTMLElement, item: T & { depth: number }) => void;
   } & Omit<ComponentProps<PageList<T>>, 'depth' | 'items' | 'openState' | 'parent'>;
 
   export let depth: number;
   export let item: T;
   export let openState: Record<string, boolean>;
   export let onPointerDown: (e: PointerEvent, item: T) => void;
-  export let registerNode: (node: HTMLElement, item: T) => void;
+  export let registerNode: (node: HTMLElement, item: T & { depth: number }) => void;
   export let getPageUrl: (pageId: string) => string;
 
   let elem: HTMLElement;
 
   onMount(() => {
-    registerNode(elem, item);
+    registerNode(elem, {
+      ...item,
+      depth,
+    });
   });
 
   let childrenListProps: ComponentProps<PageList<T>>;
@@ -88,8 +92,7 @@
       href={getPageUrl(item.id)}
       role="tab"
     >
-      <!-- NOTE: depth 0부터 최대 3 -->
-      {#if depth < 3}
+      {#if depth < maxDepth}
         <button
           class={css({
             color: 'neutral.70',
@@ -143,7 +146,7 @@
     </a>
   </div>
 
-  {#if openState[item.id]}
+  {#if openState[item.id] && depth < maxDepth}
     <PageList {...childrenListProps} />
   {/if}
 </li>

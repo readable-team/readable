@@ -29,7 +29,7 @@
         id
         name
         url
-        # NOTE: depth 0부터 최대 3
+        # NOTE: maxDepth = 3
         pages {
           id
           order
