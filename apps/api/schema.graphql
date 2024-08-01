@@ -146,8 +146,11 @@ enum SiteState {
   DELETED
 }
 
+union SiteUpdateStreamPayload = Page | Site
+
 type Subscription {
   pageContentSyncStream(pageId: ID!): PageContentSyncOperation!
+  siteUpdateStream(siteId: ID!): SiteUpdateStreamPayload!
 }
 
 input SyncPageContentInput {

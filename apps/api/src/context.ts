@@ -85,7 +85,7 @@ export const createContext = async ({ request, server }: ServerContext) => {
             return new Error(`DataLoader(${name}): Missing key`);
           }) as (F | Error)[];
         },
-        { cacheKeyFn: (key) => stringify(key) },
+        { cache: false },
       );
 
       ctx[' $loaders'].set(name, loader);

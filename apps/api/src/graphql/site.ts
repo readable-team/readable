@@ -5,6 +5,7 @@ import { db, first, firstOrThrow, Pages, Sites } from '@/db';
 import { PageState, SiteState, WorkspaceMemberRole } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
+import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertWorkspacePermission } from '@/utils/permissions';
 import { Page, Site } from './objects';
@@ -141,6 +142,44 @@ builder.mutationFields((t) => ({
         .where(eq(Sites.id, input.siteId))
         .returning()
         .then(firstOrThrow);
+    },
+  }),
+}));
+
+/**
+ * * Subscriptions
+ */
+
+builder.subscriptionFields((t) => ({
+  siteUpdateStream: t.withAuth({ session: true }).field({
+    type: t.builder.unionType('SiteUpdateStreamPayload', {
+      types: [Site, Page],
+      resolveType(parent) {
+        return 'logoUrl' in parent ? 'Site' : 'Page';
+      },
+    }),
+    args: { siteId: t.arg.id() },
+    subscribe: async (_, args, ctx) => {
+      await assertSitePermission({
+        siteId: args.siteId,
+        userId: ctx.session.userId,
+      });
+
+      const repeater = pubsub.subscribe('site:update', args.siteId);
+
+      ctx.req.signal.addEventListener('abort', () => {
+        repeater.return();
+      });
+
+      return repeater;
+    },
+    resolve: async (payload, args) => {
+      // eslint-disable-next-line unicorn/prefer-ternary
+      if (payload.scope === 'site') {
+        return await db.select().from(Sites).where(eq(Sites.id, args.siteId)).then(firstOrThrow);
+      } else {
+        return await db.select().from(Pages).where(eq(Pages.id, payload.pageId)).then(firstOrThrow);
+      }
     },
   }),
 }));

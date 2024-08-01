@@ -2,8 +2,9 @@ import dayjs from 'dayjs';
 import { and, asc, eq, gt, lte } from 'drizzle-orm';
 import { yXmlFragmentToProseMirrorRootNode } from 'y-prosemirror';
 import * as Y from 'yjs';
-import { db, firstOrThrow, PageContentSnapshots, PageContentStates, PageContentUpdates } from '@/db';
+import { db, firstOrThrow, PageContentSnapshots, PageContentStates, PageContentUpdates, Pages } from '@/db';
 import { schema } from '@/pm';
+import { pubsub } from '@/pubsub';
 import { defineJob } from './types';
 
 export const PageContentStateUpdateJob = defineJob('post:content:state-update', async (pageId: string) => {
@@ -76,4 +77,7 @@ export const PageContentStateUpdateJob = defineJob('post:content:state-update', 
       .delete(PageContentUpdates)
       .where(and(eq(PageContentUpdates.pageId, pageId), lte(PageContentUpdates.seq, updatedUpToSeq)));
   });
+
+  const page = await db.select({ siteId: Pages.siteId }).from(Pages).where(eq(Pages.id, pageId)).then(firstOrThrow);
+  pubsub.publish('site:update', page.siteId, { scope: 'page', pageId });
 });

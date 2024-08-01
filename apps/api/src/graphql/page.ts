@@ -131,7 +131,7 @@ builder.mutationFields((t) => ({
         .limit(1)
         .then(first);
 
-      return await db.transaction(async (tx) => {
+      const page = db.transaction(async (tx) => {
         const page = await tx
           .insert(Pages)
           .values({
@@ -160,6 +160,10 @@ builder.mutationFields((t) => ({
 
         return page;
       });
+
+      pubsub.publish('site:update', input.siteId, { scope: 'site' });
+
+      return page;
     },
   }),
 
@@ -172,8 +176,13 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
       });
 
-      await db.transaction(async (tx) => {
-        await tx.update(Pages).set({ state: 'DELETED' }).where(eq(Pages.id, input.pageId));
+      const page = await db.transaction(async (tx) => {
+        const page = await tx
+          .update(Pages)
+          .set({ state: 'DELETED' })
+          .where(eq(Pages.id, input.pageId))
+          .returning()
+          .then(firstOrThrow);
 
         let deleteParentIds = [input.pageId];
 
@@ -187,9 +196,13 @@ builder.mutationFields((t) => ({
 
           deleteParentIds = deletedIds;
         }
+
+        return page;
       });
 
-      return input.pageId;
+      pubsub.publish('site:update', page.siteId, { scope: 'site' });
+
+      return page;
     },
   }),
 
@@ -207,7 +220,7 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
       });
 
-      return await db
+      const page = await db
         .update(Pages)
         .set({
           order: encoder.encode(generateJitteredKeyBetween(input.lower ?? null, input.upper ?? null)),
@@ -216,6 +229,10 @@ builder.mutationFields((t) => ({
         .where(eq(Pages.id, input.pageId))
         .returning()
         .then(firstOrThrow);
+
+      pubsub.publish('site:update', page.siteId, { scope: 'site' });
+
+      return page;
     },
   }),
 
@@ -304,7 +321,12 @@ builder.subscriptionFields((t) => ({
   pageContentSyncStream: t.withAuth({ session: true }).field({
     type: PageContentSyncOperation,
     args: { pageId: t.arg.id() },
-    subscribe: (_, args, ctx) => {
+    subscribe: async (_, args, ctx) => {
+      assertPagePermission({
+        pageId: args.pageId,
+        userId: ctx.session.userId,
+      });
+
       const repeater = Repeater.merge([
         pubsub.subscribe('page:content:sync', args.pageId),
         new Repeater<typeof PageContentSyncOperation.$inferType>(async (push, stop) => {
@@ -322,9 +344,7 @@ builder.subscriptionFields((t) => ({
 
       return repeater;
     },
-    resolve: (payload) => {
-      return payload;
-    },
+    resolve: (payload) => payload,
   }),
 }));
 

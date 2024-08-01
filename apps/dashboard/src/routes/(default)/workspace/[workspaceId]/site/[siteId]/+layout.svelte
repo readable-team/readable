@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Button, HorizontalDivider, Icon, LogoPlaceholder, Menu, MenuItem } from '@readable/ui/components';
+  import { onMount } from 'svelte';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import HouseIcon from '~icons/lucide/house';
   import PlusIcon from '~icons/lucide/plus';
@@ -132,6 +133,34 @@
     }
   `);
 
+  const siteUpdateStream = graphql(`
+    subscription SiteLayout_SiteUpdateStream_Subscription($siteId: ID!) {
+      siteUpdateStream(siteId: $siteId) {
+        __typename
+
+        ... on Site {
+          id
+        }
+
+        ... on Page {
+          id
+          state
+
+          content {
+            id
+            title
+          }
+        }
+      }
+    }
+  `);
+
+  siteUpdateStream.on('data', (data) => {
+    if (data.siteUpdateStream.__typename === 'Site') {
+      query.refetch();
+    }
+  });
+
   async function onCreatePage(parentId: string | null) {
     const page = await createPage({
       siteId: $query.site.id,
@@ -180,6 +209,16 @@
         color: 'text.accent',
       },
     },
+  });
+
+  onMount(() => {
+    const unsubscribe = siteUpdateStream.subscribe({
+      siteId: $query.site.id,
+    });
+
+    return () => {
+      unsubscribe();
+    };
   });
 </script>
 
