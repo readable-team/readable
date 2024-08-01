@@ -1,6 +1,6 @@
 import { init } from '@paralleldrive/cuid2';
 import dayjs from 'dayjs';
-import { and, asc, desc, eq, gt, isNull, ne } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, inArray, isNull, ne } from 'drizzle-orm';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { Repeater } from 'graphql-yoga';
 import { fromUint8Array, toUint8Array } from 'js-base64';
@@ -141,6 +141,36 @@ builder.mutationFields((t) => ({
 
         return page;
       });
+    },
+  }),
+
+  deletePage: t.withAuth({ session: true }).fieldWithInput({
+    type: Page,
+    input: { pageId: t.input.id() },
+    resolve: async (_, { input }, ctx) => {
+      await assertPagePermission({
+        pageId: input.pageId,
+        userId: ctx.session.userId,
+      });
+
+      await db.transaction(async (tx) => {
+        await tx.update(Pages).set({ state: 'DELETED' }).where(eq(Pages.id, input.pageId));
+
+        let deleteParentIds = [input.pageId];
+
+        while (deleteParentIds.length > 0) {
+          const deletedIds = await tx
+            .update(Pages)
+            .set({ state: 'DELETED' })
+            .where(and(inArray(Pages.parentId, deleteParentIds), ne(Pages.state, 'DELETED')))
+            .returning({ id: Pages.id })
+            .then((rows) => rows.map((row) => row.id));
+
+          deleteParentIds = deletedIds;
+        }
+      });
+
+      return input.pageId;
     },
   }),
 
