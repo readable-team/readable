@@ -10,6 +10,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
+  import Img from '$lib/components/Img.svelte';
   import { PageList } from '$lib/components/page-list';
   import SettingModal from './SettingModal.svelte';
 
@@ -93,8 +94,11 @@
         }
       }
 
-      me {
+      me @required {
         id
+        name
+        avatarUrl
+
         ...SettingModal_user
       }
     }
@@ -325,14 +329,10 @@
         사이트 바로가기
       </Button>
 
-      <div
-        class={css({
-          borderWidth: '1px',
-          borderColor: 'border.image',
-          borderRadius: 'full',
-          size: '38px',
-          backgroundColor: 'gray.100',
-        })}
+      <Img
+        style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '38px' })}
+        alt={`${$query.me.name}의 아바타`}
+        url={$query.me.avatarUrl}
       />
     </div>
   </header>
@@ -410,6 +410,4 @@
   </div>
 </div>
 
-{#if $query.me}
-  <SettingModal $user={$query.me} $workspace={$query.workspace} bind:open />
-{/if}
+<SettingModal $user={$query.me} $workspace={$query.workspace} bind:open />

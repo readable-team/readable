@@ -9,6 +9,7 @@
   import UsersIcon from '~icons/lucide/users';
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
+  import Img from '$lib/components/Img.svelte';
   import type { SettingModal_user, SettingModal_workspace } from '$graphql';
 
   let _user: SettingModal_user;
@@ -24,6 +25,7 @@
         id
         name
         email
+        avatarUrl
       }
     `),
   );
@@ -148,15 +150,16 @@
     })}
   >
     <div class={flex({ align: 'center', gap: '6px' })}>
-      <div
-        class={css({
+      <Img
+        style={css.raw({
           flex: 'none',
           borderWidth: '1px',
           borderColor: 'border.image',
           borderRadius: 'full',
           size: '36px',
-          backgroundColor: 'gray.100',
         })}
+        alt={`${$user.name}의 아바타`}
+        url={$user.avatarUrl}
       />
 
       <div class={css({ truncate: true })}>
