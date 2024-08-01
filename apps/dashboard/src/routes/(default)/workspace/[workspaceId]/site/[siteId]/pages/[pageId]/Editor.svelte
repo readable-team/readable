@@ -12,6 +12,7 @@
   import ClockIcon from '~icons/lucide/clock';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import { fragment, graphql } from '$graphql';
+  import type { Writable } from 'svelte/store';
   import type { PagePage_Editor_query } from '$graphql';
 
   export let _query: PagePage_Editor_query;
@@ -156,6 +157,42 @@
     }
   };
 
+  const createStore = (doc: Y.Doc, name: string) => {
+    const yText = doc.getText(name);
+
+    const store: Writable<string> = {
+      subscribe: (run) => {
+        const handler = () => {
+          run(yText.toString());
+        };
+
+        yText.observe(handler);
+        handler();
+
+        return () => {
+          yText.unobserve(handler);
+        };
+      },
+      set: (value: string) => {
+        doc.transact(() => {
+          yText.delete(0, yText.length);
+          yText.insert(0, value);
+        });
+      },
+      update: (fn: (value: string) => string) => {
+        doc.transact(() => {
+          yText.delete(0, yText.length);
+          yText.insert(0, fn(yText.toString()));
+        });
+      },
+    };
+
+    return store;
+  };
+
+  const title = createStore(yDoc, 'title');
+  const subtitle = createStore(yDoc, 'subtitle');
+
   onMount(() => {
     const unsubscribe = pageContentSyncStream.subscribe({ pageId: $query.page.id });
 
@@ -171,6 +208,31 @@
 </script>
 
 <div class={css({ margin: '100px', borderWidth: '4px', padding: '20px' })}>
+  <div
+    class={css({
+      borderBottomWidth: '1px',
+      borderBottomColor: 'gray.200',
+      marginBottom: '20px',
+      paddingBottom: '10px',
+    })}
+  >
+    <input
+      class={css({ width: 'full', fontSize: { base: '22px', sm: '28px' }, fontWeight: 'bold' })}
+      maxlength="100"
+      placeholder="제목을 입력하세요"
+      type="text"
+      bind:value={$title}
+    />
+
+    <input
+      class={css({ marginTop: '4px', width: 'full', fontSize: '16px', fontWeight: 'bold' })}
+      maxlength="100"
+      placeholder="부제목을 입력하세요"
+      type="text"
+      bind:value={$subtitle}
+    />
+  </div>
+
   <TiptapEditor style={css.raw({ height: '[2000px]' })} awareness={yAwareness} document={yDoc} />
 </div>
 

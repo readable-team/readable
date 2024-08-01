@@ -2,7 +2,8 @@ import { init } from '@paralleldrive/cuid2';
 import { sql } from 'drizzle-orm';
 import { bigint, index, pgTable, text, unique, uniqueIndex } from 'drizzle-orm/pg-core';
 import * as E from './enums';
-import { bytea, datetime } from './types';
+import { bytea, datetime, jsonb } from './types';
+import type { JSONContent } from '@tiptap/core';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 
 export const createDbId = init({ length: 16 });
@@ -61,6 +62,10 @@ export const PageContentStates = pgTable('page_content_states', {
   update: bytea('update').notNull(),
   vector: bytea('vector').notNull(),
   upToSeq: bigint('up_to_seq', { mode: 'bigint' }).notNull(),
+  title: text('title'),
+  subtitle: text('subtitle'),
+  content: jsonb('content').notNull().$type<JSONContent>(),
+  text: text('text').notNull(),
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),

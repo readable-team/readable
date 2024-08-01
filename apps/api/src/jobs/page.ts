@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
 import { and, asc, eq, gt, lte } from 'drizzle-orm';
+import { yXmlFragmentToProseMirrorRootNode } from 'y-prosemirror';
 import * as Y from 'yjs';
 import { db, firstOrThrow, PageContentSnapshots, PageContentStates, PageContentUpdates } from '@/db';
+import { schema } from '@/pm';
 import { defineJob } from './types';
 
 export const PageContentStateUpdateJob = defineJob('post:content:state-update', async (pageId: string) => {
@@ -50,12 +52,24 @@ export const PageContentStateUpdateJob = defineJob('post:content:state-update', 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const updatedUpToSeq = pendingUpdates.at(-1)!.seq;
 
+    const title = doc.getText('title').toString();
+    const subtitle = doc.getText('subtitle').toString();
+    const fragment = doc.getXmlFragment('content');
+
+    const node = yXmlFragmentToProseMirrorRootNode(fragment, schema);
+    const content = node.toJSON();
+    const text = node.content.textBetween(0, node.content.size, '\n');
+
     await tx
       .update(PageContentStates)
       .set({
         update: updatedUpdate,
         vector: updatedVector,
         upToSeq: updatedUpToSeq,
+        title,
+        subtitle,
+        content,
+        text,
         updatedAt: dayjs(),
       })
       .where(eq(PageContentStates.pageId, pageId));

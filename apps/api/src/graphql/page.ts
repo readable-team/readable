@@ -131,6 +131,8 @@ builder.mutationFields((t) => ({
           pageId: page.id,
           update,
           vector,
+          content: node.toJSON(),
+          text: node.content.textBetween(0, node.content.size, '\n'),
           upToSeq: 0n,
         });
 
