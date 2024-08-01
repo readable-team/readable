@@ -13,6 +13,7 @@
     ghost: HTMLElement;
     event: PointerEvent;
     pointerId: number;
+    moved: boolean;
   };
 
   type DropTarget = {
@@ -160,22 +161,17 @@
       event,
       ghost: createGhost(draggingItemElem),
       pointerId: event.pointerId,
+      moved: false,
     };
-
-    (event.target as HTMLElement).setPointerCapture(event.pointerId);
-
-    document.addEventListener('pointermove', onPointerMove);
-    document.addEventListener('pointerup', onPointerUp);
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onPointerUp = async (event: PointerEvent) => {
-    document.removeEventListener('pointermove', onPointerMove);
-    document.removeEventListener('pointerup', onPointerUp);
-
     if (!dragging) {
       return;
     }
+
+    dragging.elem.releasePointerCapture(dragging.pointerId);
 
     if (dragging.item.id === null) {
       throw new Error('Wrong implementation: Root item cannot be dragged');
@@ -227,8 +223,6 @@
       }
     }
 
-    dragging.elem.releasePointerCapture(dragging.pointerId);
-
     dragging?.ghost.remove();
     dragging = null;
     dropTarget = null;
@@ -239,6 +233,25 @@
 
   const onPointerMove = async (event: PointerEvent) => {
     if (!dragging) {
+      return;
+    }
+
+    // dragging.event와 event의 위치 차이가 5px 이상이면 드래그로 판단
+    if (
+      !dragging.moved &&
+      Math.abs(dragging.event.clientX - event.clientX) + Math.abs(dragging.event.clientY - event.clientY) > 5
+    ) {
+      dragging.moved = true;
+      dragging.elem.setPointerCapture(dragging.pointerId);
+    }
+
+    if (!dragging.moved) {
+      return;
+    }
+
+    // 드래그 중인 아이템이 포인터 캡쳐를 잃어버린 경우 드래그 취소
+    if (!dragging.elem.hasPointerCapture(dragging.pointerId)) {
+      cancelDragging();
       return;
     }
 
@@ -312,6 +325,27 @@
     updateIndicatorPosition(dragging, dropTarget as DropTarget);
   };
 
+  function cancelDragging() {
+    if (!dragging) {
+      return;
+    }
+
+    document.removeEventListener('pointermove', onPointerMove);
+    document.removeEventListener('pointerup', onPointerUp);
+
+    dragging.elem.releasePointerCapture(dragging.pointerId);
+
+    onCancel?.(dragging.item);
+
+    dragging.ghost.remove();
+    dragging = null;
+    dropTarget = null;
+
+    if (indicatorElem) {
+      indicatorElem.style.display = 'none';
+    }
+  }
+
   $: itemCommonProps = {
     depth,
     getPageUrl,
@@ -328,23 +362,13 @@
 
 <svelte:window
   on:keydown={(event) => {
-    if (!indicatorElem) return;
-
-    if (event.key === 'Escape' && dragging) {
-      document.removeEventListener('pointermove', onPointerMove);
-      document.removeEventListener('pointerup', onPointerUp);
-
-      dragging.elem.releasePointerCapture(dragging.pointerId);
-
-      onCancel?.(dragging.item);
-
-      dragging.ghost.remove();
-      dragging = null;
-      dropTarget = null;
-
-      indicatorElem.style.display = 'none';
+    if (event.key === 'Escape') {
+      cancelDragging();
     }
   }}
+  on:contextmenu={() => cancelDragging()}
+  on:pointerup={(event) => onPointerUp(event)}
+  on:pointermove={(event) => onPointerMove(event)}
 />
 
 <ul
