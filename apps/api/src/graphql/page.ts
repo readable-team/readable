@@ -26,6 +26,21 @@ Page.implement({
 
     order: t.string({ resolve: (page) => decoder.decode(page.order) }),
 
+    content: t.field({
+      type: PageContentState,
+      resolve: async (page, _, ctx) => {
+        const loader = ctx.loader({
+          name: 'page:content',
+          load: async (ids: string[]) => {
+            return await db.select().from(PageContentStates).where(inArray(PageContentStates.pageId, ids));
+          },
+          key: (row) => row.pageId,
+        });
+
+        return await loader.load(page.id);
+      },
+    }),
+
     parent: t.field({ type: Page, nullable: true, resolve: (page) => page.parentId }),
     children: t.field({
       type: [Page],
@@ -49,6 +64,8 @@ PageContentSnapshot.implement({
 PageContentState.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
+
+    title: t.string({ resolve: (state) => state.title ?? '(제목 없음)' }),
   }),
 });
 

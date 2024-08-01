@@ -54,11 +54,9 @@ export const PageContentStateUpdateJob = defineJob('post:content:state-update', 
 
     const title = doc.getText('title').toString();
     const subtitle = doc.getText('subtitle').toString();
-    const fragment = doc.getXmlFragment('content');
 
-    const node = yXmlFragmentToProseMirrorRootNode(fragment, schema);
-    const content = node.toJSON();
-    const text = node.content.textBetween(0, node.content.size, '\n');
+    const content = doc.getXmlFragment('content');
+    const node = yXmlFragmentToProseMirrorRootNode(content, schema);
 
     await tx
       .update(PageContentStates)
@@ -66,10 +64,10 @@ export const PageContentStateUpdateJob = defineJob('post:content:state-update', 
         update: updatedUpdate,
         vector: updatedVector,
         upToSeq: updatedUpToSeq,
-        title,
-        subtitle,
-        content,
-        text,
+        title: title.length > 0 ? title : null,
+        subtitle: subtitle.length > 0 ? subtitle : null,
+        content: node.toJSON(),
+        text: node.content.textBetween(0, node.content.size, '\n'),
         updatedAt: dayjs(),
       })
       .where(eq(PageContentStates.pageId, pageId));
