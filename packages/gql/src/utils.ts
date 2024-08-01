@@ -64,10 +64,18 @@ export const addIdAndTypenameField = (
     },
   });
 
-  if (newNode.kind === 'OperationDefinition') {
-    newNode.selectionSet.selections = newNode.selectionSet.selections.filter(
-      (selection) => selection.kind === 'Field' && selection.name.value !== '__typename',
-    );
+  if (
+    newNode.kind === 'OperationDefinition' ||
+    (newNode.kind === 'FragmentDefinition' &&
+      ['Query', 'Mutation', 'Subscription'].includes(newNode.typeCondition.name.value))
+  ) {
+    newNode.selectionSet.selections = newNode.selectionSet.selections.filter((selection) => {
+      if (selection.kind === 'Field') {
+        return selection.name.value !== '__typename';
+      }
+
+      return true;
+    });
   }
 
   return newNode;
