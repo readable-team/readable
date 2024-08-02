@@ -5,10 +5,18 @@
   import type { SystemStyleObject } from '@readable/styled-system/types';
 
   export let open = false;
+  export let close: () => void;
   export let style: SystemStyleObject | undefined = undefined;
 </script>
 
-<svelte:window on:keydown={(e) => e.key === 'Escape' && (open = false)} />
+<svelte:window
+  on:keydown={(e) => {
+    if (e.key === 'Escape') {
+      open = false;
+      close();
+    }
+  }}
+/>
 
 {#if open}
   <div class={css({ position: 'fixed', inset: '0', zIndex: '50' })} use:portal>
@@ -16,7 +24,10 @@
       class={css({ position: 'absolute', inset: '0', backgroundColor: 'gray.1000/60' })}
       role="button"
       tabindex="-1"
-      on:click={() => (open = false)}
+      on:click={() => {
+        open = false;
+        close();
+      }}
       on:keypress={null}
       transition:fade={{ duration: 150 }}
     />

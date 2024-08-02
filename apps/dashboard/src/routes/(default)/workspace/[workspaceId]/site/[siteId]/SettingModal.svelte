@@ -18,6 +18,7 @@
   export { _site as $site, _user as $user, _workspace as $workspace };
 
   export let open = false;
+  export let close: () => void;
 
   $: user = fragment(
     _user,
@@ -155,7 +156,7 @@
   });
 </script>
 
-<Modal style={css.raw({ display: 'flex' })} bind:open>
+<Modal style={css.raw({ display: 'flex' })} {close} bind:open>
   <div
     class={flex({
       direction: 'column',

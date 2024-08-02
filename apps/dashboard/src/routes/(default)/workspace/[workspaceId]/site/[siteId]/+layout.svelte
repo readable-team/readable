@@ -14,7 +14,8 @@
   import { PageList } from '$lib/components/page-list';
   import SettingModal from './SettingModal.svelte';
 
-  let open = false;
+  let openSettingModal = false;
+  $: openSettingModal = $page.url.hash === '#settings';
 
   $: query = graphql(`
     query SiteLayout_Query($workspaceId: ID!, $siteId: ID!) {
@@ -374,7 +375,14 @@
             </a>
           </li>
           <li>
-            <button class={sidebarMenuItemStyle} role="tab" type="button" on:click={() => (open = true)}>
+            <button
+              class={sidebarMenuItemStyle}
+              role="tab"
+              type="button"
+              on:click={() => {
+                goto('#settings');
+              }}
+            >
               <Icon style={css.raw({ color: 'text.secondary' })} icon={SettingsIcon} />
               <span>설정</span>
             </button>
@@ -407,4 +415,13 @@
   </div>
 </div>
 
-<SettingModal $site={$query.site} $user={$query.me} $workspace={$query.workspace} bind:open />
+<SettingModal
+  $site={$query.site}
+  $user={$query.me}
+  $workspace={$query.workspace}
+  close={() => {
+    const currentPath = $page.url.pathname;
+    goto(currentPath, { replaceState: true });
+  }}
+  bind:open={openSettingModal}
+/>
