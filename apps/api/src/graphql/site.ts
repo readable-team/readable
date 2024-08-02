@@ -8,20 +8,25 @@ import { ApiError } from '@/errors';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertWorkspacePermission } from '@/utils/permissions';
-import { Page, Site } from './objects';
+import { ISite, Page, PublicSite, Site } from './objects';
 
 /**
  * * Types
  */
 
-Site.implement({
+ISite.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
     logoUrl: t.exposeString('logoUrl', { nullable: true }),
 
     url: t.string({ resolve: (site) => `https://${site.slug}.${env.USERSITE_DEFAULT_HOST}` }),
+  }),
+});
 
+Site.implement({
+  interfaces: [ISite],
+  fields: (t) => ({
     pages: t.field({
       type: [Page],
       resolve: async (site) => {
@@ -29,6 +34,22 @@ Site.implement({
           .select()
           .from(Pages)
           .where(and(eq(Pages.siteId, site.id), isNull(Pages.parentId), ne(Pages.state, PageState.DELETED)))
+          .orderBy(asc(Pages.order));
+      },
+    }),
+  }),
+});
+
+PublicSite.implement({
+  interfaces: [ISite],
+  fields: (t) => ({
+    pages: t.field({
+      type: [Page],
+      resolve: async (site) => {
+        return await db
+          .select()
+          .from(Pages)
+          .where(and(eq(Pages.siteId, site.id), isNull(Pages.parentId), eq(Pages.state, PageState.PUBLISHED)))
           .orderBy(asc(Pages.order));
       },
     }),
@@ -50,6 +71,20 @@ builder.queryFields((t) => ({
       });
 
       return args.siteId;
+    },
+  }),
+
+  publicSite: t.field({
+    type: PublicSite,
+    args: { hostname: t.arg.string() },
+    resolve: async (_, args) => {
+      const slug = args.hostname.split('.')[0];
+
+      return await db
+        .select()
+        .from(Sites)
+        .where(and(eq(Sites.slug, slug), eq(Sites.state, SiteState.ACTIVE)))
+        .then(firstOrThrow);
     },
   }),
 }));

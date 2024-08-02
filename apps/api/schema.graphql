@@ -35,6 +35,19 @@ input GenerateSingleSignOnAuthorizationUrlInput {
   provider: SingleSignOnProvider!
 }
 
+interface IPage {
+  id: ID!
+  order: String!
+  state: PageState!
+}
+
+interface ISite {
+  id: ID!
+  logoUrl: String
+  name: String!
+  url: String!
+}
+
 input InviteWorkspaceMemberInput {
   email: String!
   workspaceId: String!
@@ -78,7 +91,7 @@ type Mutation {
   updateWorkspaceMemberRole(input: UpdateWorkspaceMemberRoleInput!): WorkspaceMember!
 }
 
-type Page {
+type Page implements IPage {
   children: [Page!]!
   content: PageContentState!
   id: ID!
@@ -117,9 +130,26 @@ enum PageState {
   PUBLISHED
 }
 
+type PublicPage implements IPage {
+  children: [PublicPage!]!
+  id: ID!
+  order: String!
+  parent: PublicPage
+  state: PageState!
+}
+
+type PublicSite implements ISite {
+  id: ID!
+  logoUrl: String
+  name: String!
+  pages: [Page!]!
+  url: String!
+}
+
 type Query {
   me: User
   page(pageId: ID!): Page!
+  publicSite(hostname: String!): PublicSite!
   site(siteId: ID!): Site!
   workspace(workspaceId: ID!): Workspace!
 }
@@ -133,7 +163,7 @@ enum SingleSignOnProvider {
   GOOGLE
 }
 
-type Site {
+type Site implements ISite {
   id: ID!
   logoUrl: String
   name: String!

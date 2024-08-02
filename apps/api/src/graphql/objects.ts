@@ -31,11 +31,14 @@ const createObjectRef = <T extends TableConfig>(name: string, table: TableWithId
   });
 };
 
-// const createInterfaceRef = <T extends TableConfig>(name: string, table: TableWithIdColumn<T>) => {
-//   return builder.loadableInterfaceRef(name, {
-//     ...makeLoadableFields(table),
-//   });
-// };
+const createInterfaceRef = <T extends TableConfig>(name: string, table: TableWithIdColumn<T>) => {
+  return builder.loadableInterfaceRef(name, {
+    ...makeLoadableFields(table),
+  });
+};
+
+export const IPage = createInterfaceRef('IPage', T.Pages);
+export const ISite = createInterfaceRef('ISite', T.Sites);
 
 export const Page = createObjectRef('Page', T.Pages);
 export const PageContentSnapshot = createObjectRef('PageContentSnapshot', T.PageContentSnapshots);
@@ -45,3 +48,6 @@ export const User = createObjectRef('User', T.Users);
 export const Workspace = createObjectRef('Workspace', T.Workspaces);
 export const WorkspaceMember = createObjectRef('WorkspaceMember', T.WorkspaceMembers);
 export const WorkspaceMemberInvitation = createObjectRef('WorkspaceMemberInvitation', T.WorkspaceMemberInvitations);
+
+export const PublicPage = createObjectRef('PublicPage', T.Pages);
+export const PublicSite = createObjectRef('PublicSite', T.Sites);

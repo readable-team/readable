@@ -13,18 +13,25 @@ import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { assertPagePermission, assertSitePermission } from '@/utils/permissions';
-import { Page, PageContentSnapshot, PageContentState } from './objects';
+import { IPage, Page, PageContentSnapshot, PageContentState, PublicPage } from './objects';
 
 /**
  * * Types
  */
 
-Page.implement({
+IPage.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     state: t.expose('state', { type: PageState }),
 
     order: t.string({ resolve: (page) => decoder.decode(page.order) }),
+  }),
+});
+
+Page.implement({
+  interfaces: [IPage],
+  fields: (t) => ({
+    id: t.exposeID('id'),
 
     content: t.field({
       type: PageContentState,
@@ -49,6 +56,24 @@ Page.implement({
           .select()
           .from(Pages)
           .where(and(eq(Pages.parentId, page.id), ne(Pages.state, PageState.DELETED)))
+          .orderBy(asc(Pages.order));
+      },
+    }),
+  }),
+});
+
+PublicPage.implement({
+  interfaces: [IPage],
+
+  fields: (t) => ({
+    parent: t.field({ type: PublicPage, nullable: true, resolve: (page) => page.parentId }),
+    children: t.field({
+      type: [PublicPage],
+      resolve: async (page) => {
+        return await db
+          .select()
+          .from(Pages)
+          .where(and(eq(Pages.parentId, page.id), eq(Pages.state, PageState.PUBLISHED)))
           .orderBy(asc(Pages.order));
       },
     }),
