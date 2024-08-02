@@ -13,6 +13,7 @@
   import CopyIcon from '~icons/lucide/copy';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import TrashIcon from '~icons/lucide/trash';
+  import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
   import type { Writable } from 'svelte/store';
   import type { PagePage_Editor_query } from '$graphql';
@@ -28,8 +29,19 @@
           name
         }
 
+        workspace(workspaceId: $workspaceId) {
+          id
+        }
+
+        site(siteId: $siteId) {
+          id
+        }
+
         page(pageId: $pageId) {
           id
+          parent {
+            id
+          }
         }
       }
     `),
@@ -80,6 +92,23 @@
       YAwareness.applyAwarenessUpdate(yAwareness, toUint8Array(operation.data), 'NETWORK');
     }
   });
+
+  const deletePage = graphql(`
+    mutation PagePage_DeletePage_Mutation($input: DeletePageInput!) {
+      deletePage(input: $input) {
+        id
+      }
+    }
+  `);
+
+  const onDeletePage = async () => {
+    await deletePage({ pageId: $query.page.id });
+    if ($query.page.parent?.id) {
+      goto(`/workspace/${$query.workspace.id}/site/${$query.site.id}/pages/${$query.page.parent.id}`);
+    } else {
+      goto(`/workspace/${$query.workspace.id}/site/${$query.site.id}`);
+    }
+  };
 
   const yDoc = new Y.Doc();
   const yAwareness = new YAwareness.Awareness(yDoc);
@@ -284,7 +313,7 @@
         <Icon slot="prefix" icon={CopyIcon} size={20} />
         <span>복사</span>
       </MenuItem>
-      <MenuItem variant="danger">
+      <MenuItem variant="danger" on:click={onDeletePage}>
         <Icon slot="prefix" icon={TrashIcon} size={20} />
         <span>삭제</span>
       </MenuItem>

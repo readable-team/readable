@@ -4,7 +4,7 @@
   import Editor from './Editor.svelte';
 
   $: query = graphql(`
-    query PagePage_Query($siteId: ID!, $pageId: ID!) {
+    query PagePage_Query($workspaceId: ID!, $siteId: ID!, $pageId: ID!) {
       site(siteId: $siteId) {
         id
         name
