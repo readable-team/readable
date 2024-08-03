@@ -1,7 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { and, asc, eq, isNull, ne } from 'drizzle-orm';
+import { match } from 'ts-pattern';
 import { builder } from '@/builder';
-import { db, first, firstOrThrow, Pages, Sites } from '@/db';
+import { db, extractTableCode, first, firstOrThrow, Pages, Sites } from '@/db';
 import { PageState, SiteState, TeamMemberRole } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
@@ -190,7 +191,11 @@ builder.subscriptionFields((t) => ({
     type: t.builder.unionType('SiteUpdateStreamPayload', {
       types: [Site, Page],
       resolveType(parent) {
-        return 'logoUrl' in parent ? 'Site' : 'Page';
+        const code = extractTableCode(parent.id);
+        return match(code)
+          .with('S', () => 'Site')
+          .with('P', () => 'Page')
+          .run();
       },
     }),
     args: { siteId: t.arg.id() },

@@ -1,19 +1,19 @@
-import { init } from '@paralleldrive/cuid2';
+// spell-checker:ignoreRegExp /createDbId\('[A-Z]{1,4}'/g
+
 import { sql } from 'drizzle-orm';
 import { bigint, index, pgTable, text, unique, uniqueIndex } from 'drizzle-orm/pg-core';
 import * as E from './enums';
+import { createDbId } from './id';
 import { bytea, datetime, jsonb } from './types';
 import type { JSONContent } from '@tiptap/core';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
-
-export const createDbId = init({ length: 16 });
 
 export const Pages = pgTable(
   'pages',
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createDbId()),
+      .$defaultFn(() => createDbId('P', { length: 'short' })),
     siteId: text('site_id')
       .notNull()
       .references(() => Sites.id),
@@ -37,7 +37,7 @@ export const PageContentSnapshots = pgTable(
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createDbId()),
+      .$defaultFn(() => createDbId('PCSN')),
     pageId: text('page_id')
       .notNull()
       .references(() => Pages.id),
@@ -54,7 +54,7 @@ export const PageContentSnapshots = pgTable(
 export const PageContentStates = pgTable('page_content_states', {
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => createDbId()),
+    .$defaultFn(() => createDbId('PCST')),
   pageId: text('page_id')
     .notNull()
     .unique()
@@ -77,7 +77,7 @@ export const PageContentUpdates = pgTable(
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createDbId()),
+      .$defaultFn(() => createDbId('PCUP', { length: 'long' })),
     pageId: text('page_id')
       .notNull()
       .references(() => Pages.id),
@@ -100,7 +100,7 @@ export const Sites = pgTable(
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createDbId()),
+      .$defaultFn(() => createDbId('S', { length: 'short' })),
     teamId: text('team_id')
       .notNull()
       .references(() => Teams.id),
@@ -125,7 +125,7 @@ export const Teams = pgTable(
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createDbId()),
+      .$defaultFn(() => createDbId('T', { length: 'short' })),
     name: text('name').notNull(),
     state: E._TeamState('state').notNull().default('ACTIVE'),
     createdAt: datetime('created_at')
@@ -142,7 +142,7 @@ export const TeamMembers = pgTable(
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createDbId()),
+      .$defaultFn(() => createDbId('TM')),
     teamId: text('team_id')
       .notNull()
       .references(() => Teams.id),
@@ -163,7 +163,7 @@ export const TeamMembers = pgTable(
 export const TeamMemberInvitations = pgTable('team_member_invitations', {
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => createDbId()),
+    .$defaultFn(() => createDbId('TMIV')),
   teamId: text('team_id')
     .notNull()
     .references(() => Teams.id),
@@ -179,7 +179,7 @@ export const Users = pgTable(
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createDbId()),
+      .$defaultFn(() => createDbId('U', { length: 'short' })),
     email: text('email').notNull(),
     name: text('name').notNull(),
     avatarUrl: text('avatar_url').notNull(),
@@ -201,7 +201,7 @@ export const UserSessions = pgTable(
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createDbId()),
+      .$defaultFn(() => createDbId('USES')),
     userId: text('user_id')
       .notNull()
       .references(() => Users.id),
@@ -219,7 +219,7 @@ export const UserSingleSignOns = pgTable(
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createDbId()),
+      .$defaultFn(() => createDbId('USSO')),
     userId: text('user_id')
       .notNull()
       .unique()
