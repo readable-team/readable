@@ -25,8 +25,18 @@ const usercontents = new aws.s3.Bucket('usercontents', {
   corsRules: [
     {
       allowedHeaders: ['*'],
-      allowedMethods: ['PUT'],
+      allowedMethods: ['POST'],
       allowedOrigins: ['https://dashboard.rdbl.io', 'https://dashboard.rdbl.ninja', 'http://localhost:4100'],
+    },
+  ],
+
+  lifecycleRules: [
+    {
+      enabled: true,
+      prefix: 'uploads/',
+      expiration: {
+        days: 1,
+      },
     },
   ],
 });
@@ -40,7 +50,7 @@ new aws.s3.BucketPolicy('usercontents', {
         Effect: 'Allow',
         Principal: { Service: 'cloudfront.amazonaws.com' },
         Action: ['s3:GetObject'],
-        Resource: [pulumi.interpolate`${usercontents.arn}/*`],
+        Resource: [pulumi.interpolate`${usercontents.arn}/public/*`],
       },
     ],
   },

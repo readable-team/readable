@@ -93,6 +93,20 @@ const staticResponseHeadersPolicy = new aws.cloudfront.ResponseHeadersPolicy('st
     originOverride: true,
   },
 
+  customHeadersConfig: {
+    items: [
+      {
+        header: 'Cache-Control',
+        value: 'public, max-age=31536000, immutable',
+        override: true,
+      },
+    ],
+  },
+
+  removeHeadersConfig: {
+    items: [{ header: 'X-Amz-Meta-Name' }, { header: 'X-Amz-Meta-User-Id' }],
+  },
+
   securityHeadersConfig: {
     strictTransportSecurity: {
       override: true,
@@ -165,6 +179,7 @@ const usercontents = new aws.cloudfront.Distribution('usercontents', {
     {
       originId: 'usercontents',
       domainName: buckets.usercontents.bucketRegionalDomainName,
+      originPath: '/public',
       originAccessControlId: s3OriginAccessControl.id,
       originShield: { enabled: true, originShieldRegion: 'ap-northeast-2' },
     },

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.621.0",
-    "@aws-sdk/s3-request-presigner": "^3.621.0",
+    "@aws-sdk/s3-presigned-post": "^3.621.0",
     "@envelop/graphql-jit": "^8.0.3",
     "@faker-js/faker": "^8.4.1",
     "@paralleldrive/cuid2": "^2.2.2",

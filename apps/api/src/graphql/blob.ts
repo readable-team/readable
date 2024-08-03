@@ -1,6 +1,6 @@
 import path from 'node:path';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { CopyObjectCommand } from '@aws-sdk/client-s3';
+import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { builder } from '@/builder';
 import * as aws from '@/external/aws';
 
@@ -12,32 +12,51 @@ builder.mutationFields((t) => ({
   issueBlobUploadUrl: t.withAuth({ session: true }).fieldWithInput({
     type: t.builder.simpleObject('IssueBlobUploadUrlResult', {
       fields: (t) => ({
-        key: t.string(),
-        presignedUrl: t.string(),
+        path: t.string(),
+        url: t.string(),
+        fields: t.field({ type: 'JSON' }),
       }),
     }),
     input: { filename: t.input.string() },
     resolve: async (_, { input }, ctx) => {
       const ext = path.extname(input.filename);
-      const key = aws.createFragmentedS3ObjectKey() + ext;
+      const key = `${aws.createFragmentedS3ObjectKey()}${ext}`;
 
-      const presignedUrl = await getSignedUrl(
-        aws.s3,
-        new PutObjectCommand({
-          Bucket: 'readable-usercontents',
-          Key: key,
-          Metadata: {
-            name: encodeURIComponent(input.filename),
-            userId: ctx.session.userId,
-          },
-        }),
-        { expiresIn: 60 * 60 }, // 1 hour
-      );
+      const req = await createPresignedPost(aws.s3, {
+        Bucket: 'readable-usercontents',
+        Key: `uploads/${key}`,
+        Conditions: [
+          ['content-length-range', 0, 1024 * 1024 * 1024], // 1GB
+          ['starts-with', '$Content-Type', ''],
+        ],
+        Fields: {
+          'x-amz-meta-name': encodeURIComponent(input.filename),
+          'x-amz-meta-user-id': ctx.session.userId,
+        },
+        Expires: 60 * 5, // 5 minutes
+      });
 
       return {
-        key,
-        presignedUrl,
+        path: key,
+        url: req.url,
+        fields: req.fields,
       };
+    },
+  }),
+
+  finishBlobUpload: t.withAuth({ session: true }).fieldWithInput({
+    type: 'Boolean',
+    input: { path: t.input.string() },
+    resolve: async (_, { input }) => {
+      await aws.s3.send(
+        new CopyObjectCommand({
+          Bucket: 'readable-usercontents',
+          CopySource: `readable-usercontents/uploads/${input.path}`,
+          Key: `public/${input.path}`,
+        }),
+      );
+
+      return true;
     },
   }),
 }));

@@ -31,6 +31,10 @@ input DeleteWorkspaceInput {
   workspaceId: String!
 }
 
+input FinishBlobUploadInput {
+  path: String!
+}
+
 input GenerateSingleSignOnAuthorizationUrlInput {
   provider: SingleSignOnProvider!
 }
@@ -60,8 +64,9 @@ input IssueBlobUploadUrlInput {
 }
 
 type IssueBlobUploadUrlResult {
-  key: String!
-  presignedUrl: String!
+  fields: JSON!
+  path: String!
+  url: String!
 }
 
 """
@@ -79,6 +84,7 @@ type Mutation {
   deletePage(input: DeletePageInput!): Page!
   deleteSite(input: DeleteSiteInput!): Site!
   deleteWorkspace(input: DeleteWorkspaceInput!): Workspace!
+  finishBlobUpload(input: FinishBlobUploadInput!): Boolean!
   generateSingleSignOnAuthorizationUrl(input: GenerateSingleSignOnAuthorizationUrlInput!): String!
   inviteWorkspaceMember(input: InviteWorkspaceMemberInput!): InviteWorkspaceMemberResult!
   issueBlobUploadUrl(input: IssueBlobUploadUrlInput!): IssueBlobUploadUrlResult!
