@@ -29,18 +29,16 @@
           name
         }
 
-        team(teamId: $teamId) {
+        page(slug: $slug) {
           id
-        }
 
-        site(siteId: $siteId) {
-          id
-        }
-
-        page(pageId: $pageId) {
-          id
           parent {
             id
+          }
+
+          site {
+            id
+            slug
           }
         }
       }
@@ -104,9 +102,9 @@
   const onDeletePage = async () => {
     await deletePage({ pageId: $query.page.id });
     if ($query.page.parent?.id) {
-      goto(`/team/${$query.team.id}/site/${$query.site.id}/pages/${$query.page.parent.id}`);
+      goto(`/${$query.page.site.slug}/${$query.page.parent.id}`);
     } else {
-      goto(`/team/${$query.team.id}/site/${$query.site.id}`);
+      goto(`/${$query.page.site.slug}`);
     }
   };
 

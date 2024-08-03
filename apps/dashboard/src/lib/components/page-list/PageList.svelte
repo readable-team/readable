@@ -36,7 +36,7 @@
   }) => Promise<boolean>;
   export let onCancel: ((item: T) => void) | undefined = undefined;
   export let onCreate: (parentId: string | null) => Promise<void>;
-  export let getPageUrl: (pageId: string) => string;
+  export let getPageUrl: (page: T) => string;
   export let indicatorElem: HTMLElement | null = null;
   export let nodeMap = new Map<HTMLElement, (T | VirtualRootPageData) & { depth: number }>();
   export let registerNode = (node: HTMLElement, item: (T | VirtualRootPageData) & { depth: number }) => {

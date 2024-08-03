@@ -12,31 +12,33 @@
   import { graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
   import { PageList } from '$lib/components/page-list';
+  import { buildPageFullSlug } from '$lib/utils/url';
   import SettingModal from './SettingModal.svelte';
 
   let openSettingModal = false;
   $: openSettingModal = $page.url.hash === '#settings';
 
   $: query = graphql(`
-    query SiteLayout_Query($teamId: ID!, $siteId: ID!) {
-      team(teamId: $teamId) {
-        id
-        ...SettingModal_team
-        sites {
-          id
-          name
-        }
-      }
-
-      site(siteId: $siteId) {
+    query SiteLayout_Query($slug: String!) {
+      me @required {
         id
         name
+        avatarUrl
+
+        ...SettingModal_user
+      }
+
+      site(slug: $slug) {
+        id
+        name
+        slug
         url
-        ...SettingModal_site
+
         # NOTE: maxDepth = 3
         pages {
           id
           state
+          slug
           order
 
           content {
@@ -51,6 +53,7 @@
           children {
             id
             state
+            slug
             order
 
             content {
@@ -64,8 +67,9 @@
 
             children {
               id
-              order
               state
+              slug
+              order
 
               content {
                 id
@@ -78,8 +82,9 @@
 
               children {
                 id
-                order
                 state
+                slug
+                order
 
                 content {
                   id
@@ -93,39 +98,32 @@
             }
           }
         }
-      }
 
-      me @required {
-        id
-        name
-        avatarUrl
+        team {
+          id
 
-        ...SettingModal_user
+          sites {
+            id
+            name
+            slug
+          }
+        }
+
+        ...SettingModal_site
       }
     }
   `);
-
-  // NOTE: fragment를 쓰면 output 타입이 제대로 안 나오고 있음
-  // let _pageChildren: Page_Children_page;
-  // fragment(
-  //   // @ts-expect-error Argument of type '_pageChildren' is not assignable to parameter of type 'never'.
-  //   _pageChildren,
-  //   graphql(`
-  //     fragment Page_Children_page on Page {
-  //       id
-  //       order
-  //       parent {
-  //         id
-  //       }
-  //       state
-  //     }
-  //   `),
-  // );
 
   const createPage = graphql(`
     mutation SiteLayout_CreatePage_Mutation($input: CreatePageInput!) {
       createPage(input: $input) {
         id
+        slug
+
+        content {
+          id
+          title
+        }
       }
     }
   `);
@@ -172,7 +170,7 @@
       parentId,
     });
 
-    await goto(`/team/${$query.team.id}/site/${$query.site.id}/pages/${page.id}`);
+    await goto(`/${$query.site.slug}/${buildPageFullSlug(page)}`);
   }
 
   async function onDropPage(target: {
@@ -272,11 +270,8 @@
         <Icon style={css.raw({ color: 'neutral.70' })} icon={ChevronDownIcon} size={20} />
       </div>
 
-      {#each $query.team.sites as site (site.id)}
-        <MenuItem
-          aria-selected={site.id === $query.site.id}
-          on:click={async () => await goto(`/team/${$query.team.id}/site/${site.id}`)}
-        >
+      {#each $query.site.team.sites as site (site.id)}
+        <MenuItem aria-selected={site.id === $query.site.id} on:click={async () => await goto(`/${site.slug}`)}>
           <LogoPlaceholder slot="prefix" size={20} />
           {site.name}
         </MenuItem>
@@ -366,8 +361,8 @@
           <li>
             <a
               class={sidebarMenuItemStyle}
-              aria-selected={$page.url.pathname === `/team/${$query.team.id}/site/${$query.site.id}`}
-              href={`/team/${$query.team.id}/site/${$query.site.id}`}
+              aria-selected={$page.url.pathname === `/${$query.site.slug}`}
+              href={`/${$query.site.slug}`}
               role="tab"
             >
               <Icon style={css.raw({ color: 'text.secondary' })} icon={HouseIcon} />
@@ -393,7 +388,7 @@
 
         <div role="tree">
           <PageList
-            getPageUrl={(pageId) => `/team/${$query.team.id}/site/${$query.site.id}/pages/${pageId}`}
+            getPageUrl={(page) => `/${$query.site.slug}/${buildPageFullSlug(page)}`}
             items={$query.site.pages}
             onCreate={onCreatePage}
             onDrop={onDropPage}
@@ -417,7 +412,6 @@
 
 <SettingModal
   $site={$query.site}
-  $team={$query.team}
   $user={$query.me}
   close={() => {
     const currentPath = $page.url.pathname;

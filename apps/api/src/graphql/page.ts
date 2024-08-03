@@ -13,7 +13,7 @@ import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { assertPagePermission, assertSitePermission } from '@/utils/permissions';
-import { IPage, Page, PageContentSnapshot, PageContentState, PublicPage } from './objects';
+import { IPage, Page, PageContentSnapshot, PageContentState, PublicPage, Site } from './objects';
 
 /**
  * * Types
@@ -23,6 +23,7 @@ IPage.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     state: t.expose('state', { type: PageState }),
+    slug: t.exposeString('slug'),
 
     order: t.string({ resolve: (page) => decoder.decode(page.order) }),
   }),
@@ -32,6 +33,8 @@ Page.implement({
   interfaces: [IPage],
   fields: (t) => ({
     id: t.exposeID('id'),
+
+    site: t.field({ type: Site, resolve: (page) => page.siteId }),
 
     content: t.field({
       type: PageContentState,
@@ -109,14 +112,16 @@ const PageContentSyncOperation = builder.simpleObject('PageContentSyncOperation'
 builder.queryFields((t) => ({
   page: t.withAuth({ session: true }).field({
     type: Page,
-    args: { pageId: t.arg.id() },
+    args: { slug: t.arg.string() },
     resolve: async (_, args, ctx) => {
+      const page = await db.select().from(Pages).where(eq(Pages.slug, args.slug)).then(firstOrThrow);
+
       await assertPagePermission({
-        pageId: args.pageId,
+        pageId: page.id,
         userId: ctx.session.userId,
       });
 
-      return args.pageId;
+      return page;
     },
   }),
 }));

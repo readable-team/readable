@@ -10,12 +10,11 @@
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
-  import type { SettingModal_site, SettingModal_team, SettingModal_user } from '$graphql';
+  import type { SettingModal_site, SettingModal_user } from '$graphql';
 
   let _user: SettingModal_user;
-  let _team: SettingModal_team;
   let _site: SettingModal_site;
-  export { _site as $site, _team as $team, _user as $user };
+  export { _site as $site, _user as $user };
 
   export let open = false;
   export let close: () => void;
@@ -32,30 +31,6 @@
     `),
   );
 
-  $: team = fragment(
-    _team,
-    graphql(`
-      fragment SettingModal_team on Team {
-        id
-
-        meAsMember {
-          id
-          role
-        }
-
-        members {
-          id
-          role
-
-          user {
-            id
-            email
-          }
-        }
-      }
-    `),
-  );
-
   $: site = fragment(
     _site,
     graphql(`
@@ -63,6 +38,25 @@
         id
         name
         url
+
+        team {
+          id
+
+          meAsMember {
+            id
+            role
+          }
+
+          members {
+            id
+            role
+
+            user {
+              id
+              email
+            }
+          }
+        }
       }
     `),
   );
@@ -230,7 +224,7 @@
       <Button
         on:click={async () => {
           await deleteSite({ siteId: $site.id });
-          await goto(`/team/${$team.id}`);
+          await goto('/');
         }}
       >
         사이트 삭제
@@ -243,7 +237,7 @@
         class={flex({ align: 'center', gap: '10px' })}
         on:submit|preventDefault={async () => {
           await inviteTeamMember({
-            teamId: $team.id,
+            teamId: $site.team.id,
             email: inviteMemberEmail,
           });
           inviteMemberEmail = '';
@@ -257,14 +251,14 @@
       <br />
 
       <ul>
-        {#each $team.members as member (member.id)}
+        {#each $site.team.members as member (member.id)}
           <li class={flex({ align: 'center', gap: '10px' })}>
             <div>
               <p>{member.user.email}</p>
               <p>{member.role}</p>
             </div>
 
-            {#if $team.meAsMember?.role === 'ADMIN' && member.id !== $team.meAsMember?.id}
+            {#if $site.team.meAsMember?.role === 'ADMIN' && member.id !== $site.team.meAsMember?.id}
               <Button
                 size="sm"
                 variant="secondary"
@@ -272,7 +266,7 @@
                   await updateTeamMemberRole({
                     role: 'ADMIN',
                     userId: member.user.id,
-                    teamId: $team.id,
+                    teamId: $site.team.id,
                   })}
               >
                 ADMIN으로 변경
@@ -284,20 +278,20 @@
                   await updateTeamMemberRole({
                     role: 'MEMBER',
                     userId: member.user.id,
-                    teamId: $team.id,
+                    teamId: $site.team.id,
                   })}
               >
                 MEMBER로 변경
               </Button>
             {/if}
 
-            {#if $team.meAsMember?.role === 'ADMIN' || member.id === $team.meAsMember?.id}
+            {#if $site.team.meAsMember?.role === 'ADMIN' || member.id === $site.team.meAsMember?.id}
               <Button
                 size="sm"
                 on:click={async () => {
                   // TODO: alert, cache invalidate
-                  await removeTeamMember({ userId: member.user.id, teamId: $team.id });
-                  if (member.id === $team.meAsMember?.id) {
+                  await removeTeamMember({ userId: member.user.id, teamId: $site.team.id });
+                  if (member.id === $site.team.meAsMember?.id) {
                     await goto('/');
                   }
                 }}

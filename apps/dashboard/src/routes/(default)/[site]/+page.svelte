@@ -9,10 +9,10 @@
   import { graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
   import { accessToken } from '$lib/graphql';
-  import Pages from './pages/Pages.svelte';
+  import { buildPageFullSlug } from '$lib/utils/url';
 
   $: query = graphql(`
-    query SitePage_Query($teamId: ID!, $siteId: ID!) {
+    query SitePage_Query($slug: String!) {
       me @required {
         id
         name
@@ -20,14 +20,10 @@
         avatarUrl
       }
 
-      team(teamId: $teamId) {
-        id
-      }
-
-      site(siteId: $siteId) {
+      site(slug: $slug) {
         id
         name
-        url
+        slug
       }
     }
   `);
@@ -36,6 +32,12 @@
     mutation SitePage_CreatePage_Mutation($input: CreatePageInput!) {
       createPage(input: $input) {
         id
+        slug
+
+        content {
+          id
+          title
+        }
       }
     }
   `);
@@ -78,7 +80,7 @@
   on:click={async () => {
     const page = await createPage({ siteId: $query.site.id });
 
-    await goto(`/team/${$query.team.id}/site/${$query.site.id}/pages/${page.id}`);
+    await goto(`/${$query.site.slug}/${buildPageFullSlug(page)}`);
   }}
 >
   새 페이지
@@ -103,11 +105,6 @@
     value="asdf"
   />
 </div>
-
-<br />
-<br />
-
-<Pages />
 
 <br />
 <br />

@@ -67,6 +67,7 @@ export const transformLoadPlugin = (contextHolder: ContextHolder): Plugin => {
           specifiers: [
             AST.b.importSpecifier.from({
               imported: AST.b.identifier('get'),
+              local: AST.b.identifier('__gql_get'),
             }),
           ],
         }),
@@ -100,10 +101,12 @@ export const transformLoadPlugin = (contextHolder: ContextHolder): Plugin => {
                         AST.b.identifier('event.fetch'),
                         ...(`_${query.name}_Variables` in exportedVariables
                           ? [
-                              AST.b.callExpression.from({
-                                callee: AST.b.identifier(`_${query.name}_Variables`),
-                                arguments: [AST.b.identifier('event')],
-                              }),
+                              AST.b.awaitExpression(
+                                AST.b.callExpression.from({
+                                  callee: AST.b.identifier(`_${query.name}_Variables`),
+                                  arguments: [AST.b.identifier('event')],
+                                }),
+                              ),
                             ]
                           : []),
                       ],
@@ -121,7 +124,7 @@ export const transformLoadPlugin = (contextHolder: ContextHolder): Plugin => {
                       callee: AST.b.identifier(`_${query.name}_AfterLoad`),
                       arguments: [
                         AST.b.callExpression.from({
-                          callee: AST.b.identifier('get'),
+                          callee: AST.b.identifier('__gql_get'),
                           arguments: [AST.b.identifier(query.name)],
                         }),
                         AST.b.identifier('event'),

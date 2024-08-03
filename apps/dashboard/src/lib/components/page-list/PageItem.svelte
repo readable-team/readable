@@ -27,7 +27,7 @@
   export let openState: Record<string, boolean>;
   export let onPointerDown: (e: PointerEvent, item: T) => void;
   export let registerNode: (node: HTMLElement, item: T & { depth: number }) => void;
-  export let getPageUrl: (pageId: string) => string;
+  export let getPageUrl: (page: T) => string;
 
   let elem: HTMLElement;
 
@@ -90,7 +90,7 @@
       })}
       aria-selected={item.id === $page.params.pageId ? 'true' : 'false'}
       draggable="false"
-      href={getPageUrl(item.id)}
+      href={getPageUrl(item)}
       role="tab"
     >
       {#if depth < maxDepth}

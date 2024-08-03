@@ -1,6 +1,7 @@
 export type PageData = {
   id: string;
   order: string;
+  slug: string;
   content: {
     title: string;
   };

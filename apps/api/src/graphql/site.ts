@@ -9,7 +9,7 @@ import { ApiError } from '@/errors';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
-import { ISite, Page, PublicSite, Site } from './objects';
+import { ISite, Page, PublicSite, Site, Team } from './objects';
 
 /**
  * * Types
@@ -19,9 +19,12 @@ ISite.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
+    slug: t.exposeString('slug'),
     logoUrl: t.exposeString('logoUrl', { nullable: true }),
 
     url: t.string({ resolve: (site) => `https://${site.slug}.${env.USERSITE_DEFAULT_HOST}` }),
+
+    team: t.field({ type: Team, resolve: (site) => site.teamId }),
   }),
 });
 
@@ -64,14 +67,16 @@ PublicSite.implement({
 builder.queryFields((t) => ({
   site: t.withAuth({ session: true }).field({
     type: Site,
-    args: { siteId: t.arg.id() },
+    args: { slug: t.arg.string() },
     resolve: async (_, args, ctx) => {
+      const site = await db.select().from(Sites).where(eq(Sites.slug, args.slug)).then(firstOrThrow);
+
       await assertSitePermission({
-        siteId: args.siteId,
+        siteId: site.id,
         userId: ctx.session.userId,
       });
 
-      return args.siteId;
+      return site;
     },
   }),
 

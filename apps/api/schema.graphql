@@ -42,6 +42,7 @@ input GenerateSingleSignOnAuthorizationUrlInput {
 interface IPage {
   id: ID!
   order: String!
+  slug: String!
   state: PageState!
 }
 
@@ -49,6 +50,8 @@ interface ISite {
   id: ID!
   logoUrl: String
   name: String!
+  slug: String!
+  team: Team!
   url: String!
 }
 
@@ -103,6 +106,8 @@ type Page implements IPage {
   id: ID!
   order: String!
   parent: Page
+  site: Site!
+  slug: String!
   state: PageState!
 }
 
@@ -141,6 +146,7 @@ type PublicPage implements IPage {
   id: ID!
   order: String!
   parent: PublicPage
+  slug: String!
   state: PageState!
 }
 
@@ -149,14 +155,16 @@ type PublicSite implements ISite {
   logoUrl: String
   name: String!
   pages: [Page!]!
+  slug: String!
+  team: Team!
   url: String!
 }
 
 type Query {
   me: User
-  page(pageId: ID!): Page!
+  page(slug: String!): Page!
   publicSite(hostname: String!): PublicSite!
-  site(siteId: ID!): Site!
+  site(slug: String!): Site!
   team(teamId: ID!): Team!
 }
 
@@ -174,6 +182,8 @@ type Site implements ISite {
   logoUrl: String
   name: String!
   pages: [Page!]!
+  slug: String!
+  team: Team!
   url: String!
 }
 
