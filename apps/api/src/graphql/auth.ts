@@ -86,20 +86,23 @@ builder.mutationFields((t) => ({
         const avatarResp = await fetch(externalUser.avatarUrl);
         const avatarBuffer = await avatarResp.arrayBuffer();
 
-        const avatarUrl = await aws.uploadUserContents({
-          filename: path.basename(externalUser.avatarUrl),
-          source: Buffer.from(avatarBuffer),
-        });
-
         const user = await tx
           .insert(Users)
           .values({
             email: externalUser.email,
             name: externalUser.name,
-            avatarUrl,
+            avatarUrl: '',
           })
           .returning({ id: Users.id })
           .then(firstOrThrow);
+
+        const avatarUrl = await aws.uploadUserContents({
+          userId: user.id,
+          filename: path.basename(externalUser.avatarUrl),
+          source: Buffer.from(avatarBuffer),
+        });
+
+        await tx.update(Users).set({ avatarUrl }).where(eq(Users.id, user.id));
 
         await tx.insert(UserSingleSignOns).values({
           userId: user.id,

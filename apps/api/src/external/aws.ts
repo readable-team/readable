@@ -17,16 +17,20 @@ export const createFragmentedS3ObjectKey = () => {
   return `${year}/${month}/${fragment}/${subfragment}/${key}`;
 };
 
-type UploadUserContentsParams = { filename: string; source: Buffer };
-export const uploadUserContents = async ({ filename, source }: UploadUserContentsParams) => {
+type UploadUserContentsParams = { userId: string; filename: string; source: Buffer };
+export const uploadUserContents = async ({ userId, filename, source }: UploadUserContentsParams) => {
   const ext = path.extname(filename);
-  const key = createFragmentedS3ObjectKey() + ext;
+  const key = `${createFragmentedS3ObjectKey()}${ext}`;
 
   await s3.send(
     new PutObjectCommand({
       Bucket: 'readable-usercontents',
-      Key: key,
+      Key: `public/${key}`,
       Body: source,
+      Metadata: {
+        'name': encodeURIComponent(filename),
+        'user-id': userId,
+      },
     }),
   );
 
