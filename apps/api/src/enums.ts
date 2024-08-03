@@ -26,20 +26,20 @@ export const SiteState = {
   DELETED: 'DELETED',
 } as const;
 
-export type UserState = keyof typeof UserState;
-export const UserState = {
-  ACTIVE: 'ACTIVE',
-  DEACTIVATED: 'DEACTIVATED',
-} as const;
-
-export type WorkspaceMemberRole = keyof typeof WorkspaceMemberRole;
-export const WorkspaceMemberRole = {
+export type TeamMemberRole = keyof typeof TeamMemberRole;
+export const TeamMemberRole = {
   ADMIN: 'ADMIN',
   MEMBER: 'MEMBER',
 } as const;
 
-export type WorkspaceState = keyof typeof WorkspaceState;
-export const WorkspaceState = {
+export type TeamState = keyof typeof TeamState;
+export const TeamState = {
   ACTIVE: 'ACTIVE',
   DELETED: 'DELETED',
+} as const;
+
+export type UserState = keyof typeof UserState;
+export const UserState = {
+  ACTIVE: 'ACTIVE',
+  DEACTIVATED: 'DEACTIVATED',
 } as const;

@@ -8,11 +8,11 @@
   tabs={[
     {
       title: '사이트 디자인 설정',
-      path: `/workspace/${$page.params.workspaceId}/site/${$page.params.siteId}/settings/designs`,
+      path: `/team/${$page.params.teamId}/site/${$page.params.siteId}/settings/designs`,
     },
     {
       title: '시작 페이지 디자인 설정',
-      path: `/workspace/${$page.params.workspaceId}/site/${$page.params.siteId}/settings/designs/initialpage`,
+      path: `/team/${$page.params.teamId}/site/${$page.params.siteId}/settings/designs/initialpage`,
     },
   ]}
 />

@@ -36,12 +36,12 @@ export const dataSchemas = {
       .max(60, { message: '이름은 60글자를 넘을 수 없어요' }),
   },
 
-  workspace: {
+  team: {
     name: z
-      .string({ required_error: '워크스페이스 이름을 입력해 주세요' })
+      .string({ required_error: '팀 이름을 입력해 주세요' })
       .trim()
-      .min(1, { message: '워크스페이스 이름을 입력해 주세요' })
-      .max(50, { message: '워크스페이스 이름은 50글자를 넘을 수 없어요' }),
+      .min(1, { message: '팀 이름을 입력해 주세요' })
+      .max(50, { message: '팀 이름은 50글자를 넘을 수 없어요' }),
   },
 };
 
@@ -64,9 +64,9 @@ export const inputSchemas = {
     }),
   },
 
-  workspace: {
+  team: {
     create: z.object({
-      name: dataSchemas.workspace.name,
+      name: dataSchemas.team.name,
     }),
 
     inviteMember: z.object({

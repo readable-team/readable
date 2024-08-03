@@ -10,10 +10,10 @@ input CreatePageInput {
 
 input CreateSiteInput {
   name: String!
-  workspaceId: ID!
+  teamId: ID!
 }
 
-input CreateWorkspaceInput {
+input CreateTeamInput {
   name: String!
 }
 
@@ -27,8 +27,8 @@ input DeleteSiteInput {
   siteId: ID!
 }
 
-input DeleteWorkspaceInput {
-  workspaceId: String!
+input DeleteTeamInput {
+  teamId: String!
 }
 
 input FinishBlobUploadInput {
@@ -52,12 +52,12 @@ interface ISite {
   url: String!
 }
 
-input InviteWorkspaceMemberInput {
+input InviteTeamMemberInput {
   email: String!
-  workspaceId: String!
+  teamId: String!
 }
 
-union InviteWorkspaceMemberResult = WorkspaceMember | WorkspaceMemberInvitation
+union InviteTeamMemberResult = TeamMember | TeamMemberInvitation
 
 input IssueBlobUploadUrlInput {
   filename: String!
@@ -76,25 +76,25 @@ scalar JSON
 
 type Mutation {
   authorizeSingleSignOn(input: AuthorizeSingleSignOnInput!): UserWithAccessToken!
-  createDefaultWorkspace: Workspace!
+  createDefaultTeam: Team!
   createPage(input: CreatePageInput!): Page!
   createSite(input: CreateSiteInput!): Site!
-  createWorkspace(input: CreateWorkspaceInput!): Workspace!
+  createTeam(input: CreateTeamInput!): Team!
   deactivateUser: User!
   deletePage(input: DeletePageInput!): Page!
   deleteSite(input: DeleteSiteInput!): Site!
-  deleteWorkspace(input: DeleteWorkspaceInput!): Workspace!
+  deleteTeam(input: DeleteTeamInput!): Team!
   finishBlobUpload(input: FinishBlobUploadInput!): Boolean!
   generateSingleSignOnAuthorizationUrl(input: GenerateSingleSignOnAuthorizationUrlInput!): String!
-  inviteWorkspaceMember(input: InviteWorkspaceMemberInput!): InviteWorkspaceMemberResult!
+  inviteTeamMember(input: InviteTeamMemberInput!): InviteTeamMemberResult!
   issueBlobUploadUrl(input: IssueBlobUploadUrlInput!): IssueBlobUploadUrlResult!
   logout: Boolean!
-  removeWorkspaceMember(input: RemoveWorkspaceMemberInput!): WorkspaceMember!
+  removeTeamMember(input: RemoveTeamMemberInput!): TeamMember!
   syncPageContent(input: SyncPageContentInput!): [PageContentSyncOperation!]!
   updatePagePosition(input: UpdatePagePositionInput!): Page!
   updateSite(input: UpdateSiteInput!): Site!
+  updateTeamMemberRole(input: UpdateTeamMemberRoleInput!): TeamMember!
   updateUser(input: UpdateUserInput!): User!
-  updateWorkspaceMemberRole(input: UpdateWorkspaceMemberRoleInput!): WorkspaceMember!
 }
 
 type Page implements IPage {
@@ -157,12 +157,12 @@ type Query {
   page(pageId: ID!): Page!
   publicSite(hostname: String!): PublicSite!
   site(siteId: ID!): Site!
-  workspace(workspaceId: ID!): Workspace!
+  team(teamId: ID!): Team!
 }
 
-input RemoveWorkspaceMemberInput {
+input RemoveTeamMemberInput {
+  teamId: String!
   userId: String!
-  workspaceId: String!
 }
 
 enum SingleSignOnProvider {
@@ -196,6 +196,36 @@ input SyncPageContentInput {
   pageId: ID!
 }
 
+type Team {
+  id: ID!
+  meAsMember: TeamMember
+  members: [TeamMember!]!
+  name: String!
+  sites: [Site!]!
+}
+
+type TeamMember {
+  id: ID!
+  role: TeamMemberRole!
+  user: User!
+}
+
+type TeamMemberInvitation {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+}
+
+enum TeamMemberRole {
+  ADMIN
+  MEMBER
+}
+
+enum TeamState {
+  ACTIVE
+  DELETED
+}
+
 input UpdatePagePositionInput {
   lower: String
   pageId: String!
@@ -210,15 +240,15 @@ input UpdateSiteInput {
   slug: String!
 }
 
+input UpdateTeamMemberRoleInput {
+  role: TeamMemberRole!
+  teamId: String!
+  userId: String!
+}
+
 input UpdateUserInput {
   avatarUrl: String!
   name: String!
-}
-
-input UpdateWorkspaceMemberRoleInput {
-  role: WorkspaceMemberRole!
-  userId: String!
-  workspaceId: String!
 }
 
 type User {
@@ -226,7 +256,7 @@ type User {
   email: String!
   id: ID!
   name: String!
-  workspaces: [Workspace!]!
+  teams: [Team!]!
 }
 
 enum UserState {
@@ -237,34 +267,4 @@ enum UserState {
 type UserWithAccessToken {
   accessToken: String!
   user: User!
-}
-
-type Workspace {
-  id: ID!
-  meAsMember: WorkspaceMember
-  members: [WorkspaceMember!]!
-  name: String!
-  sites: [Site!]!
-}
-
-type WorkspaceMember {
-  id: ID!
-  role: WorkspaceMemberRole!
-  user: User!
-}
-
-type WorkspaceMemberInvitation {
-  createdAt: DateTime!
-  email: String!
-  id: ID!
-}
-
-enum WorkspaceMemberRole {
-  ADMIN
-  MEMBER
-}
-
-enum WorkspaceState {
-  ACTIVE
-  DELETED
 }

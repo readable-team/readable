@@ -1,10 +1,10 @@
 import { and, asc, eq, getTableColumns } from 'drizzle-orm';
 import { builder } from '@/builder';
-import { db, firstOrThrow, Users, UserSessions, UserSingleSignOns, WorkspaceMembers, Workspaces } from '@/db';
-import { UserState, WorkspaceState } from '@/enums';
+import { db, firstOrThrow, TeamMembers, Teams, Users, UserSessions, UserSingleSignOns } from '@/db';
+import { TeamState, UserState } from '@/enums';
 import { ApiError } from '@/errors';
 import { dataSchemas } from '@/schemas';
-import { User, Workspace } from './objects';
+import { Team, User } from './objects';
 
 /**
  * * Types
@@ -17,15 +17,15 @@ User.implement({
     email: t.exposeString('email'),
     avatarUrl: t.exposeString('avatarUrl'),
 
-    workspaces: t.field({
-      type: [Workspace],
+    teams: t.field({
+      type: [Team],
       resolve: async (user) => {
         return await db
-          .select(getTableColumns(Workspaces))
-          .from(Workspaces)
-          .innerJoin(WorkspaceMembers, eq(Workspaces.id, WorkspaceMembers.workspaceId))
-          .where(and(eq(WorkspaceMembers.userId, user.id), eq(Workspaces.state, WorkspaceState.ACTIVE)))
-          .orderBy(asc(WorkspaceMembers.createdAt));
+          .select(getTableColumns(Teams))
+          .from(Teams)
+          .innerJoin(TeamMembers, eq(Teams.id, TeamMembers.teamId))
+          .where(and(eq(TeamMembers.userId, user.id), eq(Teams.state, TeamState.ACTIVE)))
+          .orderBy(asc(TeamMembers.createdAt));
       },
     }),
   }),
@@ -70,13 +70,13 @@ builder.mutationFields((t) => ({
     type: User,
     resolve: async (_, __, ctx) => {
       const members = await db
-        .select({ id: WorkspaceMembers.id })
-        .from(WorkspaceMembers)
-        .innerJoin(Workspaces, eq(WorkspaceMembers.workspaceId, Workspaces.id))
-        .where(and(eq(WorkspaceMembers.userId, ctx.session.userId), eq(Workspaces.state, WorkspaceState.ACTIVE)));
+        .select({ id: TeamMembers.id })
+        .from(TeamMembers)
+        .innerJoin(Teams, eq(TeamMembers.teamId, Teams.id))
+        .where(and(eq(TeamMembers.userId, ctx.session.userId), eq(Teams.state, TeamState.ACTIVE)));
 
       if (members.length > 0) {
-        throw new ApiError({ code: 'user_has_workspaces' });
+        throw new ApiError({ code: 'user_has_teams' });
       }
 
       return await db.transaction(async (tx) => {

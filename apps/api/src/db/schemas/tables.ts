@@ -101,9 +101,9 @@ export const Sites = pgTable(
     id: text('id')
       .primaryKey()
       .$defaultFn(() => createDbId()),
-    workspaceId: text('workspace_id')
+    teamId: text('team_id')
       .notNull()
-      .references(() => Workspaces.id),
+      .references(() => Teams.id),
     slug: text('slug').notNull(),
     name: text('name').notNull(),
     state: E._SiteState('state').notNull().default('ACTIVE'),
@@ -119,6 +119,60 @@ export const Sites = pgTable(
       .where(sql`${t.state} = 'ACTIVE'`),
   }),
 );
+
+export const Teams = pgTable(
+  'teams',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId()),
+    name: text('name').notNull(),
+    state: E._TeamState('state').notNull().default('ACTIVE'),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    stateIdx: index().on(t.state),
+  }),
+);
+
+export const TeamMembers = pgTable(
+  'team_members',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId()),
+    teamId: text('team_id')
+      .notNull()
+      .references(() => Teams.id),
+    userId: text('user_id')
+      .notNull()
+      .references(() => Users.id),
+    role: E._TeamMemberRole('role').notNull(),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    userIdTeamIdUniq: unique().on(t.userId, t.teamId),
+    teamIdUserIdRoleIdx: index().on(t.teamId, t.userId, t.role),
+  }),
+);
+
+export const TeamMemberInvitations = pgTable('team_member_invitations', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId()),
+  teamId: text('team_id')
+    .notNull()
+    .references(() => Teams.id),
+  email: text('email').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+  expiresAt: datetime('expires_at').notNull(),
+});
 
 export const Users = pgTable(
   'users',
@@ -181,57 +235,3 @@ export const UserSingleSignOns = pgTable(
     providerPrincipalUniq: unique().on(t.provider, t.principal),
   }),
 );
-
-export const Workspaces = pgTable(
-  'workspaces',
-  {
-    id: text('id')
-      .primaryKey()
-      .$defaultFn(() => createDbId()),
-    name: text('name').notNull(),
-    state: E._WorkspaceState('state').notNull().default('ACTIVE'),
-    createdAt: datetime('created_at')
-      .notNull()
-      .default(sql`now()`),
-  },
-  (t) => ({
-    stateIdx: index().on(t.state),
-  }),
-);
-
-export const WorkspaceMembers = pgTable(
-  'workspace_members',
-  {
-    id: text('id')
-      .primaryKey()
-      .$defaultFn(() => createDbId()),
-    workspaceId: text('workspace_id')
-      .notNull()
-      .references(() => Workspaces.id),
-    userId: text('user_id')
-      .notNull()
-      .references(() => Users.id),
-    role: E._WorkspaceMemberRole('role').notNull(),
-    createdAt: datetime('created_at')
-      .notNull()
-      .default(sql`now()`),
-  },
-  (t) => ({
-    userIdWorkspaceIdUniq: unique().on(t.userId, t.workspaceId),
-    workspaceIdUserIdRoleIdx: index().on(t.workspaceId, t.userId, t.role),
-  }),
-);
-
-export const WorkspaceMemberInvitations = pgTable('workspace_member_invitations', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => createDbId()),
-  workspaceId: text('workspace_id')
-    .notNull()
-    .references(() => Workspaces.id),
-  email: text('email').notNull(),
-  createdAt: datetime('created_at')
-    .notNull()
-    .default(sql`now()`),
-  expiresAt: datetime('expires_at').notNull(),
-});

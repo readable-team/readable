@@ -6,11 +6,11 @@ export const _DefaultLayout_Query_AfterLoad: DefaultLayout_Query_AfterLoad = asy
     redirect(302, '/auth/login');
   }
 
-  if (query.me.workspaces.length === 0) {
+  if (query.me.teams.length === 0) {
     redirect(302, '/new');
   }
 
   if (event.route.id == '/(default)') {
-    redirect(302, `/workspace/${query.me.workspaces[0].id}`);
+    redirect(302, `/team/${query.me.teams[0].id}`);
   }
 };

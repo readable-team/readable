@@ -29,7 +29,7 @@
           name
         }
 
-        workspace(workspaceId: $workspaceId) {
+        team(teamId: $teamId) {
           id
         }
 
@@ -104,9 +104,9 @@
   const onDeletePage = async () => {
     await deletePage({ pageId: $query.page.id });
     if ($query.page.parent?.id) {
-      goto(`/workspace/${$query.workspace.id}/site/${$query.site.id}/pages/${$query.page.parent.id}`);
+      goto(`/team/${$query.team.id}/site/${$query.site.id}/pages/${$query.page.parent.id}`);
     } else {
-      goto(`/workspace/${$query.workspace.id}/site/${$query.site.id}`);
+      goto(`/team/${$query.team.id}/site/${$query.site.id}`);
     }
   };
 

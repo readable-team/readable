@@ -2,12 +2,12 @@ import { faker } from '@faker-js/faker';
 import { and, asc, eq, isNull, ne } from 'drizzle-orm';
 import { builder } from '@/builder';
 import { db, first, firstOrThrow, Pages, Sites } from '@/db';
-import { PageState, SiteState, WorkspaceMemberRole } from '@/enums';
+import { PageState, SiteState, TeamMemberRole } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
-import { assertSitePermission, assertWorkspacePermission } from '@/utils/permissions';
+import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
 import { ISite, Page, PublicSite, Site } from './objects';
 
 /**
@@ -97,14 +97,14 @@ builder.mutationFields((t) => ({
   createSite: t.withAuth({ session: true }).fieldWithInput({
     type: Site,
     input: {
-      workspaceId: t.input.id(),
+      teamId: t.input.id(),
       name: t.input.string({ validate: { schema: dataSchemas.site.name } }),
     },
     resolve: async (_, { input }, ctx) => {
-      await assertWorkspacePermission({
-        workspaceId: input.workspaceId,
+      await assertTeamPermission({
+        teamId: input.teamId,
         userId: ctx.session.userId,
-        role: WorkspaceMemberRole.ADMIN,
+        role: TeamMemberRole.ADMIN,
       });
 
       const slug = [
@@ -116,7 +116,7 @@ builder.mutationFields((t) => ({
       const site = await db
         .insert(Sites)
         .values({
-          workspaceId: input.workspaceId,
+          teamId: input.teamId,
           name: input.name,
           slug,
         })
@@ -139,7 +139,7 @@ builder.mutationFields((t) => ({
       await assertSitePermission({
         siteId: input.siteId,
         userId: ctx.session.userId,
-        role: WorkspaceMemberRole.ADMIN,
+        role: TeamMemberRole.ADMIN,
       });
 
       const existingSite = await db
@@ -168,7 +168,7 @@ builder.mutationFields((t) => ({
       await assertSitePermission({
         siteId: input.siteId,
         userId: ctx.session.userId,
-        role: WorkspaceMemberRole.ADMIN,
+        role: TeamMemberRole.ADMIN,
       });
 
       return await db

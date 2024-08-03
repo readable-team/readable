@@ -7,13 +7,13 @@ import {
   db,
   first,
   firstOrThrow,
+  TeamMemberInvitations,
+  TeamMembers,
   Users,
   UserSessions,
   UserSingleSignOns,
-  WorkspaceMemberInvitations,
-  WorkspaceMembers,
 } from '@/db';
-import { SingleSignOnProvider, UserState, WorkspaceMemberRole } from '@/enums';
+import { SingleSignOnProvider, TeamMemberRole, UserState } from '@/enums';
 import { ApiError } from '@/errors';
 import * as aws from '@/external/aws';
 import * as google from '@/external/google';
@@ -109,23 +109,18 @@ builder.mutationFields((t) => ({
         });
 
         const invitations = await tx
-          .delete(WorkspaceMemberInvitations)
-          .where(
-            and(
-              eq(WorkspaceMemberInvitations.email, externalUser.email),
-              gt(WorkspaceMemberInvitations.expiresAt, dayjs()),
-            ),
-          )
-          .returning({ workspaceId: WorkspaceMemberInvitations.workspaceId });
+          .delete(TeamMemberInvitations)
+          .where(and(eq(TeamMemberInvitations.email, externalUser.email), gt(TeamMemberInvitations.expiresAt, dayjs())))
+          .returning({ teamId: TeamMemberInvitations.teamId });
 
-        const workspaceIds = new Set(invitations.map((invitation) => invitation.workspaceId));
+        const teamIds = new Set(invitations.map((invitation) => invitation.teamId));
 
-        if (workspaceIds.size > 0) {
-          await tx.insert(WorkspaceMembers).values(
-            [...workspaceIds].map((workspaceId) => ({
-              workspaceId,
+        if (teamIds.size > 0) {
+          await tx.insert(TeamMembers).values(
+            [...teamIds].map((teamId) => ({
+              teamId,
               userId: user.id,
-              role: WorkspaceMemberRole.MEMBER,
+              role: TeamMemberRole.MEMBER,
             })),
           );
         }

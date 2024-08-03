@@ -4,8 +4,8 @@ import './auth';
 import './blob';
 import './page';
 import './site';
+import './team';
 import './user';
-import './workspace';
 
 import { builder } from '@/builder';
 import { dev } from '@/env';

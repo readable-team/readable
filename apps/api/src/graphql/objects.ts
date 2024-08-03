@@ -44,10 +44,10 @@ export const Page = createObjectRef('Page', T.Pages);
 export const PageContentSnapshot = createObjectRef('PageContentSnapshot', T.PageContentSnapshots);
 export const PageContentState = createObjectRef('PageContentState', T.PageContentStates);
 export const Site = createObjectRef('Site', T.Sites);
+export const Team = createObjectRef('Team', T.Teams);
+export const TeamMember = createObjectRef('TeamMember', T.TeamMembers);
+export const TeamMemberInvitation = createObjectRef('TeamMemberInvitation', T.TeamMemberInvitations);
 export const User = createObjectRef('User', T.Users);
-export const Workspace = createObjectRef('Workspace', T.Workspaces);
-export const WorkspaceMember = createObjectRef('WorkspaceMember', T.WorkspaceMembers);
-export const WorkspaceMemberInvitation = createObjectRef('WorkspaceMemberInvitation', T.WorkspaceMemberInvitations);
 
 export const PublicPage = createObjectRef('PublicPage', T.Pages);
 export const PublicSite = createObjectRef('PublicSite', T.Sites);

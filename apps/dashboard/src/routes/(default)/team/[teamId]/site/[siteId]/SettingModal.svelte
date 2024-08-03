@@ -10,12 +10,12 @@
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
-  import type { SettingModal_site, SettingModal_user, SettingModal_workspace } from '$graphql';
+  import type { SettingModal_site, SettingModal_team, SettingModal_user } from '$graphql';
 
   let _user: SettingModal_user;
-  let _workspace: SettingModal_workspace;
+  let _team: SettingModal_team;
   let _site: SettingModal_site;
-  export { _site as $site, _user as $user, _workspace as $workspace };
+  export { _site as $site, _team as $team, _user as $user };
 
   export let open = false;
   export let close: () => void;
@@ -32,10 +32,10 @@
     `),
   );
 
-  $: workspace = fragment(
-    _workspace,
+  $: team = fragment(
+    _team,
     graphql(`
-      fragment SettingModal_workspace on Workspace {
+      fragment SettingModal_team on Team {
         id
 
         meAsMember {
@@ -67,14 +67,14 @@
     `),
   );
 
-  const inviteWorkspaceMember = graphql(`
-    mutation SettingModal_InviteWorkspaceMember_Mutation($input: InviteWorkspaceMemberInput!) {
-      inviteWorkspaceMember(input: $input) {
-        ... on WorkspaceMember {
+  const inviteTeamMember = graphql(`
+    mutation SettingModal_InviteTeamMember_Mutation($input: InviteTeamMemberInput!) {
+      inviteTeamMember(input: $input) {
+        ... on TeamMember {
           id
         }
 
-        ... on WorkspaceMemberInvitation {
+        ... on TeamMemberInvitation {
           id
           email
           createdAt
@@ -83,18 +83,18 @@
     }
   `);
 
-  const updateWorkspaceMemberRole = graphql(`
-    mutation SettingModal_UpdateWorkspaceMemberRole_Mutation($input: UpdateWorkspaceMemberRoleInput!) {
-      updateWorkspaceMemberRole(input: $input) {
+  const updateTeamMemberRole = graphql(`
+    mutation SettingModal_UpdateTeamMemberRole_Mutation($input: UpdateTeamMemberRoleInput!) {
+      updateTeamMemberRole(input: $input) {
         id
         role
       }
     }
   `);
 
-  const removeWorkspaceMember = graphql(`
-    mutation SettingModal_RemoveWorkspaceMember_Mutation($input: RemoveWorkspaceMemberInput!) {
-      removeWorkspaceMember(input: $input) {
+  const removeTeamMember = graphql(`
+    mutation SettingModal_RemoveTeamMember_Mutation($input: RemoveTeamMemberInput!) {
+      removeTeamMember(input: $input) {
         id
       }
     }
@@ -124,7 +124,7 @@
     },
   ];
 
-  const workspaceSettings = [
+  const teamSettings = [
     {
       icon: UsersIcon,
       text: '멤버 관리',
@@ -207,8 +207,8 @@
     </dl>
 
     <dl class={flex({ direction: 'column', gap: '4px', paddingTop: '16px', paddingBottom: '8px' })}>
-      <dt class={css({ textStyle: '12sb', color: 'text.tertiary' })}>워크스페이스</dt>
-      {#each workspaceSettings as setting (setting.text)}
+      <dt class={css({ textStyle: '12sb', color: 'text.tertiary' })}>팀</dt>
+      {#each teamSettings as setting (setting.text)}
         <dd>
           <button
             class={tabItemStyle}
@@ -230,7 +230,7 @@
       <Button
         on:click={async () => {
           await deleteSite({ siteId: $site.id });
-          await goto(`/workspace/${$workspace.id}`);
+          await goto(`/team/${$team.id}`);
         }}
       >
         사이트 삭제
@@ -242,8 +242,8 @@
       <form
         class={flex({ align: 'center', gap: '10px' })}
         on:submit|preventDefault={async () => {
-          await inviteWorkspaceMember({
-            workspaceId: $workspace.id,
+          await inviteTeamMember({
+            teamId: $team.id,
             email: inviteMemberEmail,
           });
           inviteMemberEmail = '';
@@ -257,22 +257,22 @@
       <br />
 
       <ul>
-        {#each $workspace.members as member (member.id)}
+        {#each $team.members as member (member.id)}
           <li class={flex({ align: 'center', gap: '10px' })}>
             <div>
               <p>{member.user.email}</p>
               <p>{member.role}</p>
             </div>
 
-            {#if $workspace.meAsMember?.role === 'ADMIN' && member.id !== $workspace.meAsMember?.id}
+            {#if $team.meAsMember?.role === 'ADMIN' && member.id !== $team.meAsMember?.id}
               <Button
                 size="sm"
                 variant="secondary"
                 on:click={async () =>
-                  await updateWorkspaceMemberRole({
+                  await updateTeamMemberRole({
                     role: 'ADMIN',
                     userId: member.user.id,
-                    workspaceId: $workspace.id,
+                    teamId: $team.id,
                   })}
               >
                 ADMIN으로 변경
@@ -281,23 +281,23 @@
                 size="sm"
                 variant="secondary"
                 on:click={async () =>
-                  await updateWorkspaceMemberRole({
+                  await updateTeamMemberRole({
                     role: 'MEMBER',
                     userId: member.user.id,
-                    workspaceId: $workspace.id,
+                    teamId: $team.id,
                   })}
               >
                 MEMBER로 변경
               </Button>
             {/if}
 
-            {#if $workspace.meAsMember?.role === 'ADMIN' || member.id === $workspace.meAsMember?.id}
+            {#if $team.meAsMember?.role === 'ADMIN' || member.id === $team.meAsMember?.id}
               <Button
                 size="sm"
                 on:click={async () => {
                   // TODO: alert, cache invalidate
-                  await removeWorkspaceMember({ userId: member.user.id, workspaceId: $workspace.id });
-                  if (member.id === $workspace.meAsMember?.id) {
+                  await removeTeamMember({ userId: member.user.id, teamId: $team.id });
+                  if (member.id === $team.meAsMember?.id) {
                     await goto('/');
                   }
                 }}

@@ -6,7 +6,7 @@
       me {
         id
 
-        workspaces {
+        teams {
           id
         }
       }

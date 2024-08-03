@@ -6,7 +6,7 @@ export const _NewPage_Query_AfterLoad: NewPage_Query_AfterLoad = async (query) =
     redirect(302, '/auth/login');
   }
 
-  if (query.me.workspaces.length > 0) {
+  if (query.me.teams.length > 0) {
     redirect(302, '/');
   }
 };

@@ -1,35 +1,29 @@
 import { and, eq } from 'drizzle-orm';
-import { db, first, Pages, Sites, WorkspaceMembers, Workspaces } from '@/db';
-import { SiteState, WorkspaceMemberRole, WorkspaceState } from '@/enums';
+import { db, first, Pages, Sites, TeamMembers, Teams } from '@/db';
+import { SiteState, TeamMemberRole, TeamState } from '@/enums';
 import { ApiError } from '@/errors';
 
-const workspaceMemberRolePrecedences: WorkspaceMemberRole[] = [WorkspaceMemberRole.MEMBER, WorkspaceMemberRole.ADMIN];
+const teamMemberRolePrecedences: TeamMemberRole[] = [TeamMemberRole.MEMBER, TeamMemberRole.ADMIN];
 
-type AssertWorkspacePermissionParams = {
-  workspaceId: string;
+type AssertTeamPermissionParams = {
+  teamId: string;
   userId: string;
-  role?: WorkspaceMemberRole;
+  role?: TeamMemberRole;
 };
 
-export const assertWorkspacePermission = async ({
-  workspaceId,
+export const assertTeamPermission = async ({
+  teamId,
   userId,
-  role = WorkspaceMemberRole.MEMBER,
-}: AssertWorkspacePermissionParams) => {
+  role = TeamMemberRole.MEMBER,
+}: AssertTeamPermissionParams) => {
   const member = await db
-    .select({ role: WorkspaceMembers.role })
-    .from(WorkspaceMembers)
-    .innerJoin(Workspaces, eq(WorkspaceMembers.workspaceId, Workspaces.id))
-    .where(
-      and(
-        eq(WorkspaceMembers.workspaceId, workspaceId),
-        eq(WorkspaceMembers.userId, userId),
-        eq(Workspaces.state, WorkspaceState.ACTIVE),
-      ),
-    )
+    .select({ role: TeamMembers.role })
+    .from(TeamMembers)
+    .innerJoin(Teams, eq(TeamMembers.teamId, Teams.id))
+    .where(and(eq(TeamMembers.teamId, teamId), eq(TeamMembers.userId, userId), eq(Teams.state, TeamState.ACTIVE)))
     .then(first);
 
-  if (!member || workspaceMemberRolePrecedences.indexOf(member.role) < workspaceMemberRolePrecedences.indexOf(role)) {
+  if (!member || teamMemberRolePrecedences.indexOf(member.role) < teamMemberRolePrecedences.indexOf(role)) {
     throw new ApiError({ code: 'forbidden' });
   }
 };
@@ -37,31 +31,31 @@ export const assertWorkspacePermission = async ({
 type AssertSitePermissionParams = {
   siteId: string;
   userId: string;
-  role?: WorkspaceMemberRole;
+  role?: TeamMemberRole;
 };
 
 export const assertSitePermission = async ({
   siteId,
   userId,
-  role = WorkspaceMemberRole.MEMBER,
+  role = TeamMemberRole.MEMBER,
 }: AssertSitePermissionParams) => {
-  // 사실 지금은 사이트별 권한이 없어서 워크스페이스 권한만 봄
+  // 사실 지금은 사이트별 권한이 없어서 팀 권한만 봄
   const member = await db
-    .select({ role: WorkspaceMembers.role })
-    .from(WorkspaceMembers)
-    .innerJoin(Workspaces, eq(WorkspaceMembers.workspaceId, Workspaces.id))
-    .innerJoin(Sites, eq(WorkspaceMembers.workspaceId, Sites.workspaceId))
+    .select({ role: TeamMembers.role })
+    .from(TeamMembers)
+    .innerJoin(Teams, eq(TeamMembers.teamId, Teams.id))
+    .innerJoin(Sites, eq(TeamMembers.teamId, Sites.teamId))
     .where(
       and(
         eq(Sites.id, siteId),
-        eq(WorkspaceMembers.userId, userId),
-        eq(Workspaces.state, WorkspaceState.ACTIVE),
+        eq(TeamMembers.userId, userId),
+        eq(Teams.state, TeamState.ACTIVE),
         eq(Sites.state, SiteState.ACTIVE),
       ),
     )
     .then(first);
 
-  if (!member || workspaceMemberRolePrecedences.indexOf(member.role) < workspaceMemberRolePrecedences.indexOf(role)) {
+  if (!member || teamMemberRolePrecedences.indexOf(member.role) < teamMemberRolePrecedences.indexOf(role)) {
     throw new ApiError({ code: 'forbidden' });
   }
 };
@@ -69,31 +63,31 @@ export const assertSitePermission = async ({
 type AssertPagePermissionParams = {
   pageId: string;
   userId: string;
-  role?: WorkspaceMemberRole;
+  role?: TeamMemberRole;
 };
 
 export const assertPagePermission = async ({
   pageId,
   userId,
-  role = WorkspaceMemberRole.MEMBER,
+  role = TeamMemberRole.MEMBER,
 }: AssertPagePermissionParams) => {
   const member = await db
-    .select({ role: WorkspaceMembers.role })
-    .from(WorkspaceMembers)
-    .innerJoin(Workspaces, eq(WorkspaceMembers.workspaceId, Workspaces.id))
-    .innerJoin(Sites, eq(Workspaces.id, Sites.workspaceId))
+    .select({ role: TeamMembers.role })
+    .from(TeamMembers)
+    .innerJoin(Teams, eq(TeamMembers.teamId, Teams.id))
+    .innerJoin(Sites, eq(Teams.id, Sites.teamId))
     .innerJoin(Pages, eq(Pages.siteId, Sites.id))
     .where(
       and(
         eq(Pages.id, pageId),
-        eq(WorkspaceMembers.userId, userId),
-        eq(Workspaces.state, WorkspaceState.ACTIVE),
+        eq(TeamMembers.userId, userId),
+        eq(Teams.state, TeamState.ACTIVE),
         eq(Sites.state, SiteState.ACTIVE),
       ),
     )
     .then(first);
 
-  if (!member || workspaceMemberRolePrecedences.indexOf(member.role) < workspaceMemberRolePrecedences.indexOf(role)) {
+  if (!member || teamMemberRolePrecedences.indexOf(member.role) < teamMemberRolePrecedences.indexOf(role)) {
     throw new ApiError({ code: 'forbidden' });
   }
 };

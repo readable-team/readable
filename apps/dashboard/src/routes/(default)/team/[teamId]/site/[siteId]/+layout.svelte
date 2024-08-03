@@ -18,10 +18,10 @@
   $: openSettingModal = $page.url.hash === '#settings';
 
   $: query = graphql(`
-    query SiteLayout_Query($workspaceId: ID!, $siteId: ID!) {
-      workspace(workspaceId: $workspaceId) {
+    query SiteLayout_Query($teamId: ID!, $siteId: ID!) {
+      team(teamId: $teamId) {
         id
-        ...SettingModal_workspace
+        ...SettingModal_team
         sites {
           id
           name
@@ -172,7 +172,7 @@
       parentId,
     });
 
-    await goto(`/workspace/${$query.workspace.id}/site/${$query.site.id}/pages/${page.id}`);
+    await goto(`/team/${$query.team.id}/site/${$query.site.id}/pages/${page.id}`);
   }
 
   async function onDropPage(target: {
@@ -272,10 +272,10 @@
         <Icon style={css.raw({ color: 'neutral.70' })} icon={ChevronDownIcon} size={20} />
       </div>
 
-      {#each $query.workspace.sites as site (site.id)}
+      {#each $query.team.sites as site (site.id)}
         <MenuItem
           aria-selected={site.id === $query.site.id}
-          on:click={async () => await goto(`/workspace/${$query.workspace.id}/site/${site.id}`)}
+          on:click={async () => await goto(`/team/${$query.team.id}/site/${site.id}`)}
         >
           <LogoPlaceholder slot="prefix" size={20} />
           {site.name}
@@ -366,8 +366,8 @@
           <li>
             <a
               class={sidebarMenuItemStyle}
-              aria-selected={$page.url.pathname === `/workspace/${$query.workspace.id}/site/${$query.site.id}`}
-              href={`/workspace/${$query.workspace.id}/site/${$query.site.id}`}
+              aria-selected={$page.url.pathname === `/team/${$query.team.id}/site/${$query.site.id}`}
+              href={`/team/${$query.team.id}/site/${$query.site.id}`}
               role="tab"
             >
               <Icon style={css.raw({ color: 'text.secondary' })} icon={HouseIcon} />
@@ -393,7 +393,7 @@
 
         <div role="tree">
           <PageList
-            getPageUrl={(pageId) => `/workspace/${$query.workspace.id}/site/${$query.site.id}/pages/${pageId}`}
+            getPageUrl={(pageId) => `/team/${$query.team.id}/site/${$query.site.id}/pages/${pageId}`}
             items={$query.site.pages}
             onCreate={onCreatePage}
             onDrop={onDropPage}
@@ -417,8 +417,8 @@
 
 <SettingModal
   $site={$query.site}
+  $team={$query.team}
   $user={$query.me}
-  $workspace={$query.workspace}
   close={() => {
     const currentPath = $page.url.pathname;
     goto(currentPath, { replaceState: true });

@@ -8,16 +8,16 @@
       me {
         id
 
-        workspaces {
+        teams {
           id
         }
       }
     }
   `);
 
-  const createDefaultWorkspace = graphql(`
-    mutation NewPage_CreateDefaultWorkspace_Mutation {
-      createDefaultWorkspace {
+  const createDefaultTeam = graphql(`
+    mutation NewPage_CreateDefaultTeam_Mutation {
+      createDefaultTeam {
         id
       }
     }
@@ -44,9 +44,9 @@
 <button
   type="button"
   on:click={async () => {
-    const workspace = await createDefaultWorkspace();
-    const site = await createSite({ workspaceId: workspace.id, name });
-    await goto(`/workspace/${workspace.id}/site/${site.id}`);
+    const team = await createDefaultTeam();
+    const site = await createSite({ teamId: team.id, name });
+    await goto(`/team/${team.id}/site/${site.id}`);
   }}
 >
   만들기

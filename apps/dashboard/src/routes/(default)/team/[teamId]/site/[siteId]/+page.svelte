@@ -12,7 +12,7 @@
   import Pages from './pages/Pages.svelte';
 
   $: query = graphql(`
-    query SitePage_Query($workspaceId: ID!, $siteId: ID!) {
+    query SitePage_Query($teamId: ID!, $siteId: ID!) {
       me @required {
         id
         name
@@ -20,7 +20,7 @@
         avatarUrl
       }
 
-      workspace(workspaceId: $workspaceId) {
+      team(teamId: $teamId) {
         id
       }
 
@@ -78,7 +78,7 @@
   on:click={async () => {
     const page = await createPage({ siteId: $query.site.id });
 
-    await goto(`/workspace/${$query.workspace.id}/site/${$query.site.id}/pages/${page.id}`);
+    await goto(`/team/${$query.team.id}/site/${$query.site.id}/pages/${page.id}`);
   }}
 >
   새 페이지
