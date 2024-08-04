@@ -112,16 +112,14 @@ const PageContentSyncOperation = builder.simpleObject('PageContentSyncOperation'
 builder.queryFields((t) => ({
   page: t.withAuth({ session: true }).field({
     type: Page,
-    args: { slug: t.arg.string() },
+    args: { pageId: t.arg.id() },
     resolve: async (_, args, ctx) => {
-      const page = await db.select().from(Pages).where(eq(Pages.slug, args.slug)).then(firstOrThrow);
-
       await assertPagePermission({
-        pageId: page.id,
+        pageId: args.pageId,
         userId: ctx.session.userId,
       });
 
-      return page;
+      return args.pageId;
     },
   }),
 }));

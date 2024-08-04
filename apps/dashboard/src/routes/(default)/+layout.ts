@@ -15,8 +15,6 @@ export const _DefaultLayout_Query_AfterLoad: DefaultLayout_Query_AfterLoad = asy
   const teamId = get(currentTeamId);
   const hasTeam = query.me.teams.some((team) => team.id === teamId);
 
-  console.log({ teamId, hasTeam });
-
   if (teamId && !hasTeam) {
     if (query.me.teams.length > 0) {
       currentTeamId.set(query.me.teams[0].id);

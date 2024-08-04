@@ -86,13 +86,13 @@ builder.queryFields((t) => ({
   team: t.withAuth({ session: true }).field({
     type: Team,
     args: { teamId: t.arg.id() },
-    resolve: async (_, { teamId }, ctx) => {
+    resolve: async (_, args, ctx) => {
       await assertTeamPermission({
-        teamId,
+        teamId: args.teamId,
         userId: ctx.session.userId,
       });
 
-      return await db.select().from(Teams).where(eq(Teams.id, teamId)).then(firstOrThrow);
+      return args.teamId;
     },
   }),
 }));

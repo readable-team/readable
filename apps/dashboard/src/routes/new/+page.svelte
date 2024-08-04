@@ -27,7 +27,6 @@
     mutation NewPage_CreateSite_Mutation($input: CreateSiteInput!) {
       createSite(input: $input) {
         id
-        slug
       }
     }
   `);
@@ -47,7 +46,7 @@
   on:click={async () => {
     const team = await createDefaultTeam();
     const site = await createSite({ teamId: team.id, name });
-    await goto(`/${site.slug}`);
+    await goto(`/${site.id}`);
   }}
 >
   만들기

@@ -23,8 +23,6 @@ ISite.implement({
     logoUrl: t.exposeString('logoUrl', { nullable: true }),
 
     url: t.string({ resolve: (site) => `https://${site.slug}.${env.USERSITE_DEFAULT_HOST}` }),
-
-    team: t.field({ type: Team, resolve: (site) => site.teamId }),
   }),
 });
 
@@ -41,6 +39,8 @@ Site.implement({
           .orderBy(asc(Pages.order));
       },
     }),
+
+    team: t.field({ type: Team, resolve: (site) => site.teamId }),
   }),
 });
 
@@ -67,16 +67,14 @@ PublicSite.implement({
 builder.queryFields((t) => ({
   site: t.withAuth({ session: true }).field({
     type: Site,
-    args: { slug: t.arg.string() },
+    args: { siteId: t.arg.id() },
     resolve: async (_, args, ctx) => {
-      const site = await db.select().from(Sites).where(eq(Sites.slug, args.slug)).then(firstOrThrow);
-
       await assertSitePermission({
-        siteId: site.id,
+        siteId: args.siteId,
         userId: ctx.session.userId,
       });
 
-      return site;
+      return args.siteId;
     },
   }),
 

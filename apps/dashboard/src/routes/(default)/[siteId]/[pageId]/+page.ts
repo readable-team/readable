@@ -1,5 +1,5 @@
 import type { PagePage_Query_Variables } from './$graphql';
 
 export const _PagePage_Query_Variables: PagePage_Query_Variables = ({ params }) => ({
-  slug: params.page.split('-', 2)[0],
+  pageId: params.pageId,
 });

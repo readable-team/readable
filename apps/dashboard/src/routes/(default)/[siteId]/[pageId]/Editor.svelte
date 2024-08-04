@@ -29,7 +29,7 @@
           name
         }
 
-        page(slug: $slug) {
+        page(pageId: $pageId) {
           id
 
           parent {
@@ -38,7 +38,6 @@
 
           site {
             id
-            slug
           }
         }
       }
@@ -102,9 +101,9 @@
   const onDeletePage = async () => {
     await deletePage({ pageId: $query.page.id });
     if ($query.page.parent?.id) {
-      goto(`/${$query.page.site.slug}/${$query.page.parent.id}`);
+      goto(`/${$query.page.site.id}/${$query.page.parent.id}`);
     } else {
-      goto(`/${$query.page.site.slug}`);
+      goto(`/${$query.page.site.id}`);
     }
   };
 

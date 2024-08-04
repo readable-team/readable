@@ -51,7 +51,6 @@ interface ISite {
   logoUrl: String
   name: String!
   slug: String!
-  team: Team!
   url: String!
 }
 
@@ -156,15 +155,14 @@ type PublicSite implements ISite {
   name: String!
   pages: [Page!]!
   slug: String!
-  team: Team!
   url: String!
 }
 
 type Query {
   me: User
-  page(slug: String!): Page!
+  page(pageId: ID!): Page!
   publicSite(hostname: String!): PublicSite!
-  site(slug: String!): Site!
+  site(siteId: ID!): Site!
   team(teamId: ID!): Team!
 }
 

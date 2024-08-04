@@ -14,7 +14,6 @@
         sites {
           id
           name
-          slug
         }
       }
     }
@@ -24,7 +23,6 @@
     mutation TeamPage_CreateSite_Mutation($input: CreateSiteInput!) {
       createSite(input: $input) {
         id
-        slug
       }
     }
   `);
@@ -48,7 +46,7 @@
 <Button
   on:click={async () => {
     await deleteTeam({ teamId: $query.team.id });
-    await goto('/team');
+    await goto('/', { invalidateAll: true });
   }}
 >
   팀 삭제
@@ -60,7 +58,7 @@
 <br />
 
 {#each $query.team.sites as site (site.id)}
-  <a href={`/${site.slug}`}>{site.name}</a>
+  <a href={`/${site.id}`}>{site.name}</a>
   <br />
 {/each}
 
@@ -71,7 +69,7 @@
 <Button
   on:click={async () => {
     const site = await createSite({ teamId: $query.team.id, name: siteName });
-    await goto(`/${site.slug}`);
+    await goto(`/${site.id}`);
   }}
 >
   새 사이트 만들기

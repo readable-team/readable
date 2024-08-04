@@ -12,14 +12,13 @@
   import { graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
   import { PageList } from '$lib/components/page-list';
-  import { buildPageFullSlug } from '$lib/utils/url';
   import SettingModal from './SettingModal.svelte';
 
   let openSettingModal = false;
   $: openSettingModal = $page.url.hash === '#settings';
 
   $: query = graphql(`
-    query SiteLayout_Query($slug: String!) {
+    query SiteLayout_Query($siteId: ID!) {
       me @required {
         id
         name
@@ -28,17 +27,15 @@
         ...SettingModal_user
       }
 
-      site(slug: $slug) {
+      site(siteId: $siteId) {
         id
         name
-        slug
         url
 
         # NOTE: maxDepth = 3
         pages {
           id
           state
-          slug
           order
 
           content {
@@ -53,7 +50,6 @@
           children {
             id
             state
-            slug
             order
 
             content {
@@ -68,7 +64,6 @@
             children {
               id
               state
-              slug
               order
 
               content {
@@ -83,7 +78,6 @@
               children {
                 id
                 state
-                slug
                 order
 
                 content {
@@ -105,7 +99,6 @@
           sites {
             id
             name
-            slug
           }
         }
 
@@ -118,12 +111,6 @@
     mutation SiteLayout_CreatePage_Mutation($input: CreatePageInput!) {
       createPage(input: $input) {
         id
-        slug
-
-        content {
-          id
-          title
-        }
       }
     }
   `);
@@ -170,7 +157,7 @@
       parentId,
     });
 
-    await goto(`/${$query.site.slug}/${buildPageFullSlug(page)}`);
+    await goto(`/${$query.site.id}/${page.id}`);
   }
 
   async function onDropPage(target: {
@@ -271,7 +258,7 @@
       </div>
 
       {#each $query.site.team.sites as site (site.id)}
-        <MenuItem aria-selected={site.id === $query.site.id} on:click={async () => await goto(`/${site.slug}`)}>
+        <MenuItem aria-selected={site.id === $query.site.id} on:click={async () => await goto(`/${site.id}`)}>
           <LogoPlaceholder slot="prefix" size={20} />
           {site.name}
         </MenuItem>
@@ -361,8 +348,8 @@
           <li>
             <a
               class={sidebarMenuItemStyle}
-              aria-selected={$page.url.pathname === `/${$query.site.slug}`}
-              href={`/${$query.site.slug}`}
+              aria-selected={$page.url.pathname === `/${$query.site.id}`}
+              href={`/${$query.site.id}`}
               role="tab"
             >
               <Icon style={css.raw({ color: 'text.secondary' })} icon={HouseIcon} />
@@ -388,7 +375,7 @@
 
         <div role="tree">
           <PageList
-            getPageUrl={(page) => `/${$query.site.slug}/${buildPageFullSlug(page)}`}
+            getPageUrl={(page) => `/${$query.site.id}/${page.id}`}
             items={$query.site.pages}
             onCreate={onCreatePage}
             onDrop={onDropPage}
