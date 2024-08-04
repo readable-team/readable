@@ -91,6 +91,7 @@ type Mutation {
   inviteTeamMember(input: InviteTeamMemberInput!): InviteTeamMemberResult!
   issueBlobUploadUrl(input: IssueBlobUploadUrlInput!): IssueBlobUploadUrlResult!
   logout: Boolean!
+  publishPage(input: PublishPageInput!): Page!
   removeTeamMember(input: RemoveTeamMemberInput!): TeamMember!
   syncPageContent(input: SyncPageContentInput!): [PageContentSyncOperation!]!
   updatePagePosition(input: UpdatePagePositionInput!): Page!
@@ -142,11 +143,19 @@ enum PageState {
 
 type PublicPage implements IPage {
   children: [PublicPage!]!
+  content: PublicPageContent!
   id: ID!
   order: String!
   parent: PublicPage
   slug: String!
   state: PageState!
+}
+
+type PublicPageContent {
+  content: JSON!
+  id: ID!
+  subtitle: String
+  title: String!
 }
 
 type PublicSite implements ISite {
@@ -158,9 +167,14 @@ type PublicSite implements ISite {
   url: String!
 }
 
+input PublishPageInput {
+  pageId: ID!
+}
+
 type Query {
   me: User
   page(pageId: ID!): Page!
+  publicPage(slug: String!): PublicPage!
   publicSite(hostname: String!): PublicSite!
   site(siteId: ID!): Site!
   team(teamId: ID!): Team!

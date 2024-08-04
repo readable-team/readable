@@ -44,6 +44,23 @@
     `),
   );
 
+  const publishPage = graphql(`
+    mutation PagePage_PublishPage_Mutation($input: PublishPageInput!) {
+      publishPage(input: $input) {
+        id
+        state
+      }
+    }
+  `);
+
+  const deletePage = graphql(`
+    mutation PagePage_DeletePage_Mutation($input: DeletePageInput!) {
+      deletePage(input: $input) {
+        id
+      }
+    }
+  `);
+
   const syncPageContent = graphql(`
     mutation PagePage_SyncPageContent_Mutation($input: SyncPageContentInput!) {
       syncPageContent(input: $input) {
@@ -89,14 +106,6 @@
       YAwareness.applyAwarenessUpdate(yAwareness, toUint8Array(operation.data), 'NETWORK');
     }
   });
-
-  const deletePage = graphql(`
-    mutation PagePage_DeletePage_Mutation($input: DeletePageInput!) {
-      deletePage(input: $input) {
-        id
-      }
-    }
-  `);
 
   const onDeletePage = async () => {
     await deletePage({ pageId: $query.page.id });
@@ -341,7 +350,13 @@
       })}
     >
       <Button variant="secondary">발행취소</Button>
-      <Button>발행</Button>
+      <Button
+        on:click={async () => {
+          await publishPage({ pageId: $query.page.id });
+        }}
+      >
+        발행
+      </Button>
     </div>
   </div>
 </div>

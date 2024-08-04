@@ -4,16 +4,25 @@ import { and, asc, desc, eq, gt, inArray, isNull, ne } from 'drizzle-orm';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { Repeater } from 'graphql-yoga';
 import { fromUint8Array, toUint8Array } from 'js-base64';
-import { prosemirrorToYDoc } from 'y-prosemirror';
+import { prosemirrorToYDoc, yXmlFragmentToProseMirrorRootNode } from 'y-prosemirror';
 import * as Y from 'yjs';
 import { builder } from '@/builder';
-import { db, first, firstOrThrow, PageContentSnapshots, PageContentStates, PageContentUpdates, Pages } from '@/db';
+import {
+  db,
+  first,
+  firstOrThrow,
+  PageContents,
+  PageContentSnapshots,
+  PageContentStates,
+  PageContentUpdates,
+  Pages,
+} from '@/db';
 import { PageContentSyncKind, PageState } from '@/enums';
 import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { assertPagePermission, assertSitePermission } from '@/utils/permissions';
-import { IPage, Page, PageContentSnapshot, PageContentState, PublicPage, Site } from './objects';
+import { IPage, Page, PageContentSnapshot, PageContentState, PublicPage, PublicPageContent, Site } from './objects';
 
 /**
  * * Types
@@ -40,7 +49,7 @@ Page.implement({
       type: PageContentState,
       resolve: async (page, _, ctx) => {
         const loader = ctx.loader({
-          name: 'page:content',
+          name: 'Page.content',
           load: async (ids: string[]) => {
             return await db.select().from(PageContentStates).where(inArray(PageContentStates.pageId, ids));
           },
@@ -69,6 +78,21 @@ PublicPage.implement({
   interfaces: [IPage],
 
   fields: (t) => ({
+    content: t.field({
+      type: PublicPageContent,
+      resolve: async (page, _, ctx) => {
+        const loader = ctx.loader({
+          name: 'PublicPage.content',
+          load: async (ids: string[]) => {
+            return await db.select().from(PageContents).where(inArray(PageContents.pageId, ids));
+          },
+          key: (row) => row.pageId,
+        });
+
+        return await loader.load(page.id);
+      },
+    }),
+
     parent: t.field({ type: PublicPage, nullable: true, resolve: (page) => page.parentId }),
     children: t.field({
       type: [PublicPage],
@@ -97,6 +121,17 @@ PageContentState.implement({
   }),
 });
 
+PublicPageContent.implement({
+  fields: (t) => ({
+    id: t.exposeID('id'),
+
+    title: t.string({ resolve: (state) => state.title ?? '(제목 없음)' }),
+    subtitle: t.exposeString('subtitle', { nullable: true }),
+
+    content: t.expose('content', { type: 'JSON' }),
+  }),
+});
+
 const PageContentSyncOperation = builder.simpleObject('PageContentSyncOperation', {
   fields: (t) => ({
     pageId: t.id(),
@@ -120,6 +155,14 @@ builder.queryFields((t) => ({
       });
 
       return args.pageId;
+    },
+  }),
+
+  publicPage: t.field({
+    type: PublicPage,
+    args: { slug: t.arg.string() },
+    resolve: async (_, args) => {
+      return await db.select().from(Pages).where(eq(Pages.slug, args.slug)).then(firstOrThrow);
     },
   }),
 }));
@@ -259,6 +302,64 @@ builder.mutationFields((t) => ({
         .then(firstOrThrow);
 
       pubsub.publish('site:update', page.siteId, { scope: 'site' });
+
+      return page;
+    },
+  }),
+
+  publishPage: t.withAuth({ session: true }).fieldWithInput({
+    type: Page,
+    input: { pageId: t.input.id() },
+    resolve: async (_, { input }, ctx) => {
+      await assertPagePermission({
+        pageId: input.pageId,
+        userId: ctx.session.userId,
+      });
+
+      const state = await getLatestPageContentState(input.pageId);
+
+      const doc = new Y.Doc();
+      Y.applyUpdateV2(doc, state.update);
+
+      const title = doc.getText('title').toString();
+      const subtitle = doc.getText('subtitle').toString();
+
+      const content = doc.getXmlFragment('content');
+      const node = yXmlFragmentToProseMirrorRootNode(content, schema);
+      const text = node.content.textBetween(0, node.content.size, '\n');
+
+      const page = await db.transaction(async (tx) => {
+        const page = await tx
+          .update(Pages)
+          .set({ state: 'PUBLISHED' })
+          .where(eq(Pages.id, input.pageId))
+          .returning()
+          .then(firstOrThrow);
+
+        await tx
+          .insert(PageContents)
+          .values({
+            pageId: page.id,
+            title: title.length > 0 ? title : null,
+            subtitle: subtitle.length > 0 ? subtitle : null,
+            content: node.toJSON(),
+            text,
+          })
+          .onConflictDoUpdate({
+            target: [PageContents.pageId],
+            set: {
+              title: title.length > 0 ? title : null,
+              subtitle: subtitle.length > 0 ? subtitle : null,
+              content: node.toJSON(),
+              text,
+              updatedAt: dayjs(),
+            },
+          });
+
+        return page;
+      });
+
+      pubsub.publish('site:update', page.siteId, { scope: 'page', pageId: page.id });
 
       return page;
     },

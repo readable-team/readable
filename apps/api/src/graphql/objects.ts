@@ -51,3 +51,4 @@ export const User = createObjectRef('User', T.Users);
 
 export const PublicPage = createObjectRef('PublicPage', T.Pages);
 export const PublicSite = createObjectRef('PublicSite', T.Sites);
+export const PublicPageContent = createObjectRef('PublicPageContent', T.PageContents);

@@ -32,6 +32,32 @@ export const Pages = pgTable(
   }),
 );
 
+export const PageContents = pgTable(
+  'page_contents',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId('PCC')),
+    pageId: text('page_id')
+      .notNull()
+      .unique()
+      .references(() => Pages.id),
+    title: text('title'),
+    subtitle: text('subtitle'),
+    content: jsonb('content').notNull().$type<JSONContent>(),
+    text: text('text').notNull(),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+    updatedAt: datetime('updated_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    pageIdCreatedAtIdx: index().on(t.pageId, t.createdAt),
+  }),
+);
+
 export const PageContentSnapshots = pgTable(
   'page_content_snapshots',
   {
@@ -69,7 +95,9 @@ export const PageContentStates = pgTable('page_content_states', {
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),
-  updatedAt: datetime('updated_at'),
+  updatedAt: datetime('updated_at')
+    .notNull()
+    .default(sql`now()`),
 });
 
 export const PageContentUpdates = pgTable(
