@@ -110,6 +110,7 @@
         },
       })}
       aria-selected={item.id === $page.params.pageId ? 'true' : 'false'}
+      data-sveltekit-preload-data={item.id === $page.params.pageId ? 'false' : 'tap'}
       draggable="false"
       href={getPageUrl(item)}
       role="tab"
