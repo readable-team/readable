@@ -69,6 +69,27 @@
       }),
     )}
   >
+    {#if depth < maxDepth}
+      <button
+        class={css({
+          color: 'neutral.70',
+          borderRadius: '2px',
+          _hover: {
+            backgroundColor: 'neutral.30',
+          },
+        })}
+        aria-expanded={openState[item.id] ? 'true' : 'false'}
+        type="button"
+        on:click={() => {
+          openState[item.id] = !openState[item.id];
+        }}
+      >
+        <Icon icon={openState[item.id] ? ChevronDownIcon : ChevronRightIcon} size={16} />
+      </button>
+    {:else}
+      <Icon icon={DotIcon} size={16} />
+    {/if}
+
     <a
       class={flex({
         width: 'full',
@@ -93,27 +114,6 @@
       href={getPageUrl(item)}
       role="tab"
     >
-      {#if depth < maxDepth}
-        <button
-          class={css({
-            color: 'neutral.70',
-            borderRadius: '2px',
-            _hover: {
-              backgroundColor: 'neutral.30',
-            },
-          })}
-          aria-expanded={openState[item.id] ? 'true' : 'false'}
-          type="button"
-          on:click={(e) => {
-            e.preventDefault();
-            openState[item.id] = !openState[item.id];
-          }}
-        >
-          <Icon icon={openState[item.id] ? ChevronDownIcon : ChevronRightIcon} size={16} />
-        </button>
-      {:else}
-        <Icon icon={DotIcon} size={16} />
-      {/if}
       {#if item.state === 'DRAFT'}
         <Chip>초안</Chip>
       {/if}
