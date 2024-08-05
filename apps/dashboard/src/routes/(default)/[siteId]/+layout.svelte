@@ -22,7 +22,11 @@
       me @required {
         id
         name
-        avatarUrl
+
+        avatar {
+          id
+          ...Img_image
+        }
 
         ...SettingModal_user
       }
@@ -313,8 +317,8 @@
 
       <Img
         style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '38px' })}
+        $image={$query.me.avatar}
         alt={`${$query.me.name}의 아바타`}
-        url={$query.me.avatarUrl}
       />
     </div>
   </header>

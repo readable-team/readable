@@ -1,4 +1,3 @@
-import path from 'node:path';
 import dayjs from 'dayjs';
 import { and, eq, gt } from 'drizzle-orm';
 import { match } from 'ts-pattern';
@@ -7,6 +6,7 @@ import {
   db,
   first,
   firstOrThrow,
+  Images,
   TeamMemberInvitations,
   TeamMembers,
   Users,
@@ -15,9 +15,9 @@ import {
 } from '@/db';
 import { SingleSignOnProvider, TeamMemberRole, UserState } from '@/enums';
 import { ApiError } from '@/errors';
-import * as aws from '@/external/aws';
 import * as google from '@/external/google';
 import { createAccessToken } from '@/utils/access-token';
+import { persistBlobAsImage } from '@/utils/user-contents';
 import { User } from './objects';
 
 /**
@@ -83,26 +83,20 @@ builder.mutationFields((t) => ({
       }
 
       const user = await db.transaction(async (tx) => {
-        const avatarResp = await fetch(externalUser.avatarUrl);
-        const avatarBuffer = await avatarResp.arrayBuffer();
+        const avatarBlob = await fetch(externalUser.avatarUrl).then((res) => res.blob());
+        const avatar = await persistBlobAsImage({ file: new File([avatarBlob], externalUser.avatarUrl) });
 
         const user = await tx
           .insert(Users)
           .values({
             email: externalUser.email,
             name: externalUser.name,
-            avatarUrl: '',
+            avatarId: avatar.id,
           })
           .returning({ id: Users.id })
           .then(firstOrThrow);
 
-        const avatarUrl = await aws.uploadUserContents({
-          userId: user.id,
-          filename: path.basename(externalUser.avatarUrl),
-          source: Buffer.from(avatarBuffer),
-        });
-
-        await tx.update(Users).set({ avatarUrl }).where(eq(Users.id, user.id));
+        await tx.update(Images).set({ userId: user.id }).where(eq(Images.id, avatar.id));
 
         await tx.insert(UserSingleSignOns).values({
           userId: user.id,

@@ -9,7 +9,7 @@ import { ApiError } from '@/errors';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
-import { ISite, Page, PublicSite, Site, Team } from './objects';
+import { Image, ISite, Page, PublicSite, Site, Team } from './objects';
 
 /**
  * * Types
@@ -20,7 +20,8 @@ ISite.implement({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
     slug: t.exposeString('slug'),
-    logoUrl: t.exposeString('logoUrl', { nullable: true }),
+
+    logo: t.field({ type: Image, nullable: true, resolve: (site) => site.logoId }),
 
     url: t.string({ resolve: (site) => `https://${site.slug}.${env.USERSITE_DEFAULT_HOST}` }),
   }),
@@ -137,7 +138,7 @@ builder.mutationFields((t) => ({
       siteId: t.input.id(),
       name: t.input.string({ validate: { schema: dataSchemas.site.name } }),
       slug: t.input.string({ validate: { schema: dataSchemas.site.slug } }),
-      logoUrl: t.input.string({ validate: { schema: dataSchemas.blob.url } }),
+      logoId: t.input.id(),
     },
     resolve: async (_, { input }, ctx) => {
       await assertSitePermission({
@@ -158,7 +159,7 @@ builder.mutationFields((t) => ({
 
       return await db
         .update(Sites)
-        .set({ name: input.name, slug: input.slug, logoUrl: input.logoUrl })
+        .set({ name: input.name, slug: input.slug, logoId: input.logoId })
         .where(eq(Sites.id, input.siteId))
         .returning()
         .then(firstOrThrow);

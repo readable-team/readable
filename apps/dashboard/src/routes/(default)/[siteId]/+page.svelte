@@ -16,7 +16,11 @@
         id
         name
         email
-        avatarUrl
+
+        avatar {
+          id
+          ...Img_image
+        }
       }
 
       site(siteId: $siteId) {
@@ -58,8 +62,8 @@
       size: '64px',
       marginBottom: '4px',
     })}
+    $image={$query.me.avatar}
     alt={`${$query.me.name}의 아바타`}
-    url={$query.me.avatarUrl}
   />
 </Tooltip>
 

@@ -40,6 +40,8 @@ const createInterfaceRef = <T extends TableConfig>(name: string, table: TableWit
 export const IPage = createInterfaceRef('IPage', T.Pages);
 export const ISite = createInterfaceRef('ISite', T.Sites);
 
+export const File = createObjectRef('File', T.Files);
+export const Image = createObjectRef('Image', T.Images);
 export const Page = createObjectRef('Page', T.Pages);
 export const PageContentSnapshot = createObjectRef('PageContentSnapshot', T.PageContentSnapshots);
 export const PageContentState = createObjectRef('PageContentState', T.PageContentStates);
@@ -52,3 +54,6 @@ export const User = createObjectRef('User', T.Users);
 export const PublicPage = createObjectRef('PublicPage', T.Pages);
 export const PublicSite = createObjectRef('PublicSite', T.Sites);
 export const PublicPageContent = createObjectRef('PublicPageContent', T.PageContents);
+
+type BlobShape = { id: string; path: string };
+export const Blob = builder.interfaceRef<BlobShape>('Blob');

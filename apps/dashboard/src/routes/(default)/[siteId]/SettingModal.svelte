@@ -26,7 +26,11 @@
         id
         name
         email
-        avatarUrl
+
+        avatar {
+          id
+          ...Img_image
+        }
       }
     `),
   );
@@ -173,8 +177,8 @@
           borderRadius: 'full',
           size: '36px',
         })}
+        $image={$user.avatar}
         alt={`${$user.name}의 아바타`}
-        url={$user.avatarUrl}
       />
 
       <div class={css({ truncate: true })}>

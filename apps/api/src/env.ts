@@ -11,6 +11,7 @@ const schema = z.object({
   RABBITMQ_URL: z.string(),
   RESEND_API_KEY: z.string(),
   SENTRY_DSN: z.string().optional(),
+  USERCONTENTS_URL: z.string(),
   USERSITE_DEFAULT_HOST: z.string(),
 });
 

@@ -1,12 +1,43 @@
 // spell-checker:ignoreRegExp /createDbId\('[A-Z]{1,4}'/g
 
 import { sql } from 'drizzle-orm';
-import { bigint, index, pgTable, text, unique, uniqueIndex } from 'drizzle-orm/pg-core';
+import { bigint, index, integer, pgTable, text, unique, uniqueIndex } from 'drizzle-orm/pg-core';
 import * as E from './enums';
 import { createDbId } from './id';
 import { bytea, datetime, jsonb } from './types';
 import type { JSONContent } from '@tiptap/core';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
+
+export const Files = pgTable('files', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('FILE')),
+  userId: text('user_id').references(() => Users.id),
+  name: text('name').notNull(),
+  format: text('format').notNull(),
+  size: integer('size').notNull(),
+  path: text('path').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
+
+export const Images = pgTable('images', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('IMG')),
+  userId: text('user_id').references((): AnyPgColumn => Users.id),
+  name: text('name').notNull(),
+  format: text('format').notNull(),
+  size: integer('size').notNull(),
+  width: integer('width').notNull(),
+  height: integer('height').notNull(),
+  placeholder: text('placeholder').notNull(),
+  path: text('path').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
 
 export const Pages = pgTable(
   'pages',
@@ -135,7 +166,7 @@ export const Sites = pgTable(
     slug: text('slug').notNull(),
     name: text('name').notNull(),
     state: E._SiteState('state').notNull().default('ACTIVE'),
-    logoUrl: text('logo_url'),
+    logoId: text('logo_id').references(() => Images.id),
     createdAt: datetime('created_at')
       .notNull()
       .default(sql`now()`),
@@ -210,7 +241,9 @@ export const Users = pgTable(
       .$defaultFn(() => createDbId('U', { length: 'short' })),
     email: text('email').notNull(),
     name: text('name').notNull(),
-    avatarUrl: text('avatar_url').notNull(),
+    avatarId: text('avatar_id')
+      .notNull()
+      .references(() => Images.id),
     state: E._UserState('state').notNull().default('ACTIVE'),
     createdAt: datetime('created_at')
       .notNull()

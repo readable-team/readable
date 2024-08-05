@@ -3,6 +3,11 @@ input AuthorizeSingleSignOnInput {
   provider: SingleSignOnProvider!
 }
 
+interface Blob {
+  id: ID!
+  url: String!
+}
+
 input CreatePageInput {
   parentId: ID
   siteId: ID!
@@ -31,8 +36,9 @@ input DeleteTeamInput {
   teamId: String!
 }
 
-input FinishBlobUploadInput {
-  path: String!
+type File implements Blob {
+  id: ID!
+  url: String!
 }
 
 input GenerateSingleSignOnAuthorizationUrlInput {
@@ -48,9 +54,15 @@ interface IPage {
 
 interface ISite {
   id: ID!
-  logoUrl: String
+  logo: Image
   name: String!
   slug: String!
+  url: String!
+}
+
+type Image implements Blob {
+  id: ID!
+  placeholder: String!
   url: String!
 }
 
@@ -86,11 +98,12 @@ type Mutation {
   deletePage(input: DeletePageInput!): Page!
   deleteSite(input: DeleteSiteInput!): Site!
   deleteTeam(input: DeleteTeamInput!): Team!
-  finishBlobUpload(input: FinishBlobUploadInput!): Boolean!
   generateSingleSignOnAuthorizationUrl(input: GenerateSingleSignOnAuthorizationUrlInput!): String!
   inviteTeamMember(input: InviteTeamMemberInput!): InviteTeamMemberResult!
   issueBlobUploadUrl(input: IssueBlobUploadUrlInput!): IssueBlobUploadUrlResult!
   logout: Boolean!
+  persistBlobAsFile(input: PersistBlobAsFileInput!): File!
+  persistBlobAsImage(input: PersistBlobAsImageInput!): Image!
   publishPage(input: PublishPageInput!): Page!
   removeTeamMember(input: RemoveTeamMemberInput!): TeamMember!
   syncPageContent(input: SyncPageContentInput!): [PageContentSyncOperation!]!
@@ -141,6 +154,14 @@ enum PageState {
   PUBLISHED
 }
 
+input PersistBlobAsFileInput {
+  path: String!
+}
+
+input PersistBlobAsImageInput {
+  path: String!
+}
+
 type PublicPage implements IPage {
   children: [PublicPage!]!
   content: PublicPageContent!
@@ -160,7 +181,7 @@ type PublicPageContent {
 
 type PublicSite implements ISite {
   id: ID!
-  logoUrl: String
+  logo: Image
   name: String!
   pages: [Page!]!
   slug: String!
@@ -191,7 +212,7 @@ enum SingleSignOnProvider {
 
 type Site implements ISite {
   id: ID!
-  logoUrl: String
+  logo: Image
   name: String!
   pages: [Page!]!
   slug: String!
@@ -256,7 +277,7 @@ input UpdatePagePositionInput {
 }
 
 input UpdateSiteInput {
-  logoUrl: String!
+  logoId: ID!
   name: String!
   siteId: ID!
   slug: String!
@@ -269,12 +290,12 @@ input UpdateTeamMemberRoleInput {
 }
 
 input UpdateUserInput {
-  avatarUrl: String!
+  avatarId: ID!
   name: String!
 }
 
 type User {
-  avatarUrl: String!
+  avatar: Image!
   email: String!
   id: ID!
   name: String!

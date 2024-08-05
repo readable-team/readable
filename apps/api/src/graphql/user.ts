@@ -4,7 +4,7 @@ import { db, firstOrThrow, TeamMembers, Teams, Users, UserSessions, UserSingleSi
 import { TeamState, UserState } from '@/enums';
 import { ApiError } from '@/errors';
 import { dataSchemas } from '@/schemas';
-import { Team, User } from './objects';
+import { Image, Team, User } from './objects';
 
 /**
  * * Types
@@ -15,7 +15,8 @@ User.implement({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
     email: t.exposeString('email'),
-    avatarUrl: t.exposeString('avatarUrl'),
+
+    avatar: t.field({ type: Image, resolve: (user) => user.avatarId }),
 
     teams: t.field({
       type: [Team],
@@ -54,12 +55,12 @@ builder.mutationFields((t) => ({
     type: User,
     input: {
       name: t.input.string({ validate: { schema: dataSchemas.user.name } }),
-      avatarUrl: t.input.string({ validate: { schema: dataSchemas.blob.url } }),
+      avatarId: t.input.id(),
     },
     resolve: async (_, { input }, ctx) => {
       return await db
         .update(Users)
-        .set({ name: input.name, avatarUrl: input.avatarUrl })
+        .set({ name: input.name, avatarId: input.avatarId })
         .where(eq(Users.id, ctx.session.userId))
         .returning()
         .then(firstOrThrow);

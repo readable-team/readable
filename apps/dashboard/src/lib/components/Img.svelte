@@ -1,13 +1,25 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { env } from '$env/dynamic/public';
+  import { fragment, graphql } from '$graphql';
   import type { SystemStyleObject } from '@readable/styled-system/types';
+  import type { Img_image } from '$graphql';
 
-  export let url: string;
   export let alt: string;
   export let style: SystemStyleObject | undefined = undefined;
+  let _image: Img_image;
+  export { _image as $image };
 
-  $: src = `${env.PUBLIC_USERCONTENTS_URL}/${url}`;
+  $: image = fragment(
+    _image,
+    graphql(`
+      fragment Img_image on Image {
+        id
+        url
+      }
+    `),
+  );
+
+  $: src = $image.url;
 </script>
 
 <img class={css(style)} {alt} {src} />

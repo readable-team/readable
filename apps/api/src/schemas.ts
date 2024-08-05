@@ -7,10 +7,6 @@ export const dataSchemas = {
     .email({ message: '잘못된 이메일 주소예요' })
     .toLowerCase(),
 
-  blob: {
-    url: z.string().regex(/^\w+(?:\/\w+)*(?:\.\w+)?$/),
-  },
-
   site: {
     name: z
       .string({ required_error: '사이트 이름을 한 글자 이상 입력해 주세요' })
@@ -60,7 +56,6 @@ export const inputSchemas = {
   user: {
     update: z.object({
       name: dataSchemas.user.name,
-      avatarUrl: dataSchemas.blob.url,
     }),
   },
 
