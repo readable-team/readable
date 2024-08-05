@@ -419,6 +419,45 @@ builder.mutationFields((t) => ({
     },
   }),
 
+  unpublishPage: t.withAuth({ session: true }).fieldWithInput({
+    type: Page,
+    input: { pageId: t.input.id() },
+    resolve: async (_, { input }, ctx) => {
+      await assertPagePermission({
+        pageId: input.pageId,
+        userId: ctx.session.userId,
+      });
+
+      const page = await db.transaction(async (tx) => {
+        const page = await tx
+          .update(Pages)
+          .set({ state: 'DRAFT' })
+          .where(eq(Pages.id, input.pageId))
+          .returning()
+          .then(firstOrThrow);
+
+        let unpublishParentIds = [input.pageId];
+
+        while (unpublishParentIds.length > 0) {
+          const unpublishedIds = await tx
+            .update(Pages)
+            .set({ state: 'DRAFT' })
+            .where(and(inArray(Pages.parentId, unpublishParentIds), ne(Pages.state, 'DELETED')))
+            .returning({ id: Pages.id })
+            .then((rows) => rows.map((row) => row.id));
+
+          unpublishParentIds = unpublishedIds;
+        }
+
+        return page;
+      });
+
+      pubsub.publish('site:update', page.siteId, { scope: 'site' });
+
+      return page;
+    },
+  }),
+
   syncPageContent: t.withAuth({ session: true }).fieldWithInput({
     type: [PageContentSyncOperation],
     input: {

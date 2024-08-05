@@ -107,6 +107,7 @@ type Mutation {
   publishPage(input: PublishPageInput!): Page!
   removeTeamMember(input: RemoveTeamMemberInput!): TeamMember!
   syncPageContent(input: SyncPageContentInput!): [PageContentSyncOperation!]!
+  unpublishPage(input: UnpublishPageInput!): Page!
   updatePagePosition(input: UpdatePagePositionInput!): Page!
   updateSite(input: UpdateSiteInput!): Site!
   updateTeamMemberRole(input: UpdateTeamMemberRoleInput!): TeamMember!
@@ -271,6 +272,10 @@ enum TeamMemberRole {
 enum TeamState {
   ACTIVE
   DELETED
+}
+
+input UnpublishPageInput {
+  pageId: ID!
 }
 
 input UpdatePagePositionInput {
