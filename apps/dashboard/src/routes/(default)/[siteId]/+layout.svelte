@@ -357,17 +357,16 @@
             </a>
           </li>
           <li>
-            <button
+            <a
               class={sidebarMenuItemStyle}
+              data-sveltekit-preload-data="false"
+              href="#settings"
               role="tab"
               type="button"
-              on:click={() => {
-                goto('#settings');
-              }}
             >
               <Icon style={css.raw({ color: 'text.secondary' })} icon={SettingsIcon} />
               <span>설정</span>
-            </button>
+            </a>
           </li>
         </ul>
 
