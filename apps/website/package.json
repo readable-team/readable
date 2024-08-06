@@ -10,6 +10,7 @@
     "lint:svelte": "svelte-check --fail-on-warnings"
   },
   "dependencies": {
+    "@readable/lib": "workspace:*",
     "@readable/styled-system": "workspace:*",
     "@readable/ui": "workspace:*"
   },

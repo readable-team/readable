@@ -22,6 +22,7 @@
     "@pothos/plugin-with-input": "^4.0.2",
     "@pothos/plugin-zod": "^4.0.2",
     "@react-email/components": "^0.0.22",
+    "@readable/lib": "workspace:*",
     "@repeaterjs/repeater": "^3.0.6",
     "@resvg/resvg-js": "^2.6.2",
     "@sentry/bun": "^8.21.0",

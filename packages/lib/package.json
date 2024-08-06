@@ -1,0 +1,19 @@
+{
+  "name": "@readable/lib",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./dayjs": "./src/dayjs/index.ts"
+  },
+  "scripts": {
+    "lint:typecheck": "tsc"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.12"
+  },
+  "devDependencies": {
+    "@readable/tsconfig": "workspace:*",
+    "typescript": "^5.5.4"
+  }
+}

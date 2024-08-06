@@ -1,4 +1,5 @@
 import './instrument';
+import '@readable/lib/dayjs';
 import './jobs';
 
 import { yoga } from '@/handler';
