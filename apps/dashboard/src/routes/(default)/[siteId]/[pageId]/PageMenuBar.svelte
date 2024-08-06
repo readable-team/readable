@@ -9,6 +9,7 @@
   import TrashIcon from '~icons/lucide/trash';
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
+  import Img from '$lib/components/Img.svelte';
   import { pageUrl } from '$lib/utils/url';
   import type { PagePage_PageMenuBar_query } from '$graphql';
 
@@ -23,7 +24,21 @@
           hasUnpublishedChanges
           slug
 
+          contentContributor {
+            id
+
+            user {
+              id
+
+              avatar {
+                id
+                ...Img_image
+              }
+            }
+          }
+
           content {
+            id
             title
           }
 
@@ -97,6 +112,19 @@
     >
       x일 전 발행됨
     </span>
+
+    <ul class={flex({ align: 'center' })}>
+      {#each $query.page.contentContributor as contributor (contributor.id)}
+        <li>
+          <Img
+            style={css.raw({ borderRadius: 'full', size: '32px', objectFit: 'cover' })}
+            $image={contributor.user.avatar}
+            alt=""
+          />
+        </li>
+      {/each}
+    </ul>
+
     <div
       class={flex({
         paddingX: '12px',
