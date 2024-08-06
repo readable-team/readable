@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, HorizontalDivider, Icon, LogoPlaceholder, Menu, MenuItem } from '@readable/ui/components';
+  import { HorizontalDivider, Icon, LogoPlaceholder, Menu, MenuItem } from '@readable/ui/components';
   import { onMount } from 'svelte';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import HouseIcon from '~icons/lucide/house';
@@ -99,6 +99,7 @@
 
         team {
           id
+          name
 
           sites {
             id
@@ -219,20 +220,21 @@
 
 <div
   class={flex({
-    flexDirection: 'column',
     height: 'screen',
+    overflow: 'auto',
   })}
 >
-  <header
+  <aside
     class={flex({
-      align: 'center',
-      justifyContent: 'space-between',
-      position: 'relative',
-      borderBottomWidth: '1px',
-      borderColor: 'border.secondary',
-      height: '60px',
-      paddingX: '10px',
-      paddingY: '11px',
+      flexDirection: 'column',
+      gap: '10px',
+      width: '370px',
+      padding: '16px',
+      backgroundColor: 'white',
+      flexShrink: 0,
+      overflowY: 'auto',
+      borderRightWidth: '1px',
+      borderColor: 'divider.secondary',
     })}
   >
     <Menu listStyle={css.raw({ width: '234px' })} placement="bottom-start">
@@ -246,7 +248,6 @@
             gap: '10px',
             borderRadius: '10px',
             padding: '6px',
-            width: '234px',
             _hover: { backgroundColor: 'neutral.10' },
           },
           open && { backgroundColor: 'neutral.10' },
@@ -288,14 +289,8 @@
         <span>사이트 만들기</span>
       </button>
     </Menu>
-
-    <div
+    <a
       class={css({
-        position: 'absolute',
-        translate: 'auto',
-        left: '1/2',
-        translateX: '-1/2',
-        marginX: 'auto',
         borderWidth: '1px',
         borderColor: 'neutral.20',
         borderRadius: '8px',
@@ -305,99 +300,73 @@
         textAlign: 'center',
         color: 'text.secondary',
         backgroundColor: 'neutral.10',
-        minWidth: '380px',
       })}
+      href={$query.site.url}
+      rel="noopener noreferrer"
+      target="_blank"
+      type="link"
     >
       {$query.site.url}
-    </div>
+    </a>
+    <nav>
+      <ul
+        class={flex({
+          flexDirection: 'column',
+          gap: '2px',
+        })}
+      >
+        <li>
+          <a
+            class={sidebarMenuItemStyle}
+            aria-selected={$page.url.pathname === `/${$query.site.id}`}
+            href={`/${$query.site.id}`}
+            role="tab"
+          >
+            <Icon style={css.raw({ color: 'text.secondary' })} icon={HouseIcon} />
+            <span>홈</span>
+          </a>
+        </li>
+        <li>
+          <a class={sidebarMenuItemStyle} data-sveltekit-preload-data="false" href="#settings" role="tab" type="button">
+            <Icon style={css.raw({ color: 'text.secondary' })} icon={SettingsIcon} />
+            <span>설정</span>
+          </a>
+        </li>
+      </ul>
 
-    <div class={flex({ align: 'center', gap: '20px' })}>
-      <Button href={$query.site.url} rel="noopener noreferrer" target="_blank" type="link" variant="secondary">
-        사이트 바로가기
-      </Button>
+      <HorizontalDivider style={css.raw({ marginY: '10px' })} />
 
+      <div role="tree">
+        <PageList
+          getPageUrl={(page) => `/${$query.site.id}/${page.id}`}
+          items={$query.site.pages}
+          onCreate={onCreatePage}
+          onDrop={onDropPage}
+        />
+      </div>
+    </nav>
+    <div class={flex({ align: 'center', gap: '20px', marginTop: 'auto' })}>
       <Img
         style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '38px' })}
         $image={$query.me.avatar}
         alt={`${$query.me.name}의 아바타`}
       />
+      <div class={flex({ flexDirection: 'column' })}>
+        <div>{$query.site.team.name}</div>
+        <div>{$query.me.name}</div>
+      </div>
     </div>
-  </header>
+  </aside>
 
   <div
     class={flex({
-      flex: '1',
-      overflow: 'auto',
+      flexDirection: 'column',
+      overflowY: 'auto',
+      flexGrow: 1,
+      flexShrink: 0,
     })}
   >
-    <aside
-      class={flex({
-        flexDirection: 'column',
-        gap: '10px',
-        width: '280px',
-        padding: '16px',
-        backgroundColor: 'white',
-        flexShrink: 0,
-        overflowY: 'auto',
-        borderRightWidth: '1px',
-        borderColor: 'divider.secondary',
-      })}
-    >
-      <nav>
-        <ul
-          class={flex({
-            flexDirection: 'column',
-            gap: '2px',
-          })}
-        >
-          <li>
-            <a
-              class={sidebarMenuItemStyle}
-              aria-selected={$page.url.pathname === `/${$query.site.id}`}
-              href={`/${$query.site.id}`}
-              role="tab"
-            >
-              <Icon style={css.raw({ color: 'text.secondary' })} icon={HouseIcon} />
-              <span>홈</span>
-            </a>
-          </li>
-          <li>
-            <a
-              class={sidebarMenuItemStyle}
-              data-sveltekit-preload-data="false"
-              href="#settings"
-              role="tab"
-              type="button"
-            >
-              <Icon style={css.raw({ color: 'text.secondary' })} icon={SettingsIcon} />
-              <span>설정</span>
-            </a>
-          </li>
-        </ul>
-
-        <HorizontalDivider style={css.raw({ marginY: '10px' })} />
-
-        <div role="tree">
-          <PageList
-            getPageUrl={(page) => `/${$query.site.id}/${page.id}`}
-            items={$query.site.pages}
-            onCreate={onCreatePage}
-            onDrop={onDropPage}
-          />
-        </div>
-      </nav>
-    </aside>
-
-    <div
-      class={flex({
-        flexDirection: 'column',
-        overflowY: 'auto',
-        flexGrow: 1,
-        flexShrink: 0,
-      })}
-    >
-      <slot />
-    </div>
+    <slot />
   </div>
 </div>
 
