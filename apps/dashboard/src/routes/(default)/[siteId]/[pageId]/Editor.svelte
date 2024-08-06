@@ -12,9 +12,11 @@
   import ClockIcon from '~icons/lucide/clock';
   import CopyIcon from '~icons/lucide/copy';
   import EllipsisIcon from '~icons/lucide/ellipsis';
+  import ExternalLinkIcon from '~icons/lucide/external-link';
   import TrashIcon from '~icons/lucide/trash';
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
+  import { pageUrl } from '$lib/utils/url';
   import type { Writable } from 'svelte/store';
   import type { PagePage_Editor_query } from '$graphql';
 
@@ -32,6 +34,11 @@
         page(pageId: $pageId) {
           id
           hasUnpublishedChanges
+          slug
+
+          content {
+            title
+          }
 
           parent {
             id
@@ -39,6 +46,7 @@
 
           site {
             id
+            url
           }
         }
       }
@@ -320,7 +328,9 @@
         gap: '8px',
       })}
     >
-      <Button variant="secondary">바로가기</Button>
+      <Button href={pageUrl($query.page)} rel="noopener noreferrer" target="_blank" type="link" variant="secondary">
+        <Icon icon={ExternalLinkIcon} size={18} />
+      </Button>
       {#if $query.page.hasUnpublishedChanges}
         <Button
           on:click={async () => {

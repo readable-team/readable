@@ -4,7 +4,11 @@ type PartialPageSpec = {
   content: {
     title: string;
   };
+
+  site: {
+    url: string;
+  };
 };
 
-export const buildPageFullSlug = (page: PartialPageSpec): string =>
-  `${page.slug}-${encodeURIComponent(page.content.title)}`;
+export const pageUrl = (page: PartialPageSpec): string =>
+  `${page.site.url}/ko/${page.slug}-${encodeURIComponent(page.content.title)}`;
