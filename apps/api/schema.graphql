@@ -116,6 +116,7 @@ type Mutation {
 type Page implements IPage {
   children: [Page!]!
   content: PageContentState!
+  hasUnpublishedChanges: Boolean!
   id: ID!
   order: String!
   parent: Page

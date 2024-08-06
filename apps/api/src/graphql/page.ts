@@ -1,4 +1,5 @@
 import { init } from '@paralleldrive/cuid2';
+import { Node } from '@tiptap/pm/model';
 import dayjs from 'dayjs';
 import { and, asc, desc, eq, gt, inArray, isNull, ne } from 'drizzle-orm';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
@@ -49,7 +50,7 @@ Page.implement({
       type: PageContentState,
       resolve: async (page, _, ctx) => {
         const loader = ctx.loader({
-          name: 'Page.content',
+          name: 'PageContentStates(pageId)',
           load: async (ids: string[]) => {
             return await db.select().from(PageContentStates).where(inArray(PageContentStates.pageId, ids));
           },
@@ -71,6 +72,37 @@ Page.implement({
           .orderBy(asc(Pages.order));
       },
     }),
+
+    hasUnpublishedChanges: t.boolean({
+      resolve: async (page, _, ctx) => {
+        const contentLoader = ctx.loader({
+          name: 'PageContents(pageId)',
+          load: async (ids: string[]) => {
+            return await db.select().from(PageContents).where(inArray(PageContents.pageId, ids));
+          },
+          key: (row) => row.pageId,
+        });
+
+        const stateLoader = ctx.loader({
+          name: 'PageContentStates(pageId)',
+          load: async (ids: string[]) => {
+            return await db.select().from(PageContentStates).where(inArray(PageContentStates.pageId, ids));
+          },
+          key: (row) => row.pageId,
+        });
+
+        const [pageContent, pageContentState] = await Promise.all([
+          contentLoader.load(page.id),
+          stateLoader.load(page.id),
+        ]);
+
+        if (pageContent.title !== pageContentState.title || pageContent.subtitle !== pageContentState.subtitle) {
+          return true;
+        }
+
+        return !Node.fromJSON(schema, pageContent.content).eq(Node.fromJSON(schema, pageContentState.content));
+      },
+    }),
   }),
 });
 
@@ -82,7 +114,7 @@ PublicPage.implement({
       type: PublicPageContent,
       resolve: async (page, _, ctx) => {
         const loader = ctx.loader({
-          name: 'PublicPage.content',
+          name: 'PageContents(pageId)',
           load: async (ids: string[]) => {
             return await db.select().from(PageContents).where(inArray(PageContents.pageId, ids));
           },
