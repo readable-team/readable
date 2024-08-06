@@ -101,6 +101,11 @@
           id
           name
 
+          avatar {
+            id
+            ...Img_image
+          }
+
           sites {
             id
             name
@@ -346,11 +351,18 @@
       </div>
     </nav>
     <div class={flex({ align: 'center', gap: '20px', marginTop: 'auto' })}>
-      <Img
-        style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '38px' })}
-        $image={$query.me.avatar}
-        alt={`${$query.me.name}의 아바타`}
-      />
+      <div class={flex()}>
+        <Img
+          style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '38px' })}
+          $image={$query.site.team.avatar}
+          alt={`${$query.site.team.name}의 아바타`}
+        />
+        <Img
+          style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '38px' })}
+          $image={$query.me.avatar}
+          alt={`${$query.me.name}의 아바타`}
+        />
+      </div>
       <div class={flex({ flexDirection: 'column' })}>
         <div>{$query.site.team.name}</div>
         <div>{$query.me.name}</div>

@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { css } from '@readable/styled-system/css';
   import { Button, Helmet, TextInput } from '@readable/ui/components';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
+  import Img from '$lib/components/Img.svelte';
 
   let siteName = '';
 
@@ -10,6 +12,10 @@
       team(teamId: $teamId) {
         id
         name
+        avatar {
+          id
+          ...Img_image
+        }
 
         sites {
           id
@@ -42,6 +48,11 @@
 
 <br />
 팀 이름: {$query.team.name}
+<Img
+  style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '38px' })}
+  $image={$query.team.avatar}
+  alt={`${$query.team.name}의 아바타`}
+/>
 <br />
 <Button
   on:click={async () => {
