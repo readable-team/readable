@@ -244,6 +244,7 @@ input SyncPageContentInput {
 
 type Team {
   id: ID!
+  logo: Image
   meAsMember: TeamMember
   members: [TeamMember!]!
   name: String!

@@ -10,7 +10,7 @@ import { env } from '@/env';
 import { ApiError } from '@/errors';
 import { dataSchemas } from '@/schemas';
 import { assertTeamPermission } from '@/utils/permissions';
-import { Site, Team, TeamMember, TeamMemberInvitation, User } from './objects';
+import { Image, Site, Team, TeamMember, TeamMemberInvitation, User } from './objects';
 
 /**
  * * Types
@@ -20,6 +20,8 @@ Team.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
+
+    logo: t.field({ type: Image, nullable: true, resolve: (team) => team.logoId }),
 
     members: t.field({
       type: [TeamMember],
