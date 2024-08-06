@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Chip, Icon, Menu, MenuItem } from '@readable/ui/components';
+  import { Button, Chip, Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
   import ClockIcon from '~icons/lucide/clock';
   import CopyIcon from '~icons/lucide/copy';
   import EllipsisIcon from '~icons/lucide/ellipsis';
@@ -182,7 +182,9 @@
           발행하기
         </Button>
       {:else}
-        <Button disabled>발행됨</Button>
+        <Tooltip message="이미 최신 버전으로 발행되어 있어요">
+          <Button disabled>발행됨</Button>
+        </Tooltip>
       {/if}
     </div>
   </div>
