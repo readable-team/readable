@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
   import ky from 'ky';
-  import { match } from 'ts-pattern';
   import { graphql } from '$graphql';
 
   const issueBlobUploadUrl = graphql(`
@@ -29,7 +28,7 @@
     }
   `);
 
-  export const uploadBlob = async (as: 'file' | 'image', file: File) => {
+  const uploadBlob = async (file: File) => {
     const { path, url, fields } = await issueBlobUploadUrl({ filename: file.name });
 
     const formData = new FormData();
@@ -42,9 +41,16 @@
 
     await ky.post(url, { body: formData });
 
-    return await match(as)
-      .with('file', () => persistBlobAsFile({ path }))
-      .with('image', () => persistBlobAsImage({ path }))
-      .exhaustive();
+    return path;
+  };
+
+  export const uploadBlobAsFile = async (file: File) => {
+    const path = await uploadBlob(file);
+    return await persistBlobAsFile({ path });
+  };
+
+  export const uploadBlobAsImage = async (file: File, modification?: unknown) => {
+    const path = await uploadBlob(file);
+    return await persistBlobAsImage({ path, modification });
   };
 </script>

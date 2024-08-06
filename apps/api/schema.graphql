@@ -159,6 +159,7 @@ input PersistBlobAsFileInput {
 }
 
 input PersistBlobAsImageInput {
+  modification: JSON
   path: String!
 }
 

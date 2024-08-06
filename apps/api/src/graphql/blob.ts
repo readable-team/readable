@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { CopyObjectCommand, GetObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
+import { CopyObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import sharp from 'sharp';
 import { rgbaToThumbHash } from 'thumbhash';
@@ -113,7 +113,10 @@ builder.mutationFields((t) => ({
 
   persistBlobAsImage: t.withAuth({ session: true }).fieldWithInput({
     type: Image,
-    input: { path: t.input.string() },
+    input: {
+      path: t.input.string(),
+      modification: t.input.field({ type: 'JSON', required: false }),
+    },
     resolve: async (_, { input }, ctx) => {
       const object = await aws.s3.send(
         new GetObjectCommand({
@@ -125,10 +128,26 @@ builder.mutationFields((t) => ({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const buffer = await object.Body!.transformToByteArray();
 
-      const img = sharp(buffer, { failOn: 'none' });
-      const metadata = await img.metadata();
+      let img = sharp(buffer, { failOn: 'none' });
+
+      if (input.modification) {
+        if (input.modification.ensureAlpha) {
+          img = img.ensureAlpha();
+        }
+
+        if (input.modification.resize) {
+          img = img.resize(input.modification.resize);
+        }
+
+        if (input.modification.format) {
+          img = img.toFormat(input.modification.format);
+        }
+      }
+
+      const res = await img.toBuffer({ resolveWithObject: true });
 
       const raw = await img
+        .clone()
         .resize({ width: 100, height: 100, fit: 'inside' })
         .ensureAlpha()
         .raw()
@@ -142,10 +161,10 @@ builder.mutationFields((t) => ({
           .values({
             userId: ctx.session.userId,
             name: decodeURIComponent(object.Metadata!.name),
-            size: object.ContentLength!,
-            format: object.ContentType!,
-            width: metadata.width!,
-            height: metadata.height!,
+            size: res.info.size,
+            format: `image/${res.info.format}`,
+            width: res.info.width,
+            height: res.info.height,
             path: input.path,
             placeholder: Buffer.from(placeholder).toString('base64'),
           })
@@ -154,10 +173,10 @@ builder.mutationFields((t) => ({
         /* eslint-enable @typescript-eslint/no-non-null-assertion */
 
         await aws.s3.send(
-          new CopyObjectCommand({
+          new PutObjectCommand({
             Bucket: 'readable-usercontents',
-            CopySource: `readable-usercontents/uploads/${input.path}`,
             Key: `public/${input.path}`,
+            Body: res.data,
           }),
         );
 
