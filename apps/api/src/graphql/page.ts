@@ -76,11 +76,12 @@ Page.implement({
     hasUnpublishedChanges: t.boolean({
       resolve: async (page, _, ctx) => {
         const contentLoader = ctx.loader({
-          name: 'PageContents(pageId)',
+          name: 'PageContents(pageId) nullable',
+          nullable: true,
           load: async (ids: string[]) => {
             return await db.select().from(PageContents).where(inArray(PageContents.pageId, ids));
           },
-          key: (row) => row.pageId,
+          key: (row) => row?.pageId,
         });
 
         const stateLoader = ctx.loader({
@@ -96,7 +97,11 @@ Page.implement({
           stateLoader.load(page.id),
         ]);
 
-        if (pageContent.title !== pageContentState.title || pageContent.subtitle !== pageContentState.subtitle) {
+        if (
+          !pageContent ||
+          pageContent.title !== pageContentState.title ||
+          pageContent.subtitle !== pageContentState.subtitle
+        ) {
           return true;
         }
 
