@@ -11,6 +11,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.621.0",
     "@aws-sdk/s3-presigned-post": "^3.621.0",
+    "@ctrl/tinycolor": "^4.1.0",
     "@envelop/graphql-jit": "^8.0.3",
     "@faker-js/faker": "^8.4.1",
     "@paralleldrive/cuid2": "^2.2.2",
@@ -22,6 +23,7 @@
     "@pothos/plugin-zod": "^4.0.2",
     "@react-email/components": "^0.0.22",
     "@repeaterjs/repeater": "^3.0.6",
+    "@resvg/resvg-js": "^2.6.2",
     "@sentry/bun": "^8.21.0",
     "@tiptap/core": "^2.5.8",
     "@tiptap/pm": "^2.5.8",

@@ -187,7 +187,9 @@ export const Teams = pgTable(
       .$defaultFn(() => createDbId('T', { length: 'short' })),
     name: text('name').notNull(),
     state: E._TeamState('state').notNull().default('ACTIVE'),
-    logoId: text('logo_id').references(() => Images.id),
+    avatarId: text('avatar_id')
+      .notNull()
+      .references(() => Images.id),
     createdAt: datetime('created_at')
       .notNull()
       .default(sql`now()`),

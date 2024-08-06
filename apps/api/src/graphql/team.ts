@@ -9,7 +9,9 @@ import { SiteState, TeamMemberRole, TeamState, UserState } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
 import { dataSchemas } from '@/schemas';
+import { generateRandomAvatar } from '@/utils/image-generation';
 import { assertTeamPermission } from '@/utils/permissions';
+import { persistBlobAsImage } from '@/utils/user-contents';
 import { Image, Site, Team, TeamMember, TeamMemberInvitation, User } from './objects';
 
 /**
@@ -21,7 +23,7 @@ Team.implement({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
 
-    logo: t.field({ type: Image, nullable: true, resolve: (team) => team.logoId }),
+    avatar: t.field({ type: Image, resolve: (team) => team.avatarId }),
 
     members: t.field({
       type: [TeamMember],
@@ -312,7 +314,12 @@ builder.mutationFields((t) => ({
 
 const createTeam = async (userId: string, teamName: string) => {
   return await db.transaction(async (tx) => {
-    const team = await tx.insert(Teams).values({ name: teamName }).returning().then(firstOrThrow);
+    const avatar = await persistBlobAsImage({
+      userId,
+      file: await generateRandomAvatar(),
+    });
+
+    const team = await tx.insert(Teams).values({ name: teamName, avatarId: avatar.id }).returning().then(firstOrThrow);
 
     await tx.insert(TeamMembers).values({
       teamId: team.id,

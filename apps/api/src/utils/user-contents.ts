@@ -10,6 +10,7 @@ export const persistBlobAsImage = async ({ userId, file }: PersistBlobAsImagePar
   const buffer = await file.arrayBuffer();
   const img = sharp(buffer, { failOn: 'none' });
   const metadata = await img.metadata();
+  const mimetype = `image/${metadata.format}`;
 
   const raw = await img
     .resize({ width: 100, height: 100, fit: 'inside' })
@@ -29,7 +30,7 @@ export const persistBlobAsImage = async ({ userId, file }: PersistBlobAsImagePar
         userId,
         name: file.name,
         size: file.size,
-        format: file.type,
+        format: mimetype,
         width: metadata.width!,
         height: metadata.height!,
         path: key,
@@ -44,6 +45,11 @@ export const persistBlobAsImage = async ({ userId, file }: PersistBlobAsImagePar
         Bucket: 'readable-usercontents',
         Key: `public/${key}`,
         Body: Buffer.from(buffer),
+        ContentType: mimetype,
+        Metadata: {
+          'name': encodeURIComponent(file.name),
+          'user-id': userId ?? '',
+        },
       }),
     );
 
