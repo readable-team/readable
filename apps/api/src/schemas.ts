@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+const UNAVAILABLE_SLUGS = {
+  EXACT: ['dashboard'],
+};
+
 export const dataSchemas = {
   email: z
     .string({ required_error: '이메일 주소를 입력해 주세요' })
@@ -21,7 +25,9 @@ export const dataSchemas = {
       .min(4, { message: '사이트 주소는 4글자 이상이여야 해요' })
       .max(63, { message: '사이트 주소는 63글자를 넘을 수 없어요' })
       .regex(/^[\da-z-]+$/, { message: '사이트 주소는 소문자, 숫자, 하이픈만 사용할 수 있어요' })
-      .regex(/^[\da-z][\da-z-]*[\da-z]$/, { message: '사이트 주소는 하이픈으로 시작하거나 끝날 수 없어요' }),
+      .regex(/^[\da-z][\da-z-]*[\da-z]$/, { message: '사이트 주소는 하이픈으로 시작하거나 끝날 수 없어요' })
+      .refine((str) => !str.includes('--'), { message: '하이픈을 연속으로 사용할 수 없어요' })
+      .refine((str) => !UNAVAILABLE_SLUGS.EXACT.includes(str), { message: '사용할 수 없는 사이트 주소에요' }),
   },
 
   user: {
@@ -29,7 +35,7 @@ export const dataSchemas = {
       .string({ required_error: '이름을 입력해 주세요' })
       .trim()
       .min(1, { message: '이름을 입력해 주세요' })
-      .max(60, { message: '이름은 60글자를 넘을 수 없어요' }),
+      .max(50, { message: '이름은 50글자를 넘을 수 없어요' }),
   },
 
   team: {
