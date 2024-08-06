@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Icon, Menu, MenuItem, VerticalDivider } from '@readable/ui/components';
+  import { Button, Chip, Icon, Menu, MenuItem } from '@readable/ui/components';
   import { TiptapEditor } from '@readable/ui/tiptap';
   import { fromUint8Array, toUint8Array } from 'js-base64';
   import { nanoid } from 'nanoid';
@@ -31,6 +31,7 @@
 
         page(pageId: $pageId) {
           id
+          hasUnpublishedChanges
 
           parent {
             id
@@ -244,6 +245,96 @@
   });
 </script>
 
+<div
+  class={flex({
+    position: 'sticky',
+    top: '0',
+    width: 'full',
+    height: '58px',
+    backgroundColor: 'surface.tertiary',
+    alignItems: 'center',
+  })}
+>
+  <div
+    class={flex({
+      marginLeft: 'auto',
+      gap: '8px',
+      paddingX: '12px',
+      paddingY: '10px',
+      alignItems: 'center',
+    })}
+  >
+    {#if $query.page.hasUnpublishedChanges}
+      <Chip>발행되지 않은 수정사항 있음</Chip>
+    {/if}
+    <span
+      class={css({
+        color: 'text.tertiary',
+        textStyle: '14sb',
+      })}
+    >
+      x일 전 발행됨
+    </span>
+    <div
+      class={flex({
+        paddingX: '12px',
+        alignItems: 'center',
+        gap: '10px',
+      })}
+    >
+      <Button
+        style={css.raw({
+          paddingX: '9px',
+        })}
+        variant="secondary"
+      >
+        <Icon icon={ClockIcon} size={18} />
+      </Button>
+
+      <Menu listStyle={css.raw({ width: '148px' })} offset={16} placement="top-start">
+        <Button
+          slot="button"
+          style={css.raw({
+            paddingX: '9px',
+          })}
+          aria-pressed={open}
+          variant="secondary"
+          let:open
+        >
+          <Icon icon={EllipsisIcon} size={18} />
+        </Button>
+
+        <MenuItem>
+          <Icon slot="prefix" icon={CopyIcon} size={20} />
+          <span>복사</span>
+        </MenuItem>
+        <MenuItem variant="danger" on:click={onDeletePage}>
+          <Icon slot="prefix" icon={TrashIcon} size={20} />
+          <span>삭제</span>
+        </MenuItem>
+      </Menu>
+    </div>
+
+    <div
+      class={flex({
+        gap: '8px',
+      })}
+    >
+      <Button variant="secondary">바로가기</Button>
+      {#if $query.page.hasUnpublishedChanges}
+        <Button
+          on:click={async () => {
+            await publishPage({ pageId: $query.page.id });
+          }}
+        >
+          발행하기
+        </Button>
+      {:else}
+        <Button disabled>발행됨</Button>
+      {/if}
+    </div>
+  </div>
+</div>
 <div class={css({ margin: '100px', borderWidth: '4px', padding: '20px' })}>
   <div
     class={css({
@@ -271,92 +362,4 @@
   </div>
 
   <TiptapEditor style={css.raw({ height: '[2000px]' })} awareness={yAwareness} document={yDoc} />
-</div>
-
-<div
-  class={flex({
-    position: 'sticky',
-    bottom: '56px',
-    marginX: 'auto',
-    width: '[fit-content]',
-    height: '58px',
-    borderRadius: '12px',
-    backgroundColor: 'surface.tertiary',
-    alignItems: 'center',
-    shadow: 'strong',
-  })}
->
-  <div
-    class={flex({
-      gap: '8px',
-      paddingX: '12px',
-      paddingY: '10px',
-    })}
-  >
-    <Button
-      style={css.raw({
-        paddingX: '9px',
-      })}
-      variant="secondary"
-    >
-      <Icon icon={ClockIcon} size={18} />
-    </Button>
-
-    <Menu listStyle={css.raw({ width: '148px' })} offset={16} placement="top-start">
-      <Button
-        slot="button"
-        style={css.raw({
-          paddingX: '9px',
-        })}
-        aria-pressed={open}
-        variant="secondary"
-        let:open
-      >
-        <Icon icon={EllipsisIcon} size={18} />
-      </Button>
-
-      <MenuItem>
-        <Icon slot="prefix" icon={CopyIcon} size={20} />
-        <span>복사</span>
-      </MenuItem>
-      <MenuItem variant="danger" on:click={onDeletePage}>
-        <Icon slot="prefix" icon={TrashIcon} size={20} />
-        <span>삭제</span>
-      </MenuItem>
-    </Menu>
-  </div>
-
-  <VerticalDivider color="secondary" />
-
-  <div
-    class={flex({
-      paddingX: '12px',
-      alignItems: 'center',
-      gap: '10px',
-    })}
-  >
-    <span
-      class={css({
-        color: 'text.tertiary',
-        textStyle: '14sb',
-      })}
-    >
-      2일 전 발행됨
-    </span>
-
-    <div
-      class={flex({
-        gap: '8px',
-      })}
-    >
-      <Button variant="secondary">발행취소</Button>
-      <Button
-        on:click={async () => {
-          await publishPage({ pageId: $query.page.id });
-        }}
-      >
-        발행
-      </Button>
-    </div>
-  </div>
 </div>

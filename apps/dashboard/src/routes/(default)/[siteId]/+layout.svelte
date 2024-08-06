@@ -139,6 +139,7 @@
         ... on Page {
           id
           state
+          hasUnpublishedChanges
 
           content {
             id
