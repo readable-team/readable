@@ -43,7 +43,7 @@ export const persistBlobAsImage = async ({ userId, file }: PersistBlobAsImagePar
     await aws.s3.send(
       new PutObjectCommand({
         Bucket: 'readable-usercontents',
-        Key: `public/${key}`,
+        Key: `images/${key}`,
         Body: Buffer.from(buffer),
         ContentType: mimetype,
         Metadata: {

@@ -1,0 +1,20 @@
+{
+  "name": "@readable/literoom",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun build --target=bun --outfile=dist/handler.js src/handler.ts",
+    "lint:typecheck": "tsc"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.621.0",
+    "sharp": "^0.33.4"
+  },
+  "devDependencies": {
+    "@pulumi/aws": "^6.47.0",
+    "@pulumi/pulumi": "^3.127.0",
+    "@readable/tsconfig": "workspace:*",
+    "typescript": "^5.5.4"
+  }
+}

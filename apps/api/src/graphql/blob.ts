@@ -16,19 +16,22 @@ import { Blob, File, Image } from './objects';
 Blob.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
-
-    url: t.string({ resolve: (blob) => `${env.USERCONTENTS_URL}/${blob.path}` }),
   }),
 });
 
 File.implement({
   interfaces: [Blob],
+  fields: (t) => ({
+    url: t.string({ resolve: (blob) => `${env.USERCONTENTS_URL}/files/${blob.path}` }),
+  }),
 });
 
 Image.implement({
   interfaces: [Blob],
   fields: (t) => ({
     placeholder: t.exposeString('placeholder'),
+
+    url: t.string({ resolve: (blob) => `${env.USERCONTENTS_URL}/images/${blob.path}` }),
   }),
 });
 
@@ -51,8 +54,8 @@ builder.mutationFields((t) => ({
       const key = `${aws.createFragmentedS3ObjectKey()}${ext}`;
 
       const req = await createPresignedPost(aws.s3, {
-        Bucket: 'readable-usercontents',
-        Key: `uploads/${key}`,
+        Bucket: 'readable-uploads',
+        Key: key,
         Conditions: [
           ['content-length-range', 0, 1024 * 1024 * 1024], // 1GB
           ['starts-with', '$Content-Type', ''],
@@ -78,8 +81,8 @@ builder.mutationFields((t) => ({
     resolve: async (_, { input }, ctx) => {
       const head = await aws.s3.send(
         new HeadObjectCommand({
-          Bucket: 'readable-usercontents',
-          Key: `uploads/${input.path}`,
+          Bucket: 'readable-uploads',
+          Key: input.path,
         }),
       );
 
@@ -101,8 +104,8 @@ builder.mutationFields((t) => ({
         await aws.s3.send(
           new CopyObjectCommand({
             Bucket: 'readable-usercontents',
-            CopySource: `readable-usercontents/uploads/${input.path}`,
-            Key: `public/${input.path}`,
+            CopySource: `readable-uploads/${input.path}`,
+            Key: `files/${input.path}`,
           }),
         );
 
@@ -120,8 +123,8 @@ builder.mutationFields((t) => ({
     resolve: async (_, { input }, ctx) => {
       const object = await aws.s3.send(
         new GetObjectCommand({
-          Bucket: 'readable-usercontents',
-          Key: `uploads/${input.path}`,
+          Bucket: 'readable-uploads',
+          Key: input.path,
         }),
       );
 
@@ -176,7 +179,7 @@ builder.mutationFields((t) => ({
         await aws.s3.send(
           new PutObjectCommand({
             Bucket: 'readable-usercontents',
-            Key: `public/${input.path}`,
+            Key: `images/${input.path}`,
             Body: res.data,
             ContentType: mimetype,
             Metadata: {

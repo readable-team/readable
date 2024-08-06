@@ -179,7 +179,13 @@ const usercontents = new aws.cloudfront.Distribution('usercontents', {
     {
       originId: 'usercontents',
       domainName: buckets.usercontents.bucketRegionalDomainName,
-      originPath: '/public',
+      originAccessControlId: s3OriginAccessControl.id,
+      originShield: { enabled: true, originShieldRegion: 'ap-northeast-2' },
+    },
+    {
+      originId: 'usercontents-literoom',
+      // spell-checker:disable-next-line
+      domainName: 'usercontents-literoo-daeepnuproy4fzfnt4im8nr6apn2a--ol-s3.s3.ap-northeast-2.amazonaws.com',
       originAccessControlId: s3OriginAccessControl.id,
       originShield: { enabled: true, originShieldRegion: 'ap-northeast-2' },
     },
@@ -195,6 +201,20 @@ const usercontents = new aws.cloudfront.Distribution('usercontents', {
     originRequestPolicyId: staticOriginRequestPolicy.id,
     responseHeadersPolicyId: staticResponseHeadersPolicy.id,
   },
+
+  orderedCacheBehaviors: [
+    {
+      targetOriginId: 'usercontents-literoom',
+      pathPattern: 'images/*',
+      compress: true,
+      viewerProtocolPolicy: 'redirect-to-https',
+      allowedMethods: ['GET', 'HEAD', 'OPTIONS'],
+      cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
+      cachePolicyId: staticCachePolicy.id,
+      originRequestPolicyId: staticOriginRequestPolicy.id,
+      responseHeadersPolicyId: staticResponseHeadersPolicy.id,
+    },
+  ],
 
   restrictions: {
     geoRestriction: {

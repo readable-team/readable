@@ -5,7 +5,6 @@ input AuthorizeSingleSignOnInput {
 
 interface Blob {
   id: ID!
-  url: String!
 }
 
 input CreatePageInput {

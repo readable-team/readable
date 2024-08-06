@@ -57,7 +57,12 @@ new aws.iam.UserPolicy('developer@team', {
     Statement: [
       {
         Effect: 'Allow',
-        Action: ['s3:GetObject', 's3:PutObject'],
+        Action: ['s3:GetObject'],
+        Resource: [pulumi.concat(buckets.uploads.arn, '/*')],
+      },
+      {
+        Effect: 'Allow',
+        Action: ['s3:PutObject'],
         Resource: [pulumi.concat(buckets.usercontents.arn, '/*')],
       },
     ],

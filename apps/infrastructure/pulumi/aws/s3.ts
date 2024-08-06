@@ -22,23 +22,6 @@ new aws.s3.BucketPolicy('cdn', {
 
 const usercontents = new aws.s3.Bucket('usercontents', {
   bucket: 'readable-usercontents',
-  corsRules: [
-    {
-      allowedHeaders: ['*'],
-      allowedMethods: ['POST'],
-      allowedOrigins: ['https://dashboard.rdbl.io', 'https://dashboard.rdbl.ninja', 'http://localhost:4100'],
-    },
-  ],
-
-  lifecycleRules: [
-    {
-      enabled: true,
-      prefix: 'uploads/',
-      expiration: {
-        days: 1,
-      },
-    },
-  ],
 });
 
 new aws.s3.BucketPolicy('usercontents', {
@@ -50,18 +33,40 @@ new aws.s3.BucketPolicy('usercontents', {
         Effect: 'Allow',
         Principal: { Service: 'cloudfront.amazonaws.com' },
         Action: ['s3:GetObject'],
-        Resource: [pulumi.interpolate`${usercontents.arn}/public/*`],
+        Resource: [pulumi.interpolate`${usercontents.arn}/*`],
       },
     ],
   },
 });
 
-export const buckets = { cdn, usercontents };
+const uploads = new aws.s3.Bucket('uploads', {
+  bucket: 'readable-uploads',
+  corsRules: [
+    {
+      allowedHeaders: ['*'],
+      allowedMethods: ['POST'],
+      allowedOrigins: ['https://dashboard.rdbl.io', 'https://dashboard.rdbl.ninja', 'http://localhost:4100'],
+    },
+  ],
+
+  lifecycleRules: [
+    {
+      enabled: true,
+      expiration: {
+        days: 1,
+      },
+    },
+  ],
+});
+
+export const buckets = { cdn, usercontents, uploads };
 
 export const outputs = {
   AWS_S3_BUCKET_CDN_BUCKET: cdn.bucket,
   AWS_S3_BUCKET_USERCONTENTS_BUCKET: usercontents.bucket,
+  AWS_S3_BUCKET_UPLOADS_BUCKET: uploads.bucket,
 
   AWS_S3_BUCKET_CDN_ARN: cdn.arn,
   AWS_S3_BUCKET_USERCONTENTS_ARN: usercontents.arn,
+  AWS_S3_BUCKET_UPLOADS_ARN: uploads.arn,
 };
