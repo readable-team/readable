@@ -108,6 +108,23 @@ Page.implement({
         return !Node.fromJSON(schema, pageContent.content).eq(Node.fromJSON(schema, pageContentState.content));
       },
     }),
+
+    lastPublishedAt: t.field({
+      type: 'DateTime',
+      nullable: true,
+      resolve: async (page, _, ctx) => {
+        const loader = ctx.loader({
+          name: 'PageContents(pageId) nullable',
+          nullable: true,
+          load: async (ids: string[]) => {
+            return await db.select().from(PageContents).where(inArray(PageContents.pageId, ids));
+          },
+          key: (row) => row?.pageId,
+        });
+
+        return loader.load(page.id).then((content) => content?.updatedAt);
+      },
+    }),
   }),
 });
 

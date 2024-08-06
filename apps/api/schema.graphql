@@ -118,6 +118,7 @@ type Page implements IPage {
   content: PageContentState!
   hasUnpublishedChanges: Boolean!
   id: ID!
+  lastPublishedAt: DateTime
   order: String!
   parent: Page
   site: Site!
