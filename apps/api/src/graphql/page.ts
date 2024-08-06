@@ -17,8 +17,10 @@ import {
   PageContentStates,
   PageContentUpdates,
   Pages,
+  Sites,
 } from '@/db';
 import { PageContentSyncKind, PageState } from '@/enums';
+import { env } from '@/env';
 import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
@@ -36,6 +38,34 @@ IPage.implement({
     slug: t.exposeString('slug'),
 
     order: t.string({ resolve: (page) => decoder.decode(page.order) }),
+    url: t.string({
+      nullable: true,
+      resolve: async (page, _, ctx) => {
+        const siteLoader = ctx.loader({
+          name: 'Sites',
+          load: async (ids: string[]) => {
+            return await db.select().from(Sites).where(inArray(Sites.id, ids));
+          },
+          key: (site) => site.id,
+        });
+
+        const contentLoader = ctx.loader({
+          name: 'PageContents(pageId) nullable',
+          nullable: true,
+          load: async (ids: string[]) => {
+            return await db.select().from(PageContents).where(inArray(PageContents.pageId, ids));
+          },
+          key: (row) => row?.pageId,
+        });
+
+        const site = await siteLoader.load(page.siteId);
+        const pageContent = await contentLoader.load(page.id);
+
+        if (pageContent) {
+          return `https://${site.slug}.${env.USERSITE_DEFAULT_HOST}/ko/${page.slug}-${pageContent.title}`;
+        }
+      },
+    }),
   }),
 });
 

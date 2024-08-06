@@ -50,6 +50,7 @@ interface IPage {
   order: String!
   slug: String!
   state: PageState!
+  url: String
 }
 
 interface ISite {
@@ -124,6 +125,7 @@ type Page implements IPage {
   site: Site!
   slug: String!
   state: PageState!
+  url: String
 }
 
 type PageContentSnapshot {
@@ -173,6 +175,7 @@ type PublicPage implements IPage {
   parent: PublicPage
   slug: String!
   state: PageState!
+  url: String
 }
 
 type PublicPageContent {
