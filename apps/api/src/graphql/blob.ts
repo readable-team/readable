@@ -145,6 +145,7 @@ builder.mutationFields((t) => ({
       }
 
       const res = await img.toBuffer({ resolveWithObject: true });
+      const mimetype = `image/${res.info.format}`;
 
       const raw = await img
         .clone()
@@ -162,7 +163,7 @@ builder.mutationFields((t) => ({
             userId: ctx.session.userId,
             name: decodeURIComponent(object.Metadata!.name),
             size: res.info.size,
-            format: `image/${res.info.format}`,
+            format: mimetype,
             width: res.info.width,
             height: res.info.height,
             path: input.path,
@@ -177,6 +178,12 @@ builder.mutationFields((t) => ({
             Bucket: 'readable-usercontents',
             Key: `public/${input.path}`,
             Body: res.data,
+            ContentType: mimetype,
+            Metadata: {
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              'name': object.Metadata!.name,
+              'user-id': ctx.session.userId,
+            },
           }),
         );
 

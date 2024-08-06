@@ -138,7 +138,7 @@ builder.mutationFields((t) => ({
       siteId: t.input.id(),
       name: t.input.string({ validate: { schema: dataSchemas.site.name } }),
       slug: t.input.string({ validate: { schema: dataSchemas.site.slug } }),
-      logoId: t.input.id(),
+      logoId: t.input.id({ required: false }),
     },
     resolve: async (_, { input }, ctx) => {
       await assertSitePermission({
@@ -150,7 +150,7 @@ builder.mutationFields((t) => ({
       const existingSite = await db
         .select({ id: Sites.id })
         .from(Sites)
-        .where(and(eq(Sites.slug, input.slug), eq(Sites.state, SiteState.ACTIVE)))
+        .where(and(eq(Sites.slug, input.slug), eq(Sites.state, SiteState.ACTIVE), ne(Sites.id, input.siteId)))
         .then(first);
 
       if (existingSite) {

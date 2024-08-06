@@ -10,6 +10,7 @@
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
+  import { uploadBlobAsImage } from '$lib/utils/blob.svelte';
   import type { SettingModal_site, SettingModal_user } from '$graphql';
 
   let _user: SettingModal_user;
@@ -42,6 +43,12 @@
         id
         name
         url
+        slug
+
+        logo {
+          id
+          ...Img_image
+        }
 
         team {
           id
@@ -94,6 +101,20 @@
     mutation SettingModal_RemoveTeamMember_Mutation($input: RemoveTeamMemberInput!) {
       removeTeamMember(input: $input) {
         id
+      }
+    }
+  `);
+
+  const updateSite = graphql(`
+    mutation SettingModal_UpdateSite_Mutation($input: UpdateSiteInput!) {
+      updateSite(input: $input) {
+        id
+        slug
+        name
+
+        logo {
+          id
+        }
       }
     }
   `);
@@ -225,6 +246,61 @@
   <div class={css({ flexGrow: '1', padding: '32px', overflowY: 'auto' })}>
     <div hidden={selectedTabIndex != 0}>
       <h1>기본정보 설정</h1>
+
+      <br />
+      현재 로고
+      {#if $site.logo}
+        <Img
+          style={css.raw({ size: '32px', borderWidth: '1px', borderColor: 'border.image' })}
+          $image={$site.logo}
+          alt="사이트 로고"
+        />
+      {:else}
+        없음
+      {/if}
+
+      <br />
+      로고 변경
+      <input
+        type="file"
+        on:change={async (event) => {
+          const file = event.currentTarget.files?.[0];
+          if (!file) {
+            return;
+          }
+
+          const resp = await uploadBlobAsImage(file, {
+            ensureAlpha: true,
+            resize: { width: 512, height: 512, fit: 'contain', background: '#00000000' },
+            format: 'png',
+          });
+
+          await updateSite({
+            siteId: $site.id,
+            name: $site.name,
+            slug: $site.slug,
+            logoId: resp.id,
+          });
+        }}
+      />
+
+      <br />
+      <Button
+        on:click={async () => {
+          await updateSite({
+            siteId: $site.id,
+            name: $site.name,
+            slug: $site.slug,
+            logoId: null,
+          });
+        }}
+      >
+        로고 제거
+      </Button>
+
+      <br />
+      <br />
+
       <Button
         on:click={async () => {
           await deleteSite({ siteId: $site.id });

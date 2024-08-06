@@ -279,7 +279,7 @@ input UpdatePagePositionInput {
 }
 
 input UpdateSiteInput {
-  logoId: ID!
+  logoId: ID
   name: String!
   siteId: ID!
   slug: String!
