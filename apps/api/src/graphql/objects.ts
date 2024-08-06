@@ -43,6 +43,7 @@ export const ISite = createInterfaceRef('ISite', T.Sites);
 export const File = createObjectRef('File', T.Files);
 export const Image = createObjectRef('Image', T.Images);
 export const Page = createObjectRef('Page', T.Pages);
+export const PageContentContributor = createObjectRef('PageContentContributor', T.PageContentContributors);
 export const PageContentSnapshot = createObjectRef('PageContentSnapshot', T.PageContentSnapshots);
 export const PageContentState = createObjectRef('PageContentState', T.PageContentStates);
 export const Site = createObjectRef('Site', T.Sites);

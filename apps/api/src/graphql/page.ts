@@ -12,6 +12,7 @@ import {
   db,
   first,
   firstOrThrow,
+  PageContentContributors,
   PageContents,
   PageContentSnapshots,
   PageContentStates,
@@ -23,7 +24,17 @@ import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { assertPagePermission, assertSitePermission } from '@/utils/permissions';
-import { IPage, Page, PageContentSnapshot, PageContentState, PublicPage, PublicPageContent, Site } from './objects';
+import {
+  IPage,
+  Page,
+  PageContentContributor,
+  PageContentSnapshot,
+  PageContentState,
+  PublicPage,
+  PublicPageContent,
+  Site,
+  User,
+} from './objects';
 
 /**
  * * Types
@@ -70,6 +81,17 @@ Page.implement({
           .from(Pages)
           .where(and(eq(Pages.parentId, page.id), ne(Pages.state, PageState.DELETED)))
           .orderBy(asc(Pages.order));
+      },
+    }),
+
+    contentContributor: t.field({
+      type: [PageContentContributor],
+      resolve: async (page) => {
+        return await db
+          .select()
+          .from(PageContentContributors)
+          .where(eq(PageContentContributors.pageId, page.id))
+          .orderBy(desc(PageContentContributors.updatedAt));
       },
     }),
 
@@ -158,6 +180,16 @@ PublicPage.implement({
           .orderBy(asc(Pages.order));
       },
     }),
+  }),
+});
+
+PageContentContributor.implement({
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    createdAt: t.expose('createdAt', { type: 'DateTime' }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
+
+    user: t.field({ type: User, resolve: (contributor) => contributor.userId }),
   }),
 });
 
@@ -281,6 +313,11 @@ builder.mutationFields((t) => ({
         await tx.insert(PageContentSnapshots).values({
           pageId: page.id,
           snapshot,
+        });
+
+        await tx.insert(PageContentContributors).values({
+          pageId: page.id,
+          userId: ctx.session.userId,
         });
 
         return page;

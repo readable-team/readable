@@ -115,6 +115,7 @@ type Mutation {
 type Page implements IPage {
   children: [Page!]!
   content: PageContentState!
+  contentContributor: [PageContentContributor!]!
   hasUnpublishedChanges: Boolean!
   id: ID!
   lastPublishedAt: DateTime
@@ -123,6 +124,13 @@ type Page implements IPage {
   site: Site!
   slug: String!
   state: PageState!
+}
+
+type PageContentContributor {
+  createdAt: DateTime!
+  id: ID!
+  updatedAt: DateTime!
+  user: User!
 }
 
 type PageContentSnapshot {

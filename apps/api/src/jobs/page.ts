@@ -1,8 +1,17 @@
 import dayjs from 'dayjs';
 import { and, asc, eq, gt, lte } from 'drizzle-orm';
+import * as R from 'radash';
 import { yXmlFragmentToProseMirrorRootNode } from 'y-prosemirror';
 import * as Y from 'yjs';
-import { db, firstOrThrow, PageContentSnapshots, PageContentStates, PageContentUpdates, Pages } from '@/db';
+import {
+  db,
+  firstOrThrow,
+  PageContentContributors,
+  PageContentSnapshots,
+  PageContentStates,
+  PageContentUpdates,
+  Pages,
+} from '@/db';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { defineJob } from './types';
@@ -21,7 +30,7 @@ export const PageContentStateUpdateJob = defineJob('post:content:state-update', 
       .then(firstOrThrow);
 
     const pendingUpdates = await tx
-      .select({ update: PageContentUpdates.update, seq: PageContentUpdates.seq })
+      .select({ update: PageContentUpdates.update, seq: PageContentUpdates.seq, userId: PageContentUpdates.userId })
       .from(PageContentUpdates)
       .where(and(eq(PageContentUpdates.pageId, pageId), gt(PageContentUpdates.seq, state.upToSeq)))
       .orderBy(asc(PageContentUpdates.seq));
@@ -41,10 +50,21 @@ export const PageContentStateUpdateJob = defineJob('post:content:state-update', 
     const snapshot = Y.snapshot(doc);
 
     if (!Y.equalSnapshots(prevSnapshot, snapshot)) {
-      await tx.insert(PageContentSnapshots).values({
-        pageId,
-        snapshot: Y.encodeSnapshotV2(snapshot),
-      });
+      const uniqueContributorUserIds = R.unique(pendingUpdates.map((update) => update.userId));
+
+      await Promise.all([
+        tx.insert(PageContentSnapshots).values({
+          pageId,
+          snapshot: Y.encodeSnapshotV2(snapshot),
+        }),
+        tx
+          .insert(PageContentContributors)
+          .values(uniqueContributorUserIds.map((userId) => ({ pageId, userId })))
+          .onConflictDoUpdate({
+            target: [PageContentContributors.pageId, PageContentContributors.userId],
+            set: { updatedAt: dayjs() },
+          }),
+      ]);
     }
 
     const updatedUpdate = Y.encodeStateAsUpdateV2(doc);

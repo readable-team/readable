@@ -89,6 +89,31 @@ export const PageContents = pgTable(
   }),
 );
 
+export const PageContentContributors = pgTable(
+  'page_content_contributors',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId('PCED')),
+    pageId: text('page_id')
+      .notNull()
+      .references(() => Pages.id),
+    userId: text('user_id')
+      .notNull()
+      .references(() => Users.id),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+    updatedAt: datetime('updated_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    pageIdUserIdUniq: unique().on(t.pageId, t.userId),
+    pageIdUpdatedAtIdx: index().on(t.pageId, t.updatedAt),
+  }),
+);
+
 export const PageContentSnapshots = pgTable(
   'page_content_snapshots',
   {
