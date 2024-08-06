@@ -127,6 +127,32 @@ builder.mutationFields((t) => ({
     },
   }),
 
+  updateTeam: t.withAuth({ session: true }).fieldWithInput({
+    type: Team,
+    input: {
+      teamId: t.input.string(),
+      name: t.input.string({ validate: { schema: dataSchemas.team.name } }),
+      avatarId: t.input.string(),
+    },
+    resolve: async (_, { input }, ctx) => {
+      await assertTeamPermission({
+        teamId: input.teamId,
+        userId: ctx.session.userId,
+        role: 'ADMIN',
+      });
+
+      return await db
+        .update(Teams)
+        .set({
+          name: input.name,
+          avatarId: input.avatarId,
+        })
+        .where(eq(Teams.id, input.teamId))
+        .returning()
+        .then(firstOrThrow);
+    },
+  }),
+
   deleteTeam: t.withAuth({ session: true }).fieldWithInput({
     type: Team,
     input: { teamId: t.input.string() },

@@ -108,6 +108,7 @@ type Mutation {
   syncPageContent(input: SyncPageContentInput!): [PageContentSyncOperation!]!
   updatePagePosition(input: UpdatePagePositionInput!): Page!
   updateSite(input: UpdateSiteInput!): Site!
+  updateTeam(input: UpdateTeamInput!): Team!
   updateTeamMemberRole(input: UpdateTeamMemberRoleInput!): TeamMember!
   updateUser(input: UpdateUserInput!): User!
 }
@@ -292,6 +293,12 @@ input UpdateSiteInput {
   name: String!
   siteId: ID!
   slug: String!
+}
+
+input UpdateTeamInput {
+  avatarId: String!
+  name: String!
+  teamId: String!
 }
 
 input UpdateTeamMemberRoleInput {
