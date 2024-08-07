@@ -35,6 +35,7 @@
     "tini",
     "tsup",
     "unplugin",
+    "unpublish",
     "urql",
     "vcpu",
     "wonka"
