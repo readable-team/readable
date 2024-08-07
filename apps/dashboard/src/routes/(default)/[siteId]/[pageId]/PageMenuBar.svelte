@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Button, Chip, Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
+  import { PageState } from '@/enums';
   import ClockIcon from '~icons/lucide/clock';
   import CopyIcon from '~icons/lucide/copy';
   import EllipsisIcon from '~icons/lucide/ellipsis';
@@ -21,6 +22,7 @@
       fragment PagePage_PageMenuBar_query on Query {
         page(pageId: $pageId) {
           id
+          state
           hasUnpublishedChanges
           slug
 
@@ -64,6 +66,15 @@
     }
   `);
 
+  const unpublishPage = graphql(`
+    mutation PagePage_UnpublishPage_Mutation($input: UnpublishPageInput!) {
+      unpublishPage(input: $input) {
+        id
+        state
+      }
+    }
+  `);
+
   const deletePage = graphql(`
     mutation PagePage_DeletePage_Mutation($input: DeletePageInput!) {
       deletePage(input: $input) {
@@ -79,6 +90,10 @@
     } else {
       goto(`/${$query.page.site.id}`);
     }
+  };
+
+  const onUnpublishPage = async () => {
+    await unpublishPage({ pageId: $query.page.id });
   };
 </script>
 
@@ -162,6 +177,9 @@
           <Icon slot="prefix" icon={TrashIcon} size={20} />
           <span>삭제</span>
         </MenuItem>
+        <MenuItem on:click={onUnpublishPage}>
+          <span>발행 취소</span>
+        </MenuItem>
       </Menu>
     </div>
 
@@ -173,7 +191,7 @@
       <Button href={pageUrl($query.page)} rel="noopener noreferrer" target="_blank" type="link" variant="secondary">
         <Icon icon={ExternalLinkIcon} size={18} />
       </Button>
-      {#if $query.page.hasUnpublishedChanges}
+      {#if $query.page.hasUnpublishedChanges || $query.page.state === PageState.DRAFT}
         <Button
           on:click={async () => {
             await publishPage({ pageId: $query.page.id });
