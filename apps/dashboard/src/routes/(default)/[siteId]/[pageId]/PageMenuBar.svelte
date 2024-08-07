@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Button, Chip, Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
+  import dayjs from 'dayjs';
   import { PageState } from '@/enums';
   import ClockIcon from '~icons/lucide/clock';
   import CopyIcon from '~icons/lucide/copy';
@@ -24,6 +25,7 @@
           id
           state
           hasUnpublishedChanges
+          lastPublishedAt
           slug
 
           contentContributor {
@@ -62,6 +64,8 @@
       publishPage(input: $input) {
         id
         state
+        hasUnpublishedChanges
+        lastPublishedAt
       }
     }
   `);
@@ -71,6 +75,7 @@
       unpublishPage(input: $input) {
         id
         state
+        hasUnpublishedChanges
       }
     }
   `);
@@ -103,14 +108,16 @@
   {#if $query.page.hasUnpublishedChanges}
     <Chip>발행되지 않은 수정사항 있음</Chip>
   {/if}
-  <span
-    class={css({
-      color: 'text.tertiary',
-      textStyle: '14sb',
-    })}
-  >
-    x일 전 발행됨
-  </span>
+  {#if $query.page.lastPublishedAt && $query.page.state === PageState.PUBLISHED}
+    <span
+      class={css({
+        color: 'text.tertiary',
+        textStyle: '14sb',
+      })}
+    >
+      {dayjs($query.page.lastPublishedAt).fromNow()} 발행됨
+    </span>
+  {/if}
 
   <ul class={flex({ align: 'center' })}>
     {#each $query.page.contentContributor as contributor (contributor.id)}
