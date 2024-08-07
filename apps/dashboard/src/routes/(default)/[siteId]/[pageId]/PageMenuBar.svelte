@@ -83,6 +83,14 @@
     }
   `);
 
+  const duplicatePage = graphql(`
+    mutation PagePage_DuplicatePage_Mutation($input: DuplicatePageInput!) {
+      duplicatePage(input: $input) {
+        id
+      }
+    }
+  `);
+
   const onDeletePage = async () => {
     await deletePage({ pageId: $query.page.id });
     if ($query.page.parent?.id) {
@@ -158,7 +166,11 @@
         <Icon icon={EllipsisIcon} size={18} />
       </Button>
 
-      <MenuItem>
+      <MenuItem
+        on:click={async () => {
+          await duplicatePage({ pageId: $query.page.id });
+        }}
+      >
         <Icon slot="prefix" icon={CopyIcon} size={20} />
         <span>복사</span>
       </MenuItem>
