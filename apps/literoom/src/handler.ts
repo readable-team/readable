@@ -23,6 +23,7 @@ export default {
     const url = new URL(event.userRequest.url);
 
     const size = Number(url.searchParams.get('s')) || null;
+    const format = url.searchParams.get('f') || 'webp';
 
     if (size !== null && size <= 0) {
       await S3.send(
@@ -66,7 +67,14 @@ export default {
       });
     }
 
-    const output = await image.webp({ quality: 90 }).toBuffer();
+    // eslint-disable-next-line unicorn/prefer-ternary
+    if (format === 'png') {
+      image = image.png();
+    } else {
+      image = image.webp();
+    }
+
+    const output = await image.toBuffer();
 
     const finished = performance.now();
 
@@ -75,7 +83,7 @@ export default {
         RequestRoute: event.getObjectContext.outputRoute,
         RequestToken: event.getObjectContext.outputToken,
         Body: output,
-        ContentType: 'image/webp',
+        ContentType: `image/${format}`,
         CacheControl: 'public, max-age=31536000, immutable',
         Metadata: {
           Elapsed: String((finished - started).toFixed(2)),
