@@ -99,111 +99,99 @@
 
 <div
   class={flex({
-    position: 'sticky',
-    top: '0',
-    width: 'full',
-    height: '58px',
-    backgroundColor: 'surface.tertiary',
+    gap: '8px',
+    paddingX: '12px',
+    paddingY: '10px',
     alignItems: 'center',
   })}
 >
-  <div
-    class={flex({
-      marginLeft: 'auto',
-      gap: '8px',
-      paddingX: '12px',
-      paddingY: '10px',
-      alignItems: 'center',
+  {#if $query.page.hasUnpublishedChanges}
+    <Chip>발행되지 않은 수정사항 있음</Chip>
+  {/if}
+  <span
+    class={css({
+      color: 'text.tertiary',
+      textStyle: '14sb',
     })}
   >
-    {#if $query.page.hasUnpublishedChanges}
-      <Chip>발행되지 않은 수정사항 있음</Chip>
-    {/if}
-    <span
-      class={css({
-        color: 'text.tertiary',
-        textStyle: '14sb',
-      })}
-    >
-      x일 전 발행됨
-    </span>
+    x일 전 발행됨
+  </span>
 
-    <ul class={flex({ align: 'center' })}>
-      {#each $query.page.contentContributor as contributor (contributor.id)}
-        <li>
-          <Img
-            style={css.raw({ borderRadius: 'full', size: '32px', objectFit: 'cover' })}
-            $image={contributor.user.avatar}
-            alt=""
-          />
-        </li>
-      {/each}
-    </ul>
+  <ul class={flex({ align: 'center' })}>
+    {#each $query.page.contentContributor as contributor (contributor.id)}
+      <li>
+        <Img
+          style={css.raw({ borderRadius: 'full', size: '32px', objectFit: 'cover' })}
+          $image={contributor.user.avatar}
+          alt=""
+        />
+      </li>
+    {/each}
+  </ul>
 
-    <div
-      class={flex({
-        paddingX: '12px',
-        alignItems: 'center',
-        gap: '10px',
+  <div
+    class={flex({
+      paddingX: '12px',
+      alignItems: 'center',
+      gap: '10px',
+    })}
+  >
+    <Button
+      style={css.raw({
+        paddingX: '9px',
       })}
+      variant="secondary"
     >
+      <Icon icon={ClockIcon} size={18} />
+    </Button>
+
+    <Menu listStyle={css.raw({ width: '148px' })} offset={16} placement="top-start">
       <Button
+        slot="button"
         style={css.raw({
           paddingX: '9px',
         })}
+        aria-pressed={open}
         variant="secondary"
+        let:open
       >
-        <Icon icon={ClockIcon} size={18} />
+        <Icon icon={EllipsisIcon} size={18} />
       </Button>
 
-      <Menu listStyle={css.raw({ width: '148px' })} offset={16} placement="top-start">
-        <Button
-          slot="button"
-          style={css.raw({
-            paddingX: '9px',
-          })}
-          aria-pressed={open}
-          variant="secondary"
-          let:open
-        >
-          <Icon icon={EllipsisIcon} size={18} />
-        </Button>
+      <MenuItem>
+        <Icon slot="prefix" icon={CopyIcon} size={20} />
+        <span>복사</span>
+      </MenuItem>
+      <MenuItem variant="danger" on:click={onDeletePage}>
+        <Icon slot="prefix" icon={TrashIcon} size={20} />
+        <span>삭제</span>
+      </MenuItem>
+      <MenuItem on:click={onUnpublishPage}>
+        <span>발행 취소</span>
+      </MenuItem>
+    </Menu>
+  </div>
 
-        <MenuItem>
-          <Icon slot="prefix" icon={CopyIcon} size={20} />
-          <span>복사</span>
-        </MenuItem>
-        <MenuItem variant="danger" on:click={onDeletePage}>
-          <Icon slot="prefix" icon={TrashIcon} size={20} />
-          <span>삭제</span>
-        </MenuItem>
-        <MenuItem on:click={onUnpublishPage}>
-          <span>발행 취소</span>
-        </MenuItem>
-      </Menu>
-    </div>
-
-    <div
-      class={flex({
-        gap: '8px',
-      })}
-    >
-      <Button href={pageUrl($query.page)} rel="noopener noreferrer" target="_blank" type="link" variant="secondary">
-        <Icon icon={ExternalLinkIcon} size={18} />
+  <div
+    class={flex({
+      gap: '8px',
+    })}
+  >
+    <Button href={pageUrl($query.page)} rel="noopener noreferrer" target="_blank" type="link" variant="secondary">
+      <Icon icon={ExternalLinkIcon} size={18} />
+    </Button>
+    {#if $query.page.hasUnpublishedChanges || $query.page.state === PageState.DRAFT}
+      <Button
+        on:click={async () => {
+          await publishPage({ pageId: $query.page.id });
+        }}
+      >
+        발행하기
       </Button>
-      {#if $query.page.hasUnpublishedChanges || $query.page.state === PageState.DRAFT}
-        <Button
-          on:click={async () => {
-            await publishPage({ pageId: $query.page.id });
-          }}
-        >
-          발행하기
-        </Button>
-      {:else}
-        <Tooltip message="이미 최신 버전으로 발행되어 있어요">
-          <Button disabled>발행됨</Button>
-        </Tooltip>
-      {/if}
-    </div>
+    {:else}
+      <Tooltip message="이미 최신 버전으로 발행되어 있어요">
+        <Button disabled>발행됨</Button>
+      </Tooltip>
+    {/if}
   </div>
 </div>
