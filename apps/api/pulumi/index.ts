@@ -36,7 +36,7 @@ const site = new readable.Site('api', {
       Statement: [
         {
           Effect: 'Allow',
-          Action: ['s3:GetObject'],
+          Action: ['s3:GetObject', 's3:PutObject'],
           Resource: [pulumi.concat(ref.requireOutput('AWS_S3_BUCKET_UPLOADS_ARN'), '/*')],
         },
         {
