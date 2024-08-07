@@ -1,7 +1,8 @@
 import { init } from '@paralleldrive/cuid2';
 import { Node } from '@tiptap/pm/model';
 import dayjs from 'dayjs';
-import { and, asc, desc, eq, gt, inArray, isNull, ne } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, inArray, isNull, ne, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { Repeater } from 'graphql-yoga';
 import { fromUint8Array, toUint8Array } from 'js-base64';
@@ -145,6 +146,32 @@ Page.implement({
         });
 
         return loader.load(page.id).then((content) => content?.updatedAt);
+      },
+    }),
+
+    hasUnpublishedParents: t.boolean({
+      resolve: async (page) => {
+        const p = alias(Pages, 'p');
+
+        const unpublishedParentsCount = await db
+          .execute(
+            sql<{ count: number }[]>`WITH RECURSIVE sq AS (
+              SELECT ${Pages.parentId}, ${Pages.state}
+              FROM ${Pages}
+              WHERE ${eq(Pages.id, page.id)}
+              UNION ALL
+              SELECT ${p.parentId}, ${p.state}
+              FROM pages AS p
+              INNER JOIN sq ON ${p.id} = sq.parent_id
+              WHERE ${ne(p.id, page.id)}
+            )
+            SELECT count(*) AS count
+            FROM sq
+            WHERE state != ${PageState.PUBLISHED};`,
+          )
+          .then((rows) => (rows[0].count ?? 0) as number);
+
+        return unpublishedParentsCount > 0;
       },
     }),
   }),

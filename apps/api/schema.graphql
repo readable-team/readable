@@ -124,6 +124,7 @@ type Page implements IPage {
   content: PageContentState!
   contentContributor: [PageContentContributor!]!
   hasUnpublishedChanges: Boolean!
+  hasUnpublishedParents: Boolean!
   id: ID!
   lastPublishedAt: DateTime
   order: String!
