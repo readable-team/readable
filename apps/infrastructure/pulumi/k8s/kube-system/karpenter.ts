@@ -14,7 +14,7 @@ const nodeRole = new aws.iam.Role('node@eks', {
     aws.iam.ManagedPolicy.AmazonEKS_CNI_Policy,
     aws.iam.ManagedPolicy.AmazonSSMManagedInstanceCore,
     // spell-checker:disable-next-line
-    aws.iam.ManagedPolicy.AmazonEBSCSIDriverPolicy,
+    aws.iam.ManagedPolicy.AmazonEFSCSIDriverPolicy,
   ],
 });
 

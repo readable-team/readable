@@ -78,6 +78,16 @@ new aws.eks.Addon('vpc-cni', {
   }).version,
 });
 
+new aws.eks.Addon('aws-efs-csi-driver', {
+  clusterName: cluster.name,
+  addonName: 'aws-efs-csi-driver',
+  addonVersion: aws.eks.getAddonVersionOutput({
+    addonName: 'aws-efs-csi-driver',
+    kubernetesVersion: cluster.version,
+    mostRecent: true,
+  }).version,
+});
+
 new aws.eks.AccessEntry('admin@eks', {
   clusterName: cluster.name,
   principalArn: adminRole.arn,
