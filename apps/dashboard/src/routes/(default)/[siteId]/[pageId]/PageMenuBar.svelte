@@ -90,19 +90,6 @@
       }
     }
   `);
-
-  const onDeletePage = async () => {
-    await deletePage({ pageId: $query.page.id });
-    if ($query.page.parent?.id) {
-      goto(`/${$query.page.site.id}/${$query.page.parent.id}`);
-    } else {
-      goto(`/${$query.page.site.id}`);
-    }
-  };
-
-  const onUnpublishPage = async () => {
-    await unpublishPage({ pageId: $query.page.id });
-  };
 </script>
 
 <div
@@ -174,11 +161,25 @@
         <Icon slot="prefix" icon={CopyIcon} size={20} />
         <span>복사</span>
       </MenuItem>
-      <MenuItem variant="danger" on:click={onDeletePage}>
+      <MenuItem
+        variant="danger"
+        on:click={async () => {
+          await deletePage({ pageId: $query.page.id });
+          if ($query.page.parent?.id) {
+            goto(`/${$query.page.site.id}/${$query.page.parent.id}`);
+          } else {
+            goto(`/${$query.page.site.id}`);
+          }
+        }}
+      >
         <Icon slot="prefix" icon={TrashIcon} size={20} />
         <span>삭제</span>
       </MenuItem>
-      <MenuItem on:click={onUnpublishPage}>
+      <MenuItem
+        on:click={async () => {
+          await unpublishPage({ pageId: $query.page.id });
+        }}
+      >
         <span>발행 취소</span>
       </MenuItem>
     </Menu>
