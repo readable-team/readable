@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { css } from '@readable/styled-system/css';
   import { graphql } from '$graphql';
   import { pageUrl } from '$lib/utils/url';
 
@@ -7,6 +8,11 @@
       publicSite(hostname: $hostname) {
         id
         name
+
+        logo {
+          id
+          url
+        }
 
         # NOTE: maxDepth = 3
         pages {
@@ -71,6 +77,9 @@
 
 usersite
 <br />
+{#if $query.publicSite.logo}
+  <img class={css({ size: '32px' })} alt="Logo" src={$query.publicSite.logo.url} />
+{/if}
 id: {$query.publicSite.id}
 <br />
 name: {$query.publicSite.name}
