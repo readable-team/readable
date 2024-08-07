@@ -52,6 +52,7 @@
   style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '38px' })}
   $image={$query.team.avatar}
   alt={`${$query.team.name}의 아바타`}
+  size={48}
 />
 <br />
 <Button

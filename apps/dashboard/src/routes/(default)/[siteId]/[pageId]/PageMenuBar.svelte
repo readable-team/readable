@@ -126,6 +126,7 @@
           style={css.raw({ borderRadius: 'full', size: '32px', objectFit: 'cover' })}
           $image={contributor.user.avatar}
           alt=""
+          size={32}
         />
       </li>
     {/each}

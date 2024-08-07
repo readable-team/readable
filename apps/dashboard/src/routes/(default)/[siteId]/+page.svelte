@@ -60,10 +60,11 @@
     style={css.raw({
       borderRadius: 'full',
       size: '64px',
-      marginBottom: '4px',
     })}
     $image={$query.me.avatar}
     alt={`${$query.me.name}의 아바타`}
+    progressive
+    size={64}
   />
 </Tooltip>
 
@@ -118,3 +119,5 @@
 >
   Logout
 </Button>
+
+<!-- <div class={css({ minHeight: '[10000px]' })} /> -->

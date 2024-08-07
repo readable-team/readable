@@ -200,6 +200,7 @@
         })}
         $image={$user.avatar}
         alt={`${$user.name}의 아바타`}
+        size={48}
       />
 
       <div class={css({ truncate: true })}>
@@ -254,6 +255,7 @@
           style={css.raw({ size: '32px', borderWidth: '1px', borderColor: 'border.image' })}
           $image={$site.logo}
           alt="사이트 로고"
+          size={32}
         />
       {:else}
         없음
