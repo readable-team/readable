@@ -9,7 +9,7 @@ import { ApiError } from '@/errors';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
-import { Image, ISite, Page, PublicSite, Site, Team } from './objects';
+import { Image, ISite, Page, PublicPage, PublicSite, Site, Team } from './objects';
 
 /**
  * * Types
@@ -49,7 +49,7 @@ PublicSite.implement({
   interfaces: [ISite],
   fields: (t) => ({
     pages: t.field({
-      type: [Page],
+      type: [PublicPage],
       resolve: async (site) => {
         return await db
           .select()

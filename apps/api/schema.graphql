@@ -195,7 +195,7 @@ type PublicSite implements ISite {
   id: ID!
   logo: Image
   name: String!
-  pages: [Page!]!
+  pages: [PublicPage!]!
   slug: String!
   url: String!
 }
