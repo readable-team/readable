@@ -35,6 +35,10 @@ input DeleteTeamInput {
   teamId: String!
 }
 
+input DuplicatePageInput {
+  pageId: ID!
+}
+
 type File implements Blob {
   id: ID!
   url: String!
@@ -97,6 +101,7 @@ type Mutation {
   deletePage(input: DeletePageInput!): Page!
   deleteSite(input: DeleteSiteInput!): Site!
   deleteTeam(input: DeleteTeamInput!): Team!
+  duplicatePage(input: DuplicatePageInput!): Page!
   generateSingleSignOnAuthorizationUrl(input: GenerateSingleSignOnAuthorizationUrlInput!): String!
   inviteTeamMember(input: InviteTeamMemberInput!): InviteTeamMemberResult!
   issueBlobUploadUrl(input: IssueBlobUploadUrlInput!): IssueBlobUploadUrlResult!

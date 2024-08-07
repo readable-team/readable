@@ -570,6 +570,88 @@ builder.mutationFields((t) => ({
       return [];
     },
   }),
+
+  duplicatePage: t.withAuth({ session: true }).fieldWithInput({
+    type: Page,
+    input: { pageId: t.input.id() },
+    resolve: async (_, { input }, ctx) => {
+      await assertPagePermission({
+        pageId: input.pageId,
+        userId: ctx.session.userId,
+      });
+
+      const page = await db.select().from(Pages).where(eq(Pages.id, input.pageId)).then(firstOrThrow);
+
+      const nextPageOrder = await db
+        .select({ order: Pages.order })
+        .from(Pages)
+        .where(gt(Pages.order, page.order))
+        .orderBy(asc(Pages.order))
+        .limit(1)
+        .then((rows) => (rows[0]?.order ? decoder.decode(rows[0].order) : null));
+
+      const { update } = await getLatestPageContentState(input.pageId);
+
+      const doc = new Y.Doc();
+      Y.applyUpdateV2(doc, update);
+
+      const node = yXmlFragmentToProseMirrorRootNode(doc.getXmlFragment('content'), schema);
+      const text = node.content.textBetween(0, node.content.size, '\n');
+
+      const title = `(사본) ${doc.getText('title').toString() || '(제목 없음)'}`;
+      const subtitle = doc.getText('subtitle').toString();
+
+      const newDoc = prosemirrorToYDoc(node, 'content');
+      newDoc.getText('title').insert(0, title);
+      newDoc.getText('subtitle').insert(0, subtitle);
+
+      const newUpdate = Y.encodeStateAsUpdateV2(newDoc);
+      const newVector = Y.encodeStateVector(newDoc);
+
+      const snapshot = Y.encodeSnapshotV2(Y.snapshot(newDoc));
+
+      const newPage = await db.transaction(async (tx) => {
+        const newPage = await tx
+          .insert(Pages)
+          .values({
+            siteId: page.siteId,
+            parentId: page.parentId,
+            slug: createPageSlug(),
+            order: encoder.encode(generateJitteredKeyBetween(decoder.decode(page.order), nextPageOrder)),
+            state: 'DRAFT',
+          })
+          .returning()
+          .then(firstOrThrow);
+
+        await tx.insert(PageContentStates).values({
+          pageId: newPage.id,
+          update: newUpdate,
+          vector: newVector,
+          title,
+          subtitle: subtitle.length > 0 ? subtitle : null,
+          content: node.toJSON(),
+          text,
+          upToSeq: 0n,
+        });
+
+        await tx.insert(PageContentSnapshots).values({
+          pageId: newPage.id,
+          snapshot,
+        });
+
+        await tx.insert(PageContentContributors).values({
+          pageId: newPage.id,
+          userId: ctx.session.userId,
+        });
+
+        return newPage;
+      });
+
+      pubsub.publish('site:update', page.siteId, { scope: 'site' });
+
+      return newPage;
+    },
+  }),
 }));
 
 /**
