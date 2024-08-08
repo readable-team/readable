@@ -37,7 +37,6 @@ export const extensions = [
   Paragraph.configure({
     HTMLAttributes: {
       class: css({
-        marginY: '4px',
         textStyle: '16m',
       }),
     },
@@ -46,7 +45,6 @@ export const extensions = [
     levels: [1, 2, 3],
     HTMLAttributes: {
       class: css({
-        'marginY': '4px',
         'h1&': { textStyle: '28b' },
         'h2&': { textStyle: '24b' },
         'h3&': { textStyle: '20b' },
@@ -87,8 +85,6 @@ export const extensions = [
   }).configure({
     HTMLAttributes: {
       class: css({
-        marginY: '6px',
-        display: 'flow-root', // 자식 paragraph와 margin collapse 방지
         borderLeftWidth: '3px',
         borderLeftColor: 'neutral.100',
         paddingLeft: '24px',

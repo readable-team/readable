@@ -3,7 +3,7 @@ import { Extension } from '@tiptap/core';
 import { Plugin, PluginKey, Selection } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import type { Range } from '@tiptap/core';
-import type { Node } from '@tiptap/pm/model';
+import type { Node, ResolvedPos } from '@tiptap/pm/model';
 import type { Mappable } from '@tiptap/pm/transform';
 
 const key = new PluginKey('blockSelectionHelper');
@@ -12,7 +12,7 @@ declare module '@tiptap/core' {
   // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Commands<ReturnType> {
     blockSelection: {
-      setBlockSelection: (range: Range) => ReturnType;
+      setBlockSelection: (range: Range, invisible?: boolean) => ReturnType;
     };
   }
 }
@@ -23,10 +23,10 @@ export const BlockSelectionHelper = Extension.create({
   addCommands() {
     return {
       setBlockSelection:
-        (range: Range) =>
+        (range, invisible) =>
         ({ tr, dispatch }) => {
           if (dispatch) {
-            const selection = BlockSelection.create(tr.doc, range.from, range.to);
+            const selection = BlockSelection.create(tr.doc, range.from, range.to, invisible);
             tr.setSelection(selection);
           }
 
@@ -55,7 +55,7 @@ export const BlockSelectionHelper = Extension.create({
         key,
         props: {
           decorations: ({ doc, selection }) => {
-            if (!this.editor.isEditable || !(selection instanceof BlockSelection)) {
+            if (!this.editor.isEditable || !(selection instanceof BlockSelection) || selection.invisible) {
               return DecorationSet.empty;
             }
 
@@ -100,6 +100,14 @@ export const BlockSelectionHelper = Extension.create({
 class BlockSelection extends Selection {
   override readonly visible = false;
 
+  constructor(
+    from: ResolvedPos,
+    to: ResolvedPos,
+    public invisible: boolean,
+  ) {
+    super(from, to);
+  }
+
   override eq(other: Selection) {
     return other instanceof BlockSelection && other.$anchor === this.$anchor && other.$head === this.$head;
   }
@@ -115,15 +123,15 @@ class BlockSelection extends Selection {
     // eslint-disable-next-line unicorn/no-array-callback-reference
     const $anchor = doc.resolve(mapping.map(this.anchor));
 
-    return new BlockSelection($anchor.parent.inlineContent ? $anchor : $head, $head);
+    return new BlockSelection($anchor.parent.inlineContent ? $anchor : $head, $head, this.invisible);
   }
 
   override toJSON() {
     return { type: 'block', anchor: this.anchor, head: this.head };
   }
 
-  static create(doc: Node, from: number, to: number): BlockSelection {
-    return new BlockSelection(doc.resolve(from), doc.resolve(to));
+  static create(doc: Node, from: number, to: number, invisible = false): BlockSelection {
+    return new BlockSelection(doc.resolve(from), doc.resolve(to), invisible);
   }
 }
 

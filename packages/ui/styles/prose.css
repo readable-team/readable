@@ -5,6 +5,10 @@
 
   line-height: 1.6;
 
+  & > * + * {
+    margin-top: 2px;
+  }
+
   & *::selection {
     background-color: #b3d4fc;
   }

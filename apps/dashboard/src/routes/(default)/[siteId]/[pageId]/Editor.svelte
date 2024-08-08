@@ -9,6 +9,7 @@
   import * as Y from 'yjs';
   import { PageContentSyncKind } from '@/enums';
   import { fragment, graphql } from '$graphql';
+  import type { Editor } from '@tiptap/core';
   import type { Writable } from 'svelte/store';
   import type { PagePage_Editor_query } from '$graphql';
 
@@ -75,6 +76,8 @@
       YAwareness.applyAwarenessUpdate(yAwareness, toUint8Array(operation.data), 'NETWORK');
     }
   });
+
+  let editor: Editor | undefined;
 
   const yDoc = new Y.Doc();
   const yAwareness = new YAwareness.Awareness(yDoc);
@@ -204,13 +207,15 @@
   });
 </script>
 
-<div class={css({ flex: '1', marginTop: '64px', marginBottom: '128px', marginX: 'auto' })}>
-  <div class={flex({ height: 'full', flexDirection: 'column', marginX: '64px', width: '720px' })}>
+<div class={css({ flex: '1', marginTop: '64px', marginBottom: '128px' })}>
+  <div class={flex({ height: 'full', flexDirection: 'column' })}>
     <div
       class={flex({
         flexDirection: 'column',
         gap: '8px',
+        marginX: 'auto',
         marginBottom: '42px',
+        width: '720px',
         color: 'text.primary',
       })}
     >
@@ -247,6 +252,16 @@
       </span>
     </div>
 
-    <TiptapEditor style={css.raw({ flex: '1', color: 'text.primary' })} awareness={yAwareness} document={yDoc} />
+    <!-- {#if editor}
+      {JSON.stringify(editor.state.selection.toJSON())}
+      {JSON.stringify(editor.state.doc.resolve(editor.state.selection.$from.start(1)).node().toJSON())}
+    {/if} -->
+
+    <TiptapEditor
+      style={css.raw({ flex: '1', color: 'text.primary', paddingX: '64px', marginX: 'auto', width: '848px' })}
+      awareness={yAwareness}
+      document={yDoc}
+      bind:editor
+    />
   </div>
 </div>

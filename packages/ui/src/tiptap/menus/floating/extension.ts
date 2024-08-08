@@ -1,11 +1,11 @@
 import { autoUpdate, computePosition, offset } from '@floating-ui/dom';
+import { center } from '@readable/styled-system/patterns';
 import { Extension } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import Component from './Component.svelte';
 
 type State = {
   pos: number;
-  index: number;
 };
 
 const key = new PluginKey<State>('floatingMenu');
@@ -20,25 +20,25 @@ export const FloatingMenu = Extension.create({
         props: {
           handleDOMEvents: {
             pointermove: (view, event) => {
-              if (!(event.target instanceof Node)) {
+              if (!(event.target instanceof Element)) {
                 return;
               }
 
-              // const rect = view.dom.getBoundingClientRect();
-
-              // const left = Math.max(event.clientX, rect.x);
-              const left = event.clientX;
-              const top = event.clientY;
-
-              const pos = view.posAtCoords({ left, top });
+              const posAtCoords = view.posAtCoords({ left: event.clientX, top: event.clientY });
 
               const { tr } = view.state;
 
-              if (pos) {
-                const $pos = view.state.doc.resolve(pos.pos);
-                tr.setMeta(key, { pos: $pos.start(1), index: $pos.index(0) });
+              if (posAtCoords) {
+                const $pos = view.state.doc.resolve(posAtCoords.pos);
+                const pos = $pos.start(1);
+
+                if (pos > view.state.doc.content.size) {
+                  tr.setMeta(key, { pos: -1 });
+                } else {
+                  tr.setMeta(key, { pos });
+                }
               } else {
-                tr.setMeta(key, { pos: -1, index: -1 });
+                tr.setMeta(key, { pos: -1 });
               }
 
               view.dispatch(tr);
@@ -46,7 +46,7 @@ export const FloatingMenu = Extension.create({
           },
         },
         state: {
-          init: () => ({ pos: -1, index: -1 }),
+          init: () => ({ pos: -1 }),
           apply: (tr, value) => {
             const meta = tr.getMeta(key);
             if (meta) {
@@ -65,10 +65,15 @@ export const FloatingMenu = Extension.create({
             },
           });
 
-          dom.style.position = 'absolute';
-          dom.style.width = 'max-content';
-          dom.style.top = '0';
-          dom.style.left = '0';
+          dom.className = center({
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: 'max',
+            visibility: 'hidden',
+            translate: 'auto',
+            translateY: '-1/2',
+          });
 
           document.body.append(dom);
 
@@ -79,36 +84,40 @@ export const FloatingMenu = Extension.create({
               const state = key.getState(view.state);
               const prevState = key.getState(oldState);
 
-              if (!state || state.index === prevState?.index) {
+              if (!state || state.pos === prevState?.pos) {
                 return;
               }
 
-              const { pos, index } = state;
+              const { pos } = state;
+
               if (pos === -1) {
                 dom.style.visibility = 'hidden';
                 return;
               }
 
-              const node = view.state.doc.maybeChild(index);
-              if (!node) {
-                dom.style.visibility = 'hidden';
-                return;
-              }
+              const $pos = view.state.doc.resolve(pos);
+              const node = $pos.node();
 
               component.$set({ pos, node });
 
-              const element = view.domAtPos(pos) as { node: HTMLElement; offset: number };
+              const element = view.domAtPos(pos) as { node: Element; offset: number };
 
               cleanup?.();
               cleanup = autoUpdate(element.node, dom, async () => {
                 const { x, y } = await computePosition(element.node, dom, {
                   placement: 'left-start',
-                  middleware: [offset({ mainAxis: 8, crossAxis: 4 })],
+                  middleware: [offset(8)],
                 });
 
+                const style = window.getComputedStyle(element.node);
+                const lineHeight = Number.parseInt(style.lineHeight, 10) || Number.parseInt(style.fontSize, 10) * 1.5;
+
+                const effectiveX = x;
+                const effectiveY = y + lineHeight / 2;
+
                 dom.style.visibility = 'visible';
-                dom.style.left = `${x}px`;
-                dom.style.top = `${y}px`;
+                dom.style.left = `${effectiveX}px`;
+                dom.style.top = `${effectiveY}px`;
               });
             },
             destroy: () => {
