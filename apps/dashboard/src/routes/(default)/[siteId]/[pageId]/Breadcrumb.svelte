@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import { Icon } from '@readable/ui/components';
+  import ChevronRightIcon from '~icons/lucide/chevron-right';
   import { fragment, graphql } from '$graphql';
   import type { PagePage_Breadcrumb_query } from '$graphql';
 
@@ -58,25 +61,50 @@
   ].filter(Boolean) as NonNullable<typeof $query.page>[];
 </script>
 
-<nav aria-label="Breadcrumb">
+<nav class={css({ truncate: true })} aria-label="Breadcrumb">
   <ol
     class={flex({
-      paddingX: '12px',
-      gap: '6px',
+      'align': 'center',
+      'gap': '4px',
+      'truncate': true,
+      '& > li': {
+        display: 'inline-block',
+        borderRadius: '6px',
+        textStyle: '15m',
+        color: 'text.tertiary',
+      },
+      '& > li > a': {
+        paddingX: '8px',
+        paddingY: '4px',
+      },
     })}
   >
-    <li>
+    <li class={css({ _hover: { backgroundColor: 'surface.secondary' } })}>
       <a href={`/${$query.page.site.id}`}>홈</a>
     </li>
-    <li aria-hidden="true">&gt;</li>
+    <li aria-hidden="true">
+      <Icon icon={ChevronRightIcon} />
+    </li>
     {#each breadcrumbs as page, i (page.id)}
-      <li>
-        <a aria-current={i === breadcrumbs.length - 1 ? 'page' : undefined} href={`/${$query.page.site.id}/${page.id}`}>
+      {@const current = i === breadcrumbs.length - 1}
+      <li
+        class={css({
+          truncate: true,
+          _hover: { backgroundColor: 'surface.secondary' },
+        })}
+      >
+        <a
+          class={css(current && { textStyle: '15sb', color: 'text.primary' })}
+          aria-current={current ? 'page' : undefined}
+          href={`/${$query.page.site.id}/${page.id}`}
+        >
           {page.content.title}
         </a>
       </li>
       {#if i < breadcrumbs.length - 1}
-        <li aria-hidden="true">&gt;</li>
+        <li aria-hidden="true">
+          <Icon icon={ChevronRightIcon} />
+        </li>
       {/if}
     {/each}
   </ol>

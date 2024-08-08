@@ -101,6 +101,7 @@
 <div
   class={flex({
     gap: '8px',
+    flex: 'none',
     paddingX: '12px',
     paddingY: '10px',
     alignItems: 'center',

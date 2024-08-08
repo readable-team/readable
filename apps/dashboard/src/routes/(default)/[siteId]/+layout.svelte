@@ -233,7 +233,8 @@
     class={flex({
       flexDirection: 'column',
       gap: '10px',
-      width: '370px',
+      flex: 'none',
+      width: '300px',
       padding: '16px',
       backgroundColor: 'white',
       flexShrink: 0,
@@ -377,7 +378,6 @@
       flexDirection: 'column',
       overflowY: 'auto',
       flexGrow: 1,
-      flexShrink: 0,
     })}
   >
     <slot />
