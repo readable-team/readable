@@ -85,4 +85,15 @@ export const menuItems: MenuItem[] = [
       editor.chain().focus().deleteRange(range).toggleOrderedList().run();
     },
   },
+  {
+    id: 'callout',
+    group: 'block',
+    name: '콜아웃',
+    keywords: ['callout'],
+    description: '...',
+    icon: Heading1Icon, // FIXME: 콜아웃 아이콘
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setCallout().run();
+    },
+  },
 ];

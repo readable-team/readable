@@ -27,6 +27,7 @@ import { liftTarget } from '@tiptap/pm/transform';
 import { BlockSelectionHelper } from './extensions/block-selection';
 import { FloatingMenu } from './menus/floating';
 import { SlashMenu } from './menus/slash';
+import { Callout } from './node-views';
 
 export const extensions = [
   // special nodes
@@ -160,6 +161,7 @@ export const extensions = [
   BlockSelectionHelper,
 
   // node views
+  Callout,
 ];
 
 export const schema = getSchema(extensions);
