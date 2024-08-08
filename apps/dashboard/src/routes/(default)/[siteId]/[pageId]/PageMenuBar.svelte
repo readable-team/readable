@@ -25,6 +25,7 @@
           id
           state
           hasUnpublishedChanges
+          hasUnpublishedParents
           lastPublishedAt
           slug
 
@@ -201,7 +202,11 @@
     <Button href={pageUrl($query.page)} rel="noopener noreferrer" target="_blank" type="link" variant="secondary">
       <Icon icon={ExternalLinkIcon} size={18} />
     </Button>
-    {#if $query.page.hasUnpublishedChanges || $query.page.state === PageState.DRAFT}
+    {#if $query.page.hasUnpublishedParents}
+      <Tooltip message="아직 상위 페이지가 발행되지 않았어요">
+        <Button disabled>발행하기</Button>
+      </Tooltip>
+    {:else if $query.page.hasUnpublishedChanges || $query.page.state === PageState.DRAFT}
       <Button
         on:click={async () => {
           await publishPage({ pageId: $query.page.id });
