@@ -199,9 +199,16 @@
       gap: '8px',
     })}
   >
-    <Button href={pageUrl($query.page)} rel="noopener noreferrer" target="_blank" type="link" variant="secondary">
-      <Icon icon={ExternalLinkIcon} size={18} />
-    </Button>
+    {#if $query.page.state === PageState.DRAFT}
+      <Button disabled variant="secondary">
+        <Icon icon={ExternalLinkIcon} size={18} />
+      </Button>
+    {:else}
+      <Button href={pageUrl($query.page)} rel="noopener noreferrer" target="_blank" type="link" variant="secondary">
+        <Icon icon={ExternalLinkIcon} size={18} />
+      </Button>
+    {/if}
+
     {#if $query.page.hasUnpublishedParents}
       <Tooltip message="아직 상위 페이지가 발행되지 않았어요">
         <Button disabled>발행하기</Button>
