@@ -160,11 +160,11 @@ Page.implement({
         const unpublishedParentsCount = await db
           .execute(
             sql<{ count: number }[]>`WITH RECURSIVE sq AS (
-              SELECT ${Pages.parentId}, ${Pages.state}
+              SELECT ${Pages.id}, ${Pages.parentId}, ${Pages.state}
               FROM ${Pages}
-              WHERE ${eq(Pages.id, page.id)}
+              WHERE ${eq(Pages.id, page.parentId)}
               UNION ALL
-              SELECT ${p.parentId}, ${p.state}
+              SELECT ${p.id}, ${p.parentId}, ${p.state}
               FROM pages AS p
               INNER JOIN sq ON ${p.id} = sq.parent_id
               WHERE ${ne(p.id, page.id)}
