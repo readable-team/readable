@@ -214,21 +214,37 @@
         color: 'text.primary',
       })}
     >
-      <input
-        class={css({ width: 'full', textStyle: '42eb', fontWeight: 'bold' })}
-        maxlength="100"
+      <span
+        class={css({
+          display: 'inline-block',
+          width: 'full',
+          textStyle: '42eb',
+          _empty: { _before: { display: 'block', content: 'attr(placeholder)', color: 'text.secondary' } },
+        })}
+        contenteditable="true"
         placeholder="제목을 입력하세요"
-        type="text"
-        bind:value={$title}
-      />
+        on:input={(e) => {
+          title.set(e.currentTarget?.textContent ?? '');
+        }}
+      >
+        {$title}
+      </span>
 
-      <input
-        class={css({ width: 'full', textStyle: '23eb', fontWeight: 'bold' })}
-        maxlength="100"
+      <span
+        class={css({
+          display: 'inline-block',
+          width: 'full',
+          textStyle: '23eb',
+          _empty: { _before: { display: 'block', content: 'attr(placeholder)', color: 'text.secondary' } },
+        })}
+        contenteditable="true"
         placeholder="부제목을 입력하세요"
-        type="text"
-        bind:value={$subtitle}
-      />
+        on:input={(e) => {
+          subtitle.set(e.currentTarget?.textContent ?? '');
+        }}
+      >
+        {$subtitle}
+      </span>
     </div>
 
     <TiptapEditor style={css.raw({ height: '[2000px]' })} awareness={yAwareness} document={yDoc} />
