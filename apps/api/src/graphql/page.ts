@@ -151,6 +151,10 @@ Page.implement({
 
     hasUnpublishedParents: t.boolean({
       resolve: async (page) => {
+        if (!page.parentId) {
+          return false;
+        }
+
         const p = alias(Pages, 'p');
 
         const unpublishedParentsCount = await db
