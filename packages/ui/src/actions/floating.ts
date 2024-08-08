@@ -13,6 +13,7 @@ type CreateFloatingActionsOptions = {
   offset?: number;
   arrow?: boolean;
   middleware?: Middleware[];
+  onClickOutside?: () => void;
 };
 
 type CreateFloatingActionsReturn = {
@@ -88,6 +89,12 @@ export function createFloatingActions(options?: CreateFloatingActionsOptions): C
     }
   };
 
+  const clickListener = (event: Event) => {
+    if (options?.onClickOutside && !floatingElement?.contains(event.target as Node)) {
+      options.onClickOutside();
+    }
+  };
+
   const mount = async () => {
     if (!referenceElement || !floatingElement) {
       return;
@@ -97,6 +104,10 @@ export function createFloatingActions(options?: CreateFloatingActionsOptions): C
 
     cleanupAutoUpdate?.();
     cleanupAutoUpdate = autoUpdate(referenceElement, floatingElement, updatePosition);
+
+    setTimeout(() => {
+      window.addEventListener('click', clickListener);
+    });
   };
 
   const unmount = () => {
@@ -104,6 +115,8 @@ export function createFloatingActions(options?: CreateFloatingActionsOptions): C
       cleanupAutoUpdate();
       cleanupAutoUpdate = undefined;
     }
+
+    window.removeEventListener('click', clickListener);
   };
 
   const referenceAction: ReferenceAction = (element) => {

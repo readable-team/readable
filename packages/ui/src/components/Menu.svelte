@@ -2,7 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { setContext } from 'svelte';
   import { afterNavigate } from '$app/navigation';
-  import { createFloatingActions, portal } from '../actions/index';
+  import { createFloatingActions } from '../actions/index';
   import type { Placement } from '@floating-ui/dom';
   import type { SystemStyleObject } from '@readable/styled-system/types';
 
@@ -14,6 +14,9 @@
   const { anchor, floating } = createFloatingActions({
     placement,
     offset,
+    onClickOutside: () => {
+      open = false;
+    },
   });
 
   setContext('close', () => (open = false));
@@ -28,15 +31,6 @@
 </button>
 
 {#if open}
-  <div
-    class={css({ position: 'fixed', inset: '0' })}
-    role="button"
-    tabindex="-1"
-    on:click={() => (open = false)}
-    on:keypress={null}
-    use:portal
-  />
-
   <div
     class={css(
       {
