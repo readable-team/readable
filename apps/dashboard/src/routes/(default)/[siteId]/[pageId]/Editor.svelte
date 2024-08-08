@@ -1,5 +1,6 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
+  import { flex } from '@readable/styled-system/patterns';
   import { TiptapEditor } from '@readable/ui/tiptap';
   import { fromUint8Array, toUint8Array } from 'js-base64';
   import { nanoid } from 'nanoid';
@@ -203,32 +204,33 @@
   });
 </script>
 
-<div class={css({ borderWidth: '4px' })}>
-  <div
-    class={css({
-      borderBottomWidth: '1px',
-      borderBottomColor: 'gray.200',
-      marginX: '100px',
-      marginBottom: '20px',
-      paddingBottom: '10px',
-    })}
-  >
-    <input
-      class={css({ width: 'full', fontSize: { base: '22px', sm: '28px' }, fontWeight: 'bold' })}
-      maxlength="100"
-      placeholder="제목을 입력하세요"
-      type="text"
-      bind:value={$title}
-    />
+<div class={css({ marginTop: '64px', marginX: 'auto' })}>
+  <div class={css({ marginX: '64px', width: '720px' })}>
+    <div
+      class={flex({
+        flexDirection: 'column',
+        gap: '8px',
+        marginBottom: '46px',
+        color: 'text.primary',
+      })}
+    >
+      <input
+        class={css({ width: 'full', textStyle: '42eb', fontWeight: 'bold' })}
+        maxlength="100"
+        placeholder="제목을 입력하세요"
+        type="text"
+        bind:value={$title}
+      />
 
-    <input
-      class={css({ marginTop: '4px', width: 'full', fontSize: '16px', fontWeight: 'bold' })}
-      maxlength="100"
-      placeholder="부제목을 입력하세요"
-      type="text"
-      bind:value={$subtitle}
-    />
+      <input
+        class={css({ width: 'full', textStyle: '23eb', fontWeight: 'bold' })}
+        maxlength="100"
+        placeholder="부제목을 입력하세요"
+        type="text"
+        bind:value={$subtitle}
+      />
+    </div>
+
+    <TiptapEditor style={css.raw({ height: '[2000px]' })} awareness={yAwareness} document={yDoc} />
   </div>
-
-  <TiptapEditor style={css.raw({ height: '[2000px]', padding: '100px' })} awareness={yAwareness} document={yDoc} />
 </div>
