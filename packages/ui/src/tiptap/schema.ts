@@ -34,14 +34,22 @@ export const extensions = [
   Text,
 
   // nodes
-  Paragraph.configure({ HTMLAttributes: { class: css({ marginY: '2px' }) } }),
+  Paragraph.configure({
+    HTMLAttributes: {
+      class: css({
+        marginY: '4px',
+        textStyle: '16m',
+      }),
+    },
+  }),
   Heading.configure({
     levels: [1, 2, 3],
     HTMLAttributes: {
       class: css({
-        'h1&': { fontSize: '32px', fontWeight: 'bold' },
-        'h2&': { fontSize: '26px', fontWeight: 'bold' },
-        'h3&': { fontSize: '20px', fontWeight: 'bold' },
+        'marginY': '4px',
+        'h1&': { textStyle: '28b' },
+        'h2&': { textStyle: '24b' },
+        'h3&': { textStyle: '20b' },
       }),
     },
   }),
@@ -77,13 +85,43 @@ export const extensions = [
       },
     }),
   }).configure({
-    HTMLAttributes: { class: css({ borderLeftWidth: '4px', borderLeftColor: 'gray.200', paddingLeft: '16px' }) },
+    HTMLAttributes: {
+      class: css({
+        marginY: '6px',
+        display: 'flow-root', // 자식 paragraph와 margin collapse 방지
+        borderLeftWidth: '3px',
+        borderLeftColor: 'neutral.100',
+        paddingLeft: '24px',
+        color: 'text.primary',
+      }),
+    },
   }),
   BulletList.configure({
-    HTMLAttributes: { class: css({ paddingLeft: '16px', listStylePosition: 'outside', listStyleType: 'disc' }) },
+    HTMLAttributes: {
+      class: css({
+        '&:not(ul ul)': { marginLeft: '10px' }, // ul 루트 노드
+        'marginLeft': '-6px',
+        'paddingLeft': '16px',
+        'listStylePosition': 'outside',
+        'listStyleType': 'disc',
+        'ul ul&': { listStyleType: 'circle' },
+        'ul ul ul&': { listStyleType: 'disc' },
+        'ul ul ul ul&': { listStyleType: 'circle' },
+        'ul ul ul ul ul&': { listStyleType: 'disc' }, // FIXME: 이게 맞나
+      }),
+    },
   }),
   OrderedList.configure({
-    HTMLAttributes: { class: css({ paddingLeft: '16px', listStylePosition: 'outside', listStyleType: 'decimal' }) },
+    HTMLAttributes: {
+      class: css({
+        'paddingLeft': '33px',
+        'listStylePosition': 'outside',
+        'listStyleType': 'decimal',
+        '& li': {
+          textIndent: '12px',
+        },
+      }),
+    },
   }),
   ListItem,
 

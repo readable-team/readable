@@ -204,13 +204,13 @@
   });
 </script>
 
-<div class={css({ marginTop: '64px', marginX: 'auto' })}>
-  <div class={css({ marginX: '64px', width: '720px' })}>
+<div class={css({ flex: '1', marginTop: '64px', marginBottom: '128px', marginX: 'auto' })}>
+  <div class={flex({ height: 'full', flexDirection: 'column', marginX: '64px', width: '720px' })}>
     <div
       class={flex({
         flexDirection: 'column',
         gap: '8px',
-        marginBottom: '46px',
+        marginBottom: '42px',
         color: 'text.primary',
       })}
     >
@@ -247,6 +247,6 @@
       </span>
     </div>
 
-    <TiptapEditor style={css.raw({ height: '[2000px]' })} awareness={yAwareness} document={yDoc} />
+    <TiptapEditor style={css.raw({ flex: '1', color: 'text.primary' })} awareness={yAwareness} document={yDoc} />
   </div>
 </div>
