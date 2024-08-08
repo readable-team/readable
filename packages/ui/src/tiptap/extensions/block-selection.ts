@@ -67,10 +67,10 @@ export const BlockSelectionHelper = Extension.create({
                 return false;
               }
 
-              // const isSelected =
-              //   from <= pos + (node.isLeaf ? 0 : 1) && to >= pos + node.nodeSize - (node.isLeaf ? 0 : 1);
+              const isSelected =
+                from <= pos + (node.isLeaf ? 0 : 1) && to >= pos + node.nodeSize - (node.isLeaf ? 0 : 1);
 
-              const isSelected = from <= pos && to >= pos + node.nodeSize;
+              // const isSelected = from <= pos && to >= pos + node.nodeSize;
 
               if (!isSelected) {
                 return true;

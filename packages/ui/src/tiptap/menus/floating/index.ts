@@ -1,0 +1,1 @@
+export { FloatingMenu } from './extension';

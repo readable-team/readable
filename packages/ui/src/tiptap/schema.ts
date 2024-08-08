@@ -1,5 +1,5 @@
 import { css } from '@readable/styled-system/css';
-import { getSchema } from '@tiptap/core';
+import { getSchema, isNodeActive } from '@tiptap/core';
 import { Blockquote } from '@tiptap/extension-blockquote';
 import { Bold } from '@tiptap/extension-bold';
 import { BulletList } from '@tiptap/extension-bullet-list';
@@ -23,7 +23,9 @@ import { Text } from '@tiptap/extension-text';
 import { TextAlign } from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
+import { liftTarget } from '@tiptap/pm/transform';
 import { BlockSelectionHelper } from './extensions/block-selection';
+import { FloatingMenu } from './menus/floating';
 import { SlashMenu } from './menus/slash';
 
 export const extensions = [
@@ -45,7 +47,36 @@ export const extensions = [
   }),
   HardBreak,
   HorizontalRule,
-  Blockquote.configure({
+  Blockquote.extend({
+    content: 'paragraph',
+    addKeyboardShortcuts: () => ({
+      Enter: ({ editor }) => {
+        if (!isNodeActive(editor.state, 'blockquote')) {
+          return false;
+        }
+
+        return editor.commands.command(({ tr, dispatch }) => {
+          tr.split(tr.selection.from, 2);
+
+          const range = tr.selection.$from.blockRange(tr.selection.$to);
+          if (!range) {
+            return false;
+          }
+
+          const target = liftTarget(range);
+          if (target === null) {
+            return false;
+          }
+
+          tr.lift(range, target);
+
+          dispatch?.(tr);
+
+          return true;
+        });
+      },
+    }),
+  }).configure({
     HTMLAttributes: { class: css({ borderLeftWidth: '4px', borderLeftColor: 'gray.200', paddingLeft: '16px' }) },
   }),
   BulletList.configure({
@@ -90,6 +121,7 @@ export const extensions = [
   TextAlign,
   TextStyle,
 
+  FloatingMenu,
   SlashMenu,
   BlockSelectionHelper,
 

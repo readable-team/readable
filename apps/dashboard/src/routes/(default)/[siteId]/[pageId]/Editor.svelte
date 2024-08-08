@@ -203,11 +203,12 @@
   });
 </script>
 
-<div class={css({ margin: '100px', borderWidth: '4px', padding: '20px' })}>
+<div class={css({ borderWidth: '4px' })}>
   <div
     class={css({
       borderBottomWidth: '1px',
       borderBottomColor: 'gray.200',
+      marginX: '100px',
       marginBottom: '20px',
       paddingBottom: '10px',
     })}
@@ -229,5 +230,5 @@
     />
   </div>
 
-  <TiptapEditor style={css.raw({ height: '[2000px]' })} awareness={yAwareness} document={yDoc} />
+  <TiptapEditor style={css.raw({ height: '[2000px]', padding: '100px' })} awareness={yAwareness} document={yDoc} />
 </div>
