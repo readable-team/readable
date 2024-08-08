@@ -219,11 +219,12 @@
         color: 'text.primary',
       })}
     >
-      <span
+      <h1
         class={css({
           display: 'inline-block',
           width: 'full',
           textStyle: '42eb',
+          cursor: 'text',
           _empty: { _before: { display: 'block', content: 'attr(placeholder)', color: 'text.secondary' } },
         })}
         contenteditable="true"
@@ -233,13 +234,14 @@
         }}
       >
         {$title}
-      </span>
+      </h1>
 
-      <span
+      <h2
         class={css({
           display: 'inline-block',
           width: 'full',
           textStyle: '23eb',
+          cursor: 'text',
           _empty: { _before: { display: 'block', content: 'attr(placeholder)', color: 'text.secondary' } },
         })}
         contenteditable="true"
@@ -249,7 +251,7 @@
         }}
       >
         {$subtitle}
-      </span>
+      </h2>
     </div>
 
     <!-- {#if editor}
