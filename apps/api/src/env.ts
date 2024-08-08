@@ -6,6 +6,8 @@ const schema = z.object({
   DATABASE_URL: z.string(),
   GOOGLE_OAUTH_CLIENT_ID: z.string(),
   GOOGLE_OAUTH_CLIENT_SECRET: z.string(),
+  MEILISEARCH_API_KEY: z.string(),
+  MEILISEARCH_URL: z.string(),
   PUBLIC_PULUMI_PROJECT: z.string().optional(),
   PUBLIC_PULUMI_STACK: z.string().optional(),
   RABBITMQ_URL: z.string(),

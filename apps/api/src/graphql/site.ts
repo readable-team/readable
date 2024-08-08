@@ -6,6 +6,7 @@ import { db, extractTableCode, first, firstOrThrow, Pages, Sites } from '@/db';
 import { PageState, SiteState, TeamMemberRole } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
+import { enqueueJob } from '@/jobs';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
@@ -176,12 +177,27 @@ builder.mutationFields((t) => ({
         role: TeamMemberRole.ADMIN,
       });
 
-      return await db
-        .update(Sites)
-        .set({ state: SiteState.DELETED })
-        .where(eq(Sites.id, input.siteId))
-        .returning()
-        .then(firstOrThrow);
+      const [site, deletedPageIds] = await db.transaction(async (tx) => {
+        const deletedPageIds = await tx
+          .update(Pages)
+          .set({ state: PageState.DELETED })
+          .where(eq(Pages.siteId, input.siteId))
+          .returning({ id: Pages.id })
+          .then((rows) => rows.map((row) => row.id));
+
+        const site = await tx
+          .update(Sites)
+          .set({ state: SiteState.DELETED })
+          .where(eq(Sites.id, input.siteId))
+          .returning()
+          .then(firstOrThrow);
+
+        return [site, deletedPageIds];
+      });
+
+      await Promise.all(deletedPageIds.map((pageId) => enqueueJob('page:search:index-update', pageId)));
+
+      return site;
     },
   }),
 }));

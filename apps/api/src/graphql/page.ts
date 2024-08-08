@@ -315,7 +315,7 @@ builder.mutationFields((t) => ({
         .limit(1)
         .then(first);
 
-      const page = db.transaction(async (tx) => {
+      const page = await db.transaction(async (tx) => {
         const page = await tx
           .insert(Pages)
           .values({
@@ -352,6 +352,8 @@ builder.mutationFields((t) => ({
 
       pubsub.publish('site:update', input.siteId, { scope: 'site' });
 
+      await enqueueJob('page:search:index-update', page.id);
+
       return page;
     },
   }),
@@ -364,6 +366,8 @@ builder.mutationFields((t) => ({
         pageId: input.pageId,
         userId: ctx.session.userId,
       });
+
+      const deletedPageIds = [input.pageId];
 
       const page = await db.transaction(async (tx) => {
         const page = await tx
@@ -384,12 +388,15 @@ builder.mutationFields((t) => ({
             .then((rows) => rows.map((row) => row.id));
 
           deleteParentIds = deletedIds;
+          deletedPageIds.push(...deletedIds);
         }
 
         return page;
       });
 
       pubsub.publish('site:update', page.siteId, { scope: 'site' });
+
+      await Promise.all(deletedPageIds.map((pageId) => enqueueJob('page:search:index-update', pageId)));
 
       return page;
     },
@@ -479,6 +486,8 @@ builder.mutationFields((t) => ({
 
       pubsub.publish('site:update', page.siteId, { scope: 'page', pageId: page.id });
 
+      await enqueueJob('page:search:index-update', input.pageId);
+
       return page;
     },
   }),
@@ -491,6 +500,8 @@ builder.mutationFields((t) => ({
         pageId: input.pageId,
         userId: ctx.session.userId,
       });
+
+      const unpublishedPageIds = [input.pageId];
 
       const page = await db.transaction(async (tx) => {
         const page = await tx
@@ -511,12 +522,15 @@ builder.mutationFields((t) => ({
             .then((rows) => rows.map((row) => row.id));
 
           unpublishParentIds = unpublishedIds;
+          unpublishedPageIds.push(...unpublishedIds);
         }
 
         return page;
       });
 
       pubsub.publish('site:update', page.siteId, { scope: 'site' });
+
+      await Promise.all(unpublishedPageIds.map((pageId) => enqueueJob('page:search:index-update', pageId)));
 
       return page;
     },
@@ -544,7 +558,7 @@ builder.mutationFields((t) => ({
           update: toUint8Array(input.data),
         });
 
-        await enqueueJob('post:content:state-update', input.pageId);
+        await enqueueJob('page:content:state-update', input.pageId);
       } else if (input.kind === 'SYNCHRONIZE_1') {
         const state = await getLatestPageContentState(input.pageId);
 
@@ -579,7 +593,7 @@ builder.mutationFields((t) => ({
           update: serverMissingUpdate,
         });
 
-        await enqueueJob('post:content:state-update', input.pageId);
+        await enqueueJob('page:content:state-update', input.pageId);
 
         pubsub.publish('page:content:sync', input.pageId, {
           pageId: input.pageId,
@@ -675,6 +689,8 @@ builder.mutationFields((t) => ({
       });
 
       pubsub.publish('site:update', page.siteId, { scope: 'site' });
+
+      await enqueueJob('page:search:index-update', newPage.id);
 
       return newPage;
     },

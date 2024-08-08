@@ -7,16 +7,20 @@ import {
   db,
   firstOrThrow,
   PageContentContributors,
+  PageContents,
   PageContentSnapshots,
   PageContentStates,
   PageContentUpdates,
   Pages,
 } from '@/db';
+import { PageState } from '@/enums';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
+import { ms } from '@/search';
+import { enqueueJob } from './index';
 import { defineJob } from './types';
 
-export const PageContentStateUpdateJob = defineJob('post:content:state-update', async (pageId: string) => {
+export const PageContentStateUpdateJob = defineJob('page:content:state-update', async (pageId: string) => {
   await db.transaction(async (tx) => {
     const state = await tx
       .select({
@@ -100,4 +104,49 @@ export const PageContentStateUpdateJob = defineJob('post:content:state-update', 
 
   const page = await db.select({ siteId: Pages.siteId }).from(Pages).where(eq(Pages.id, pageId)).then(firstOrThrow);
   pubsub.publish('site:update', page.siteId, { scope: 'page', pageId });
+
+  await enqueueJob('page:search:index-update', pageId);
+});
+
+export const PageSearchIndexUpdateJob = defineJob('page:search:index-update', async (pageId: string) => {
+  const index = ms.index('pages');
+
+  const { state } = await db.select({ state: Pages.state }).from(Pages).where(eq(Pages.id, pageId)).then(firstOrThrow);
+
+  // eslint-disable-next-line unicorn/prefer-switch
+  if (state === PageState.PUBLISHED) {
+    const page = await db
+      .select({
+        id: Pages.id,
+        siteId: Pages.siteId,
+        state: Pages.state,
+        title: PageContents.title,
+        subtitle: PageContents.subtitle,
+        text: PageContents.text,
+      })
+      .from(Pages)
+      .innerJoin(PageContents, eq(Pages.id, PageContents.pageId))
+      .where(eq(Pages.id, pageId))
+      .then(firstOrThrow);
+
+    await index.addDocuments([page]);
+  } else if (state === PageState.DRAFT) {
+    const page = await db
+      .select({
+        id: Pages.id,
+        siteId: Pages.siteId,
+        state: Pages.state,
+        title: PageContentStates.title,
+        subtitle: PageContentStates.subtitle,
+        text: PageContentStates.text,
+      })
+      .from(Pages)
+      .innerJoin(PageContentStates, eq(Pages.id, PageContentStates.pageId))
+      .where(eq(Pages.id, pageId))
+      .then(firstOrThrow);
+
+    await index.addDocuments([page]);
+  } else if (state === PageState.DELETED) {
+    await index.deleteDocument(pageId);
+  }
 });

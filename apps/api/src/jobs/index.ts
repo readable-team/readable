@@ -1,10 +1,10 @@
 import { nanoid } from 'nanoid';
 import { dev, env } from '@/env';
 import { pub, rabbit } from '@/mq';
-import { PageContentStateUpdateJob } from './page';
+import { PageContentStateUpdateJob, PageSearchIndexUpdateJob } from './page';
 import type { JobFn } from './types';
 
-const jobs = [PageContentStateUpdateJob];
+const jobs = [PageContentStateUpdateJob, PageSearchIndexUpdateJob];
 
 type Jobs = typeof jobs;
 type JobNames = Jobs[number]['name'];
