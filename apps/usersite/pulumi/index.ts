@@ -9,6 +9,11 @@ const site = new readable.Site('usersite', {
   domain: {
     production: '*.rdbl.io',
     dev: '*.rdbl.ninja',
+
+    secondary: {
+      production: 'usersite.rdbl.io',
+      dev: 'usersite.rdbl.ninja',
+    },
   },
 
   image: {
