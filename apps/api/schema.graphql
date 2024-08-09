@@ -55,6 +55,10 @@ interface IPage {
   state: PageState!
 }
 
+interface IPageSearchHit {
+  highlight: PageSearchHighlight
+}
+
 interface ISite {
   id: ID!
   logo: Image
@@ -165,6 +169,17 @@ type PageContentSyncOperation {
   pageId: ID!
 }
 
+type PageSearchHighlight {
+  subtitle: String
+  text: String
+  title: String
+}
+
+type PageSearchHit implements IPageSearchHit {
+  highlight: PageSearchHighlight
+  page: Page!
+}
+
 enum PageState {
   DELETED
   DRAFT
@@ -197,6 +212,11 @@ type PublicPageContent {
   title: String!
 }
 
+type PublicPageSearchHit implements IPageSearchHit {
+  highlight: PageSearchHighlight
+  page: PublicPage!
+}
+
 type PublicSite implements ISite {
   id: ID!
   logo: Image
@@ -215,6 +235,8 @@ type Query {
   page(pageId: ID!): Page!
   publicPage(slug: String!): PublicPage!
   publicSite(hostname: String!): PublicSite!
+  searchPage(query: String!, siteId: String!): SearchPageResult!
+  searchPublicPage(query: String!, siteId: String!): SearchPublicPageResult!
   site(siteId: ID!): Site!
   team(teamId: ID!): Team!
 }
@@ -222,6 +244,16 @@ type Query {
 input RemoveTeamMemberInput {
   teamId: String!
   userId: String!
+}
+
+type SearchPageResult {
+  estimatedTotalHits: Int!
+  hits: [PageSearchHit!]!
+}
+
+type SearchPublicPageResult {
+  estimatedTotalHits: Int!
+  hits: [PublicPageSearchHit!]!
 }
 
 enum SingleSignOnProvider {

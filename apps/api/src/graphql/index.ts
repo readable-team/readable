@@ -3,6 +3,7 @@ import './enums';
 import './auth';
 import './blob';
 import './page';
+import './search';
 import './site';
 import './team';
 import './user';
