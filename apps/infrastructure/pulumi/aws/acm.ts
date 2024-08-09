@@ -1,7 +1,8 @@
 import * as aws from '@pulumi/aws';
+import * as cloudflare from '@pulumi/cloudflare';
 import * as pulumi from '@pulumi/pulumi';
 import { usEast1 } from '$aws/providers';
-import { zones } from '$aws/route53';
+import { zones } from '$cloudflare/zone';
 
 const createCertificate = (zoneId: pulumi.Input<string>, domain: string) => {
   const certificate = new aws.acm.Certificate(domain, {
@@ -17,13 +18,14 @@ const createCertificate = (zoneId: pulumi.Input<string>, domain: string) => {
       }
 
       const name = option.resourceRecordName.slice(0, -1);
+      const value = option.resourceRecordValue.slice(0, -1);
 
-      new aws.route53.Record(name, {
+      new cloudflare.Record(name, {
         zoneId,
         type: option.resourceRecordType,
         name,
-        records: [option.resourceRecordValue.slice(0, -1)],
-        ttl: 300,
+        value,
+        comment: 'AWS Certificate Manager',
       });
     }
   });
@@ -52,9 +54,9 @@ const createCloudfrontCertificate = (domain: string) => {
 };
 
 export const certificates = {
-  rdbl_io: createCertificate(zones.rdbl_io.zoneId, 'rdbl.io'),
-  rdbl_app: createCertificate(zones.rdbl_app.zoneId, 'rdbl.app'),
-  rdbl_ninja: createCertificate(zones.rdbl_ninja.zoneId, 'rdbl.ninja'),
+  rdbl_io: createCertificate(zones.rdbl_io.id, 'rdbl.io'),
+  rdbl_app: createCertificate(zones.rdbl_app.id, 'rdbl.app'),
+  rdbl_ninja: createCertificate(zones.rdbl_ninja.id, 'rdbl.ninja'),
 };
 
 export const cloudfrontCertificates = {
