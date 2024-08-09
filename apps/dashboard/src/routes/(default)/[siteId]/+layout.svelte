@@ -10,23 +10,19 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
-  import Img from '$lib/components/Img.svelte';
   import { PageList } from '$lib/components/page-list';
   import SettingModal from './SettingModal.svelte';
+  import UserMenu from './UserMenu.svelte';
 
   let openSettingModal = false;
   $: openSettingModal = $page.url.hash === '#settings';
 
   $: query = graphql(`
     query SiteLayout_Query($siteId: ID!) {
+      ...UserMenu_query
+
       me @required {
         id
-        name
-
-        avatar {
-          id
-          ...Img_image
-        }
 
         ...SettingModal_user
       }
@@ -99,12 +95,6 @@
 
         team {
           id
-          name
-
-          avatar {
-            id
-            ...Img_image
-          }
 
           sites {
             id
@@ -243,7 +233,7 @@
       borderColor: 'divider.secondary',
     })}
   >
-    <Menu listStyle={css.raw({ width: '234px' })} placement="bottom-start">
+    <Menu listStyle={css.raw({ width: '234px', maxHeight: '324px' })} placement="bottom-start" setFullWidth>
       <div
         slot="button"
         class={css(
@@ -314,7 +304,7 @@
     >
       {$query.site.url}
     </a>
-    <nav>
+    <nav class={css({ marginBottom: 'auto' })}>
       <ul
         class={flex({
           flexDirection: 'column',
@@ -351,26 +341,8 @@
         />
       </div>
     </nav>
-    <div class={flex({ align: 'center', gap: '20px', marginTop: 'auto' })}>
-      <div class={flex()}>
-        <Img
-          style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '38px' })}
-          $image={$query.site.team.avatar}
-          alt={`${$query.site.team.name}의 아바타`}
-          size={48}
-        />
-        <Img
-          style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '38px' })}
-          $image={$query.me.avatar}
-          alt={`${$query.me.name}의 아바타`}
-          size={48}
-        />
-      </div>
-      <div class={flex({ flexDirection: 'column' })}>
-        <div>{$query.site.team.name}</div>
-        <div>{$query.me.name}</div>
-      </div>
-    </div>
+
+    <UserMenu {$query} />
   </aside>
 
   <div

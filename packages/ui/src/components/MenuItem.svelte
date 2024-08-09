@@ -39,22 +39,20 @@
     cva({
       base: flex.raw({
         alignItems: 'center',
-        gap: '6px',
+        gap: '10px',
         borderRadius: '8px',
-        paddingX: '12px',
-        paddingY: '9px',
+        paddingX: '10px',
+        paddingY: '8px',
         textStyle: '16sb',
         textAlign: 'left',
+        color: 'text.secondary',
         width: 'full',
         _hover: {
           backgroundColor: 'neutral.10',
         },
         _selected: {
-          color: 'text.accent',
-          backgroundColor: {
-            base: 'accent.20',
-            _hover: 'accent.30',
-          },
+          color: 'text.primary',
+          backgroundColor: 'neutral.20',
         },
       }),
       variants: {

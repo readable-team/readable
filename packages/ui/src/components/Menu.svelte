@@ -8,8 +8,11 @@
 
   export let open = false;
   export let placement: Placement = 'bottom';
-  export let offset = 4;
+  export let offset = 6;
   export let listStyle: SystemStyleObject | undefined = undefined;
+  export let setFullWidth = false;
+
+  let buttonEl: HTMLButtonElement | undefined;
 
   const { anchor, floating } = createFloatingActions({
     placement,
@@ -26,22 +29,24 @@
   });
 </script>
 
-<button type="button" on:click={() => (open = !open)} use:anchor>
+<button bind:this={buttonEl} type="button" on:click={() => (open = !open)} use:anchor>
   <slot name="button" {open} />
 </button>
 
 {#if open}
   <div
+    style:width={setFullWidth ? `${buttonEl?.getBoundingClientRect().width}px` : 'auto'}
     class={css(
       {
         display: 'flex',
         flexDirection: 'column',
         gap: '4px',
         borderRadius: '10px',
-        padding: '6px',
-        backgroundColor: 'surface.tertiary',
+        padding: '12px',
+        backgroundColor: 'surface.primary',
         minWidth: '140px',
-        boxShadow: 'emphasize',
+        boxShadow: 'heavy',
+        overflowY: 'auto',
       },
       listStyle,
     )}
