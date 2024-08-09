@@ -11,11 +11,11 @@
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
   import { PageList } from '$lib/components/page-list';
-  import SettingModal from './SettingModal.svelte';
+  import SiteSettingModal from './SiteSettingModal.svelte';
   import UserMenu from './UserMenu.svelte';
 
-  let openSettingModal = false;
-  $: openSettingModal = $page.url.hash === '#settings';
+  let openSiteSettingModal = false;
+  $: openSiteSettingModal = $page.url.hash === '#site-settings' || $page.url.hash === '#design-settings';
 
   $: query = graphql(`
     query SiteLayout_Query($siteId: ID!) {
@@ -24,7 +24,7 @@
       me @required {
         id
 
-        ...SettingModal_user
+        ...SiteSettingModal_user
       }
 
       site(siteId: $siteId) {
@@ -102,7 +102,7 @@
           }
         }
 
-        ...SettingModal_site
+        ...SiteSettingModal_site
       }
     }
   `);
@@ -323,7 +323,13 @@
           </a>
         </li>
         <li>
-          <a class={sidebarMenuItemStyle} data-sveltekit-preload-data="false" href="#settings" role="tab" type="button">
+          <a
+            class={sidebarMenuItemStyle}
+            data-sveltekit-preload-data="false"
+            href="#site-settings"
+            role="tab"
+            type="button"
+          >
             <Icon style={css.raw({ color: 'text.secondary' })} icon={SettingsIcon} />
             <span>설정</span>
           </a>
@@ -356,12 +362,4 @@
   </div>
 </div>
 
-<SettingModal
-  $site={$query.site}
-  $user={$query.me}
-  close={() => {
-    const currentPath = $page.url.pathname;
-    goto(currentPath, { replaceState: true });
-  }}
-  bind:open={openSettingModal}
-/>
+<SiteSettingModal $site={$query.site} $user={$query.me} bind:open={openSiteSettingModal} />

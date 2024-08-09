@@ -3,12 +3,20 @@
   import { flex } from '@readable/styled-system/patterns';
   import { HorizontalDivider, Icon, Menu, MenuItem } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
+  import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
+  import UserSettingModal from './UserSettingModal.svelte';
   import type { UserMenu_query } from '$graphql';
 
   let _query: UserMenu_query;
   export { _query as $query };
+
+  let openUserSettingModal = false;
+  $: openUserSettingModal =
+    $page.url.hash === '#personal-settings' ||
+    $page.url.hash === '#team-settings' ||
+    $page.url.hash === '#member-settings';
 
   $: query = fragment(
     _query,
@@ -18,6 +26,7 @@
           id
           name
           email
+          ...UserSettingModal_user
 
           avatar {
             id
@@ -27,6 +36,7 @@
 
         site(siteId: $siteId) {
           id
+          ...UserSettingModal_site
 
           team {
             id
@@ -101,7 +111,7 @@
   </div>
   <MenuItem>팀 전환</MenuItem>
   <MenuItem>팀 생성</MenuItem>
-  <MenuItem>팀 설정</MenuItem>
+  <MenuItem external={false} href="#team-settings" type="link">팀 설정</MenuItem>
 
   <HorizontalDivider style={css.raw({ marginY: '12px' })} color="secondary" />
 
@@ -119,5 +129,7 @@
       <p class={css({ textStyle: '12sb', color: 'text.tertiary' })}>{$query.me.email}</p>
     </div>
   </div>
-  <MenuItem>개인 설정</MenuItem>
+  <MenuItem external={false} href="#personal-settings" type="link">개인 설정</MenuItem>
 </Menu>
+
+<UserSettingModal $site={$query.site} $user={$query.me} bind:open={openUserSettingModal} />
