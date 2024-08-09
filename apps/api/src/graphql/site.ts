@@ -1,9 +1,10 @@
+import { resolveCname } from 'node:dns/promises';
 import { faker } from '@faker-js/faker';
 import { and, asc, eq, isNull, ne } from 'drizzle-orm';
 import { match } from 'ts-pattern';
 import { builder } from '@/builder';
-import { db, extractTableCode, first, firstOrThrow, Pages, Sites } from '@/db';
-import { PageState, SiteState, TeamMemberRole } from '@/enums';
+import { db, extractTableCode, first, firstOrThrow, Pages, SiteCustomDomains, Sites } from '@/db';
+import { PageState, SiteCustomDomainState, SiteState, TeamMemberRole } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
 import { enqueueJob } from '@/jobs';
@@ -84,13 +85,49 @@ builder.queryFields((t) => ({
     type: PublicSite,
     args: { hostname: t.arg.string() },
     resolve: async (_, args) => {
-      const slug = args.hostname.split('.')[0];
+      if (args.hostname.endsWith(env.USERSITE_DEFAULT_HOST)) {
+        const slug = args.hostname.split('.')[0];
 
-      return await db
-        .select()
-        .from(Sites)
-        .where(and(eq(Sites.slug, slug), eq(Sites.state, SiteState.ACTIVE)))
-        .then(firstOrThrow);
+        return await db
+          .select()
+          .from(Sites)
+          .where(and(eq(Sites.slug, slug), eq(Sites.state, SiteState.ACTIVE)))
+          .then(firstOrThrow);
+      } else {
+        const result = await db
+          .select({ Sites, SiteCustomDomains })
+          .from(SiteCustomDomains)
+          .innerJoin(Sites, eq(Sites.id, SiteCustomDomains.siteId))
+          .where(eq(SiteCustomDomains.domain, args.hostname))
+          .then(firstOrThrow);
+
+        if (result.SiteCustomDomains.state === SiteCustomDomainState.ACTIVE) {
+          return result.Sites;
+        }
+
+        if (!result?.SiteCustomDomains) {
+          throw new ApiError({ code: 'not_found' });
+        }
+
+        const cnameResult = await resolveCname(args.hostname).then((arr) => arr[0]);
+
+        if (!cnameResult?.endsWith(env.USERSITE_DEFAULT_HOST)) {
+          throw new ApiError({ code: 'not_found' });
+        }
+
+        const slug = cnameResult.split('.')[0];
+
+        if (slug !== result.Sites.slug) {
+          throw new ApiError({ code: 'not_found' });
+        }
+
+        await db
+          .update(SiteCustomDomains)
+          .set({ state: SiteCustomDomainState.ACTIVE })
+          .where(eq(SiteCustomDomains.id, result.SiteCustomDomains.id));
+
+        return result.Sites;
+      }
     },
   }),
 }));

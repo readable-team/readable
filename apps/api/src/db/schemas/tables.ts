@@ -1,6 +1,6 @@
 // spell-checker:ignoreRegExp /createDbId\('[A-Z]{1,4}'/g
 
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { bigint, index, integer, pgTable, text, unique, uniqueIndex } from 'drizzle-orm/pg-core';
 import * as E from './enums';
 import { createDbId } from './id';
@@ -201,6 +201,27 @@ export const Sites = pgTable(
     slugUniqIdx: uniqueIndex()
       .on(t.slug)
       .where(sql`${t.state} = 'ACTIVE'`),
+  }),
+);
+
+export const SiteCustomDomains = pgTable(
+  'site_custom_domains',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId('SCD')),
+    siteId: text('site_id')
+      .notNull()
+      .references(() => Sites.id),
+    domain: text('domain').notNull(),
+    state: E._SiteCustomDomainState('state').notNull().default('PENDING'),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+    lastCheckedAt: datetime('last_checked_at'),
+  },
+  (t) => ({
+    domainUniqIdx: uniqueIndex().on(t.domain).where(eq(t.state, 'ACTIVE')),
   }),
 );
 

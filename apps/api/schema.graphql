@@ -270,6 +270,11 @@ type Site implements ISite {
   url: String!
 }
 
+enum SiteCustomDomainState {
+  ACTIVE
+  PENDING
+}
+
 enum SiteState {
   ACTIVE
   DELETED
