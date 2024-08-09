@@ -1,11 +1,11 @@
-import { ms } from '@/search';
+import { ms, searchIndex, searchIndexName } from '@/search';
 
-await ms.deleteIndexIfExists('pages');
-await ms.createIndex('pages', {
+await ms.deleteIndexIfExists(searchIndexName('pages'));
+await ms.createIndex(searchIndexName('pages'), {
   primaryKey: 'id',
 });
 
-const index = ms.index('pages');
+const index = searchIndex('pages');
 await index.updateSettings({
   filterableAttributes: ['siteId', 'state'],
   searchableAttributes: ['title', 'subtitle', 'text'],

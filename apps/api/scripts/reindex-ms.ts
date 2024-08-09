@@ -1,9 +1,9 @@
 import { eq } from 'drizzle-orm';
 import { db, PageContents, PageContentStates, Pages } from '@/db';
 import { PageState } from '@/enums';
-import { ms } from '@/search';
+import { searchIndex } from '@/search';
 
-const index = ms.index('pages');
+const index = searchIndex('pages');
 
 const publishedPages = await db
   .select({
