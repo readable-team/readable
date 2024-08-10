@@ -1,8 +1,7 @@
 import * as aws from '@pulumi/aws';
-import * as cloudflare from '@pulumi/cloudflare';
 import * as random from '@pulumi/random';
+import { zones } from '$aws/route53';
 import { securityGroups, subnets } from '$aws/vpc';
-import { zones } from '$cloudflare/zone';
 
 const devPassword = new random.RandomPassword('readable-dev@rds', {
   length: 20,
@@ -60,12 +59,12 @@ new aws.rds.ClusterInstance('readable-dev-1', {
   applyImmediately: true,
 });
 
-new cloudflare.Record('dev.db.rdbl.app', {
-  zoneId: zones.rdbl_app.id,
+new aws.route53.Record('dev.db.rdbl.app', {
+  zoneId: zones.rdbl_app.zoneId,
   type: 'CNAME',
   name: 'dev.db.rdbl.app',
-  value: devCluster.endpoint,
-  comment: 'Amazon RDS',
+  records: [devCluster.endpoint],
+  ttl: 300,
 });
 
 export const outputs = {

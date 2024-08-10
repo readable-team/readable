@@ -1,8 +1,7 @@
 import * as aws from '@pulumi/aws';
-import * as cloudflare from '@pulumi/cloudflare';
 import { cloudfrontCertificates } from '$aws/acm';
+import { zones } from '$aws/route53';
 import { buckets } from '$aws/s3';
-import { zones } from '$cloudflare/zone';
 
 const s3OriginAccessControl = new aws.cloudfront.OriginAccessControl('s3', {
   name: 's3',
@@ -158,12 +157,17 @@ const cdn = new aws.cloudfront.Distribution('cdn', {
   waitForDeployment: false,
 });
 
-new cloudflare.Record('cdn.rdbl.app', {
-  zoneId: zones.rdbl_app.id,
-  type: 'CNAME',
+new aws.route53.Record('cdn.rdbl.app', {
+  zoneId: zones.rdbl_app.zoneId,
+  type: 'A',
   name: 'cdn.rdbl.app',
-  value: cdn.domainName,
-  comment: 'Amazon CloudFront',
+  aliases: [
+    {
+      name: cdn.domainName,
+      zoneId: cdn.hostedZoneId,
+      evaluateTargetHealth: false,
+    },
+  ],
 });
 
 const usercontents = new aws.cloudfront.Distribution('usercontents', {
@@ -227,12 +231,17 @@ const usercontents = new aws.cloudfront.Distribution('usercontents', {
   waitForDeployment: false,
 });
 
-new cloudflare.Record('usercontents.rdbl.app', {
-  zoneId: zones.rdbl_app.id,
-  type: 'CNAME',
+new aws.route53.Record('usercontents.rdbl.app', {
+  zoneId: zones.rdbl_app.zoneId,
+  type: 'A',
   name: 'usercontents.rdbl.app',
-  value: usercontents.domainName,
-  comment: 'Amazon CloudFront',
+  aliases: [
+    {
+      name: usercontents.domainName,
+      zoneId: usercontents.hostedZoneId,
+      evaluateTargetHealth: false,
+    },
+  ],
 });
 
 export const distributions = { cdn, usercontents };

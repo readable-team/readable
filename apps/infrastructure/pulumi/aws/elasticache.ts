@@ -1,7 +1,6 @@
 import * as aws from '@pulumi/aws';
-import * as cloudflare from '@pulumi/cloudflare';
+import { zones } from '$aws/route53';
 import { securityGroups, subnets } from '$aws/vpc';
-import { zones } from '$cloudflare/zone';
 
 const subnetGroup = new aws.elasticache.SubnetGroup('private', {
   name: 'private',
@@ -36,10 +35,10 @@ const cluster = new aws.elasticache.ReplicationGroup('readable', {
   applyImmediately: true,
 });
 
-new cloudflare.Record('redis.rdbl.app', {
-  zoneId: zones.rdbl_app.id,
+new aws.route53.Record('redis.rdbl.app', {
+  zoneId: zones.rdbl_app.zoneId,
   type: 'CNAME',
   name: 'redis.rdbl.app',
-  value: cluster.primaryEndpointAddress,
-  comment: 'Amazon ElastiCache',
+  records: [cluster.primaryEndpointAddress],
+  ttl: 300,
 });
