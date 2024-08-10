@@ -139,6 +139,7 @@ export class Site extends pulumi.ComponentResource {
           namespace,
           annotations: {
             'pulumi.com/patchForce': 'true',
+            'reloader.stakater.com/auto': 'true',
             ...(isProd && {
               'notifications.argoproj.io/subscribe.on-rollout-completed.slack': 'activities',
             }),
