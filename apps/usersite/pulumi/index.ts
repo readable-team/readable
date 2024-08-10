@@ -3,6 +3,8 @@ import * as readable from '@readable/pulumi';
 
 const config = new pulumi.Config('readable');
 
+const ref = new pulumi.StackReference('readable/infrastructure/base');
+
 const site = new readable.Site('usersite', {
   name: 'usersite',
 
@@ -30,6 +32,56 @@ const site = new readable.Site('usersite', {
 
   secret: {
     project: 'usersite',
+  },
+});
+
+new readable.Caddy('usersite-proxy', {
+  name: 'usersite-proxy',
+
+  caddyfile: pulumi.interpolate`
+{
+  admin off
+  email cert@penxle.io
+  storage dynamodb usersite-proxy
+  on_demand_tls {
+    ask http://api:3000/caddy/tls
+  }
+}
+
+http:// {
+  respond /healthz 200
+}
+
+https:// {
+  respond /healthz 200
+  reverse_proxy usersite:3000
+  tls {
+    on_demand
+  }
+}
+  `,
+
+  domain: {
+    production: 'cname.rdbl.io',
+    dev: 'cname.rdbl.ninja',
+  },
+
+  resources: {
+    cpu: '100m',
+    memory: '200Mi',
+  },
+
+  iam: {
+    policy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:DeleteItem', 'dynamodb:Scan'],
+          Resource: [ref.requireOutput('AWS_DYNAMODB_USERSITE_PROXY_ARN')],
+        },
+      ],
+    },
   },
 });
 

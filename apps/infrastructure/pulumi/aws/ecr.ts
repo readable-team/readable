@@ -49,3 +49,4 @@ const createRepository = (name: string) => {
 };
 
 createRepository('readable');
+createRepository('caddy');

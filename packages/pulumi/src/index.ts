@@ -1,3 +1,4 @@
+export { Caddy } from './caddy';
 export { DopplerSecret } from './doppler-secret';
 export { IAMServiceAccount } from './iam-service-account';
 export { Redirect } from './redirect';

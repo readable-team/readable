@@ -11,6 +11,5 @@ export const yoga = createYoga({
   batching: true,
   maskedErrors: false,
   landingPage: false,
-  healthCheckEndpoint: '/healthz',
   plugins: [useGraphQlJit(), useExecutionCancellation(), useLogger()],
 });

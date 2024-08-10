@@ -4,8 +4,8 @@ import stringify from 'fast-json-stable-stringify';
 import * as R from 'radash';
 import { db, UserSessions } from './db';
 import { decodeAccessToken } from './utils/access-token';
-import type { Server } from 'bun';
 import type { YogaInitialContext } from 'graphql-yoga';
+import type { Context as HonoContext } from 'hono';
 
 type LoaderParams<T, R, S, N extends boolean, M extends boolean> = {
   name: string;
@@ -16,7 +16,7 @@ type LoaderParams<T, R, S, N extends boolean, M extends boolean> = {
 };
 
 type ServerContext = YogaInitialContext & {
-  server: Server;
+  hono: HonoContext;
 };
 
 type DefaultContext = {
@@ -38,10 +38,10 @@ export type UserContext = {
 
 export type Context = DefaultContext & Partial<UserContext>;
 
-export const createContext = async ({ request, server }: ServerContext) => {
+export const createContext = async ({ request }: ServerContext) => {
   const ctx: Context = {
     'req': request,
-    'clientAddress': server.requestIP(request)?.address,
+    // 'clientAddress': getConnInfo(hono).remote.address,
 
     'loader': <
       T,
