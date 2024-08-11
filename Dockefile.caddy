@@ -1,7 +1,8 @@
+# spell-checker:words silinternational
+
 FROM caddy:2-builder AS builder
 
 RUN xcaddy build \
-# spell-checker:disable-next-line
     --with github.com/silinternational/certmagic-storage-dynamodb/v3
 
 FROM caddy:2

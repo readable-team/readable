@@ -43,6 +43,8 @@ new readable.Caddy('usersite-proxy', {
   admin off
   email cert@penxle.io
   storage dynamodb usersite-proxy
+  persist_config off
+
   on_demand_tls {
     ask http://api:3000/caddy/tls
   }
@@ -55,8 +57,17 @@ http:// {
 https:// {
   respond /healthz 200
   reverse_proxy usersite:3000
+
+  encode zstd gzip
+
   tls {
     on_demand
+  }
+
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options nosniff
+    X-Frame-Options DENY
   }
 }
   `,
