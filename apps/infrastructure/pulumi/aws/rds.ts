@@ -19,7 +19,7 @@ const devCluster = new aws.rds.Cluster('readable-dev', {
 
   engine: 'aurora-postgresql',
   engineMode: 'provisioned',
-  engineVersion: '16.2',
+  engineVersion: '16.3',
 
   dbSubnetGroupName: subnetGroup.name,
   vpcSecurityGroupIds: [securityGroups.internal.id],
