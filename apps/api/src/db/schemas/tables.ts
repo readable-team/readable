@@ -214,11 +214,10 @@ export const SiteCustomDomains = pgTable(
       .notNull()
       .references(() => Sites.id),
     domain: text('domain').notNull(),
-    state: E._SiteCustomDomainState('state').notNull().default('PENDING'),
+    state: E._SiteCustomDomainState('state').notNull(),
     createdAt: datetime('created_at')
       .notNull()
       .default(sql`now()`),
-    lastCheckedAt: datetime('last_checked_at'),
   },
   (t) => ({
     domainUniqIdx: uniqueIndex().on(t.domain).where(eq(t.state, 'ACTIVE')),

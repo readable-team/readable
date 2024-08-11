@@ -14,6 +14,7 @@ const schema = z.object({
   RESEND_API_KEY: z.string(),
   SENTRY_DSN: z.string().optional(),
   USERCONTENTS_URL: z.string(),
+  USERSITE_CNAME_HOST: z.string(),
   USERSITE_DEFAULT_HOST: z.string(),
 });
 

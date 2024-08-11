@@ -1,6 +1,6 @@
-import { useGraphQlJit } from '@envelop/graphql-jit';
 import { createYoga, useExecutionCancellation } from 'graphql-yoga';
 import { createContext } from '@/context';
+import { dev } from '@/env';
 import { schema } from '@/graphql';
 import { useLogger } from './plugins/logger';
 
@@ -9,7 +9,7 @@ export const yoga = createYoga({
   context: createContext,
   graphqlEndpoint: '/graphql',
   batching: true,
-  maskedErrors: false,
+  maskedErrors: { isDev: dev },
   landingPage: false,
-  plugins: [useGraphQlJit(), useExecutionCancellation(), useLogger()],
+  plugins: [useExecutionCancellation(), useLogger()],
 });

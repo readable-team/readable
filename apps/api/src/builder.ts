@@ -37,6 +37,7 @@ export const builder = new SchemaBuilder<{
       session: !!context.session,
     }),
     treatErrorsAsUnauthorized: true,
+    authorizeOnSubscribe: true,
     // unauthorizedError: (_, __, ___, result) => new PermissionDeniedError(result),
   },
 

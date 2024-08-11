@@ -30,6 +30,7 @@
     "@tiptap/pm": "^2.5.8",
     "dataloader": "^2.2.2",
     "dayjs": "^1.11.12",
+    "dns-query": "^0.11.2",
     "drizzle-orm": "^0.32.1",
     "fast-json-stable-stringify": "^2.1.0",
     "fractional-indexing-jittered": "^0.9.1",

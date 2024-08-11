@@ -1,16 +1,18 @@
 import { faker } from '@faker-js/faker';
 import { and, asc, eq, getTableColumns, isNull, ne } from 'drizzle-orm';
+import { Repeater } from 'graphql-yoga';
 import { match } from 'ts-pattern';
 import { builder } from '@/builder';
 import { db, extractTableCode, first, firstOrThrow, Pages, SiteCustomDomains, Sites } from '@/db';
 import { PageState, SiteCustomDomainState, SiteState, TeamMemberRole } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
+import * as dns from '@/external/dns';
 import { enqueueJob } from '@/jobs';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
-import { Image, ISite, Page, PublicPage, PublicSite, Site, Team } from './objects';
+import { Image, ISite, Page, PublicPage, PublicSite, Site, SiteCustomDomain, Team } from './objects';
 
 /**
  * * Types
@@ -53,6 +55,19 @@ Site.implement({
     }),
 
     team: t.field({ type: Team, resolve: (site) => site.teamId }),
+
+    customDomain: t.field({
+      type: SiteCustomDomain,
+      nullable: true,
+      args: { state: t.arg({ type: SiteCustomDomainState }) },
+      resolve: async (site, args) => {
+        return await db
+          .select()
+          .from(SiteCustomDomains)
+          .where(and(eq(SiteCustomDomains.siteId, site.id), eq(SiteCustomDomains.state, args.state)))
+          .then(first);
+      },
+    }),
   }),
 });
 
@@ -69,6 +84,14 @@ PublicSite.implement({
           .orderBy(asc(Pages.order));
       },
     }),
+  }),
+});
+
+SiteCustomDomain.implement({
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    domain: t.exposeString('domain'),
+    state: t.expose('state', { type: SiteCustomDomainState }),
   }),
 });
 
@@ -192,6 +215,70 @@ builder.mutationFields((t) => ({
     },
   }),
 
+  setSiteCustomDomain: t.withAuth({ session: true }).fieldWithInput({
+    type: SiteCustomDomain,
+    input: { siteId: t.input.id(), domain: t.input.string({ validate: { schema: dataSchemas.site.domain } }) },
+    resolve: async (_, { input }, ctx) => {
+      await assertSitePermission({
+        siteId: input.siteId,
+        userId: ctx.session.userId,
+        role: TeamMemberRole.ADMIN,
+      });
+
+      const existingDomain = await db
+        .select({ id: SiteCustomDomains.id })
+        .from(SiteCustomDomains)
+        .where(and(eq(SiteCustomDomains.domain, input.domain), ne(SiteCustomDomains.siteId, input.siteId)))
+        .then(first);
+
+      if (existingDomain) {
+        throw new ApiError({ code: 'site_custom_domain_duplicate' });
+      }
+
+      return await db.transaction(async (tx) => {
+        await tx
+          .delete(SiteCustomDomains)
+          .where(
+            and(eq(SiteCustomDomains.siteId, input.siteId), eq(SiteCustomDomains.state, SiteCustomDomainState.PENDING)),
+          );
+
+        return await tx
+          .insert(SiteCustomDomains)
+          .values({
+            siteId: input.siteId,
+            domain: input.domain,
+            state: SiteCustomDomainState.PENDING,
+          })
+          .returning()
+          .then(firstOrThrow);
+      });
+    },
+  }),
+
+  unsetSiteCustomDomain: t.withAuth({ session: true }).fieldWithInput({
+    type: SiteCustomDomain,
+    input: { siteCustomDomainId: t.input.id() },
+    resolve: async (_, { input }, ctx) => {
+      const customDomain = await db
+        .select({ siteId: SiteCustomDomains.siteId })
+        .from(SiteCustomDomains)
+        .where(eq(SiteCustomDomains.id, input.siteCustomDomainId))
+        .then(firstOrThrow);
+
+      await assertSitePermission({
+        siteId: customDomain.siteId,
+        userId: ctx.session.userId,
+        role: TeamMemberRole.ADMIN,
+      });
+
+      return await db
+        .delete(SiteCustomDomains)
+        .where(eq(SiteCustomDomains.id, input.siteCustomDomainId))
+        .returning()
+        .then(firstOrThrow);
+    },
+  }),
+
   deleteSite: t.withAuth({ session: true }).fieldWithInput({
     type: Site,
     input: { siteId: t.input.id() },
@@ -266,5 +353,71 @@ builder.subscriptionFields((t) => ({
         return await db.select().from(Pages).where(eq(Pages.id, payload.pageId)).then(firstOrThrow);
       }
     },
+  }),
+
+  siteCustomDomainValidationStream: t.withAuth({ session: true }).field({
+    type: SiteCustomDomain,
+    args: { siteCustomDomainId: t.arg.id() },
+    subscribe: async (_, args, ctx) => {
+      const customDomain = await db
+        .select({ siteId: SiteCustomDomains.siteId })
+        .from(SiteCustomDomains)
+        .where(eq(SiteCustomDomains.id, args.siteCustomDomainId))
+        .then(firstOrThrow);
+
+      await assertSitePermission({
+        siteId: customDomain.siteId,
+        userId: ctx.session.userId,
+        role: TeamMemberRole.ADMIN,
+      });
+
+      const repeater = new Repeater<string>(async (push, stop) => {
+        const timer = setInterval(async () => {
+          try {
+            const domain = await db
+              .select({ id: SiteCustomDomains.id, domain: SiteCustomDomains.domain, state: SiteCustomDomains.state })
+              .from(SiteCustomDomains)
+              .where(eq(SiteCustomDomains.id, args.siteCustomDomainId))
+              .then(firstOrThrow);
+
+            if (domain.state === SiteCustomDomainState.PENDING) {
+              const records = await dns.lookupCnames(domain.domain);
+
+              if (records?.includes(env.USERSITE_CNAME_HOST)) {
+                await db.transaction(async (tx) => {
+                  await tx
+                    .delete(SiteCustomDomains)
+                    .where(
+                      and(
+                        eq(SiteCustomDomains.siteId, customDomain.siteId),
+                        eq(SiteCustomDomains.state, SiteCustomDomainState.ACTIVE),
+                      ),
+                    );
+
+                  await tx
+                    .update(SiteCustomDomains)
+                    .set({ state: SiteCustomDomainState.ACTIVE })
+                    .where(eq(SiteCustomDomains.id, domain.id));
+                });
+              }
+            }
+          } catch {
+            // noop
+          } finally {
+            push(args.siteCustomDomainId);
+          }
+        }, 1000);
+
+        await stop;
+        clearInterval(timer);
+      });
+
+      ctx.req.signal.addEventListener('abort', () => {
+        repeater.return();
+      });
+
+      return repeater;
+    },
+    resolve: async (customDomainId) => customDomainId,
   }),
 }));

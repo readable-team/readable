@@ -47,6 +47,7 @@ export const PageContentContributor = createObjectRef('PageContentContributor', 
 export const PageContentSnapshot = createObjectRef('PageContentSnapshot', T.PageContentSnapshots);
 export const PageContentState = createObjectRef('PageContentState', T.PageContentStates);
 export const Site = createObjectRef('Site', T.Sites);
+export const SiteCustomDomain = createObjectRef('SiteCustomDomain', T.SiteCustomDomains);
 export const Team = createObjectRef('Team', T.Teams);
 export const TeamMember = createObjectRef('TeamMember', T.TeamMembers);
 export const TeamMemberInvitation = createObjectRef('TeamMemberInvitation', T.TeamMemberInvitations);

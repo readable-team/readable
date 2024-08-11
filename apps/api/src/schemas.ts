@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const UNAVAILABLE_SLUGS = {
-  EXACT: ['dashboard'],
+  EXACT: ['dashboard', 'cname'],
 };
 
 export const dataSchemas = {
@@ -28,6 +28,12 @@ export const dataSchemas = {
       .regex(/^[\da-z][\da-z-]*[\da-z]$/, { message: '사이트 주소는 하이픈으로 시작하거나 끝날 수 없어요' })
       .refine((str) => !str.includes('--'), { message: '하이픈을 연속으로 사용할 수 없어요' })
       .refine((str) => !UNAVAILABLE_SLUGS.EXACT.includes(str), { message: '사용할 수 없는 사이트 주소에요' }),
+
+    domain: z
+      .string({ required_error: '도메인을 입력해 주세요' })
+      .trim()
+      .toLowerCase()
+      .min(1, { message: '도메인을 입력해 주세요' }),
   },
 
   user: {

@@ -114,8 +114,10 @@ type Mutation {
   persistBlobAsImage(input: PersistBlobAsImageInput!): Image!
   publishPage(input: PublishPageInput!): Page!
   removeTeamMember(input: RemoveTeamMemberInput!): TeamMember!
+  setSiteCustomDomain(input: SetSiteCustomDomainInput!): SiteCustomDomain!
   syncPageContent(input: SyncPageContentInput!): [PageContentSyncOperation!]!
   unpublishPage(input: UnpublishPageInput!): Page!
+  unsetSiteCustomDomain(input: UnsetSiteCustomDomainInput!): SiteCustomDomain!
   updatePagePosition(input: UpdatePagePositionInput!): Page!
   updateSite(input: UpdateSiteInput!): Site!
   updateTeam(input: UpdateTeamInput!): Team!
@@ -256,11 +258,17 @@ type SearchPublicPageResult {
   hits: [PublicPageSearchHit!]!
 }
 
+input SetSiteCustomDomainInput {
+  domain: String!
+  siteId: ID!
+}
+
 enum SingleSignOnProvider {
   GOOGLE
 }
 
 type Site implements ISite {
+  customDomain(state: SiteCustomDomainState!): SiteCustomDomain
   id: ID!
   logo: Image
   name: String!
@@ -268,6 +276,12 @@ type Site implements ISite {
   slug: String!
   team: Team!
   url: String!
+}
+
+type SiteCustomDomain {
+  domain: String!
+  id: ID!
+  state: SiteCustomDomainState!
 }
 
 enum SiteCustomDomainState {
@@ -284,6 +298,7 @@ union SiteUpdateStreamPayload = Page | Site
 
 type Subscription {
   pageContentSyncStream(pageId: ID!): PageContentSyncOperation!
+  siteCustomDomainValidationStream(siteCustomDomainId: ID!): SiteCustomDomain!
   siteUpdateStream(siteId: ID!): SiteUpdateStreamPayload!
 }
 
@@ -327,6 +342,10 @@ enum TeamState {
 
 input UnpublishPageInput {
   pageId: ID!
+}
+
+input UnsetSiteCustomDomainInput {
+  siteCustomDomainId: ID!
 }
 
 input UpdatePagePositionInput {
