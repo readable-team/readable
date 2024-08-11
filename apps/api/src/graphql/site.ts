@@ -24,7 +24,17 @@ ISite.implement({
 
     logo: t.field({ type: Image, nullable: true, resolve: (site) => site.logoId }),
 
-    url: t.string({ resolve: (site) => `https://${site.slug}.${env.USERSITE_DEFAULT_HOST}` }),
+    url: t.string({
+      resolve: async (site) => {
+        const customDomain = await db
+          .select({ domain: SiteCustomDomains.domain })
+          .from(SiteCustomDomains)
+          .where(and(eq(SiteCustomDomains.siteId, site.id), eq(SiteCustomDomains.state, SiteCustomDomainState.ACTIVE)))
+          .then(first);
+
+        return customDomain ? `https://${customDomain.domain}` : `https://${site.slug}.${env.USERSITE_DEFAULT_HOST}`;
+      },
+    }),
   }),
 });
 

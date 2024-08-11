@@ -5,6 +5,7 @@
     query DefaultLayout_Query($hostname: String!) {
       publicSite(hostname: $hostname) {
         id
+        url
 
         logo {
           id
