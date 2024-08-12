@@ -372,6 +372,8 @@ builder.subscriptionFields((t) => ({
       });
 
       const repeater = new Repeater<string>(async (push, stop) => {
+        push(args.siteCustomDomainId);
+
         const timer = setInterval(async () => {
           try {
             const domain = await db
