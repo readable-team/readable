@@ -1,5 +1,5 @@
 <script generics="T extends PageData" lang="ts">
-  import { css, cva, cx } from '@readable/styled-system/css';
+  import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
   import { onMount } from 'svelte';
@@ -149,9 +149,11 @@
     if (dropTarget.targetElem) {
       indicatorElem.style.height = `${dropTarget.targetElem.getBoundingClientRect().height}px`;
       indicatorElem.style.opacity = '0.4';
+      indicatorElem.style.borderWidth = '1px';
     } else {
-      indicatorElem.style.height = '2px';
+      indicatorElem.style.height = '3px';
       indicatorElem.style.opacity = '1';
+      indicatorElem.style.borderWidth = '0';
     }
   }
 
@@ -407,24 +409,14 @@
   bind:this={listElem}
   class={cx(
     'dnd-list',
-    flex({
-      userSelect: 'none',
-      flexDirection: 'column',
-    }),
     css(
-      cva({
-        base: {},
-        variants: {
-          root: {
-            true: {
-              gap: '32px',
-            },
-            false: {
-              marginLeft: '12px',
-            },
-          },
-        },
-      }).raw({ root: parent === null }),
+      {
+        display: 'flex',
+        flexDirection: 'column',
+        userSelect: 'none',
+      },
+      parent === null ? { gap: '32px' } : { marginLeft: '20px' },
+      depth === maxDepth && { borderLeftWidth: '2px', borderColor: 'border.tertiary', paddingLeft: '12px' },
     ),
   )}
   role="group"
@@ -440,8 +432,9 @@
           top: '0',
           left: '0',
           width: 'full',
-          height: '2px',
-          backgroundColor: 'accent.40',
+          height: '3px',
+          borderRadius: '6px',
+          backgroundColor: 'neutral.30',
           display: 'none',
           pointerEvents: 'none',
         }),
@@ -453,51 +446,26 @@
       <PageItem {...itemCommonProps} {item} />
     {/each}
   {/if}
+
   <button
-    class={css({
-      height: '32px',
-      alignItems: 'center',
+    class={flex({
+      align: 'center',
+      gap: '6px',
+      borderRadius: '6px',
+      paddingX: '8px',
+      textStyle: '16m',
+      color: 'text.tertiary',
+      height: '39px',
+      _hover: {
+        backgroundColor: 'surface.secondary',
+      },
     })}
     aria-selected="false"
     role="treeitem"
     type="button"
     on:click={() => onCreate(parent?.id ?? null)}
   >
-    <div
-      class={flex({
-        flex: '1',
-        height: '30px',
-        paddingX: '6px',
-        gap: '6px',
-        alignItems: 'center',
-        color: 'text.secondary',
-        _hover: {
-          borderRadius: '6px',
-          backgroundColor: 'neutral.10',
-        },
-        _active: {
-          borderRadius: '6px',
-          backgroundColor: 'accent.10',
-          color: 'text.accent',
-        },
-      })}
-    >
-      <Icon
-        style={css.raw({
-          color: 'neutral.50',
-        })}
-        icon={PlusIcon}
-        size={16}
-      ></Icon>
-      <span
-        class={css({
-          color: 'text.tertiary',
-          textStyle: '15m',
-          fontStyle: 'italic',
-        })}
-      >
-        새 페이지 추가
-      </span>
-    </div>
+    <Icon icon={PlusIcon} size={16} />
+    <span class={css({ fontStyle: 'italic' })}>새 페이지 추가</span>
   </button>
 </ul>

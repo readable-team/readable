@@ -5,7 +5,6 @@
   import { onMount } from 'svelte';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
-  import DotIcon from '~icons/lucide/dot';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import { page } from '$app/stores';
   import { maxDepth } from './const';
@@ -64,8 +63,15 @@
     class={cx(
       'dnd-item-body',
       flex({
-        height: '36px',
-        alignItems: 'center',
+        'alignItems': 'center',
+        'borderRadius': '6px',
+        'height': '36px',
+        '_hover': {
+          backgroundColor: 'surface.secondary',
+        },
+        '&:has(a[aria-selected=true])': {
+          backgroundColor: 'neutral.30',
+        },
       }),
     )}
   >
@@ -86,28 +92,17 @@
       >
         <Icon icon={openState[item.id] ? ChevronDownIcon : ChevronRightIcon} size={16} />
       </button>
-    {:else}
-      <Icon icon={DotIcon} size={16} />
     {/if}
 
     <a
       class={flex({
-        width: 'full',
-        height: '34px',
-        paddingX: '6px',
-        flex: '1',
         alignItems: 'center',
         gap: '6px',
+        flex: '1',
+        paddingX: '6px',
         color: 'text.secondary',
-        _hover: {
-          borderRadius: '6px',
-          backgroundColor: 'neutral.10',
-        },
-        _selected: {
-          borderRadius: '6px',
-          backgroundColor: 'accent.10',
-          color: 'text.accent',
-        },
+        width: 'full',
+        height: '34px',
       })}
       aria-selected={item.id === $page.params.pageId ? 'true' : 'false'}
       draggable="false"
@@ -135,16 +130,20 @@
           }).raw({ root: item.parent?.id === null }),
         )}
       >
-        <!-- FIXME: 제목을 표시해야 함 -->
         {item.content.title}
       </span>
       <button
         class={css({
+          borderRadius: '6px',
           color: 'neutral.50',
+          _hover: {
+            color: 'neutral.60',
+            backgroundColor: 'neutral.40',
+          },
         })}
         type="button"
       >
-        <Icon icon={EllipsisIcon} size={16} />
+        <Icon icon={EllipsisIcon} size={24} />
       </button>
     </a>
   </div>

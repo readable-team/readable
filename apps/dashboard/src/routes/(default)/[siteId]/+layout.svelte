@@ -3,7 +3,8 @@
   import { flex } from '@readable/styled-system/patterns';
   import { HorizontalDivider, Icon, LogoPlaceholder, Menu, MenuItem } from '@readable/ui/components';
   import { onMount } from 'svelte';
-  import ChevronDownIcon from '~icons/lucide/chevron-down';
+  import ChevronsUpDownIcon from '~icons/lucide/chevrons-up-down';
+  import ExternalLinkIcon from '~icons/lucide/external-link';
   import HouseIcon from '~icons/lucide/house';
   import PlusIcon from '~icons/lucide/plus';
   import SettingsIcon from '~icons/lucide/settings';
@@ -181,24 +182,21 @@
 
   const sidebarMenuItemStyle = flex({
     alignItems: 'center',
-    gap: '6px',
+    gap: '13px',
     flex: '1',
-    paddingX: '6px',
-    textStyle: '15sb',
-    color: 'text.primary',
+    borderRadius: '6px',
+    paddingX: '12px',
+    paddingY: '8px',
+    textStyle: '16m',
+    color: 'text.tertiary',
     width: 'full',
-    height: '34px',
+    height: '39px',
     _hover: {
-      borderRadius: '6px',
-      backgroundColor: 'neutral.10',
+      backgroundColor: 'surface.secondary', // TODO: 다시 지정 필요
     },
     _selected: {
-      'borderRadius': '6px',
-      'backgroundColor': 'accent.10',
-      'color': 'text.accent',
-      '& svg': {
-        color: 'text.accent',
-      },
+      backgroundColor: 'surface.secondary', // TODO: 다시 지정 필요
+      color: 'text.secondary',
     },
   });
 
@@ -222,18 +220,16 @@
   <aside
     class={flex({
       flexDirection: 'column',
-      gap: '10px',
       flex: 'none',
+      paddingTop: '30px',
+      paddingX: '10px',
+      paddingBottom: '36px',
+      backgroundColor: 'sidebar.surface',
       width: '300px',
-      padding: '16px',
-      backgroundColor: 'white',
-      flexShrink: 0,
       overflowY: 'auto',
-      borderRightWidth: '1px',
-      borderColor: 'divider.secondary',
     })}
   >
-    <Menu listStyle={css.raw({ width: '234px', maxHeight: '324px' })} placement="bottom-start" setFullWidth>
+    <Menu listStyle={css.raw({ maxHeight: '324px' })} placement="bottom" setFullWidth>
       <div
         slot="button"
         class={css(
@@ -241,10 +237,10 @@
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: '10px',
-            borderRadius: '10px',
-            padding: '6px',
-            _hover: { backgroundColor: 'neutral.10' },
+            gap: '12px',
+            borderRadius: '8px',
+            paddingX: '10px',
+            paddingY: '8px',
           },
           open && { backgroundColor: 'neutral.10' },
         )}
@@ -256,7 +252,7 @@
             {$query.site.name}
           </h1>
         </div>
-        <Icon style={css.raw({ color: 'neutral.70' })} icon={ChevronDownIcon} size={20} />
+        <Icon style={css.raw({ color: 'text.secondary' })} icon={ChevronsUpDownIcon} size={18} />
       </div>
 
       {#each $query.site.team.sites as site (site.id)}
@@ -285,30 +281,38 @@
         <span>사이트 만들기</span>
       </button>
     </Menu>
+
     <a
-      class={css({
+      class={flex({
+        align: 'center',
+        justify: 'space-between',
+        marginTop: '14px',
         borderWidth: '1px',
-        borderColor: 'neutral.20',
-        borderRadius: '8px',
-        paddingX: '14px',
-        paddingY: '9px',
-        textStyle: '14m',
-        textAlign: 'center',
+        borderColor: 'border.secondary',
+        borderRadius: '10px',
+        paddingLeft: '22px',
+        paddingY: '14px',
+        paddingRight: '19px',
+        textStyle: '16m',
         color: 'text.secondary',
-        backgroundColor: 'neutral.10',
+        backgroundColor: 'surface.primary',
+        truncate: true,
       })}
       href={$query.site.url}
       rel="noopener noreferrer"
       target="_blank"
       type="link"
     >
-      {$query.site.url}
+      <span class={css({ truncate: true })}>{$query.site.url}</span>
+
+      <Icon style={css.raw({ color: 'text.tertiary' })} icon={ExternalLinkIcon} size={20} />
     </a>
-    <nav class={css({ marginBottom: 'auto' })}>
+
+    <nav class={css({ marginTop: '24px', marginBottom: 'auto' })}>
       <ul
         class={flex({
           flexDirection: 'column',
-          gap: '2px',
+          gap: '7px',
         })}
       >
         <li>
@@ -318,7 +322,7 @@
             href={`/${$query.site.id}`}
             role="tab"
           >
-            <Icon style={css.raw({ color: 'text.secondary' })} icon={HouseIcon} />
+            <Icon style={css.raw({ color: 'text.tertiary' })} icon={HouseIcon} size={20} />
             <span>홈</span>
           </a>
         </li>
@@ -330,13 +334,13 @@
             role="tab"
             type="button"
           >
-            <Icon style={css.raw({ color: 'text.secondary' })} icon={SettingsIcon} />
+            <Icon style={css.raw({ color: 'text.tertiary' })} icon={SettingsIcon} size={20} />
             <span>설정</span>
           </a>
         </li>
       </ul>
 
-      <HorizontalDivider style={css.raw({ marginY: '10px' })} />
+      <HorizontalDivider style={css.raw({ marginTop: '24px', marginBottom: '28px', height: '2px' })} />
 
       <div role="tree">
         <PageList
@@ -353,12 +357,26 @@
 
   <div
     class={flex({
-      flexDirection: 'column',
-      overflowY: 'auto',
-      flexGrow: 1,
+      direction: 'column',
+      grow: 1,
+      paddingTop: '30px',
+      backgroundColor: 'sidebar.surface',
+      width: 'full',
     })}
   >
-    <slot />
+    <div
+      class={flex({
+        direction: 'column',
+        grow: 1,
+        borderTopLeftRadius: '[36px]',
+        paddingTop: '32px',
+        paddingX: '80px',
+        backgroundColor: 'surface.primary',
+        overflowY: 'auto',
+      })}
+    >
+      <slot />
+    </div>
   </div>
 </div>
 
