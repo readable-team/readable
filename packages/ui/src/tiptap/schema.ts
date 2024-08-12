@@ -136,14 +136,17 @@ export const extensions = [
   Gapcursor,
   Placeholder.configure({
     emptyNodeClass: css({
-      _before: {
-        content: 'attr(data-placeholder)',
-        float: '[left]',
-        height: '0',
-        color: 'text.placeholder',
-        pointerEvents: 'none',
+      '&:is(p, h1, h2, h3)': {
+        _before: {
+          content: 'attr(data-placeholder)',
+          float: '[left]',
+          height: '0',
+          color: 'text.placeholder',
+          pointerEvents: 'none',
+        },
       },
     }),
+    includeChildren: true,
     placeholder: ({ editor }) => {
       if (!editor.state.selection.empty) {
         return '';
