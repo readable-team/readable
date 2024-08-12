@@ -15,6 +15,6 @@ export const datetime = customType<{ data: dayjs.Dayjs; driverData: string }>({
 
 export const jsonb = customType<{ data: unknown; driverData: unknown }>({
   dataType: () => 'jsonb',
-  toDriver: (value) => value,
+  toDriver: (value) => JSON.stringify(value),
   fromDriver: (value) => (typeof value === 'string' ? JSON.parse(value) : value),
 });
