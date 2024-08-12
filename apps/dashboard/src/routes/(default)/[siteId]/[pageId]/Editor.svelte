@@ -225,7 +225,7 @@
           width: 'full',
           textStyle: '42eb',
           cursor: 'text',
-          _empty: { _before: { display: 'block', content: 'attr(placeholder)', color: 'text.secondary' } },
+          _empty: { _before: { display: 'block', content: 'attr(placeholder)', color: 'text.placeholder' } },
         })}
         contenteditable="true"
         placeholder="제목을 입력하세요"
@@ -242,7 +242,7 @@
           width: 'full',
           textStyle: '23eb',
           cursor: 'text',
-          _empty: { _before: { display: 'block', content: 'attr(placeholder)', color: 'text.secondary' } },
+          _empty: { _before: { display: 'block', content: 'attr(placeholder)', color: 'text.placeholder' } },
         })}
         contenteditable="true"
         placeholder="부제목을 입력하세요"

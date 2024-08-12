@@ -140,7 +140,7 @@ export const extensions = [
         content: 'attr(data-placeholder)',
         float: '[left]',
         height: '0',
-        color: 'gray.400',
+        color: 'text.placeholder',
         pointerEvents: 'none',
       },
     }),
