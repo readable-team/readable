@@ -1,4 +1,5 @@
 import { css } from '@readable/styled-system/css';
+import { token } from '@readable/styled-system/tokens';
 import { getSchema, isNodeActive } from '@tiptap/core';
 import { Blockquote } from '@tiptap/extension-blockquote';
 import { Bold } from '@tiptap/extension-bold';
@@ -120,7 +121,9 @@ export const extensions = [
       }),
     },
   }),
-  ListItem,
+  ListItem.extend({
+    content: 'paragraph (paragraph | bulletList | orderedList)*',
+  }),
 
   // marks
   Bold.configure({ HTMLAttributes: { class: css({ fontWeight: 'bold' }) } }),
@@ -132,7 +135,7 @@ export const extensions = [
   Link.configure({ openOnClick: false }),
 
   // extensions
-  Dropcursor,
+  Dropcursor.configure({ width: 4, color: token('colors.accent.30') }),
   Gapcursor,
   Placeholder.configure({
     emptyNodeClass: css({

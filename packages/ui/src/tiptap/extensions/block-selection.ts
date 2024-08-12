@@ -1,6 +1,6 @@
 import { css } from '@readable/styled-system/css';
 import { Extension } from '@tiptap/core';
-import { Plugin, PluginKey, Selection } from '@tiptap/pm/state';
+import { NodeSelection, Plugin, PluginKey, Selection } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import type { Range } from '@tiptap/core';
 import type { Node, ResolvedPos } from '@tiptap/pm/model';
@@ -67,30 +67,46 @@ export const BlockSelectionHelper = Extension.create({
                 return false;
               }
 
-              const isSelected =
-                from <= pos + (node.isLeaf ? 0 : 1) && to >= pos + node.nodeSize - (node.isLeaf ? 0 : 1);
-
-              // const isSelected = from <= pos && to >= pos + node.nodeSize;
+              const isSelected = from <= pos && to >= pos + node.nodeSize;
 
               if (!isSelected) {
-                return true;
+                return false;
               }
 
               decorations.push(
                 Decoration.node(pos, pos + node.nodeSize, {
+                  nodeName: 'div',
                   class: css({
-                    borderRadius: '4px',
-                    backgroundColor: '[#b3d4fc]',
-                    transition: 'common',
-                    transitionTimingFunction: 'ease',
-                    willChange: 'background-color',
+                    position: 'relative',
+
+                    _after: {
+                      content: '""',
+                      position: 'absolute',
+                      inset: '0',
+                      borderRadius: '4px',
+                      backgroundColor: '[#b3d4fc]',
+                      opacity: '50',
+                      transition: 'common',
+                      transitionTimingFunction: 'ease',
+                      willChange: 'background-color',
+                    },
                   }),
                 }),
               );
+
+              return false;
             });
 
             return DecorationSet.create(doc, decorations);
           },
+        },
+        appendTransaction: (_, __, newState) => {
+          const { selection, tr } = newState;
+
+          if (selection instanceof NodeSelection) {
+            tr.setSelection(BlockSelection.create(newState.doc, selection.from, selection.to));
+            return tr;
+          }
         },
       }),
     ];

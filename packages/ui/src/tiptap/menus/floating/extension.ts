@@ -20,10 +20,6 @@ export const FloatingMenu = Extension.create({
         props: {
           handleDOMEvents: {
             pointermove: (view, event) => {
-              if (!(event.target instanceof Element)) {
-                return;
-              }
-
               const posAtCoords = view.posAtCoords({ left: event.clientX, top: event.clientY });
 
               const { tr } = view.state;
@@ -108,13 +104,14 @@ export const FloatingMenu = Extension.create({
 
               cleanup?.();
               cleanup = autoUpdate(element, dom, async () => {
+                const style = window.getComputedStyle(element);
+                const marginLeft = Number.parseInt(style.marginLeft, 10) || 0;
+                const lineHeight = Number.parseInt(style.lineHeight, 10) || Number.parseInt(style.fontSize, 10) * 1.5;
+
                 const { x, y } = await computePosition(element, dom, {
                   placement: 'left-start',
-                  middleware: [offset(8)],
+                  middleware: [offset(8 + marginLeft)],
                 });
-
-                const style = window.getComputedStyle(element);
-                const lineHeight = Number.parseInt(style.lineHeight, 10) || Number.parseInt(style.fontSize, 10) * 1.5;
 
                 const effectiveX = x;
                 const effectiveY = y + lineHeight / 2;
