@@ -40,95 +40,56 @@
   type Variants = RecipeVariant<typeof recipe>;
   const recipe = cva({
     base: {
-      'display': 'flex',
-      'alignItems': 'center',
-      'borderWidth': '1px',
-      'padding': '10px',
-      'transition': 'common',
-      'color': { base: 'gray.500', _dark: 'darkgray.400' },
-      'borderColor': { base: 'gray.200', _dark: 'darkgray.200' },
-      'backgroundColor': { base: 'white', _dark: 'darkgray.1000' },
-      'outlineColor': 'transparent',
-      '& input::placeholder': {
-        color: { base: 'gray.500', _dark: 'darkgray.400' },
+      display: 'flex',
+      alignItems: 'center',
+      borderWidth: '1px',
+      borderColor: { base: 'gray.200', _dark: 'darkgray.700' },
+      padding: '10px',
+      color: { base: 'gray.500', _dark: 'darkgray.400' },
+      backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
+      transition: 'common',
+      _hasFocusedInput: {
+        borderColor: { base: 'gray.500', _dark: 'darkgray.700' },
       },
-      '_hover': {
-        color: { base: 'gray.500', _dark: 'darkgray.400' },
-        backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
-        borderColor: { base: 'gray.200', _dark: 'darkgray.200' },
-        outlineColor: { base: 'gray.300', _dark: 'darkgray.600' },
-      },
-      '_hasFocusedInput': {
+      _hasFilledInput: {
         color: { base: 'gray.1000', _dark: 'darkgray.100' },
-        backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
-        borderColor: { base: 'gray.1000', _dark: 'darkgray.100' },
-        outlineColor: { base: 'gray.300', _dark: 'darkgray.600' },
+        borderColor: { base: 'gray.200', _dark: 'darkgray.700' },
       },
-      '_hasFilledInput': {
-        color: { base: 'gray.1000', _dark: 'darkgray.100' },
-        backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
-        borderColor: { base: 'gray.1000', _dark: 'darkgray.100' },
-        outlineColor: 'transparent',
-      },
-      '_hasDisabledInput': {
+      _hasDisabledInput: {
         'color': { base: 'gray.500', _dark: 'darkgray.600' },
         'backgroundColor': { base: 'gray.200', _dark: 'darkgray.900' },
-        'borderColor': { base: 'gray.300', _dark: 'darkgray.800' },
-        'outlineColor': 'transparent',
+        'borderColor': { base: 'gray.200', _dark: 'darkgray.700' },
         '& input::placeholder': {
           color: { base: 'gray.500', _dark: 'darkgray.600' },
         },
       },
-      '_hasInvalidInput': {
+      _hasInvalidInput: {
         'color': { base: 'red.600', _dark: 'red.500' },
         'borderColor': { base: 'red.600', _dark: 'red.500' },
         'backgroundColor': { base: 'red.100', _dark: 'red.900' },
-        'outlineColor': 'transparent',
         '& input::placeholder': {
           color: { base: 'red.600', _dark: 'red.500' },
         },
-        '_hover': {
-          color: { base: 'red.600', _dark: 'red.500' },
-          backgroundColor: { base: 'red.100', _dark: 'red.900' },
-          borderColor: { base: 'red.600', _dark: 'red.500' },
-          outlineColor: { base: 'red.300', _dark: 'red.800' },
-        },
         '_hasFocusedInput': {
-          color: { base: 'gray.1000', _dark: 'darkgray.100' },
-          backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
           borderColor: { base: 'red.600', _dark: 'red.500' },
-          outlineColor: { base: 'red.300', _dark: 'red.800' },
         },
         '_hasFilledInput': {
           color: { base: 'gray.1000', _dark: 'darkgray.100' },
           backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
-          borderColor: { base: 'red.600', _dark: 'darkgray.100' },
-          outlineColor: 'transparent',
-        },
-        '_hasDisabledInput': {
-          'color': { base: 'gray.500', _dark: 'darkgray.600' },
-          'backgroundColor': { base: 'gray.200', _dark: 'darkgray.900' },
-          'borderColor': { base: 'gray.300', _dark: 'darkgray.800' },
-          'outlineColor': 'transparent',
-          '& input::placeholder': {
-            color: { base: 'gray.500', _dark: 'darkgray.600' },
-          },
         },
       },
     },
     variants: {
       size: {
-        lg: {
-          outlineWidth: '4px',
-          borderRadius: '10px',
-          textStyle: '16r',
-          height: '48px',
-        },
         md: {
-          outlineWidth: '3px',
           borderRadius: '8px',
-          textStyle: '14r',
+          textStyle: '14m',
           height: '38px',
+        },
+        lg: {
+          borderRadius: '10px',
+          textStyle: '16m',
+          height: '48px',
         },
       },
     },
