@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Chip, Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
+  import { Alert, Button, Chip, Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
   import dayjs from 'dayjs';
   import { PageState } from '@/enums';
   import ClockIcon from '~icons/lucide/clock';
@@ -16,6 +16,9 @@
   import type { PagePage_PageMenuBar_query } from '$graphql';
 
   export let _query: PagePage_PageMenuBar_query;
+
+  let deletePageOpen = false;
+  let unpublishPageOpen = false;
 
   $: query = fragment(
     _query,
@@ -171,25 +174,11 @@
         <Icon slot="prefix" icon={CopyIcon} size={20} />
         <span>복사</span>
       </MenuItem>
-      <MenuItem
-        variant="danger"
-        on:click={async () => {
-          await deletePage({ pageId: $query.page.id });
-          if ($query.page.parent?.id) {
-            goto(`/${$query.page.site.id}/${$query.page.parent.id}`);
-          } else {
-            goto(`/${$query.page.site.id}`);
-          }
-        }}
-      >
+      <MenuItem variant="danger" on:click={() => (deletePageOpen = true)}>
         <Icon slot="prefix" icon={TrashIcon} size={20} />
         <span>삭제</span>
       </MenuItem>
-      <MenuItem
-        on:click={async () => {
-          await unpublishPage({ pageId: $query.page.id });
-        }}
-      >
+      <MenuItem on:click={() => (unpublishPageOpen = true)}>
         <span>발행 취소</span>
       </MenuItem>
     </Menu>
@@ -229,3 +218,36 @@
     {/if}
   </div>
 </div>
+
+<Alert
+  onAction={async () => {
+    await deletePage({ pageId: $query.page.id });
+    if ($query.page.parent?.id) {
+      goto(`/${$query.page.site.id}/${$query.page.parent.id}`);
+    } else {
+      goto(`/${$query.page.site.id}`);
+    }
+  }}
+  bind:open={deletePageOpen}
+>
+  <svelte:fragment slot="title">페이지를 삭제할까요?</svelte:fragment>
+  <svelte:fragment slot="content">
+    이 작업은 되돌릴 수 없어요. 해당 페이지를 삭제하면 모든 하위 페이지도 함께 삭제돼요
+  </svelte:fragment>
+
+  <svelte:fragment slot="action">페이지 삭제</svelte:fragment>
+  <svelte:fragment slot="cancel">삭제하지 않을래요</svelte:fragment>
+</Alert>
+
+<Alert
+  onAction={async () => {
+    await unpublishPage({ pageId: $query.page.id });
+  }}
+  bind:open={unpublishPageOpen}
+>
+  <svelte:fragment slot="title">페이지 발행을 취소할까요?</svelte:fragment>
+  <svelte:fragment slot="content">페이지 발행을 취소하면 해당 페이지가 사이트에서 숨겨져요</svelte:fragment>
+
+  <svelte:fragment slot="action">페이지 발행 취소</svelte:fragment>
+  <svelte:fragment slot="cancel">발행 취소를 하지 않을래요</svelte:fragment>
+</Alert>

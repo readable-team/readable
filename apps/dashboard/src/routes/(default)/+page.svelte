@@ -1,11 +1,12 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { Button, Helmet, TextInput } from '@readable/ui/components';
+  import { Alert, Button, Helmet, TextInput } from '@readable/ui/components';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
 
   let siteName = '';
+  let deleteTeamOpen = false;
 
   $: query = graphql(`
     query TeamPage_Query($teamId: ID!) {
@@ -55,14 +56,7 @@
   size={48}
 />
 <br />
-<Button
-  on:click={async () => {
-    await deleteTeam({ teamId: $query.team.id });
-    await goto('/', { invalidateAll: true });
-  }}
->
-  팀 삭제
-</Button>
+<Button on:click={() => (deleteTeamOpen = true)}>팀 삭제</Button>
 <br />
 <br />
 
@@ -86,3 +80,17 @@
 >
   새 사이트 만들기
 </Button>
+
+<Alert
+  onAction={async () => {
+    await deleteTeam({ teamId: $query.team.id });
+    await goto('/', { invalidateAll: true });
+  }}
+  bind:open={deleteTeamOpen}
+>
+  <svelte:fragment slot="title">팀을 삭제할까요?</svelte:fragment>
+  <svelte:fragment slot="content">팀을 삭제하면 팀에 속한 모든 사이트가 삭제돼요</svelte:fragment>
+
+  <svelte:fragment slot="action">삭제하기</svelte:fragment>
+  <svelte:fragment slot="cancel">삭제하지 않을래요</svelte:fragment>
+</Alert>
