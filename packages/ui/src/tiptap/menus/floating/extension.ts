@@ -100,16 +100,20 @@ export const FloatingMenu = Extension.create({
 
               component.$set({ pos, node });
 
-              const element = view.domAtPos(pos) as { node: Element; offset: number };
+              const coordsAtPos = view.coordsAtPos(pos, -1);
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              const element = document
+                .elementsFromPoint(coordsAtPos.left, coordsAtPos.top)
+                .find((element) => element.parentElement === view.dom)!;
 
               cleanup?.();
-              cleanup = autoUpdate(element.node, dom, async () => {
-                const { x, y } = await computePosition(element.node, dom, {
+              cleanup = autoUpdate(element, dom, async () => {
+                const { x, y } = await computePosition(element, dom, {
                   placement: 'left-start',
                   middleware: [offset(8)],
                 });
 
-                const style = window.getComputedStyle(element.node);
+                const style = window.getComputedStyle(element);
                 const lineHeight = Number.parseInt(style.lineHeight, 10) || Number.parseInt(style.fontSize, 10) * 1.5;
 
                 const effectiveX = x;
