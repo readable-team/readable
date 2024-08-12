@@ -34,6 +34,12 @@ export const dataSchemas = {
       .trim()
       .toLowerCase()
       .min(1, { message: '도메인을 입력해 주세요' }),
+
+    themeColor: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .regex(/^#?[\da-f]{6}$/, { message: '올바른 색상 코드를 입력해 주세요' }),
   },
 
   user: {

@@ -23,6 +23,7 @@ ISite.implement({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
     slug: t.exposeString('slug'),
+    themeColor: t.exposeString('themeColor'),
 
     logo: t.field({ type: Image, nullable: true, resolve: (site) => site.logoId }),
 
@@ -173,6 +174,7 @@ builder.mutationFields((t) => ({
           teamId: input.teamId,
           name: input.name,
           slug,
+          themeColor: '#41c6b5',
         })
         .returning()
         .then(firstOrThrow);
@@ -187,6 +189,7 @@ builder.mutationFields((t) => ({
       siteId: t.input.id(),
       name: t.input.string({ validate: { schema: dataSchemas.site.name } }),
       slug: t.input.string({ validate: { schema: dataSchemas.site.slug } }),
+      themeColor: t.input.string({ validate: { schema: dataSchemas.site.themeColor } }),
       logoId: t.input.id({ required: false }),
     },
     resolve: async (_, { input }, ctx) => {
@@ -208,7 +211,7 @@ builder.mutationFields((t) => ({
 
       return await db
         .update(Sites)
-        .set({ name: input.name, slug: input.slug, logoId: input.logoId })
+        .set({ name: input.name, slug: input.slug, logoId: input.logoId, themeColor: input.themeColor })
         .where(eq(Sites.id, input.siteId))
         .returning()
         .then(firstOrThrow);

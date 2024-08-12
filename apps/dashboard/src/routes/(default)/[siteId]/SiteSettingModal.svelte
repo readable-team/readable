@@ -45,6 +45,7 @@
         name
         url
         slug
+        themeColor
 
         logo {
           id
@@ -200,6 +201,7 @@
           siteId: $site.id,
           name: $site.name,
           slug: $site.slug,
+          themeColor: $site.themeColor,
           logoId: resp.id,
         });
       }}
@@ -212,6 +214,7 @@
           siteId: $site.id,
           name: $site.name,
           slug: $site.slug,
+          themeColor: $site.themeColor,
           logoId: null,
         });
       }}

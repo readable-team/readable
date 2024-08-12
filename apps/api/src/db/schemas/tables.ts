@@ -192,6 +192,7 @@ export const Sites = pgTable(
     name: text('name').notNull(),
     state: E._SiteState('state').notNull().default('ACTIVE'),
     logoId: text('logo_id').references(() => Images.id),
+    themeColor: text('theme_color').notNull(),
     createdAt: datetime('created_at')
       .notNull()
       .default(sql`now()`),

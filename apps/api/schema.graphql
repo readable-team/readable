@@ -64,6 +64,7 @@ interface ISite {
   logo: Image
   name: String!
   slug: String!
+  themeColor: String!
   url: String!
 }
 
@@ -225,6 +226,7 @@ type PublicSite implements ISite {
   name: String!
   pages: [PublicPage!]!
   slug: String!
+  themeColor: String!
   url: String!
 }
 
@@ -275,6 +277,7 @@ type Site implements ISite {
   pages: [Page!]!
   slug: String!
   team: Team!
+  themeColor: String!
   url: String!
 }
 
@@ -360,6 +363,7 @@ input UpdateSiteInput {
   name: String!
   siteId: ID!
   slug: String!
+  themeColor: String!
 }
 
 input UpdateTeamInput {
