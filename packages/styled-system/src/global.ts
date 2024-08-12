@@ -22,7 +22,7 @@ export const globalCss = defineGlobalStyles({
     WebkitFontSmoothing: 'antialiased',
     MozOsxFontSmoothing: 'grayscale',
 
-    color: 'gray.900',
+    color: 'text.primary',
     lineHeight: '1.44',
     letterSpacing: '-0.004em',
   },
