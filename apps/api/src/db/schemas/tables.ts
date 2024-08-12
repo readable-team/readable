@@ -77,6 +77,7 @@ export const PageContents = pgTable(
     subtitle: text('subtitle'),
     content: jsonb('content').notNull().$type<JSONContent>(),
     text: text('text').notNull(),
+    summary: text('summary'),
     createdAt: datetime('created_at')
       .notNull()
       .default(sql`now()`),

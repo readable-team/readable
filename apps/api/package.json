@@ -43,6 +43,7 @@
     "js-base64": "^3.7.7",
     "meilisearch": "^0.41.0",
     "nanoid": "^5.0.7",
+    "openai": "^4.55.4",
     "pino": "^9.3.2",
     "postgres": "^3.4.4",
     "rabbitmq-client": "^4.6.0",

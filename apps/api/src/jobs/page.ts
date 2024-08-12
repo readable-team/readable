@@ -5,6 +5,7 @@ import { yXmlFragmentToProseMirrorRootNode } from 'y-prosemirror';
 import * as Y from 'yjs';
 import {
   db,
+  first,
   firstOrThrow,
   PageContentContributors,
   PageContents,
@@ -14,6 +15,7 @@ import {
   Pages,
 } from '@/db';
 import { PageState } from '@/enums';
+import * as openai from '@/external/openai';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { ms } from '@/search';
@@ -149,4 +151,42 @@ export const PageSearchIndexUpdateJob = defineJob('page:search:index-update', as
   } else if (state === PageState.DELETED) {
     await index.deleteDocument(pageId);
   }
+});
+
+export const PageSummarizeJob = defineJob('page:summarize', async (pageId: string) => {
+  const page = await db
+    .select({
+      contentId: PageContents.id,
+      title: PageContents.title,
+      subtitle: PageContents.subtitle,
+      text: PageContents.text,
+    })
+    .from(Pages)
+    .innerJoin(PageContents, eq(Pages.id, PageContents.pageId))
+    .where(and(eq(Pages.id, pageId), eq(Pages.state, PageState.PUBLISHED)))
+    .then(first);
+
+  if (!page) {
+    return;
+  }
+
+  const result = await openai.client.chat.completions.create({
+    model: 'gpt-4o-mini',
+    temperature: 0,
+    max_tokens: 256,
+    frequency_penalty: 1,
+
+    messages: [
+      {
+        role: 'system',
+        content: `You are an AI that summarizes end-user documentation to make it searchable in the LLM. I'll give you the content of a document and you'll need to summarize what behavior it describes. The output should only be a summary string in plain text. It doesn't need to be a natural sentence because we'll be using it as input to LLM, but it does need to be summarized enough for LLM to find the document. Do not output anything other than the summary. The output language must match the language of the document.`,
+      },
+      { role: 'user', content: JSON.stringify({ title: page.title, subtitle: page.subtitle, text: page.text }) },
+    ],
+  });
+
+  await db
+    .update(PageContents)
+    .set({ summary: result.choices[0].message.content })
+    .where(eq(PageContents.id, page.contentId));
 });
