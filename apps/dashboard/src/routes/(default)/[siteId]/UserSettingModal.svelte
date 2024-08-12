@@ -1,7 +1,10 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Icon, Modal, TextInput } from '@readable/ui/components';
+  import { Button, FormField, Icon, Modal, TextInput } from '@readable/ui/components';
+  import { createMutationForm } from '@readable/ui/forms';
+  import { z } from 'zod';
+  import { dataSchemas } from '@/schemas';
   import BuildingIcon from '~icons/lucide/building';
   import CircleUserIcon from '~icons/lucide/circle-user';
   import UserCogIcon from '~icons/lucide/user-cog';
@@ -18,7 +21,6 @@
   export let open = false;
 
   $: selectedTab = $page.url.hash;
-  let inviteMemberEmail = '';
 
   $: user = fragment(
     _user,
@@ -72,21 +74,27 @@
     `),
   );
 
-  const inviteTeamMember = graphql(`
-    mutation UserSettingModal_InviteTeamMember_Mutation($input: InviteTeamMemberInput!) {
-      inviteTeamMember(input: $input) {
-        ... on TeamMember {
-          id
-        }
+  const { form } = createMutationForm({
+    mutation: graphql(`
+      mutation UserSettingModal_InviteTeamMember_Mutation($input: InviteTeamMemberInput!) {
+        inviteTeamMember(input: $input) {
+          ... on TeamMember {
+            id
+          }
 
-        ... on TeamMemberInvitation {
-          id
-          email
-          createdAt
+          ... on TeamMemberInvitation {
+            id
+            email
+            createdAt
+          }
         }
       }
-    }
-  `);
+    `),
+    schema: z.object({ email: dataSchemas.email }),
+    onSuccess: () => {
+      console.log('success');
+    },
+  });
 
   const updateTeamMemberRole = graphql(`
     mutation UserSettingModal_UpdateTeamMemberRole_Mutation($input: UpdateTeamMemberRoleInput!) {
@@ -196,18 +204,12 @@
 
   <div hidden={selectedTab !== '#team-settings'}>팀 관리</div>
   <div hidden={selectedTab !== '#member-settings'}>
-    <!-- todo: form validation -->
-    <form
-      class={flex({ align: 'center', gap: '10px' })}
-      on:submit|preventDefault={async () => {
-        await inviteTeamMember({
-          teamId: $site.team.id,
-          email: inviteMemberEmail,
-        });
-        inviteMemberEmail = '';
-      }}
-    >
-      <TextInput name="email" placeholder="이메일" bind:value={inviteMemberEmail} />
+    <form class={flex({ align: 'center', gap: '10px' })} use:form>
+      <input name="teamId" type="hidden" value={$site.team.id} />
+      <FormField name="email">
+        <TextInput placeholder="이메일" />
+      </FormField>
+
       <Button size="lg" type="submit">멤버 초대</Button>
     </form>
 

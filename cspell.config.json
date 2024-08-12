@@ -13,6 +13,7 @@
     "bytea",
     "dmarc",
     "dotenv",
+    "felte",
     "fira",
     "healthz",
     "hono",
