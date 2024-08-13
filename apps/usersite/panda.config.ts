@@ -1,5 +1,5 @@
 import { defineConfig } from '@pandacss/dev';
-import { hooks, preset } from '@readable/styled-system';
+import { preset } from '@readable/styled-system';
 
 const prod = process.env.NODE_ENV === 'production';
 
@@ -13,14 +13,4 @@ export default defineConfig({
   separator: '-',
   hash: prod,
   minify: prod,
-
-  hooks: prod
-    ? {
-        'cssgen:done': ({ artifact, content }) => {
-          if (artifact === 'styles.css') {
-            return hooks.removeUnusedCssVars(content);
-          }
-        },
-      }
-    : undefined,
 });
