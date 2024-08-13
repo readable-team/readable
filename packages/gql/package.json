@@ -20,7 +20,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@sveltejs/kit": "^2.5.21",
+    "@sveltejs/kit": "^2.5.22",
     "@urql/core": "^5.0.5",
     "@urql/exchange-graphcache": "^7.1.2",
     "dataloader": "^2.2.2",
@@ -33,7 +33,7 @@
     "radash": "^12.1.0",
     "recast": "^0.23.9",
     "svelte": "^4.2.18",
-    "ts-pattern": "^5.2.0",
+    "ts-pattern": "^5.3.1",
     "tsup": "^8.2.4",
     "wonka": "^6.3.4"
   },

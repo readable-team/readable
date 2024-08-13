@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@readable/tsconfig": "workspace:*",
-    "@sveltejs/kit": "^2.5.21",
+    "@sveltejs/kit": "^2.5.22",
     "@types/bun": "^1.1.6",
     "typescript": "^5.5.4"
   }

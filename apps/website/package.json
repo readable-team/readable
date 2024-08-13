@@ -15,14 +15,14 @@
     "@readable/ui": "workspace:*"
   },
   "devDependencies": {
-    "@iconify-json/lucide": "^1.1.205",
+    "@iconify-json/lucide": "^1.1.206",
     "@pandacss/dev": "^0.45.0",
-    "@pulumi/pulumi": "^3.128.0",
+    "@pulumi/pulumi": "^3.129.0",
     "@readable/adapter-bun": "workspace:*",
     "@readable/lintconfig": "workspace:*",
     "@readable/pulumi": "workspace:*",
     "@readable/tsconfig": "workspace:*",
-    "@sveltejs/kit": "^2.5.21",
+    "@sveltejs/kit": "^2.5.22",
     "@sveltejs/vite-plugin-svelte": "^3.1.1",
     "svelte": "^4.2.18",
     "svelte-check": "^3.8.5",
