@@ -1,7 +1,8 @@
-import { autoUpdate, computePosition, inline, offset, shift } from '@floating-ui/dom';
+import { autoUpdate, computePosition, hide, inline, offset, shift } from '@floating-ui/dom';
 import { center } from '@readable/styled-system/patterns';
 import { Extension, posToDOMRect } from '@tiptap/core';
 import { NodeSelection, Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
+import { BlockSelection } from '../../extensions/block-selection';
 import Component from './Component.svelte';
 import type { VirtualElement } from '@floating-ui/dom';
 
@@ -50,7 +51,12 @@ export const BubbleMenu = Extension.create({
 
               const { selection } = view.state;
 
-              if (selection.empty) {
+              if (
+                selection.empty ||
+                selection.from === selection.to ||
+                selection instanceof BlockSelection ||
+                view.composing
+              ) {
                 dom.style.visibility = 'hidden';
                 return;
               }
@@ -82,19 +88,25 @@ export const BubbleMenu = Extension.create({
 
               cleanup?.();
               cleanup = autoUpdate(element, dom, async () => {
-                const { x, y } = await computePosition(element, dom, {
+                const { x, y, middlewareData } = await computePosition(element, dom, {
                   placement: 'top-start',
                   middleware: [
                     offset({ mainAxis: 8, crossAxis: -16 }),
                     inline(),
-                    shift({ mainAxis: false, crossAxis: true, altBoundary: true }),
+                    shift({ mainAxis: false, crossAxis: true, altBoundary: true, padding: 8 }),
+                    hide({ padding: -8 }),
                   ],
                 });
 
-                dom.style.visibility = 'visible';
+                if (middlewareData.hide) {
+                  dom.style.visibility = middlewareData.hide.referenceHidden ? 'hidden' : 'visible';
+                }
+
                 dom.style.left = `${x}px`;
                 dom.style.top = `${y}px`;
               });
+
+              dom.style.visibility = 'visible';
             },
             destroy: () => {
               cleanup?.();

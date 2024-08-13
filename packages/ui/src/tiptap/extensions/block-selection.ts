@@ -113,7 +113,7 @@ export const BlockSelectionHelper = Extension.create({
   },
 });
 
-class BlockSelection extends Selection {
+export class BlockSelection extends Selection {
   override readonly visible = false;
 
   constructor(
