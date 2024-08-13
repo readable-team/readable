@@ -17,15 +17,22 @@
 
   export const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'ArrowDown') {
+      event.preventDefault();
       selectedIdx = (selectedIdx + 1) % items.length;
+      selectableElems[selectedIdx]?.focus();
       return true;
     }
 
     if (event.key === 'ArrowUp') {
+      event.preventDefault();
       selectedIdx = (selectedIdx - 1 + items.length) % items.length;
+      selectableElems[selectedIdx]?.focus();
       return true;
     }
 
+    if (!editor.view.hasFocus()) {
+      editor.view.focus();
+    }
     return false;
   };
 
@@ -33,6 +40,8 @@
     heading: '제목',
     block: '블록',
   };
+
+  let selectableElems: HTMLElement[] = [];
 </script>
 
 <div
@@ -70,6 +79,7 @@
     {/if}
 
     <div
+      bind:this={selectableElems[idx]}
       class={flex({
         align: 'center',
         gap: '10px',
@@ -83,7 +93,7 @@
       on:focus={null}
       on:mouseover={() => (selectedIdx = idx)}
       on:click={() => item.command({ editor, range })}
-      on:keydown={null}
+      on:keydown={handleKeyDown}
     >
       <div
         class={center({
