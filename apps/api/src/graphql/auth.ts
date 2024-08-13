@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { and, eq, gt } from 'drizzle-orm';
+import ky from 'ky';
 import { match } from 'ts-pattern';
 import { builder } from '@/builder';
 import {
@@ -83,7 +84,7 @@ builder.mutationFields((t) => ({
       }
 
       const user = await db.transaction(async (tx) => {
-        const avatarBlob = await fetch(externalUser.avatarUrl).then((res) => res.blob());
+        const avatarBlob = await ky(externalUser.avatarUrl).blob();
         const avatar = await persistBlobAsImage({ file: new File([avatarBlob], externalUser.avatarUrl) });
 
         const user = await tx

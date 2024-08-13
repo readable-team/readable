@@ -1,10 +1,8 @@
-import got from 'got';
+import ky from 'ky';
 import { env } from '@/env';
 
 export const unfurl = async (url: string) => {
-  const resp = await got({
-    url: 'https://iframe.ly/api/oembed',
-    method: 'GET',
+  const resp = await ky('https://iframe.ly/api/oembed', {
     searchParams: {
       api_key: env.IFRAMELY_API_KEY,
       url,
