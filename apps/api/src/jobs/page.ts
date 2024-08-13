@@ -174,19 +174,21 @@ export const PageSummarizeJob = defineJob('page:summarize', async (pageId: strin
     model: 'gpt-4o-mini',
     temperature: 0,
     max_tokens: 256,
-    frequency_penalty: 1,
+    frequency_penalty: 2,
 
     messages: [
       {
         role: 'system',
-        content: `You are an AI that summarizes end-user documentation to make it searchable in the LLM. I'll give you the content of a document and you'll need to summarize what behavior it describes. The output should only be a summary string in plain text. It doesn't need to be a natural sentence because we'll be using it as input to LLM, but it does need to be summarized enough for LLM to find the document. Do not output anything other than the summary. The output language must match the language of the document.`,
+        content: `You are an assistant that summarizes end-user help center articles to make them more searchable in LLM. Summarize the content of the articles with keywords to make them easier to search and index. In particular, summarize the documentation by focusing on what methods it mainly presents. The output should only be a summary string in plain text. It doesn't need to be a natural sentence because we'll be using it as input to LLM, but it does need to be summarized enough for LLM to find the document. Do not output anything other than the summary. If there is nothing meaningful in the document, you don't need to output anything. The output language must match the language of the document.`,
       },
       { role: 'user', content: JSON.stringify({ title: page.title, subtitle: page.subtitle, text: page.text }) },
     ],
   });
 
+  const summary = result.choices[0].message.content;
+
   await db
     .update(PageContents)
-    .set({ summary: result.choices[0].message.content })
+    .set({ summary: (summary?.length ?? 0) > 0 ? summary : null })
     .where(eq(PageContents.id, page.contentId));
 });

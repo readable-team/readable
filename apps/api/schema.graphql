@@ -251,6 +251,7 @@ type Query {
   publicPage(slug: String!): PublicPage!
   publicSite(hostname: String!): PublicSite!
   searchPage(query: String!, siteId: String!): SearchPageResult!
+  searchPageByChanges(query: String!, siteId: String!): [SearchByPageChangesHit!]!
   searchPublicPage(query: String!, siteId: String!): SearchPublicPageResult!
   site(siteId: ID!): Site!
   team(teamId: ID!): Team!
@@ -259,6 +260,18 @@ type Query {
 input RemoveTeamMemberInput {
   teamId: String!
   userId: String!
+}
+
+type SearchByPageChangesHit {
+  fixes: [SearchByPageChangesHitFix!]!
+  page: Page!
+}
+
+type SearchByPageChangesHitFix {
+  completion: String!
+  kind: String!
+  reason: String!
+  text: String!
 }
 
 type SearchPageResult {
