@@ -17,7 +17,7 @@
   import UserMenu from './UserMenu.svelte';
 
   let openSiteSettingModal = false;
-  $: openSiteSettingModal = $page.url.hash === '#site-settings' || $page.url.hash === '#design-settings';
+  $: openSiteSettingModal = $page.url.hash.startsWith('#/settings/site');
 
   $: query = graphql(`
     query SiteLayout_Query($siteId: ID!) {
@@ -357,7 +357,7 @@
           <a
             class={sidebarMenuItemStyle}
             data-sveltekit-preload-data="false"
-            href="#site-settings"
+            href="#/settings/site"
             role="tab"
             type="button"
           >

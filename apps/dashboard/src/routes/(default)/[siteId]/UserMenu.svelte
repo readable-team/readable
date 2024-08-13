@@ -13,10 +13,7 @@
   export { _query as $query };
 
   let openUserSettingModal = false;
-  $: openUserSettingModal =
-    $page.url.hash === '#personal-settings' ||
-    $page.url.hash === '#team-settings' ||
-    $page.url.hash === '#member-settings';
+  $: openUserSettingModal = $page.url.hash === '#/settings/personal' || $page.url.hash.startsWith('#/settings/team');
 
   $: query = fragment(
     _query,
@@ -111,7 +108,7 @@
   </div>
   <MenuItem>팀 전환</MenuItem>
   <MenuItem>팀 생성</MenuItem>
-  <MenuItem external={false} href="#team-settings" type="link">팀 설정</MenuItem>
+  <MenuItem external={false} href="#/settings/team" type="link">팀 설정</MenuItem>
 
   <HorizontalDivider style={css.raw({ marginY: '12px' })} color="secondary" />
 
@@ -129,7 +126,7 @@
       <p class={css({ textStyle: '12sb', color: 'text.tertiary' })}>{$query.me.email}</p>
     </div>
   </div>
-  <MenuItem external={false} href="#personal-settings" type="link">개인 설정</MenuItem>
+  <MenuItem external={false} href="#/settings/personal" type="link">개인 설정</MenuItem>
 </Menu>
 
 <UserSettingModal $site={$query.site} $user={$query.me} bind:open={openUserSettingModal} />

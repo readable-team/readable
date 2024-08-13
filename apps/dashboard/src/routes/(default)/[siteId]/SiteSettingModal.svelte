@@ -100,12 +100,12 @@
     {
       icon: SatelliteDishIcon,
       text: '기본정보',
-      tab: '#site-settings',
+      tab: '#/settings/site',
     },
     {
       icon: PaintbrushIcon,
       text: '디자인',
-      tab: '#design-settings',
+      tab: '#/settings/site/design',
     },
   ];
 
@@ -165,7 +165,7 @@
     </dl>
   </svelte:fragment>
 
-  <div hidden={selectedTab !== '#site-settings'}>
+  <div hidden={selectedTab !== '#/settings/site'}>
     <h1>기본정보 설정</h1>
 
     <br />
@@ -227,7 +227,7 @@
 
     <Button on:click={() => (deleteSiteOpen = true)}>사이트 삭제</Button>
   </div>
-  <div hidden={selectedTab !== '#design-settings'}>디자인 설정</div>
+  <div hidden={selectedTab !== '#/settings/site/design'}>디자인 설정</div>
 </Modal>
 
 <Alert

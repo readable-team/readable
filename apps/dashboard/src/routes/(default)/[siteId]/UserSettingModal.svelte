@@ -117,7 +117,7 @@
     {
       icon: CircleUserIcon,
       text: '내 계정',
-      tab: '#personal-settings',
+      tab: '#/settings/personal',
     },
   ];
 
@@ -125,12 +125,12 @@
     {
       icon: BuildingIcon,
       text: '팀 관리',
-      tab: '#team-settings',
+      tab: '#/settings/team',
     },
     {
       icon: UserCogIcon,
       text: '멤버 관리',
-      tab: '#member-settings',
+      tab: '#/settings/team/members',
     },
   ];
 
@@ -202,8 +202,8 @@
     </dl>
   </svelte:fragment>
 
-  <div hidden={selectedTab !== '#team-settings'}>팀 관리</div>
-  <div hidden={selectedTab !== '#member-settings'}>
+  <div hidden={selectedTab !== '#/settings/team'}>팀 관리</div>
+  <div hidden={selectedTab !== '#/settings/team/members'}>
     <form class={flex({ align: 'center', gap: '10px' })} use:form>
       <input name="teamId" type="hidden" value={$site.team.id} />
       <FormField name="email">
@@ -270,5 +270,5 @@
     </ul>
   </div>
 
-  <div hidden={selectedTab !== '#personal-settings'}>내 계정</div>
+  <div hidden={selectedTab !== '#/settings/personal'}>내 계정</div>
 </Modal>
