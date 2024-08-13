@@ -39,6 +39,16 @@ export const FloatingMenu = Extension.create({
 
               view.dispatch(tr);
             },
+            wheel: (view) => {
+              const { tr } = view.state;
+              tr.setMeta(key, { pos: -1 });
+              view.dispatch(tr);
+            },
+            keydown: (view) => {
+              const { tr } = view.state;
+              tr.setMeta(key, { pos: -1 });
+              view.dispatch(tr);
+            },
           },
         },
         state: {
@@ -116,10 +126,11 @@ export const FloatingMenu = Extension.create({
                 const effectiveX = x;
                 const effectiveY = y + lineHeight / 2;
 
-                dom.style.visibility = 'visible';
                 dom.style.left = `${effectiveX}px`;
                 dom.style.top = `${effectiveY}px`;
               });
+
+              dom.style.visibility = 'visible';
             },
             destroy: () => {
               cleanup?.();
