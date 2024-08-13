@@ -26,7 +26,7 @@ export const FloatingMenu = Extension.create({
 
               if (posAtCoords) {
                 const $pos = view.state.doc.resolve(posAtCoords.pos);
-                const pos = $pos.start(1);
+                const pos = $pos.before(1);
 
                 if (pos > view.state.doc.content.size) {
                   tr.setMeta(key, { pos: -1 });
@@ -101,12 +101,15 @@ export const FloatingMenu = Extension.create({
                 return;
               }
 
-              const $pos = view.state.doc.resolve(pos);
-              const node = $pos.node();
+              const node = view.state.doc.nodeAt(pos);
+              if (!node) {
+                dom.style.visibility = 'hidden';
+                return;
+              }
 
               component.$set({ pos, node });
 
-              const coordsAtPos = view.coordsAtPos(pos, -1);
+              const coordsAtPos = view.coordsAtPos(pos, 0);
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               const element = document
                 .elementsFromPoint(coordsAtPos.left, coordsAtPos.top)

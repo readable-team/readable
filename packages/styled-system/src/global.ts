@@ -36,7 +36,6 @@ export const globalCss = defineGlobalStyles({
   },
 
   'hr': {
-    borderTopWidth: '1px',
     height: '0',
   },
 

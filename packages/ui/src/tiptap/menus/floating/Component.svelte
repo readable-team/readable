@@ -12,20 +12,22 @@
   export let node: Node | null = null;
 
   const handleGripClick = () => {
-    if (!pos || !node) {
+    if (pos === null || node === null) {
       return;
     }
 
-    const pos$ = editor.state.doc.resolve(pos);
-
-    editor.commands.setBlockSelection({
-      from: pos$.before(),
-      to: pos$.after(),
-    });
+    editor
+      .chain()
+      .setBlockSelection({
+        from: pos,
+        to: pos + node.nodeSize,
+      })
+      .focus()
+      .run();
   };
 
   const handleDragStart = (event: DragEvent) => {
-    if (!pos || !node || !event.dataTransfer) {
+    if (pos === null || node === null || !event.dataTransfer) {
       return;
     }
 
@@ -34,13 +36,24 @@
       return;
     }
 
+    editor.commands.setTextSelection(pos);
+    const child = dom.node.children[dom.offset];
+
+    event.dataTransfer.setDragImage(child, 0, 0);
     event.dataTransfer.clearData();
-    event.dataTransfer.setDragImage(dom.node, 0, 0);
     event.dataTransfer.effectAllowed = 'move';
 
-    const pos$ = editor.state.doc.resolve(pos);
-
-    editor.commands.setBlockSelection({ from: pos$.before(), to: pos$.after() }, true);
+    editor
+      .chain()
+      .setBlockSelection(
+        {
+          from: pos,
+          to: pos + node.nodeSize,
+        },
+        true,
+      )
+      .focus()
+      .run();
 
     editor.view.dragging = {
       slice: editor.state.selection.content(),
