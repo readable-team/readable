@@ -18,7 +18,6 @@ import { ListItem } from '@tiptap/extension-list-item';
 import { ListKeymap } from '@tiptap/extension-list-keymap';
 import { OrderedList } from '@tiptap/extension-ordered-list';
 import { Paragraph } from '@tiptap/extension-paragraph';
-import { Placeholder } from '@tiptap/extension-placeholder';
 import { Strike } from '@tiptap/extension-strike';
 import { Text } from '@tiptap/extension-text';
 import { TextAlign } from '@tiptap/extension-text-align';
@@ -26,6 +25,7 @@ import { TextStyle } from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
 import { liftTarget } from '@tiptap/pm/transform';
 import { BlockSelectionHelper } from './extensions/block-selection';
+import { Placeholder } from './extensions/placeholder';
 import { BubbleMenu } from './menus/bubble';
 import { FloatingMenu } from './menus/floating';
 import { SlashMenu } from './menus/slash';
@@ -150,28 +150,8 @@ export const extensions = [
   // extensions
   Dropcursor.configure({ width: 4, color: token('colors.accent.30') }),
   Gapcursor,
-  Placeholder.configure({
-    emptyNodeClass: css({
-      '&:is(p, h1, h2, h3)': {
-        _before: {
-          content: 'attr(data-placeholder)',
-          float: '[left]',
-          height: '0',
-          color: 'text.placeholder',
-          pointerEvents: 'none',
-        },
-      },
-    }),
-    includeChildren: true,
-    placeholder: ({ editor }) => {
-      if (!editor.state.selection.empty) {
-        return '';
-      }
-
-      return '내용을 입력하거나 /를 입력해 명령어 사용하기...';
-    },
-  }),
   ListKeymap,
+  Placeholder,
   TextAlign,
   TextStyle,
 
