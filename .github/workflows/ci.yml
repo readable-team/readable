@@ -5,6 +5,11 @@ on:
     branches: [main]
   pull_request:
 
+env:
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_REMOTE_ONLY: true
+
 jobs:
   lint:
     name: Lint

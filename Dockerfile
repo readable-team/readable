@@ -1,6 +1,12 @@
 FROM oven/bun:1
 WORKDIR /app
 
+ARG TURBO_TEAM
+ARG TURBO_TOKEN
+ENV TURBO_TEAM=${TURBO_TEAM}
+ENV TURBO_TOKEN=${TURBO_TOKEN}
+ENV TURBO_REMOTE_ONLY=true
+
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     ca-certificates \
