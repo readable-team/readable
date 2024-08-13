@@ -46,7 +46,7 @@
     },
     variants: {
       variant: {
-        primary: {
+        'primary': {
           color: {
             _enabled: {
               base: { base: 'white', _dark: 'darkgray.1000' },
@@ -68,15 +68,9 @@
             _disabled: { base: 'gray.200', _dark: 'darkgray.800' },
           },
         },
-        secondary: {
+        'secondary': {
           color: {
-            _enabled: {
-              base: { base: 'gray.700', _dark: 'white' },
-              _hover: { base: 'gray.700', _dark: 'white' },
-              _focusVisible: { base: 'gray.700', _dark: 'white' },
-              _active: { base: 'gray.700', _dark: 'white' },
-              _pressed: { base: 'gray.700', _dark: 'white' },
-            },
+            _enabled: { base: 'gray.700', _dark: 'white' },
             _disabled: { base: 'gray.500', _dark: 'darkgray.600' },
           },
           backgroundColor: {
@@ -92,7 +86,23 @@
           outlineWidth: '1px',
           outlineColor: { base: 'gray.300', _dark: 'transparent' },
         },
-        danger: {
+        'tertiary': {
+          color: {
+            _enabled: { base: 'gray.500', _dark: 'darkgray.500' },
+            _disabled: { base: 'gray.500', _dark: 'darkgray.600' },
+          },
+          backgroundColor: {
+            _enabled: {
+              base: { base: 'gray.100', _dark: 'darkgray.700' },
+              _hover: { base: 'gray.200', _dark: 'darkgray.800' },
+              _focusVisible: { base: 'gray.200', _dark: 'darkgray.800' },
+              _active: { base: 'gray.300', _dark: 'darkgray.900' },
+              _pressed: { base: 'gray.300', _dark: 'darkgray.900' },
+            },
+            _disabled: { base: 'gray.200', _dark: 'darkgray.800' },
+          },
+        },
+        'danger-fill': {
           color: {
             base: 'white',
             _disabled: { base: 'gray.500', _dark: 'darkgray.600' },
@@ -107,6 +117,24 @@
             },
             _disabled: { base: 'gray.200', _dark: 'darkgray.800' },
           },
+        },
+        'danger-outline': {
+          color: {
+            _enabled: { base: 'red.600', _dark: 'red.500' },
+            _disabled: { base: 'gray.500', _dark: 'darkgray.600' },
+          },
+          backgroundColor: {
+            _enabled: {
+              base: { base: 'white', _dark: 'darkgray.600' },
+              _hover: { base: 'red.100', _dark: 'red.700' },
+              _focusVisible: { base: 'red.100', _dark: 'red.700' },
+              _active: { base: 'red.200', _dark: 'red.600' },
+              _pressed: { base: 'red.200', _dark: 'red.600' },
+            },
+            _disabled: { base: 'gray.200', _dark: 'darkgray.800' },
+          },
+          outlineWidth: '1px',
+          outlineColor: { base: 'red.600', _dark: 'red.500' },
         },
       },
       size: {
@@ -123,9 +151,11 @@
     },
     variants: {
       color: {
-        primary: { color: { base: 'white', _dark: 'darkgray.1000' } },
-        secondary: { color: { base: 'gray.700', _dark: 'darkgray.800' } },
-        danger: { color: 'white' },
+        'primary': { color: { base: 'white', _dark: 'darkgray.1000' } },
+        'secondary': { color: { base: 'gray.700', _dark: 'darkgray.800' } },
+        'tertiary': { color: { base: 'gray.700', _dark: 'darkgray.500' } },
+        'danger-fill': { color: { base: 'white', _dark: 'darkgray.1000' } },
+        'danger-outline': { color: { base: 'red.600', _dark: 'red.500' } },
       },
     },
   });
