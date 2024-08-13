@@ -13,6 +13,7 @@
         border: 'none',
         width: '1px',
         height: 'full',
+        flexShrink: 0,
       },
       variants: {
         color: {

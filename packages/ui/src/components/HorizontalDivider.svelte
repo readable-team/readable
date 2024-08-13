@@ -11,7 +11,9 @@
     cva({
       base: {
         border: 'none',
+        width: 'full',
         height: '1px',
+        flexShrink: 0,
       },
       variants: {
         color: {
