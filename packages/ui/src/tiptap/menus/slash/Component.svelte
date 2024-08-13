@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
   import { HorizontalDivider, Icon } from '@readable/ui/components';
+  import { createEventDispatcher } from 'svelte';
   import type { Editor, Range } from '@tiptap/core';
   import type { MenuItem, MenuItemGroup } from './types';
 
@@ -9,6 +10,10 @@
   export let range: Range;
   export let items: MenuItem[];
   export let selectedIdx = 0;
+
+  const dispatch = createEventDispatcher<{ select: MenuItem }>();
+
+  $: dispatch('select', items[selectedIdx]);
 
   export const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'ArrowDown') {
@@ -18,15 +23,6 @@
 
     if (event.key === 'ArrowUp') {
       selectedIdx = (selectedIdx - 1 + items.length) % items.length;
-      return true;
-    }
-
-    if (event.key === 'Enter') {
-      const item = items[selectedIdx];
-      if (item) {
-        item.command({ editor, range });
-      }
-
       return true;
     }
 
