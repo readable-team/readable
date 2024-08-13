@@ -31,9 +31,8 @@
   <div
     class={css({
       zIndex: 'tooltip.body',
-      boxShadow: 'emphasize',
       borderRadius: '8px',
-      maxWidth: '220px',
+      maxWidth: '224px',
     })}
     role="tooltip"
     use:floating
@@ -41,18 +40,14 @@
   >
     <div
       class={css({
-        paddingX: '12px',
-        paddingY: '9px',
-        textStyle: '12m',
-        borderRadius: '6px',
         position: 'relative',
         zIndex: 'tooltip.content',
-        backgroundColor: 'white',
-        color: 'gray.800',
-        _dark: {
-          backgroundColor: 'darkgray.800',
-          color: 'gray.100',
-        },
+        borderRadius: '6px',
+        paddingX: '14px',
+        paddingY: '10px',
+        textStyle: '14sb',
+        color: 'white',
+        backgroundColor: 'neutral.100',
       })}
     >
       <slot name="message">
@@ -63,14 +58,9 @@
       class={css({
         position: 'relative',
         zIndex: 'tooltip.arrow',
-        width: '16px',
-        height: '16px',
         borderRadius: '2px',
-        boxShadow: 'emphasize',
-        backgroundColor: 'white',
-        _dark: {
-          backgroundColor: 'darkgray.800',
-        },
+        size: '16px',
+        backgroundColor: 'neutral.100',
       })}
       use:arrow
     />
