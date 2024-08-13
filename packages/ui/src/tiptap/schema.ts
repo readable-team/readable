@@ -48,14 +48,26 @@ export const extensions = [
     levels: [1, 2, 3],
     HTMLAttributes: {
       class: css({
-        'h1&': { textStyle: '28b' },
-        'h2&': { textStyle: '24b' },
-        'h3&': { textStyle: '20b' },
+        '&:is(h1)': { textStyle: '28b' },
+        '&:is(h2)': { textStyle: '24b' },
+        '&:is(h3)': { textStyle: '20b' },
       }),
     },
   }),
   HardBreak,
-  HorizontalRule,
+  HorizontalRule.configure({
+    HTMLAttributes: {
+      class: css({
+        paddingY: '12px',
+        _before: {
+          content: '""',
+          display: 'block',
+          height: '1px',
+          backgroundColor: 'neutral.20',
+        },
+      }),
+    },
+  }),
   Blockquote.extend({
     content: 'paragraph',
     addKeyboardShortcuts: () => ({
