@@ -205,6 +205,30 @@
       yDoc.destroy();
     };
   });
+
+  let titleEl: HTMLElement;
+  let subtitleEl: HTMLElement;
+
+  const adjustTextareaHeight = (el: HTMLElement) => {
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  };
+
+  $: {
+    setTimeout(() => {
+      if (titleEl) adjustTextareaHeight(titleEl);
+    }, 0);
+
+    [$title];
+  }
+
+  $: {
+    setTimeout(() => {
+      if (subtitleEl) adjustTextareaHeight(subtitleEl);
+    }, 0);
+
+    [$subtitle];
+  }
 </script>
 
 <div class={css({ flex: '1', marginTop: '64px', marginBottom: '128px' })}>
@@ -219,39 +243,31 @@
         color: 'text.primary',
       })}
     >
-      <h1
+      <textarea
+        bind:this={titleEl}
         class={css({
-          display: 'inline-block',
-          width: 'full',
           textStyle: '42eb',
-          cursor: 'text',
-          _empty: { _before: { display: 'block', content: 'attr(placeholder)', color: 'text.placeholder' } },
+          height: 'auto',
+          overflowY: 'hidden',
+          resize: 'none',
         })}
-        contenteditable="true"
         placeholder="제목을 입력하세요"
-        on:input={(e) => {
-          title.set(e.currentTarget?.textContent ?? '');
-        }}
-      >
-        {$title}
-      </h1>
+        rows="1"
+        bind:value={$title}
+      />
 
-      <h2
+      <textarea
+        bind:this={subtitleEl}
         class={css({
-          display: 'inline-block',
-          width: 'full',
           textStyle: '23eb',
-          cursor: 'text',
-          _empty: { _before: { display: 'block', content: 'attr(placeholder)', color: 'text.placeholder' } },
+          height: 'auto',
+          overflowY: 'hidden',
+          resize: 'none',
         })}
-        contenteditable="true"
         placeholder="부제목을 입력하세요"
-        on:input={(e) => {
-          subtitle.set(e.currentTarget?.textContent ?? '');
-        }}
-      >
-        {$subtitle}
-      </h2>
+        rows="1"
+        bind:value={$subtitle}
+      />
     </div>
 
     <!-- {#if editor}
