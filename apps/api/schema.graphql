@@ -269,9 +269,14 @@ type SearchByPageChangesHit {
 
 type SearchByPageChangesHitFix {
   completion: String!
-  kind: String!
   reason: String!
+  severity: SearchByPageChangesHitFixSeverity!
   text: String!
+}
+
+enum SearchByPageChangesHitFixSeverity {
+  ERROR
+  WARNING
 }
 
 type SearchPageResult {

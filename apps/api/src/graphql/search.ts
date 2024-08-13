@@ -54,7 +54,7 @@ PublicPageSearchHit.implement({
 });
 
 type SearchByPageChangesHitFix = {
-  kind: string;
+  severity: 'WARNING' | 'ERROR';
   text: string;
   reason: string;
   completion: string;
@@ -65,13 +65,17 @@ type SearchByPageChangesHit = {
   fixes: SearchByPageChangesHitFix[];
 };
 
+const SearchByPageChangesHitFixSeverity = builder.enumType('SearchByPageChangesHitFixSeverity', {
+  values: ['WARNING', 'ERROR'] as const,
+});
+
 const SearchByPageChangesHitFix = builder.objectRef<SearchByPageChangesHitFix>('SearchByPageChangesHitFix');
 SearchByPageChangesHitFix.implement({
   fields: (t) => ({
-    kind: t.exposeString('kind'),
     text: t.exposeString('text'),
     reason: t.exposeString('reason'),
     completion: t.exposeString('completion'),
+    severity: t.expose('severity', { type: SearchByPageChangesHitFixSeverity }),
   }),
 });
 
@@ -183,7 +187,12 @@ builder.queryFields((t) => ({
               response_format: zodResponseFormat(
                 z.object({
                   fixes: z.array(
-                    z.object({ kind: z.string(), text: z.string(), reason: z.string(), completion: z.string() }),
+                    z.object({
+                      severity: z.enum(['WARNING', 'ERROR']),
+                      text: z.string(),
+                      reason: z.string(),
+                      completion: z.string(),
+                    }),
                   ),
                 }),
                 'fixes',
@@ -191,7 +200,7 @@ builder.queryFields((t) => ({
               messages: [
                 {
                   role: 'system',
-                  content: `You are an assistant that receives changes from the service and fixes inconsistencies in the documentation. You need to create a JSON array of objective inconsistencies in the documentation due to changes in the service and output it in the form {"fixes":[{"kind":"","text":"","reason":"","completion":""}]}. "kind" is the classification of the fix ("WARNING" if it's likely to be an error but not 100%, "ERROR" if it's 100% error), "text" is the text of the inconsistency in the document, "reason" is the reason for the inconsistency, and "completion" is an example of the fix. Subjective discrepancies must not be corrected. Only objective inconsistencies, such as technical errors or misinformation, could be corrected. Something isn't mentioned in the documentation is not a reason to edit. Sometimes the correction is irrelevant to the documentation, so if there are no inconsistencies, you should output an empty array instead of creating an inconsistency hallucination. "reason" always respond in 한국어.`,
+                  content: `You are an assistant that receives changes from the service and fixes inconsistencies in the documentation. You need to create a JSON array of objective inconsistencies in the documentation due to changes in the service and output it in the form {"fixes":[{"severity":"","text":"","reason":"","completion":""}]}. "severity" is the classification of the fix ("WARNING" if it's likely to be an error but not 100%, "ERROR" if it's 100% error), "text" is the text of the inconsistency in the document, "reason" is the reason for the inconsistency, and "completion" is an example of the fix. Subjective discrepancies must not be corrected. Only objective inconsistencies, such as technical errors or misinformation, could be corrected. Something isn't mentioned in the documentation is not a reason to edit. If something in the documentation is no longer needed, output an empty string for "completion". If the change is not related to the content of the document, it is *NOT* an error. If there are no error, you should output an empty array. "reason" always respond in 한국어.`,
                 },
                 {
                   role: 'user',
