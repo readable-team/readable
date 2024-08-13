@@ -11,6 +11,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
+  import Img from '$lib/components/Img.svelte';
   import { PageList } from '$lib/components/page-list';
   import SiteSettingModal from './SiteSettingModal.svelte';
   import UserMenu from './UserMenu.svelte';
@@ -32,6 +33,11 @@
         id
         name
         url
+
+        logo {
+          id
+          ...Img_image
+        }
 
         # NOTE: maxDepth = 3
         pages {
@@ -100,6 +106,11 @@
           sites {
             id
             name
+
+            logo {
+              id
+              ...Img_image
+            }
           }
         }
 
@@ -237,17 +248,26 @@
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: '12px',
+            gap: '24px',
             borderRadius: '8px',
             paddingX: '10px',
             paddingY: '8px',
           },
-          open && { backgroundColor: 'neutral.10' },
+          open ? { backgroundColor: 'neutral.30' } : { _hover: { backgroundColor: 'neutral.20' } },
         )}
         let:open
       >
         <div class={flex({ align: 'center', gap: '10px', truncate: true })}>
-          <LogoPlaceholder size={32} />
+          {#if $query.site.logo}
+            <Img
+              style={css.raw({ borderRadius: '8px', size: '36px' })}
+              $image={$query.site.logo}
+              alt={`${$query.site.name}의 로고`}
+              size={48}
+            />
+          {:else}
+            <LogoPlaceholder style={css.raw({ flex: 'none', borderRadius: '8px', size: '36px' })} />
+          {/if}
           <h1 class={css({ textStyle: '16b', truncate: true })}>
             {$query.site.name}
           </h1>
@@ -257,29 +277,41 @@
 
       {#each $query.site.team.sites as site (site.id)}
         <MenuItem aria-selected={site.id === $query.site.id} on:click={async () => await goto(`/${site.id}`)}>
-          <LogoPlaceholder slot="prefix" size={20} />
-          {site.name}
+          {#if site.logo}
+            <Img
+              style={css.raw({ flex: 'none', borderRadius: '8px', size: '30px' })}
+              $image={site.logo}
+              alt={`${site.name}의 로고`}
+              size={32}
+            />
+          {:else}
+            <LogoPlaceholder style={css.raw({ flex: 'none', borderRadius: '8px', size: '30px' })} />
+          {/if}
+          <span class={css({ truncate: true })}>{site.name}</span>
         </MenuItem>
       {/each}
 
-      <HorizontalDivider />
+      <svelte:fragment slot="action">
+        <HorizontalDivider style={css.raw({ marginY: '4px' })} />
 
-      <button
-        class={flex({
-          align: 'center',
-          gap: '6px',
-          borderRadius: '8px',
-          paddingX: '12px',
-          paddingY: '9px',
-          textStyle: '15sb',
-          color: 'text.tertiary',
-          _hover: { backgroundColor: 'neutral.10' },
-        })}
-        type="button"
-      >
-        <Icon icon={PlusIcon} size={20} />
-        <span>사이트 만들기</span>
-      </button>
+        <button
+          class={flex({
+            align: 'center',
+            gap: '6px',
+            borderRadius: '8px',
+            paddingX: '12px',
+            paddingY: '9px',
+            textStyle: '15sb',
+            color: 'text.tertiary',
+            width: 'full',
+            _hover: { backgroundColor: 'neutral.10' },
+          })}
+          type="button"
+        >
+          <Icon icon={PlusIcon} size={20} />
+          <span>새 사이트 추가</span>
+        </button>
+      </svelte:fragment>
     </Menu>
 
     <a
@@ -369,8 +401,7 @@
         'direction': 'column',
         'grow': 1,
         'borderTopLeftRadius': '[36px]',
-        'paddingTop': '32px',
-        'paddingX': '80px',
+        'paddingTop': '28px',
         'backgroundColor': 'surface.primary',
         'overflowY': 'auto',
 

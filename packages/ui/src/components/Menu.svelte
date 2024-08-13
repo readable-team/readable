@@ -34,7 +34,7 @@
 </button>
 
 {#if open}
-  <div
+  <ul
     style:width={setFullWidth ? `${buttonEl?.getBoundingClientRect().width}px` : 'auto'}
     class={css(
       {
@@ -48,10 +48,25 @@
         boxShadow: 'heavy',
         overflowY: 'auto',
       },
+      $$slots.action && { paddingBottom: '0' },
       listStyle,
     )}
     use:floating
   >
-    <slot />
-  </div>
+    {#if $$slots.action}
+      <li>
+        <ul class={css({ display: 'flex', flexDirection: 'column', gap: '4px', overflowY: 'auto' })}>
+          <slot />
+        </ul>
+      </li>
+    {:else}
+      <slot />
+    {/if}
+
+    {#if $$slots.action}
+      <li class={css({ position: 'sticky', bottom: '0', paddingBottom: '12px', backgroundColor: 'surface.primary' })}>
+        <slot name="action" />
+      </li>
+    {/if}
+  </ul>
 {/if}

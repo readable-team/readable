@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Chip, Helmet, Icon, LogoPlaceholder, Tooltip } from '@readable/ui/components';
+  import { Button, Chip, Helmet, Icon, Tooltip } from '@readable/ui/components';
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
@@ -49,9 +49,6 @@
   <Icon icon={LayoutDashboardIcon} size={32} />
   dashboard
 </div>
-
-<LogoPlaceholder size={20} />
-<LogoPlaceholder size={32} />
 
 <Tooltip message="안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요" placement="right">
   <Img
