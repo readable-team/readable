@@ -84,7 +84,7 @@ builder.mutationFields((t) => ({
       }
 
       const user = await db.transaction(async (tx) => {
-        const avatarBlob = await ky(externalUser.avatarUrl).blob();
+        const avatarBlob = await ky(externalUser.avatarUrl).then((res) => res.blob());
         const avatar = await persistBlobAsImage({ file: new File([avatarBlob], externalUser.avatarUrl) });
 
         const user = await tx

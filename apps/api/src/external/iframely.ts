@@ -8,7 +8,7 @@ export const unfurl = async (url: string) => {
       url,
       omit_script: 1,
     },
-  }).json<Record<string, string>>();
+  }).then((res) => res.json<Record<string, string>>());
 
   if (resp.error) {
     throw new Error(resp.error);
