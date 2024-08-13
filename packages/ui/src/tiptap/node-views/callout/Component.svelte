@@ -35,7 +35,7 @@
   });
 </script>
 
-<NodeView draggable>
+<NodeView>
   <div
     class={flex({
       gap: '7px',
@@ -61,6 +61,7 @@
         },
       })}
       aria-pressed={emojiPickerOpened}
+      contenteditable={false}
       type="button"
       on:click={() => {
         emojiPickerOpened = true;
