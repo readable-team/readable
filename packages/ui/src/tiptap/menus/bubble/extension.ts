@@ -58,6 +58,7 @@ export const BubbleMenu = Extension.create({
                 view.composing
               ) {
                 dom.style.visibility = 'hidden';
+                cleanup?.();
                 return;
               }
 
