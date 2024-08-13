@@ -23,8 +23,6 @@ rabbit.createConsumer(
     queue,
     queueOptions: { exclusive: dev },
     queueBindings: [{ exchange, queue, routingKey }],
-    concurrency: 1,
-    qos: { prefetchCount: 1 },
   },
   async (msg) => {
     const { name, payload, meta } = msg.body as Body;
