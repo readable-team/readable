@@ -49,7 +49,7 @@
     direction: 'column',
     gap: '2px',
     width: '260px',
-    height: '340px',
+    maxHeight: '340px',
     overflow: 'auto',
     borderRadius: '8px',
     backgroundColor: 'surface.tertiary',
@@ -114,6 +114,6 @@
       </div>
     </div>
   {:else}
-    결과가 없어요
+    <div class={css({ paddingX: '8px', color: 'text.tertiary', textStyle: '14sb' })}>결과 없음</div>
   {/each}
 </div>

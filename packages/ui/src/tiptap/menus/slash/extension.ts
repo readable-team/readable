@@ -1,4 +1,5 @@
-import { computePosition } from '@floating-ui/dom';
+import { computePosition, flip } from '@floating-ui/dom';
+import { css } from '@readable/styled-system/css';
 import { Extension } from '@tiptap/core';
 import { Suggestion } from '@tiptap/suggestion';
 import { disassemble } from 'es-hangul';
@@ -69,6 +70,14 @@ export const SlashMenu = Extension.create({
                 },
               });
 
+              dom.className = css({
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                width: 'max',
+                visibility: 'hidden',
+              });
+
               component.$on('select', (event) => {
                 selectedItem = event.detail;
               });
@@ -83,15 +92,22 @@ export const SlashMenu = Extension.create({
                 getBoundingClientRect: () => domRect,
               };
 
+              document.body.append(dom);
+
               const { x, y } = await computePosition(virtualEl, dom, {
                 placement: 'bottom-start',
+                middleware: [
+                  flip({
+                    padding: 16,
+                  }),
+                ],
               });
 
               dom.style.position = 'absolute';
               dom.style.left = `${x}px`;
               dom.style.top = `${y}px`;
+              dom.style.visibility = 'visible';
 
-              document.body.append(dom);
               editor.view.dom.classList.add('has-slash-menu');
             },
 
