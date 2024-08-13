@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
-  import { Alert, Button, Chip, Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
+  import { center, flex } from '@readable/styled-system/patterns';
+  import { Alert, Button, Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
   import dayjs from 'dayjs';
   import { PageState } from '@/enums';
   import ClockIcon from '~icons/lucide/clock';
@@ -103,21 +103,30 @@
 
 <div
   class={flex({
-    gap: '8px',
+    align: 'center',
+    gap: '20px',
     flex: 'none',
-    paddingX: '12px',
-    paddingY: '10px',
-    alignItems: 'center',
   })}
 >
   {#if $query.page.hasUnpublishedChanges}
-    <Chip>발행되지 않은 수정사항 있음</Chip>
+    <span
+      class={css({
+        borderRadius: '6px',
+        paddingX: '10px',
+        paddingY: '5px',
+        textStyle: '13m',
+        color: 'danger.60',
+        backgroundColor: 'danger.10',
+      })}
+    >
+      발행되지 않은 수정사항 있음
+    </span>
   {/if}
   {#if $query.page.lastPublishedAt && $query.page.state === PageState.PUBLISHED}
     <span
       class={css({
         color: 'text.tertiary',
-        textStyle: '14sb',
+        textStyle: '14m',
       })}
     >
       {dayjs($query.page.lastPublishedAt).fromNow()} 발행됨
@@ -125,46 +134,77 @@
   {/if}
 
   <ul class={flex({ align: 'center' })}>
-    {#each $query.page.contentContributor as contributor (contributor.id)}
-      <li>
+    {#each $query.page.contentContributor.slice(0, 4) as contributor, index (contributor.id)}
+      <li class={css({ size: '32px' }, index !== 0 && { marginLeft: '-8px' })}>
         <Img
-          style={css.raw({ borderRadius: 'full', size: '32px', objectFit: 'cover' })}
+          style={css.raw({
+            borderWidth: '1px',
+            borderColor: 'white',
+            borderRadius: 'full',
+            size: '32px',
+            objectFit: 'cover',
+          })}
           $image={contributor.user.avatar}
           alt=""
           size={32}
         />
       </li>
     {/each}
+    {#if $query.page.contentContributor.length > 4}
+      <li
+        class={center({
+          marginLeft: '-8px',
+          borderWidth: '1px',
+          borderColor: 'white',
+          borderRadius: 'full',
+          size: '32px',
+          textStyle: '12eb',
+          color: 'accent.10',
+          backgroundColor: 'accent.40',
+        })}
+      >
+        {$query.page.contentContributor.length - 4}+
+      </li>
+    {/if}
   </ul>
 
   <div
     class={flex({
-      paddingX: '12px',
       alignItems: 'center',
       gap: '10px',
     })}
   >
-    <Button
-      style={css.raw({
-        paddingX: '9px',
+    <button
+      class={center({
+        borderRadius: '4px',
+        size: '24px',
+        backgroundColor: {
+          _hover: 'neutral.20',
+          _pressed: 'neutral.30',
+        },
       })}
-      variant="secondary"
+      type="button"
     >
-      <Icon icon={ClockIcon} size={18} />
-    </Button>
+      <Icon style={css.raw({ color: 'neutral.50' })} icon={ClockIcon} />
+    </button>
 
     <Menu listStyle={css.raw({ width: '148px' })} offset={16} placement="top-start">
-      <Button
+      <button
         slot="button"
-        style={css.raw({
-          paddingX: '9px',
+        class={center({
+          borderRadius: '4px',
+          size: '24px',
+          backgroundColor: {
+            _hover: 'neutral.20',
+            _pressed: 'neutral.30',
+          },
         })}
         aria-pressed={open}
-        variant="secondary"
+        type="button"
         let:open
       >
-        <Icon icon={EllipsisIcon} size={18} />
-      </Button>
+        <Icon style={css.raw({ color: 'neutral.50' })} icon={EllipsisIcon} />
+      </button>
 
       <MenuItem
         on:click={async () => {
@@ -184,18 +224,35 @@
     </Menu>
   </div>
 
-  <div
-    class={flex({
-      gap: '8px',
-    })}
-  >
+  <div class={flex({ gap: '10px' })}>
     {#if $query.page.state === PageState.DRAFT}
-      <Button disabled variant="secondary">
-        <Icon icon={ExternalLinkIcon} size={18} />
+      <Button
+        style={css.raw({
+          paddingTop: '6px',
+          paddingRight: '6px',
+          paddingBottom: '8px',
+          paddingLeft: '8px',
+        })}
+        disabled
+        variant="secondary"
+      >
+        <Icon icon={ExternalLinkIcon} size={24} />
       </Button>
     {:else}
-      <Button href={pageUrl($query.page)} rel="noopener noreferrer" target="_blank" type="link" variant="secondary">
-        <Icon icon={ExternalLinkIcon} size={18} />
+      <Button
+        style={css.raw({
+          paddingTop: '6px',
+          paddingRight: '6px',
+          paddingBottom: '8px',
+          paddingLeft: '8px',
+        })}
+        href={pageUrl($query.page)}
+        rel="noopener noreferrer"
+        target="_blank"
+        type="link"
+        variant="secondary"
+      >
+        <Icon icon={ExternalLinkIcon} size={24} />
       </Button>
     {/if}
 

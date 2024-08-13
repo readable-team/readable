@@ -231,14 +231,14 @@
   }
 </script>
 
-<div class={css({ flex: '1', paddingTop: '64px', paddingX: '80px', overflowY: 'auto' })}>
+<div class={css({ flex: '1', paddingTop: '62px', paddingX: '80px', overflowY: 'auto' })}>
   <div class={flex({ height: 'full', flexDirection: 'column' })}>
     <div
       class={flex({
         flexDirection: 'column',
         gap: '8px',
         marginX: 'auto',
-        marginBottom: '42px',
+        marginBottom: '46px',
         width: '720px',
         color: 'text.primary',
       })}
@@ -279,10 +279,9 @@
       style={css.raw({
         flex: '1',
         color: 'text.primary',
-        paddingX: '64px',
         paddingBottom: '128px',
         marginX: 'auto',
-        width: '848px',
+        width: '720px',
       })}
       awareness={yAwareness}
       document={yDoc}

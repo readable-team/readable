@@ -103,6 +103,7 @@
         color: 'text.secondary',
         width: 'full',
         height: '34px',
+        truncate: true,
       })}
       aria-selected={item.id === $page.params.pageId ? 'true' : 'false'}
       draggable="false"

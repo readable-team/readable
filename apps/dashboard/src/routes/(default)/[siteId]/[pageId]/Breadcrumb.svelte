@@ -94,7 +94,7 @@
         })}
       >
         <a
-          class={css(current && { textStyle: '15sb', color: 'text.primary' })}
+          class={css({ textStyle: '15m' }, current && { textStyle: '15sb', color: 'text.primary' })}
           aria-current={current ? 'page' : undefined}
           href={`/${$query.page.site.id}/${page.id}`}
         >

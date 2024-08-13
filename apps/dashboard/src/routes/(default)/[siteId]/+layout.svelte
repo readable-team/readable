@@ -222,12 +222,7 @@
   });
 </script>
 
-<div
-  class={flex({
-    height: 'screen',
-    overflow: 'auto',
-  })}
->
+<div class={flex({ height: 'screen' })}>
   <aside
     class={flex({
       flexDirection: 'column',
@@ -394,6 +389,7 @@
       paddingTop: '30px',
       backgroundColor: 'sidebar.surface',
       width: 'full',
+      truncate: true,
     })}
   >
     <div

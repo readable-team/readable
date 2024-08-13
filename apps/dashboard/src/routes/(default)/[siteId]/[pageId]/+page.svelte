@@ -36,10 +36,9 @@
     class={flex({
       alignItems: 'center',
       justifyContent: 'space-between',
+      gap: '20px',
       paddingX: '80px',
       backgroundColor: 'surface.tertiary',
-      width: 'full',
-      height: '58px',
     })}
   >
     <Breadcrumb _query={$query} />
