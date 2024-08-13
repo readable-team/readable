@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
+  import { onMount } from 'svelte';
   import BoldIcon from '~icons/lucide/bold';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import CodeXmlIcon from '~icons/lucide/code-xml';
@@ -68,7 +69,7 @@
   let selectedBlocks: Node[] = [];
   let activeNodeTypeId: string | null | undefined = null;
 
-  const updateSelectedNodeAnMarks = () => {
+  const updateSelectedNodeAndMarks = () => {
     activeMarks = marks.map(({ name }) => name).filter((name) => editor.isActive(name));
     activeNode = editor.state.selection.$head.parent;
     activeColor = editor.getAttributes('textStyle').color;
@@ -81,21 +82,24 @@
         }
       });
     }
+
     selectedBlocks = selectedBlocks;
   };
-
-  $: editor.on('update', () => {
-    updateSelectedNodeAnMarks();
-  });
-
-  $: editor.on('selectionUpdate', () => {
-    updateSelectedNodeAnMarks();
-  });
 
   $: activeNodeTypeId =
     activeNode?.type.name === 'heading'
       ? `${activeNode?.type.name}-${activeNode?.attrs?.level}`
       : activeNode?.type.name;
+
+  onMount(() => {
+    editor.on('update', updateSelectedNodeAndMarks);
+    editor.on('selectionUpdate', updateSelectedNodeAndMarks);
+
+    return () => {
+      editor.off('update', updateSelectedNodeAndMarks);
+      editor.off('selectionUpdate', updateSelectedNodeAndMarks);
+    };
+  });
 </script>
 
 <div
@@ -298,7 +302,7 @@
           }}
         >
           <div
-            style={hex && `background-color: ${hex}`}
+            style:background-color={hex}
             class={css({
               width: '18px',
               height: '18px',
