@@ -16,6 +16,12 @@ export const SlashMenu = Extension.create({
         char: '/',
         startOfLine: true,
 
+        allow: ({ state }) => {
+          const { selection } = state;
+          const { $from } = selection;
+          return $from.depth === 1;
+        },
+
         items: ({ query }) => {
           return matchSorter(menuItems, query, {
             keys: ['name', 'keywords'],
