@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
-  import Icon from '../../../components/Icon.svelte';
+  import { HorizontalDivider, Icon } from '@readable/ui/components';
   import type { Editor, Range } from '@tiptap/core';
   import type { MenuItem, MenuItemGroup } from './types';
 
@@ -40,18 +40,35 @@
 </script>
 
 <div
-  class={css({
-    width: '300px',
-    borderRadius: '4px',
-    backgroundColor: 'gray.100',
+  class={flex({
+    direction: 'column',
+    gap: '2px',
+    width: '260px',
+    height: '340px',
+    overflow: 'auto',
+    borderRadius: '8px',
+    backgroundColor: 'surface.tertiary',
     borderWidth: '1px',
-    boxShadow: '[0px 4px 10px 0 {colors.gray.1000/30}]',
-    padding: '4px',
+    borderColor: 'border.primary',
+    boxShadow: 'heavy',
+    paddingLeft: '4px',
+    paddingRight: '6px',
+    paddingY: '10px',
   })}
 >
   {#each items as item, idx (item.id)}
     {#if items[idx - 1]?.group !== item.group}
-      <div class={css({ paddingX: '8px', paddingY: '6px', textStyle: '12r', color: 'gray.700' })}>
+      {#if idx !== 0}
+        <HorizontalDivider
+          style={css.raw({
+            marginY: '10px',
+            marginLeft: '-4px',
+            marginRight: '-6px',
+          })}
+          color="secondary"
+        />
+      {/if}
+      <div class={css({ paddingX: '8px', textStyle: '12b', marginBottom: '2px', color: 'text.tertiary' })}>
         {groupNameMap[item.group]}
       </div>
     {/if}
@@ -59,10 +76,11 @@
     <div
       class={flex({
         align: 'center',
-        gap: '8px',
+        gap: '10px',
         paddingX: '8px',
-        paddingY: '6px',
-        backgroundColor: selectedIdx === idx ? 'gray.200' : undefined,
+        paddingY: '5px',
+        borderRadius: '6px',
+        backgroundColor: selectedIdx === idx ? 'neutral.10' : undefined,
       })}
       role="menuitem"
       tabindex="-1"
@@ -71,13 +89,22 @@
       on:click={() => item.command({ editor, range })}
       on:keydown={null}
     >
-      <div class={center({ size: '40px', borderRadius: '4px', backgroundColor: 'gray.200' })}>
+      <div
+        class={center({
+          width: '48px',
+          height: '48px',
+          borderRadius: '8px',
+          backgroundColor: 'surface.primary',
+          borderColor: 'border.secondary',
+          borderWidth: '1px',
+        })}
+      >
         <Icon icon={item.icon} size={20} />
       </div>
 
       <div class={flex({ direction: 'column' })}>
-        <div class={css({ textStyle: '15m' })}>{item.name}</div>
-        <div class={css({ textStyle: '12r', color: 'gray.700' })}>{item.description}</div>
+        <div class={css({ textStyle: '14sb' })}>{item.name}</div>
+        <div class={css({ textStyle: '13m', color: 'text.secondary' })}>{item.description}</div>
       </div>
     </div>
   {:else}
