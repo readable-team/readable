@@ -34,17 +34,17 @@
 {#key $query.page.id}
   <div
     class={flex({
-      position: 'sticky',
-      top: '0',
-      width: 'full',
-      height: '58px',
-      backgroundColor: 'surface.tertiary',
       alignItems: 'center',
       justifyContent: 'space-between',
+      paddingX: '80px',
+      backgroundColor: 'surface.tertiary',
+      width: 'full',
+      height: '58px',
     })}
   >
     <Breadcrumb _query={$query} />
     <PageMenuBar _query={$query} />
   </div>
+
   <Editor _query={$query} />
 {/key}

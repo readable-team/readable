@@ -231,7 +231,7 @@
   }
 </script>
 
-<div class={css({ flex: '1', marginTop: '64px', marginBottom: '128px' })}>
+<div class={css({ flex: '1', paddingTop: '64px', paddingX: '80px', overflowY: 'auto' })}>
   <div class={flex({ height: 'full', flexDirection: 'column' })}>
     <div
       class={flex({
@@ -276,7 +276,14 @@
     {/if} -->
 
     <TiptapEditor
-      style={css.raw({ flex: '1', color: 'text.primary', paddingX: '64px', marginX: 'auto', width: '848px' })}
+      style={css.raw({
+        flex: '1',
+        color: 'text.primary',
+        paddingX: '64px',
+        paddingBottom: '128px',
+        marginX: 'auto',
+        width: '848px',
+      })}
       awareness={yAwareness}
       document={yDoc}
       bind:editor
