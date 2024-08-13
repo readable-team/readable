@@ -58,14 +58,16 @@ export const SlashMenu = Extension.create({
               dom.style.top = `${y}px`;
 
               document.body.append(dom);
+              editor.view.dom.classList.add('has-slash-menu');
             },
 
             onUpdate: ({ editor, range, items }) => {
               component?.$set({ editor, range, items, selectedIdx: 0 });
             },
 
-            onKeyDown: ({ event }) => {
+            onKeyDown: ({ event, view }) => {
               if (event.key === 'Escape') {
+                view.dom.classList.remove('has-slash-menu');
                 component?.$destroy();
                 dom?.remove();
 
@@ -75,7 +77,8 @@ export const SlashMenu = Extension.create({
               return component?.handleKeyDown?.(event) ?? false;
             },
 
-            onExit: () => {
+            onExit: ({ editor }) => {
+              editor.view.dom.classList.remove('has-slash-menu');
               component?.$destroy();
               dom?.remove();
             },

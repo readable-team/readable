@@ -366,13 +366,17 @@
   >
     <div
       class={flex({
-        direction: 'column',
-        grow: 1,
-        borderTopLeftRadius: '[36px]',
-        paddingTop: '32px',
-        paddingX: '80px',
-        backgroundColor: 'surface.primary',
-        overflowY: 'auto',
+        'direction': 'column',
+        'grow': 1,
+        'borderTopLeftRadius': '[36px]',
+        'paddingTop': '32px',
+        'paddingX': '80px',
+        'backgroundColor': 'surface.primary',
+        'overflowY': 'auto',
+
+        '&:has(.has-slash-menu)': {
+          overflowY: 'hidden',
+        },
       })}
     >
       <slot />
