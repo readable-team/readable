@@ -8,6 +8,21 @@ import { bytea, datetime, jsonb } from './types';
 import type { JSONContent } from '@tiptap/core';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 
+export const Embeds = pgTable('embeds', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('EMBD')),
+  url: text('url').notNull().unique(),
+  type: text('type').notNull(),
+  title: text('title'),
+  description: text('description'),
+  html: text('html'),
+  thumbnailUrl: text('thumbnail_url'),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
+
 export const Files = pgTable('files', {
   id: text('id')
     .primaryKey()

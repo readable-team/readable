@@ -2,6 +2,7 @@ import './objects';
 import './enums';
 import './auth';
 import './blob';
+import './embed';
 import './page';
 import './search';
 import './site';

@@ -40,6 +40,7 @@ const createInterfaceRef = <T extends TableConfig>(name: string, table: TableWit
 export const IPage = createInterfaceRef('IPage', T.Pages);
 export const ISite = createInterfaceRef('ISite', T.Sites);
 
+export const Embed = createObjectRef('Embed', T.Embeds);
 export const File = createObjectRef('File', T.Files);
 export const Image = createObjectRef('Image', T.Images);
 export const Page = createObjectRef('Page', T.Pages);

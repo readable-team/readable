@@ -6,6 +6,7 @@ const schema = z.object({
   DATABASE_URL: z.string(),
   GOOGLE_OAUTH_CLIENT_ID: z.string(),
   GOOGLE_OAUTH_CLIENT_SECRET: z.string(),
+  IFRAMELY_API_KEY: z.string(),
   MEILISEARCH_API_KEY: z.string(),
   MEILISEARCH_URL: z.string(),
   OPENAI_API_KEY: z.string(),

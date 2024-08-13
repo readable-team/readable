@@ -39,6 +39,16 @@ input DuplicatePageInput {
   pageId: ID!
 }
 
+type Embed {
+  description: String
+  html: String
+  id: ID!
+  thumbnailUrl: String
+  title: String
+  type: String!
+  url: String!
+}
+
 type File implements Blob {
   id: ID!
   url: String!
@@ -117,6 +127,7 @@ type Mutation {
   removeTeamMember(input: RemoveTeamMemberInput!): TeamMember!
   setSiteCustomDomain(input: SetSiteCustomDomainInput!): SiteCustomDomain!
   syncPageContent(input: SyncPageContentInput!): [PageContentSyncOperation!]!
+  unfurlEmbed(input: UnfurlEmbedInput!): Embed!
   unpublishPage(input: UnpublishPageInput!): Page!
   unsetSiteCustomDomain(input: UnsetSiteCustomDomainInput!): SiteCustomDomain!
   updatePagePosition(input: UpdatePagePositionInput!): Page!
@@ -341,6 +352,10 @@ enum TeamMemberRole {
 enum TeamState {
   ACTIVE
   DELETED
+}
+
+input UnfurlEmbedInput {
+  url: String!
 }
 
 input UnpublishPageInput {
