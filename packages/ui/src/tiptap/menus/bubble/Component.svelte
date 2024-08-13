@@ -18,12 +18,21 @@
   export let to: number | null = null;
 
   let topLevelNodeTypePickerOpened = false;
+  let colorPickerOpened = false;
 
   const { anchor, floating } = createFloatingActions({
     placement: 'bottom-start',
     offset: 12,
     onClickOutside: () => {
       topLevelNodeTypePickerOpened = false;
+    },
+  });
+
+  const { anchor: colorPickerAnchor, floating: colorPickerFloating } = createFloatingActions({
+    placement: 'bottom-start',
+    offset: 12,
+    onClickOutside: () => {
+      colorPickerOpened = false;
     },
   });
 
@@ -42,14 +51,27 @@
     { name: 'code', icon: CodeXmlIcon },
   ];
 
-  let selectedBlocks: Node[] = [];
-  let activeNode: Node | null = null;
-  let activeNodeTypeId: string | null | undefined = null;
+  // TODO: dark mode 지원
+  const colors = [
+    { name: 'black', label: '검정', hex: null },
+    { name: 'gray', label: '회색', hex: '#6F7379' },
+    { name: 'red', label: '빨간색', hex: '#EF4444' },
+    { name: 'blue', label: '파란색', hex: '#3C82F6' },
+    { name: 'yellow', label: '노란색', hex: '#F59E0C' },
+    { name: 'green', label: '초록색', hex: '#12B981' },
+    { name: 'orange', label: '주황색', hex: '#EB690C' },
+  ];
+
   let activeMarks: string[] = [];
+  let activeNode: Node | null = null;
+  let activeColor: string | null = null;
+  let selectedBlocks: Node[] = [];
+  let activeNodeTypeId: string | null | undefined = null;
 
   const updateSelectedNodeAnMarks = () => {
     activeMarks = marks.map(({ name }) => name).filter((name) => editor.isActive(name));
     activeNode = editor.state.selection.$head.parent;
+    activeColor = editor.getAttributes('textStyle').color;
 
     selectedBlocks = [];
     if (from !== null && to !== null) {
@@ -199,4 +221,100 @@
       <Icon {icon} size={16} />
     </button>
   {/each}
+  <button
+    class={flex({
+      height: '30px',
+      gap: '4px',
+      alignItems: 'center',
+      borderRadius: '4px',
+      paddingLeft: '6px',
+      paddingRight: '5px',
+      _hover: {
+        backgroundColor: 'neutral.10',
+      },
+      _pressed: {
+        // theme=selected
+        backgroundColor: 'neutral.20',
+      },
+      _active: {
+        // theme=pressed
+        backgroundColor: 'neutral.30',
+      },
+    })}
+    aria-pressed={colorPickerOpened}
+    type="button"
+    on:click={() => {
+      colorPickerOpened = true;
+    }}
+    use:colorPickerAnchor
+  >
+    <div
+      style={activeColor && `background-color: ${activeColor}`}
+      class={css({
+        width: '18px',
+        height: '18px',
+        borderRadius: 'full',
+        backgroundColor: `text.primary`,
+      })}
+    />
+    <Icon icon={ChevronDownIcon} size={12} />
+  </button>
+  {#if colorPickerOpened}
+    <div
+      class={flex({
+        width: '163px',
+        flexDirection: 'column',
+        backgroundColor: 'surface.tertiary',
+        borderRadius: '6px',
+        boxShadow: 'heavy',
+        gap: '4px',
+        padding: '5px',
+      })}
+      use:colorPickerFloating
+    >
+      {#each colors as { name, label, hex } (name)}
+        <button
+          class={flex({
+            gap: '8px',
+            paddingX: '10px',
+            paddingY: '8px',
+            borderRadius: '6px',
+            _hover: {
+              backgroundColor: 'neutral.10',
+            },
+            _pressed: {
+              backgroundColor: 'neutral.20',
+            },
+          })}
+          aria-pressed={activeColor === hex}
+          type="button"
+          on:click={() => {
+            if (hex === null) {
+              editor.chain().focus().unsetColor().run();
+            } else {
+              editor.chain().focus().setColor(hex).run();
+            }
+            colorPickerOpened = false;
+          }}
+        >
+          <div
+            style={hex && `background-color: ${hex}`}
+            class={css({
+              width: '18px',
+              height: '18px',
+              borderRadius: 'full',
+              backgroundColor: `text.primary`,
+            })}
+          />
+          <div
+            class={css({
+              textStyle: '14sb',
+            })}
+          >
+            {label}
+          </div>
+        </button>
+      {/each}
+    </div>
+  {/if}
 </div>
