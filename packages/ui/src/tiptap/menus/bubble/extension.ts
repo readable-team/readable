@@ -2,7 +2,7 @@ import { autoUpdate, computePosition, hide, inline, offset, shift } from '@float
 import { center } from '@readable/styled-system/patterns';
 import { Extension, posToDOMRect } from '@tiptap/core';
 import { NodeSelection, Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
-import { isValidUrl } from '../../../utils/url';
+import { isValidLinkStructure } from '../../../utils/url';
 import { BlockSelection } from '../../extensions/block-selection';
 import LinkEditModal from '../link-edit-modal/Component.svelte';
 import Component from './Component.svelte';
@@ -87,7 +87,7 @@ export const BubbleMenu = Extension.create({
                   defaultLink = currentLink.href;
                 } else {
                   const maybeLink = this.editor.state.doc.textBetween(from, to);
-                  if (isValidUrl(maybeLink)) {
+                  if (isValidLinkStructure(maybeLink)) {
                     defaultLink = maybeLink;
                   }
                 }

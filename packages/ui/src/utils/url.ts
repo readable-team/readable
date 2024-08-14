@@ -1,3 +1,5 @@
+import { tokenize } from 'linkifyjs';
+
 export const addHttpScheme = (url: string) => {
   if (!url.includes('://')) {
     return `http://${url}`;
@@ -5,12 +7,16 @@ export const addHttpScheme = (url: string) => {
   return url;
 };
 
-// FIXME: 안 됨
-export const isValidUrl = (url: string) => {
-  try {
-    new URL(addHttpScheme(url));
-    return true;
-  } catch {
-    return false;
+export const isValidLinkStructure = (maybeLink: string): boolean => {
+  const tokens = tokenize(maybeLink).map((token) => token.toObject('http://'));
+
+  if (tokens.length === 1) {
+    return tokens[0].isLink;
   }
+
+  if (tokens.length === 3 && tokens[1].isLink) {
+    return ['()', '[]'].includes(tokens[0].value + tokens[2].value);
+  }
+
+  return false;
 };
