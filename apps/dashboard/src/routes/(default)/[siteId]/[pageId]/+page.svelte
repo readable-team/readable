@@ -2,7 +2,6 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Helmet } from '@readable/ui/components';
   import { graphql } from '$graphql';
-  import Breadcrumb from './Breadcrumb.svelte';
   import Editor from './Editor.svelte';
   import PageMenuBar from './PageMenuBar.svelte';
 
@@ -22,7 +21,6 @@
         }
       }
 
-      ...PagePage_Breadcrumb_query
       ...PagePage_PageMenuBar_query
       ...PagePage_Editor_query
     }
@@ -35,13 +33,12 @@
   <div
     class={flex({
       alignItems: 'center',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-end',
       gap: '20px',
       paddingX: '80px',
       backgroundColor: 'surface.tertiary',
     })}
   >
-    <Breadcrumb _query={$query} />
     <PageMenuBar _query={$query} />
   </div>
 
