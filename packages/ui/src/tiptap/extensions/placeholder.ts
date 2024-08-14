@@ -21,15 +21,22 @@ export const Placeholder = Extension.create({
             const { doc, selection } = state;
             const { $anchor, empty } = selection;
 
-            if (
+            const currentDocumentEmpty = doc.childCount === 1 && doc.firstChild?.childCount === 0;
+
+            const currentParagraphEmpty =
               this.editor.isFocused &&
               empty &&
               $anchor.depth === 1 &&
               $anchor.parent.type.name === 'paragraph' &&
-              $anchor.parent.childCount === 0
-            ) {
+              $anchor.parent.childCount === 0;
+
+            if (currentDocumentEmpty || currentParagraphEmpty) {
               decorations.push(
-                createDecoration($anchor.before(), $anchor.after(), '내용을 입력하거나 /를 입력해 명령어 사용하기...'),
+                createDecoration(
+                  $anchor.pos === 0 ? 0 : $anchor.before(),
+                  $anchor.pos === 0 ? 2 : $anchor.after(),
+                  '내용을 입력하거나 /를 입력해 명령어 사용하기...',
+                ),
               );
             }
 
