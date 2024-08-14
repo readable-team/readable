@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Button, Chip, Helmet, Icon, Tooltip } from '@readable/ui/components';
+  import { toast } from '@readable/ui/notification';
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
@@ -80,6 +81,11 @@
 
 <br />
 <div class={flex({ alignItems: 'center', gap: '8px' })}><Chip>초안</Chip> 어쩌구</div>
+
+<br />
+<br />
+
+<button type="button" on:click={() => toast('토스트 나와랏')}>토스트</button>
 
 <br />
 <br />

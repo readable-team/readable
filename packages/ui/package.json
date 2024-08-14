@@ -4,15 +4,16 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./components": "./src/components/index.ts",
     "./actions": "./src/actions/index.ts",
+    "./components": "./src/components/index.ts",
     "./forms": "./src/forms/index.ts",
     "./icons": {
       "types": "./src/icons/index.d.ts",
       "import": "./src/icons/index.js"
     },
-    "./tiptap": "./src/tiptap/index.ts",
-    "./styles.css": "./styles/index.css"
+    "./notification": "./src/notification/index.ts",
+    "./styles.css": "./styles/index.css",
+    "./tiptap": "./src/tiptap/index.ts"
   },
   "scripts": {
     "codegen": "svelte-kit sync",
