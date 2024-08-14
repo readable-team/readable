@@ -33,6 +33,7 @@
       zIndex: 'tooltip.body',
       borderRadius: '8px',
       maxWidth: '224px',
+      pointerEvents: 'none',
     })}
     role="tooltip"
     use:floating
