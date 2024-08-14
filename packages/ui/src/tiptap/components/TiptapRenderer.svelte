@@ -16,7 +16,7 @@
   let element: HTMLElement;
   let loaded = false;
 
-  $: html = generateHTML(content, extensions);
+  $: html = generateHTML(content, [...extensions, Image, File]);
   $: editor?.commands.setContent(content);
 
   onMount(() => {
