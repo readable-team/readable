@@ -345,7 +345,7 @@
         <li>
           <a
             class={sidebarMenuItemStyle}
-            aria-selected={$page.url.pathname === `/${$query.site.id}`}
+            aria-selected={$page.url.pathname === `/${$query.site.id}/`}
             href={`/${$query.site.id}`}
             role="tab"
           >
