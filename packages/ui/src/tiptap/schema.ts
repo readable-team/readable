@@ -24,6 +24,7 @@ import { TextAlign } from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
 import { liftTarget } from '@tiptap/pm/transform';
+import { Behavior } from './extensions/behavior';
 import { BlockSelectionHelper } from './extensions/block-selection';
 import { Placeholder } from './extensions/placeholder';
 import { BubbleMenu } from './menus/bubble';
@@ -155,10 +156,11 @@ export const extensions = [
   TextAlign,
   TextStyle,
 
+  Behavior,
+  BlockSelectionHelper,
   BubbleMenu,
   FloatingMenu,
   SlashMenu,
-  BlockSelectionHelper,
 
   // node views
   Callout,
