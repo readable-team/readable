@@ -21,20 +21,15 @@ export const FloatingMenu = Extension.create({
           handleDOMEvents: {
             pointermove: (view, event) => {
               const posAtCoords = view.posAtCoords({ left: event.clientX, top: event.clientY });
+              const pos = posAtCoords ? (posAtCoords.inside === -1 ? posAtCoords.pos : posAtCoords.inside) : -1;
 
               const { tr } = view.state;
 
-              if (posAtCoords) {
-                const $pos = view.state.doc.resolve(posAtCoords.pos);
-                const pos = $pos.before(1);
-
-                if (pos > view.state.doc.content.size) {
-                  tr.setMeta(key, { pos: -1 });
-                } else {
-                  tr.setMeta(key, { pos });
-                }
-              } else {
+              if (pos === -1) {
                 tr.setMeta(key, { pos: -1 });
+              } else {
+                const $pos = view.state.doc.resolve(pos);
+                tr.setMeta(key, { pos: $pos.before(1) });
               }
 
               view.dispatch(tr);

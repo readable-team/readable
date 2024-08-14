@@ -34,7 +34,9 @@ import { Callout } from './node-views';
 
 export const extensions = [
   // special nodes
-  Document,
+  Document.extend({
+    content: 'block* paragraph',
+  }),
   Text,
 
   // nodes

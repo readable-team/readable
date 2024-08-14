@@ -89,6 +89,7 @@ export const BlockSelectionHelper = Extension.create({
                       transition: 'common',
                       transitionTimingFunction: 'ease',
                       willChange: 'background-color',
+                      pointerEvents: 'none',
                     },
                   }),
                 }),

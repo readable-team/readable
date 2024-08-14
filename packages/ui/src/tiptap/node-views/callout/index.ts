@@ -16,7 +16,6 @@ export const Callout = createNodeView(Component, {
   name: 'callout',
   group: 'block',
   content: 'paragraph+',
-  draggable: true,
   defining: true,
 
   addAttributes() {
