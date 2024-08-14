@@ -129,25 +129,4 @@ export const semanticColors = defineSemanticTokens.colors({
     '80': { value: { base: '{colors.red.800}', _dark: '{colors.red.200}' } },
     '90': { value: { base: '{colors.red.900}', _dark: '{colors.red.100}' } },
   },
-
-  /**
-   * Tab
-   */
-  tab: {
-    background: {
-      DEFAULT: { value: { base: '{colors.white}', _dark: '{colors.darkgray.1000}' } },
-      selected: { value: { base: '{colors.white}', _dark: '{colors.darkgray.1000}' } },
-      hover: { value: { base: '{colors.gray.100}', _dark: '{colors.darkgray.900}' } },
-    },
-    foreground: {
-      DEFAULT: { value: { base: '{colors.gray.500}', _dark: '{colors.darkgray.600}' } },
-      selected: { value: { base: '{colors.gray.1000}', _dark: '{colors.darkgray.100}' } },
-      hover: { value: { base: '{colors.gray.1000}', _dark: '{colors.darkgray.100}' } },
-    },
-    border: {
-      DEFAULT: { value: { base: '{colors.transparent}', _dark: '{colors.transparent}' } },
-      selected: { value: { base: '{colors.gray.1000}', _dark: '{colors.darkgray.100}' } },
-      hover: { value: { base: '{colors.transparent}', _dark: '{colors.transparent}' } },
-    },
-  },
 });

@@ -37,21 +37,21 @@
         'paddingBottom': '4px',
         '_selected': {
           'borderBottomWidth': '[1.5px]',
-          'borderColor': 'tab.border.selected',
-          'color': 'tab.foreground.selected',
+          'borderColor': { base: 'gray.1000', _dark: 'darkgray.100' },
+          'color': { base: 'gray.1000', _dark: 'darkgray.100' },
           '& > span': {
-            backgroundColor: 'tab.background.selected',
+            backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
           },
         },
         '_hover': {
-          'color': 'tab.foreground.hover',
+          'color': { base: 'gray.1000', _dark: 'darkgray.100' },
           '& > span': {
-            backgroundColor: 'tab.background.hover',
+            backgroundColor: { base: 'gray.100', _dark: 'darkgray.900' },
           },
         },
-        'color': 'tab.foreground',
+        'color': { base: 'gray.500', _dark: 'darkgray.600' },
         '& > span': {
-          backgroundColor: 'tab.background',
+          backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
         },
       })}
       aria-selected={path === currentPath ? 'true' : 'false'}
