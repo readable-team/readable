@@ -50,6 +50,7 @@ export const BubbleMenu = Extension.create({
               }
 
               const { selection } = view.state;
+              component.$set({ from: selection.from, to: selection.to });
 
               if (
                 selection.empty ||
@@ -84,8 +85,6 @@ export const BubbleMenu = Extension.create({
                 },
                 contextElement: view.dom,
               };
-
-              component.$set({ from: selection.from, to: selection.to });
 
               cleanup?.();
               cleanup = autoUpdate(element, dom, async () => {
