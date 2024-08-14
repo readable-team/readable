@@ -148,7 +148,12 @@ export const extensions = [
   Underline.configure({ HTMLAttributes: { class: css({ textDecorationLine: 'underline' }) } }),
   Color,
   Code.configure({ HTMLAttributes: { class: css({ fontFamily: 'mono' }) } }),
-  Link.configure({ openOnClick: false }),
+  Link.configure({
+    openOnClick: true,
+    HTMLAttributes: {
+      class: css({ color: 'text.secondary', textDecorationLine: 'underline', cursor: 'pointer' }),
+    },
+  }),
 
   // extensions
   Dropcursor.configure({ width: 4, color: token('colors.accent.30') }),

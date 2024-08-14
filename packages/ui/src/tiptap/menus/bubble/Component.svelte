@@ -1,13 +1,13 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon } from '@readable/ui/components';
+  import { Button, Icon, TextInput } from '@readable/ui/components';
   import { onMount } from 'svelte';
   import BoldIcon from '~icons/lucide/bold';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import CodeXmlIcon from '~icons/lucide/code-xml';
   import ItalicIcon from '~icons/lucide/italic';
-  // import LinkIcon from '~icons/lucide/link';
+  import LinkIcon from '~icons/lucide/link';
   import StrikethroughIcon from '~icons/lucide/strikethrough';
   import UnderlineIcon from '~icons/lucide/underline';
   import { createFloatingActions } from '../../../actions';
@@ -19,6 +19,7 @@
   export let to: number | null = null;
 
   let topLevelNodeTypePickerOpened = false;
+  let linkerOpened = false;
   let colorPickerOpened = false;
 
   const { anchor, floating } = createFloatingActions({
@@ -26,6 +27,14 @@
     offset: 12,
     onClickOutside: () => {
       topLevelNodeTypePickerOpened = false;
+    },
+  });
+
+  const { anchor: linkerAnchor, floating: linkerFloating } = createFloatingActions({
+    placement: 'bottom-start',
+    offset: 12,
+    onClickOutside: () => {
+      linkerOpened = false;
     },
   });
 
@@ -68,6 +77,43 @@
   let activeColor: string | null = null;
   let selectedBlocks: Node[] = [];
   let activeNodeTypeId: string | null | undefined = null;
+
+  let linkDraft = '';
+
+  const addHttpScheme = (url: string) => {
+    if (!url.includes('://')) {
+      return `http://${url}`;
+    }
+    return url;
+  };
+
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(addHttpScheme(url));
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const bubbleMenuButtonStyle = flex({
+    width: '30px',
+    height: '30px',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '4px',
+    _hover: {
+      backgroundColor: 'neutral.10',
+    },
+    _pressed: {
+      // theme=selected
+      backgroundColor: 'neutral.20',
+    },
+    _active: {
+      // theme=pressed
+      backgroundColor: 'neutral.30',
+    },
+  });
 
   const updateSelectedNodeAndMarks = () => {
     activeMarks = marks.map(({ name }) => name).filter((name) => editor.isActive(name));
@@ -198,24 +244,7 @@
   {/if}
   {#each marks as { name, icon } (name)}
     <button
-      class={flex({
-        width: '30px',
-        height: '30px',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: '4px',
-        _hover: {
-          backgroundColor: 'neutral.10',
-        },
-        _pressed: {
-          // theme=selected
-          backgroundColor: 'neutral.20',
-        },
-        _active: {
-          // theme=pressed
-          backgroundColor: 'neutral.30',
-        },
-      })}
+      class={bubbleMenuButtonStyle}
       aria-pressed={activeMarks.includes(name)}
       type="button"
       on:click={() => {
@@ -225,6 +254,65 @@
       <Icon {icon} size={16} />
     </button>
   {/each}
+  <button
+    class={bubbleMenuButtonStyle}
+    aria-pressed={linkerOpened}
+    type="button"
+    on:click={() => {
+      linkerOpened = true;
+      const currentLink = editor.getAttributes('link');
+
+      if (currentLink.href) {
+        linkDraft = currentLink.href;
+        return;
+      }
+
+      if (from !== null && to !== null) {
+        const maybeLink = editor.state.doc.textBetween(from, to);
+        if (isValidUrl(maybeLink)) {
+          linkDraft = maybeLink;
+          return;
+        }
+      }
+
+      linkDraft = '';
+    }}
+    use:linkerAnchor
+  >
+    <Icon icon={LinkIcon} size={16} />
+  </button>
+  {#if linkerOpened}
+    <div
+      class={flex({
+        width: '460px',
+        flexDirection: 'column',
+        backgroundColor: 'surface.tertiary',
+        borderRadius: '10px',
+        boxShadow: 'heavy',
+        gap: '14px',
+        padding: '20px',
+      })}
+      use:linkerFloating
+    >
+      <!-- FIXME: 유효한 링크인지 검사? -->
+      <TextInput name="link-draft" placeholder="링크를 붙여넣어주세요" bind:value={linkDraft} />
+      <Button
+        disabled={linkDraft === ''}
+        size="lg"
+        variant="primary"
+        on:click={() => {
+          linkDraft = linkDraft.trim();
+          linkDraft = addHttpScheme(linkDraft);
+
+          editor.chain().focus().extendMarkRange('link').setLink({ href: linkDraft }).run();
+          linkerOpened = false;
+        }}
+      >
+        <!-- FIXME: 문구 -->
+        링크 업로드
+      </Button>
+    </div>
+  {/if}
   <button
     class={flex({
       height: '30px',
