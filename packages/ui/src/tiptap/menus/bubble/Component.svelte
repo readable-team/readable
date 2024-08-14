@@ -295,6 +295,7 @@
       use:linkerFloating
     >
       <!-- FIXME: 유효한 링크인지 검사? -->
+      <!-- FIXME: form 사용 -->
       <TextInput name="link-draft" placeholder="링크를 붙여넣어주세요" bind:value={linkDraft} />
       <Button
         disabled={linkDraft === ''}

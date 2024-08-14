@@ -29,6 +29,7 @@ import { BlockSelectionHelper } from './extensions/block-selection';
 import { Placeholder } from './extensions/placeholder';
 import { BubbleMenu } from './menus/bubble';
 import { FloatingMenu } from './menus/floating';
+import { LinkTooltip } from './menus/link-tooltip';
 import { SlashMenu } from './menus/slash';
 import { Callout } from './node-views';
 
@@ -168,6 +169,7 @@ export const extensions = [
   BubbleMenu,
   FloatingMenu,
   SlashMenu,
+  LinkTooltip,
 
   // node views
   Callout,

@@ -1,0 +1,1 @@
+export { LinkTooltip } from './extension';
