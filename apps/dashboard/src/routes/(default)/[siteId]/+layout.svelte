@@ -1,12 +1,10 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { HorizontalDivider, Icon, LogoPlaceholder, Menu, MenuItem } from '@readable/ui/components';
+  import { HorizontalDivider, Icon, LogoPlaceholder } from '@readable/ui/components';
   import { onMount } from 'svelte';
-  import ChevronsUpDownIcon from '~icons/lucide/chevrons-up-down';
   import ExternalLinkIcon from '~icons/lucide/external-link';
   import HouseIcon from '~icons/lucide/house';
-  import PlusIcon from '~icons/lucide/plus';
   import SettingsIcon from '~icons/lucide/settings';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
@@ -96,20 +94,6 @@
                   id
                 }
               }
-            }
-          }
-        }
-
-        team {
-          id
-
-          sites {
-            id
-            name
-
-            logo {
-              id
-              ...Img_image
             }
           }
         }
@@ -235,79 +219,30 @@
       overflowY: 'auto',
     })}
   >
-    <Menu listStyle={css.raw({ maxHeight: '324px' })} placement="bottom" setFullWidth>
-      <div
-        slot="button"
-        class={css(
-          {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '24px',
-            borderRadius: '8px',
-            paddingX: '10px',
-            paddingY: '8px',
-          },
-          open ? { backgroundColor: 'neutral.30' } : { _hover: { backgroundColor: 'neutral.20' } },
-        )}
-        let:open
-      >
-        <div class={flex({ align: 'center', gap: '10px', truncate: true })}>
-          {#if $query.site.logo}
-            <Img
-              style={css.raw({ borderRadius: '8px', size: '36px' })}
-              $image={$query.site.logo}
-              alt={`${$query.site.name}의 로고`}
-              size={48}
-            />
-          {:else}
-            <LogoPlaceholder style={css.raw({ flex: 'none', borderRadius: '8px', size: '36px' })} />
-          {/if}
-          <h1 class={css({ textStyle: '16b', truncate: true })}>
-            {$query.site.name}
-          </h1>
-        </div>
-        <Icon style={css.raw({ color: 'text.secondary' })} icon={ChevronsUpDownIcon} size={18} />
-      </div>
-
-      {#each $query.site.team.sites as site (site.id)}
-        <MenuItem aria-selected={site.id === $query.site.id} on:click={async () => await goto(`/${site.id}`)}>
-          {#if site.logo}
-            <Img
-              style={css.raw({ flex: 'none', borderRadius: '8px', size: '30px' })}
-              $image={site.logo}
-              alt={`${site.name}의 로고`}
-              size={32}
-            />
-          {:else}
-            <LogoPlaceholder style={css.raw({ flex: 'none', borderRadius: '8px', size: '30px' })} />
-          {/if}
-          <span class={css({ truncate: true })}>{site.name}</span>
-        </MenuItem>
-      {/each}
-
-      <svelte:fragment slot="action">
-        <HorizontalDivider style={css.raw({ marginY: '4px' })} />
-
-        <button
-          class={flex({
-            align: 'center',
-            gap: '6px',
-            borderRadius: '8px',
-            paddingX: '12px',
-            paddingY: '9px',
-            textStyle: '15sb',
-            color: 'text.tertiary',
-            width: 'full',
-            _hover: { backgroundColor: 'neutral.10' },
-          })}
-          type="button"
-        >
-          <Icon icon={PlusIcon} size={20} />
-          <span>새 사이트 추가</span>
-        </button>
-      </svelte:fragment>
-    </Menu>
+    <div
+      class={css({
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        borderRadius: '8px',
+        paddingX: '10px',
+        paddingY: '8px',
+      })}
+    >
+      {#if $query.site.logo}
+        <Img
+          style={css.raw({ borderRadius: '8px', size: '36px' })}
+          $image={$query.site.logo}
+          alt={`${$query.site.name}의 로고`}
+          size={48}
+        />
+      {:else}
+        <LogoPlaceholder style={css.raw({ flex: 'none', borderRadius: '8px', size: '36px' })} />
+      {/if}
+      <h1 class={css({ textStyle: '16b', truncate: true })}>
+        {$query.site.name}
+      </h1>
+    </div>
 
     <a
       class={flex({

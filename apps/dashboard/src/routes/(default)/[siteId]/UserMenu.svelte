@@ -114,8 +114,6 @@
 
     <p class={css({ textStyle: '14sb', color: 'text.secondary' })}>{$query.site.team.name}</p>
   </div>
-  <MenuItem>팀 전환</MenuItem>
-  <MenuItem>팀 생성</MenuItem>
   <MenuItem external={false} href="#/settings/team" type="link">팀 설정</MenuItem>
 
   <HorizontalDivider style={css.raw({ marginY: '12px' })} color="secondary" />
