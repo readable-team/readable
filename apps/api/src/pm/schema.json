@@ -2,7 +2,7 @@
   "topNode": "doc",
   "nodes": {
     "paragraph": { "content": "inline*", "group": "block", "parseDOM": [{ "tag": "p" }] },
-    "doc": { "content": "block+" },
+    "doc": { "content": "block* paragraph" },
     "text": { "group": "inline" },
     "heading": {
       "content": "inline*",
@@ -17,15 +17,46 @@
     },
     "hardBreak": { "group": "inline", "inline": true, "selectable": false, "parseDOM": [{ "tag": "br" }] },
     "horizontalRule": { "group": "block", "parseDOM": [{ "tag": "hr" }] },
-    "blockquote": { "content": "block+", "group": "block", "defining": true, "parseDOM": [{ "tag": "blockquote" }] },
+    "blockquote": { "content": "paragraph", "group": "block", "defining": true, "parseDOM": [{ "tag": "blockquote" }] },
     "bulletList": { "content": "listItem+", "group": "block list", "parseDOM": [{ "tag": "ul" }] },
     "orderedList": {
       "content": "listItem+",
       "group": "block list",
-      "attrs": { "start": { "default": 1 } },
+      "attrs": { "start": { "default": 1 }, "type": { "default": null } },
       "parseDOM": [{ "tag": "ol" }]
     },
-    "listItem": { "content": "paragraph block*", "defining": true, "parseDOM": [{ "tag": "li" }] }
+    "listItem": {
+      "content": "paragraph (paragraph | bulletList | orderedList)*",
+      "defining": true,
+      "parseDOM": [{ "tag": "li" }]
+    },
+    "callout": {
+      "content": "paragraph+",
+      "group": "block",
+      "defining": true,
+      "attrs": { "emoji": { "default": "alert" } },
+      "parseDOM": [{ "tag": "node-view" }]
+    },
+    "image": {
+      "group": "block",
+      "attrs": {
+        "id": { "default": null },
+        "url": { "default": null },
+        "ratio": { "default": null },
+        "placeholder": { "default": null }
+      },
+      "parseDOM": [{ "tag": "node-view" }]
+    },
+    "file": {
+      "group": "block",
+      "attrs": {
+        "id": { "default": null },
+        "name": { "default": null },
+        "size": { "default": null },
+        "url": { "default": null }
+      },
+      "parseDOM": [{ "tag": "node-view" }]
+    }
   },
   "marks": {
     "link": {
@@ -34,10 +65,11 @@
         "href": { "default": null },
         "target": { "default": "_blank" },
         "rel": { "default": "noopener noreferrer nofollow" },
-        "class": { "default": null }
+        "class": { "default": "c-text.secondary text-decoration-line-underline cursor-pointer" }
       },
       "parseDOM": [{ "tag": "a[href]" }]
     },
+    "textStyle": { "attrs": { "color": { "default": null } }, "parseDOM": [{ "tag": "span" }] },
     "bold": { "parseDOM": [{ "tag": "strong" }, { "tag": "b" }, { "style": "font-weight" }] },
     "italic": { "parseDOM": [{ "tag": "em" }, { "tag": "i" }, { "style": "font-style=italic" }] },
     "strike": {
@@ -49,7 +81,6 @@
       ]
     },
     "underline": { "parseDOM": [{ "tag": "u" }, { "style": "text-decoration", "consuming": false }] },
-    "code": { "excludes": "_", "code": true, "parseDOM": [{ "tag": "code" }] },
-    "textStyle": { "attrs": { "color": { "default": null } }, "parseDOM": [{ "tag": "span" }] }
+    "code": { "excludes": "_", "code": true, "parseDOM": [{ "tag": "code" }] }
   }
 }

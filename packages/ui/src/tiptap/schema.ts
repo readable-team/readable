@@ -32,6 +32,8 @@ import { FloatingMenu } from './menus/floating';
 import { LinkTooltip } from './menus/link-tooltip';
 import { SlashMenu } from './menus/slash';
 import { Callout } from './node-views';
+import { File } from './node-views/file';
+import { Image } from './node-views/image';
 
 export const extensions = [
   // special nodes
@@ -175,4 +177,4 @@ export const extensions = [
   Callout,
 ];
 
-export const schema = getSchema(extensions);
+export const schema = getSchema([...extensions, Image, File]);
