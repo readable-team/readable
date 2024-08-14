@@ -4,8 +4,10 @@
   import { HorizontalDivider, Icon, Menu, MenuItem } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import { page } from '$app/stores';
+  import { env } from '$env/dynamic/public';
   import { fragment, graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
+  import { accessToken } from '$lib/graphql';
   import UserSettingModal from './UserSettingModal.svelte';
   import type { UserMenu_query } from '$graphql';
 
@@ -48,6 +50,12 @@
       }
     `),
   );
+
+  const logout = graphql(`
+    mutation UserMenu_Logout_Mutation {
+      logout
+    }
+  `);
 </script>
 
 <Menu placement="top" setFullWidth>
@@ -127,6 +135,17 @@
     </div>
   </div>
   <MenuItem external={false} href="#/settings/personal" type="link">개인 설정</MenuItem>
+
+  <MenuItem
+    type="button"
+    on:click={async () => {
+      await logout();
+      $accessToken = null;
+      location.href = env.PUBLIC_WEBSITE_URL;
+    }}
+  >
+    로그아웃
+  </MenuItem>
 </Menu>
 
 <UserSettingModal $site={$query.site} $user={$query.me} bind:open={openUserSettingModal} />
