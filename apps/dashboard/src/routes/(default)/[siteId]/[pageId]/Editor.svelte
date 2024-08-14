@@ -3,6 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { TiptapEditor } from '@readable/ui/tiptap';
   import { fromUint8Array, toUint8Array } from 'js-base64';
+  import ky from 'ky';
   import { nanoid } from 'nanoid';
   import { onMount } from 'svelte';
   import * as YAwareness from 'y-protocols/awareness';
@@ -47,6 +48,37 @@
         pageId
         kind
         data
+      }
+    }
+  `);
+
+  const issueBlobUploadUrl = graphql(`
+    mutation PagePage_IssueBlobUploadUrl($input: IssueBlobUploadUrlInput!) {
+      issueBlobUploadUrl(input: $input) {
+        path
+        url
+        fields
+      }
+    }
+  `);
+
+  const persistBlobAsFile = graphql(`
+    mutation PagePage_PersistBlobAsFile($input: PersistBlobAsFileInput!) {
+      persistBlobAsFile(input: $input) {
+        id
+        name
+        size
+        url
+      }
+    }
+  `);
+
+  const persistBlobAsImage = graphql(`
+    mutation PagePage_PersistBlobAsImage($input: PersistBlobAsImageInput!) {
+      persistBlobAsImage(input: $input) {
+        id
+        url
+        placeholder
       }
     }
   `);
@@ -229,6 +261,22 @@
 
     [$subtitle];
   }
+
+  const uploadBlob = async (file: File) => {
+    const { path, url, fields } = await issueBlobUploadUrl({ filename: file.name });
+
+    const formData = new FormData();
+    for (const [key, value] of Object.entries<string>(fields)) {
+      formData.append(key, value);
+    }
+
+    formData.append('Content-Type', file.type);
+    formData.append('file', file);
+
+    await ky.post(url, { body: formData });
+
+    return path;
+  };
 </script>
 
 <div class={css({ flex: '1', paddingTop: '62px', paddingX: '80px', overflowY: 'auto' })}>
@@ -285,6 +333,14 @@
       })}
       awareness={yAwareness}
       document={yDoc}
+      handleFileUpload={async (file) => {
+        const path = await uploadBlob(file);
+        return await persistBlobAsFile({ path });
+      }}
+      handleImageUpload={async (file) => {
+        const path = await uploadBlob(file);
+        return await persistBlobAsImage({ path });
+      }}
       bind:editor
     />
   </div>

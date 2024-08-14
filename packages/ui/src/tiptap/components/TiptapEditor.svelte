@@ -6,6 +6,8 @@
   import * as Y from 'yjs';
   import { Collaboration } from '../extensions/collaboration';
   import { Freeze } from '../extensions/freeze';
+  import { File } from '../node-views/file';
+  import { Image } from '../node-views/image';
   import { extensions } from '../schema';
   import type { SystemStyleObject } from '@readable/styled-system/types';
 
@@ -19,6 +21,9 @@
   export let editor: Editor | undefined = undefined;
   export let frozen = false;
 
+  export let handleImageUpload: (file: File) => Promise<Record<string, unknown>>;
+  export let handleFileUpload: (file: File) => Promise<Record<string, unknown>>;
+
   let element: HTMLDivElement;
 
   onMount(() => {
@@ -26,6 +31,8 @@
       element,
       extensions: [
         ...extensions,
+        Image.configure({ handleImageUpload }),
+        File.configure({ handleFileUpload }),
         ...(document && awareness ? [Collaboration.configure({ document, awareness })] : []),
         ...(frozen ? [Freeze] : []),
       ],

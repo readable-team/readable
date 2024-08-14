@@ -1,6 +1,8 @@
+import FileIcon from '~icons/lucide/file';
 import Heading1Icon from '~icons/lucide/heading-1';
 import Heading2Icon from '~icons/lucide/heading-2';
 import Heading3Icon from '~icons/lucide/heading-3';
+import ImageIcon from '~icons/lucide/image';
 import ListIcon from '~icons/lucide/list';
 import ListOrderedIcon from '~icons/lucide/list-ordered';
 import MinusIcon from '~icons/lucide/minus';
@@ -94,6 +96,28 @@ export const menuItems: MenuItem[] = [
     icon: Heading1Icon, // FIXME: 콜아웃 아이콘
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setCallout().run();
+    },
+  },
+  {
+    id: 'image',
+    group: 'media',
+    name: '이미지',
+    keywords: ['image', 'picture'],
+    description: '이미지입니다.',
+    icon: ImageIcon,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setImage().run();
+    },
+  },
+  {
+    id: 'file',
+    group: 'media',
+    name: '파일',
+    keywords: ['file', 'attachment'],
+    description: '파일입니다.',
+    icon: FileIcon,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setFile().run();
     },
   },
 ];

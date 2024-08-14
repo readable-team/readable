@@ -22,6 +22,9 @@ Blob.implement({
 File.implement({
   interfaces: [Blob],
   fields: (t) => ({
+    name: t.exposeString('name'),
+    size: t.exposeInt('size'),
+
     url: t.string({ resolve: (blob) => `${env.PUBLIC_USERCONTENTS_URL}/files/${blob.path}` }),
   }),
 });

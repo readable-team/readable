@@ -51,6 +51,8 @@ type Embed {
 
 type File implements Blob {
   id: ID!
+  name: String!
+  size: Int!
   url: String!
 }
 

@@ -44,6 +44,7 @@
   const groupNameMap: Record<MenuItemGroup, string> = {
     heading: '제목',
     block: '블록',
+    media: '미디어',
   };
 
   let selectableElems: HTMLElement[] = [];

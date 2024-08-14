@@ -6,6 +6,7 @@ export { default as FormValidationMessage } from './FormValidationMessage.svelte
 export { default as Helmet } from './Helmet.svelte';
 export { default as HorizontalDivider } from './HorizontalDivider.svelte';
 export { default as Icon } from './Icon.svelte';
+export { default as Img } from './Img.svelte';
 export { default as LogoPlaceholder } from './LogoPlaceholder.svelte';
 export { default as Menu } from './Menu.svelte';
 export { default as MenuItem } from './MenuItem.svelte';

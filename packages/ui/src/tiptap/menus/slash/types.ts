@@ -16,4 +16,4 @@ export type MenuItem = {
   command: (params: CommandParams) => void;
 };
 
-export type MenuItemGroup = 'heading' | 'block';
+export type MenuItemGroup = 'heading' | 'block' | 'media';
