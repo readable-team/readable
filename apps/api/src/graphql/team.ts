@@ -232,7 +232,7 @@ builder.mutationFields((t) => ({
           recipient: input.email,
           subject: `[Readable] ${team.name}에 추가되었어요`,
           body: TeamMemberAddedEmail({
-            dashboardUrl: env.DASHBOARD_URL,
+            dashboardUrl: env.PUBLIC_DASHBOARD_URL,
             teamId: input.teamId,
             teamName: team.name,
           }),
@@ -254,7 +254,7 @@ builder.mutationFields((t) => ({
           recipient: input.email,
           subject: `[Readable] ${team.name}에 참여하세요`,
           body: TeamMemberInvitedEmail({
-            dashboardUrl: env.DASHBOARD_URL,
+            dashboardUrl: env.PUBLIC_DASHBOARD_URL,
             teamName: team.name,
           }),
         });

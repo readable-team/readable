@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 const schema = z.object({
   ACCESS_TOKEN_JWK: z.string(),
-  DASHBOARD_URL: z.string(),
   DATABASE_URL: z.string(),
   GOOGLE_OAUTH_CLIENT_ID: z.string(),
   GOOGLE_OAUTH_CLIENT_SECRET: z.string(),
@@ -10,12 +9,13 @@ const schema = z.object({
   MEILISEARCH_API_KEY: z.string(),
   MEILISEARCH_URL: z.string(),
   OPENAI_API_KEY: z.string(),
+  PUBLIC_DASHBOARD_URL: z.string(),
   PUBLIC_PULUMI_PROJECT: z.string().optional(),
   PUBLIC_PULUMI_STACK: z.string().optional(),
+  PUBLIC_USERCONTENTS_URL: z.string(),
   RABBITMQ_URL: z.string(),
   RESEND_API_KEY: z.string(),
   SENTRY_DSN: z.string().optional(),
-  USERCONTENTS_URL: z.string(),
   USERSITE_CNAME_HOST: z.string(),
   USERSITE_DEFAULT_HOST: z.string(),
 });

@@ -28,6 +28,7 @@
     "natgw",
     "oidc",
     "oidcs",
+    "openai",
     "penxle",
     "pino",
     "pulumi",

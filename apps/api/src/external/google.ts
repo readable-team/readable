@@ -6,7 +6,7 @@ const createOAuthClient = () => {
   return new OAuth2Client({
     clientId: env.GOOGLE_OAUTH_CLIENT_ID,
     clientSecret: env.GOOGLE_OAUTH_CLIENT_SECRET,
-    redirectUri: `${env.DASHBOARD_URL}/auth/sso/google`,
+    redirectUri: `${env.PUBLIC_DASHBOARD_URL}/auth/sso/google`,
   });
 };
 

@@ -22,7 +22,7 @@ Blob.implement({
 File.implement({
   interfaces: [Blob],
   fields: (t) => ({
-    url: t.string({ resolve: (blob) => `${env.USERCONTENTS_URL}/files/${blob.path}` }),
+    url: t.string({ resolve: (blob) => `${env.PUBLIC_USERCONTENTS_URL}/files/${blob.path}` }),
   }),
 });
 
@@ -31,7 +31,7 @@ Image.implement({
   fields: (t) => ({
     placeholder: t.exposeString('placeholder'),
 
-    url: t.string({ resolve: (blob) => `${env.USERCONTENTS_URL}/images/${blob.path}` }),
+    url: t.string({ resolve: (blob) => `${env.PUBLIC_USERCONTENTS_URL}/images/${blob.path}` }),
   }),
 });
 

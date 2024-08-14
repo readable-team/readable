@@ -10,3 +10,7 @@ setup:
   - path: apps/usersite
     project: usersite
     config: dev_local
+
+  - path: apps/website
+    project: website
+    config: dev_local
