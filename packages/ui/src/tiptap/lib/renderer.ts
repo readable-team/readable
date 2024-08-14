@@ -1,8 +1,7 @@
 import { NodeView } from '@tiptap/core';
-import { Mutex } from 'async-mutex';
 import type {
   DecorationWithType,
-  NodeViewProps as TiptapNodeViewProps,
+  NodeViewProps,
   NodeViewRenderer,
   NodeViewRendererOptions,
   NodeViewRendererProps,
@@ -11,21 +10,14 @@ import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import type { NodeView as ProseMirrorNodeView } from '@tiptap/pm/view';
 import type { ComponentType, SvelteComponent } from 'svelte';
 
-export type NodeViewProps = Omit<TiptapNodeViewProps, 'updateAttributes'> & {
-  updateAttributes: (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    attributes: Record<string, any> | ((attributes: Record<string, any>) => Record<string, any>),
-    options?: { skipHistory?: boolean },
-  ) => Promise<void>;
-};
 type NodeViewComponent = SvelteComponent<NodeViewProps>;
 export type NodeViewComponentType = ComponentType<NodeViewComponent>;
+export type { NodeViewProps } from '@tiptap/core';
 
 class SvelteNodeView extends NodeView<NodeViewComponentType> implements ProseMirrorNodeView {
   #element: HTMLElement;
   #contentElement: HTMLElement | null = null;
   #component: NodeViewComponent;
-  #mutex = new Mutex();
 
   #handleSelectionUpdate: () => void;
   #handleTransaction: () => void;
@@ -66,18 +58,7 @@ class SvelteNodeView extends NodeView<NodeViewComponentType> implements ProseMir
         selected: false,
 
         getPos: () => this.getPos() as number,
-        updateAttributes: async (attributes, options) => {
-          await this.#mutex.runExclusive(() => {
-            if (typeof attributes === 'function') {
-              attributes = attributes(this.node.attrs);
-            }
-
-            const { tr } = this.editor.state;
-            tr.setMeta('addToHistory', !options?.skipHistory);
-            tr.setNodeMarkup(this.getPos(), undefined, { ...this.node.attrs, ...attributes });
-            this.editor.view.dispatch(tr);
-          });
-        },
+        updateAttributes: (attrs) => this.updateAttributes(attrs),
         deleteNode: () => this.deleteNode(),
       },
       context,

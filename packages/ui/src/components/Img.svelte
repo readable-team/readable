@@ -1,16 +1,19 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
+  import { center } from '@readable/styled-system/patterns';
   import { toUint8Array } from 'js-base64';
   import qs from 'query-string';
   import { onMount, tick } from 'svelte';
   import { fade } from 'svelte/transition';
   import { thumbHashToDataURL } from 'thumbhash';
+  import RingSpinner from './RingSpinner.svelte';
   import type { SystemStyleObject } from '@readable/styled-system/types';
 
   type Size = 16 | 24 | 32 | 48 | 64 | 96 | 128 | 256 | 512 | 1024 | 'full';
 
   export let url: string;
   export let placeholder: string | undefined = undefined;
+  export let ratio: number | undefined = undefined;
 
   export let alt: string;
   export let style: SystemStyleObject | undefined = undefined;
@@ -62,7 +65,7 @@
   onMount(() => {
     if (containerEl) {
       const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
+        if (entries.some((entry) => entry.isIntersecting)) {
           observer.disconnect();
           load();
         }
@@ -76,10 +79,24 @@
 </script>
 
 {#if placeholderUrl}
-  <div bind:this={containerEl} class={css({ position: 'relative' })}>
-    <img class={css(style)} {alt} loading="lazy" src={placeholderUrl} />
+  <div
+    bind:this={containerEl}
+    style:aspect-ratio={ratio}
+    style:background-image={`url(${placeholderUrl})`}
+    class={css({
+      position: 'relative',
+      backgroundSize: 'cover',
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center',
+      backgroundClip: 'content-box',
+    })}
+  >
     {#if loaded}
       <div bind:this={contentEl} class={css({ position: 'absolute', inset: '0' })} in:fade={{ duration: 200 }} />
+    {:else}
+      <div class={center({ position: 'absolute', inset: '0' })}>
+        <RingSpinner style={css.raw({ size: '20px' })} />
+      </div>
     {/if}
   </div>
 {:else}

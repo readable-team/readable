@@ -83,6 +83,7 @@ interface ISite {
 type Image implements Blob {
   id: ID!
   placeholder: String!
+  ratio: Float!
   url: String!
 }
 

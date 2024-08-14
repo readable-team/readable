@@ -3,6 +3,8 @@
   import { Editor } from '@tiptap/core';
   import { generateHTML } from '@tiptap/html';
   import { onMount } from 'svelte';
+  import { File } from '../node-views/file';
+  import { Image } from '../node-views/image';
   import { extensions } from '../schema';
   import type { SystemStyleObject } from '@readable/styled-system/types';
   import type { JSONContent } from '@tiptap/core';
@@ -22,7 +24,7 @@
       element,
       editable: false,
       content,
-      extensions,
+      extensions: [...extensions, Image, File],
       injectCSS: false,
 
       editorProps: {

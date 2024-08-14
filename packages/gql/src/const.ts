@@ -11,6 +11,10 @@ export const scalarTSTypes = {
     Input: 'number',
     Output: 'number',
   },
+  Float: {
+    Input: 'number',
+    Output: 'number',
+  },
   Boolean: {
     Input: 'boolean',
     Output: 'boolean',

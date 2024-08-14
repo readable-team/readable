@@ -28,6 +28,7 @@ export const Image = createNodeView<Options>(Component, {
     return {
       id: {},
       url: {},
+      ratio: {},
       placeholder: {},
     };
   },

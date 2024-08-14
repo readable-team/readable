@@ -34,6 +34,7 @@ Image.implement({
   fields: (t) => ({
     placeholder: t.exposeString('placeholder'),
 
+    ratio: t.float({ resolve: (image) => image.width / image.height }),
     url: t.string({ resolve: (blob) => `${env.PUBLIC_USERCONTENTS_URL}/images/${blob.path}` }),
   }),
 });

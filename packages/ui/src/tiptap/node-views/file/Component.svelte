@@ -13,6 +13,7 @@
   export let selected: NodeViewProps['selected'];
   export let updateAttributes: NodeViewProps['updateAttributes'];
 
+  let inflight = false;
   let pickerOpened = false;
   $: pickerOpened = selected;
 
@@ -36,8 +37,13 @@
         return;
       }
 
-      const attrs = await extension.options.handleFileUpload(file);
-      updateAttributes(attrs);
+      inflight = true;
+      try {
+        const attrs = await extension.options.handleFileUpload(file);
+        updateAttributes(attrs);
+      } finally {
+        inflight = false;
+      }
     });
 
     picker.click();
@@ -48,11 +54,17 @@
   {#if node.attrs.id}
     <div class={css({ backgroundColor: 'neutral.20', padding: '12px' })}>{node.attrs.name}</div>
   {:else}
-    <div class={css({ backgroundColor: 'neutral.20', padding: '12px' })} use:anchor>파일</div>
+    <div class={css({ backgroundColor: 'neutral.20', padding: '12px' })} use:anchor>
+      {#if inflight}
+        업로드 중...
+      {:else}
+        파일
+      {/if}
+    </div>
   {/if}
 </NodeView>
 
-{#if pickerOpened && !node.attrs.id}
+{#if pickerOpened && !node.attrs.id && !inflight}
   <div class={css({ backgroundColor: 'neutral.10', paddingX: '36px', paddingY: '12px' })} use:floating>
     <Button on:click={handleUpload}>업로드</Button>
   </div>

@@ -78,6 +78,7 @@
       persistBlobAsImage(input: $input) {
         id
         url
+        ratio
         placeholder
       }
     }
