@@ -15,21 +15,26 @@
 
   $: dispatch('select', items[selectedIdx]);
 
+  let isOnKeyboardNavigation = false;
+
   export const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'ArrowDown') {
+    if (['ArrowDown', 'ArrowUp'].includes(event.key)) {
       event.preventDefault();
-      selectedIdx = (selectedIdx + 1) % items.length;
+      isOnKeyboardNavigation = true;
+
+      if (event.key === 'ArrowDown') {
+        selectedIdx = (selectedIdx + 1) % items.length;
+      }
+
+      if (event.key === 'ArrowUp') {
+        selectedIdx = (selectedIdx - 1 + items.length) % items.length;
+      }
+
       selectableElems[selectedIdx]?.focus();
       return true;
     }
 
-    if (event.key === 'ArrowUp') {
-      event.preventDefault();
-      selectedIdx = (selectedIdx - 1 + items.length) % items.length;
-      selectableElems[selectedIdx]?.focus();
-      return true;
-    }
-
+    isOnKeyboardNavigation = false;
     if (!editor.view.hasFocus()) {
       editor.view.focus();
     }
@@ -60,6 +65,7 @@
     paddingRight: '6px',
     paddingY: '10px',
   })}
+  role="menu"
 >
   {#each items as item, idx (item.id)}
     {#if items[idx - 1]?.group !== item.group}
@@ -90,8 +96,13 @@
       })}
       role="menuitem"
       tabindex="-1"
-      on:focus={null}
-      on:mouseover={() => (selectedIdx = idx)}
+      on:pointermove={() => {
+        if (isOnKeyboardNavigation) {
+          isOnKeyboardNavigation = false;
+        } else {
+          selectedIdx = idx;
+        }
+      }}
       on:click={() => item.command({ editor, range })}
       on:keydown={handleKeyDown}
     >
