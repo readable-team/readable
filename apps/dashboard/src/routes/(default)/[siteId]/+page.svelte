@@ -5,7 +5,7 @@
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
-  import Img from '$lib/components/Img.svelte';
+  import { Img } from '$lib/components';
   import { accessToken } from '$lib/graphql';
 
   $: query = graphql(`

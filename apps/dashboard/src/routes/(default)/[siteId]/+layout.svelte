@@ -9,7 +9,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
-  import Img from '$lib/components/Img.svelte';
+  import { Img } from '$lib/components';
   import { PageList } from '$lib/components/page-list';
   import SiteSettingModal from './SiteSettingModal.svelte';
   import UserMenu from './UserMenu.svelte';

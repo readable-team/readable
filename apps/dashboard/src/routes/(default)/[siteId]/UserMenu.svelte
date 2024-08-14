@@ -6,7 +6,7 @@
   import { page } from '$app/stores';
   import { env } from '$env/dynamic/public';
   import { fragment, graphql } from '$graphql';
-  import Img from '$lib/components/Img.svelte';
+  import { Img } from '$lib/components';
   import { accessToken } from '$lib/graphql';
   import UserSettingModal from './UserSettingModal.svelte';
   import type { UserMenu_query } from '$graphql';

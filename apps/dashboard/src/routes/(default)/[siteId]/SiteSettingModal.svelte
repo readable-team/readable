@@ -7,7 +7,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
-  import Img from '$lib/components/Img.svelte';
+  import { Img } from '$lib/components';
   import { uploadBlobAsImage } from '$lib/utils/blob.svelte';
   import type { SiteSettingModal_site, SiteSettingModal_user } from '$graphql';
 

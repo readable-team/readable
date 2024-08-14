@@ -11,7 +11,7 @@
   import TrashIcon from '~icons/lucide/trash';
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
-  import Img from '$lib/components/Img.svelte';
+  import { Img } from '$lib/components';
   import { pageUrl } from '$lib/utils/url';
   import type { PagePage_PageMenuBar_query } from '$graphql';
 

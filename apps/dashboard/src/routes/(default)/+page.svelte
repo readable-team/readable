@@ -3,7 +3,7 @@
   import { Alert, Button, Helmet, TextInput } from '@readable/ui/components';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
-  import Img from '$lib/components/Img.svelte';
+  import { Img } from '$lib/components';
 
   let siteName = '';
   let deleteTeamOpen = false;

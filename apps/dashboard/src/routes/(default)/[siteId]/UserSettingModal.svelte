@@ -11,7 +11,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
-  import Img from '$lib/components/Img.svelte';
+  import { Img } from '$lib/components';
   import type { UserSettingModal_site, UserSettingModal_user } from '$graphql';
 
   let _user: UserSettingModal_user;
