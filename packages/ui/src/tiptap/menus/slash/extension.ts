@@ -57,8 +57,39 @@ export const SlashMenu = Extension.create({
           let component: Component | null = null;
           let selectedItem: MenuItem | null = null;
 
+          let initialRange: { from: number; to: number } | null = null;
+
+          const exitSlashMenu = () => {
+            this.editor.view.dom.classList.remove('has-slash-menu');
+            component?.$destroy();
+            dom?.remove();
+          };
+
+          const updateSlashMenuPosition = async (domRect: DOMRect) => {
+            if (!dom) {
+              return;
+            }
+
+            const virtualEl: VirtualElement = {
+              getBoundingClientRect: () => domRect,
+            };
+
+            const { x, y } = await computePosition(virtualEl, dom, {
+              placement: 'bottom-start',
+              middleware: [
+                flip({
+                  padding: 16,
+                }),
+              ],
+            });
+
+            dom.style.left = `${x}px`;
+            dom.style.top = `${y}px`;
+          };
+
           return {
             onStart: async ({ clientRect, editor, range, items }) => {
+              initialRange = range;
               selectedItem = items[0];
               dom = document.createElement('div');
               component = new Component({
@@ -83,45 +114,37 @@ export const SlashMenu = Extension.create({
               });
 
               const domRect = clientRect?.();
-
               if (!domRect) {
                 return;
               }
 
-              const virtualEl: VirtualElement = {
-                getBoundingClientRect: () => domRect,
-              };
-
               document.body.append(dom);
 
-              const { x, y } = await computePosition(virtualEl, dom, {
-                placement: 'bottom-start',
-                middleware: [
-                  flip({
-                    padding: 16,
-                  }),
-                ],
-              });
-
               dom.style.position = 'absolute';
-              dom.style.left = `${x}px`;
-              dom.style.top = `${y}px`;
               dom.style.visibility = 'visible';
+
+              await updateSlashMenuPosition(domRect);
 
               editor.view.dom.classList.add('has-slash-menu');
             },
 
-            onUpdate: ({ editor, range, items }) => {
+            onUpdate: async ({ clientRect, editor, range, items }) => {
               selectedItem = items[0];
               component?.$set({ editor, range, items, selectedIdx: 0 });
+
+              if (initialRange?.from !== range.from) {
+                exitSlashMenu();
+              }
+
+              const domRect = clientRect?.();
+              if (domRect) {
+                await updateSlashMenuPosition(domRect);
+              }
             },
 
-            onKeyDown: ({ event, view, range }) => {
+            onKeyDown: ({ event, range }) => {
               if (event.key === 'Escape') {
-                view.dom.classList.remove('has-slash-menu');
-                component?.$destroy();
-                dom?.remove();
-
+                exitSlashMenu();
                 return true;
               }
 
@@ -133,10 +156,8 @@ export const SlashMenu = Extension.create({
               return component?.handleKeyDown?.(event) ?? false;
             },
 
-            onExit: ({ editor }) => {
-              editor.view.dom.classList.remove('has-slash-menu');
-              component?.$destroy();
-              dom?.remove();
+            onExit: () => {
+              exitSlashMenu();
             },
           };
         },
