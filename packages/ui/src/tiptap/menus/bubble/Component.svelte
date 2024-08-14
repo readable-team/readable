@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Icon, TextInput } from '@readable/ui/components';
+  import { Icon } from '@readable/ui/components';
   import { onMount } from 'svelte';
   import BoldIcon from '~icons/lucide/bold';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
@@ -17,9 +17,9 @@
   export let editor: Editor;
   export let from: number | null = null;
   export let to: number | null = null;
+  export let openLinkEditModal: () => void;
 
   let topLevelNodeTypePickerOpened = false;
-  let linkerOpened = false;
   let colorPickerOpened = false;
 
   const { anchor, floating } = createFloatingActions({
@@ -27,14 +27,6 @@
     offset: 12,
     onClickOutside: () => {
       topLevelNodeTypePickerOpened = false;
-    },
-  });
-
-  const { anchor: linkerAnchor, floating: linkerFloating } = createFloatingActions({
-    placement: 'bottom-start',
-    offset: 12,
-    onClickOutside: () => {
-      linkerOpened = false;
     },
   });
 
@@ -77,24 +69,6 @@
   let activeColor: string | null = null;
   let selectedBlocks: Node[] = [];
   let activeNodeTypeId: string | null | undefined = null;
-
-  let linkDraft = '';
-
-  const addHttpScheme = (url: string) => {
-    if (!url.includes('://')) {
-      return `http://${url}`;
-    }
-    return url;
-  };
-
-  const isValidUrl = (url: string) => {
-    try {
-      new URL(addHttpScheme(url));
-      return true;
-    } catch {
-      return false;
-    }
-  };
 
   const bubbleMenuButtonStyle = flex({
     width: '30px',
@@ -256,64 +230,13 @@
   {/each}
   <button
     class={bubbleMenuButtonStyle}
-    aria-pressed={linkerOpened}
     type="button"
     on:click={() => {
-      linkerOpened = true;
-      const currentLink = editor.getAttributes('link');
-
-      if (currentLink.href) {
-        linkDraft = currentLink.href;
-        return;
-      }
-
-      if (from !== null && to !== null) {
-        const maybeLink = editor.state.doc.textBetween(from, to);
-        if (isValidUrl(maybeLink)) {
-          linkDraft = maybeLink;
-          return;
-        }
-      }
-
-      linkDraft = '';
+      openLinkEditModal();
     }}
-    use:linkerAnchor
   >
     <Icon icon={LinkIcon} size={16} />
   </button>
-  {#if linkerOpened}
-    <div
-      class={flex({
-        width: '460px',
-        flexDirection: 'column',
-        backgroundColor: 'surface.tertiary',
-        borderRadius: '10px',
-        boxShadow: 'heavy',
-        gap: '14px',
-        padding: '20px',
-      })}
-      use:linkerFloating
-    >
-      <!-- FIXME: 유효한 링크인지 검사? -->
-      <!-- FIXME: form 사용 -->
-      <TextInput name="link-draft" placeholder="링크를 붙여넣어주세요" bind:value={linkDraft} />
-      <Button
-        disabled={linkDraft === ''}
-        size="lg"
-        variant="primary"
-        on:click={() => {
-          linkDraft = linkDraft.trim();
-          linkDraft = addHttpScheme(linkDraft);
-
-          editor.chain().focus().extendMarkRange('link').setLink({ href: linkDraft }).run();
-          linkerOpened = false;
-        }}
-      >
-        <!-- FIXME: 문구 -->
-        링크 업로드
-      </Button>
-    </div>
-  {/if}
   <button
     class={flex({
       height: '30px',

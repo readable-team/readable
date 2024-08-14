@@ -2,7 +2,9 @@ import { autoUpdate, computePosition, hide, inline, offset, shift } from '@float
 import { center } from '@readable/styled-system/patterns';
 import { Extension, posToDOMRect } from '@tiptap/core';
 import { NodeSelection, Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
+import { isValidUrl } from '../../../utils/url';
 import { BlockSelection } from '../../extensions/block-selection';
+import LinkEditModal from '../link-edit-modal/Component.svelte';
 import Component from './Component.svelte';
 import type { VirtualElement } from '@floating-ui/dom';
 
@@ -21,24 +23,14 @@ export const BubbleMenu = Extension.create({
         key,
         view: () => {
           const dom = document.createElement('div');
-          const component = new Component({
-            target: dom,
-            props: {
-              editor: this.editor,
-            },
-          });
-
-          dom.className = center({
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            width: 'max',
-            visibility: 'hidden',
-          });
-
-          document.body.append(dom);
-
           let cleanup: (() => void) | undefined;
+
+          const hideBubble = () => {
+            dom.style.visibility = 'hidden';
+            cleanup?.();
+          };
+
+          let bubbleComponent: Component | null = null;
 
           return {
             update: async (view, oldState) => {
@@ -50,7 +42,6 @@ export const BubbleMenu = Extension.create({
               }
 
               const { selection } = view.state;
-              component.$set({ from: selection.from, to: selection.to });
 
               if (
                 selection.empty ||
@@ -58,8 +49,7 @@ export const BubbleMenu = Extension.create({
                 selection instanceof BlockSelection ||
                 view.composing
               ) {
-                dom.style.visibility = 'hidden';
-                cleanup?.();
+                hideBubble();
                 return;
               }
 
@@ -86,6 +76,63 @@ export const BubbleMenu = Extension.create({
                 contextElement: view.dom,
               };
 
+              const openLinkEditModal = () => {
+                hideBubble();
+
+                const { from, to } = selection;
+                let defaultLink = '';
+
+                const currentLink = this.editor.getAttributes('link');
+                if (currentLink.href) {
+                  defaultLink = currentLink.href;
+                } else {
+                  const maybeLink = this.editor.state.doc.textBetween(from, to);
+                  if (isValidUrl(maybeLink)) {
+                    defaultLink = maybeLink;
+                  }
+                }
+
+                const modalDom = document.createElement('div');
+                const modalComponent = new LinkEditModal({
+                  target: modalDom,
+                  props: {
+                    editor: this.editor,
+                    from: selection.from,
+                    to: selection.to,
+                    referenceElement: element as HTMLElement,
+                    defaultLink,
+                    onClose: () => {
+                      modalComponent.$destroy();
+                      modalDom.remove();
+                    },
+                  },
+                });
+
+                document.body.append(modalDom);
+              };
+
+              if (!bubbleComponent) {
+                bubbleComponent = new Component({
+                  target: dom,
+                  props: {
+                    editor: this.editor,
+                    openLinkEditModal,
+                  },
+                });
+
+                dom.className = center({
+                  position: 'absolute',
+                  top: '0',
+                  left: '0',
+                  width: 'max',
+                  visibility: 'hidden',
+                });
+
+                document.body.append(dom);
+              }
+
+              bubbleComponent.$set({ from: selection.from, to: selection.to, openLinkEditModal });
+
               cleanup?.();
               cleanup = autoUpdate(element, dom, async () => {
                 const { x, y, middlewareData } = await computePosition(element, dom, {
@@ -109,8 +156,8 @@ export const BubbleMenu = Extension.create({
               dom.style.visibility = 'visible';
             },
             destroy: () => {
-              cleanup?.();
-              component.$destroy();
+              hideBubble();
+              bubbleComponent?.$destroy();
               dom.remove();
             },
           };

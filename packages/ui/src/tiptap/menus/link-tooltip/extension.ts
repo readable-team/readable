@@ -2,6 +2,7 @@ import { autoUpdate, computePosition } from '@floating-ui/dom';
 import { center } from '@readable/styled-system/patterns';
 import { Extension } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
+import LinkEditModal from '../link-edit-modal/Component.svelte';
 import Component from './Component.svelte';
 import type { Node } from '@tiptap/pm/model';
 
@@ -57,28 +58,12 @@ export const LinkTooltip = Extension.create({
           const dom = document.createElement('div');
           let cleanup: (() => void) | undefined;
 
-          const exit = () => {
+          const hideTooltip = () => {
             dom.style.visibility = 'hidden';
             cleanup?.();
           };
 
-          const component = new Component({
-            target: dom,
-            props: {
-              editor: this.editor,
-              exit,
-            },
-          });
-
-          dom.className = center({
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            width: 'max',
-            visibility: 'hidden',
-          });
-
-          document.body.append(dom);
+          let tooltipComponent: Component | null = null;
 
           return {
             update: async (view, oldState) => {
@@ -92,16 +77,61 @@ export const LinkTooltip = Extension.create({
               const { anchorNode, pos } = state;
 
               if (!anchorNode) {
-                exit();
+                hideTooltip();
                 return;
               }
-
-              component.$set({ anchorNode, pos, linkEditModalOpened: false });
 
               const coordsAtPos = view.coordsAtPos(pos);
 
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               const element = document.elementFromPoint(coordsAtPos.left, coordsAtPos.top)!;
+
+              const linkHref = anchorNode.marks.find((mark) => mark.type.name === 'link')?.attrs.href;
+
+              const openLinkEditModal = () => {
+                hideTooltip();
+
+                const modalDom = document.createElement('div');
+                const modalComponent = new LinkEditModal({
+                  target: modalDom,
+                  props: {
+                    editor: this.editor,
+                    from: pos,
+                    to: pos + anchorNode.nodeSize,
+                    referenceElement: element,
+                    defaultLink: linkHref,
+                    onClose: () => {
+                      modalComponent.$destroy();
+                      modalDom.remove();
+                    },
+                  },
+                });
+
+                document.body.append(modalDom);
+              };
+
+              if (!tooltipComponent) {
+                tooltipComponent = new Component({
+                  target: dom,
+                  props: {
+                    hide: hideTooltip,
+                    linkHref,
+                    openLinkEditModal,
+                  },
+                });
+
+                dom.className = center({
+                  position: 'absolute',
+                  top: '0',
+                  left: '0',
+                  width: 'max',
+                  visibility: 'hidden',
+                });
+
+                document.body.append(dom);
+              }
+
+              tooltipComponent.$set({ linkHref, openLinkEditModal });
 
               cleanup?.();
               cleanup = autoUpdate(element, dom, async () => {
@@ -114,6 +144,11 @@ export const LinkTooltip = Extension.create({
               });
 
               dom.style.visibility = 'visible';
+            },
+            destroy: () => {
+              hideTooltip();
+              tooltipComponent?.$destroy();
+              dom.remove();
             },
           };
         },
