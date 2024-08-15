@@ -48,7 +48,7 @@
       title: '검색',
       readable: TableCheckIcon,
       zendesk: CheckIcon,
-      notion: XIcon,
+      notion: CheckIcon,
     },
     {
       title: '커스텀 도메인',
@@ -123,7 +123,6 @@
 
 <Helmet
   description="빨리 움직이는 팀을 위한 가이드 문서 도구. 낡지 않는 도움센터를 지금 생성해 보세요."
-  image={{ src: 'https://cdn.rdbl.app/opengraph/cover.png', size: 'large' }}
   title="이용자들이 사랑할 도움센터, 리더블"
   trailing={null}
 />
@@ -195,7 +194,7 @@
 <div
   class={center({ flexDirection: 'column', marginTop: '80px', marginX: 'auto', paddingX: '80px', maxWidth: '1200px' })}
 >
-  <div class={css({ textStyle: '16sb', color: 'neutral.50', marginBottom: '24px' })}>
+  <div class={css({ textStyle: '16sb', color: 'neutral.50', marginBottom: '24px', lineHeight: '[1.6]' })}>
     다양한 규모의 팀이 리더블과 함께하고 있습니다
   </div>
 
@@ -234,7 +233,7 @@
         height: '860px',
       })}
     >
-      <div class={flex({ direction: 'column', height: 'full' })}>
+      <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
         <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#3730A3]' })}>
           쉴 새 없이 변화하는 제품에
           <br />
@@ -269,7 +268,15 @@
           <div>가이드 문서 도구</div>
         </h2>
 
-        <p class={css({ fontSize: '24px', fontWeight: 'bold', color: 'neutral.70', marginTop: '24px' })}>
+        <p
+          class={css({
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: 'neutral.70',
+            marginTop: '24px',
+            lineHeight: '[1.6]',
+          })}
+        >
           제품과 문서를 손쉽게 동기화하는 확실한 방법,
           <br />
           리더블이 낡은 문서 고민을 끝내 드려요.
@@ -285,7 +292,7 @@
           height: '465px',
         })}
       >
-        <div class={flex({ direction: 'column', height: 'full' })}>
+        <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
           <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#365314]' })}>
             낡고 부정확한 문서, 이제 안녕!
           </h3>
@@ -319,7 +326,9 @@
       <div>도움센터</div>
     </h2>
 
-    <p class={css({ fontSize: '24px', fontWeight: 'bold', color: 'neutral.70', marginTop: '24px' })}>
+    <p
+      class={css({ fontSize: '24px', fontWeight: 'bold', color: 'neutral.70', marginTop: '24px', lineHeight: '[1.6]' })}
+    >
       마음에 드는 쓸만한 도움센터가 없어 고민하시나요?
       <br />
       도움센터가 고객에게 실제로 도움이 되기 위해서 마땅히
@@ -339,7 +348,7 @@
         height: '480px',
       })}
     >
-      <div class={flex({ direction: 'column', height: 'full' })}>
+      <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
         <div
           class={center({
             gap: '4px',
@@ -380,7 +389,7 @@
         height: '480px',
       })}
     >
-      <div class={flex({ direction: 'column', height: 'full' })}>
+      <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
         <div
           class={center({
             gap: '4px',
@@ -420,7 +429,7 @@
         height: '480px',
       })}
     >
-      <div class={flex({ direction: 'column', height: 'full' })}>
+      <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
         <div
           class={center({
             gap: '4px',
@@ -460,7 +469,7 @@
         height: '480px',
       })}
     >
-      <div class={flex({ direction: 'column', height: 'full' })}>
+      <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
         <div
           class={center({
             gap: '4px',
@@ -494,12 +503,29 @@
 
   <section class={css({ marginTop: '160px', width: 'full' })}>
     <h2 class={css({ fontSize: '[46px]', fontWeight: '[900]' })}>
-      <mark>모든 것이</mark>
+      <mark
+        class={css({
+          textGradient: 'to-l',
+          gradientFrom: '[#F96A19]',
+          gradientTo: '[#FB60BD]',
+        })}
+      >
+        모든 것이
+      </mark>
       <br />
       그냥 돼요, 리더블로
     </h2>
 
-    <p class={css({ marginTop: '24px', fontWeight: 'bold', color: 'neutral.70', maxWidth: '512px' })}>
+    <p
+      class={css({
+        marginTop: '24px',
+        fontSize: '24px',
+        fontWeight: 'bold',
+        color: 'neutral.70',
+        lineHeight: '[1.6]',
+        maxWidth: '512px',
+      })}
+    >
       도움센터에 필수적인 요구사항들을 고려해서 직접 개발하는 것은 비용이 많이 들고 번거로운 일입니다.
       <br />
       리더블이 모두 해 두었습니다. 찾을 수 있고 읽을 수 있는 꽤 쓸만한 도움센터를 만들 수 있도록 도와드려요.
@@ -546,6 +572,7 @@
               class={css({
                 borderBottomWidth: '[0.5px]',
                 borderColor: 'neutral.20',
+                paddingX: '20px',
                 paddingY: '16px',
                 textStyle: '14b',
               })}
@@ -616,14 +643,24 @@
     paddingBottom: '120px',
     background:
       '[linear-gradient(110deg, rgba(251, 96, 189, 0.00) -5.83%, rgba(251, 96, 189, 0.10) -0.54%, rgba(251, 96, 189, 0.03) 31.21%, rgba(251, 96, 189, 0.00) 47.09%, rgba(249, 106, 25, 0.02) 61.91%, rgba(249, 106, 25, 0.10) 83.08%)]',
+    scrollMarginTop: '56px',
   })}
 >
   <div class={css({ position: 'absolute', inset: '0' })}>
     <div class={css({ height: '1/2', backgroundGradient: 'to-t', gradientFrom: 'transparent', gradientTo: 'white' })} />
   </div>
 
-  <div class={css({ fontSize: '[36px]', fontWeight: '[800]', zIndex: '0' })}>지금 신청하기</div>
-  <div class={css({ marginTop: '12px', fontSize: '[16px]', fontWeight: '[500]', color: 'neutral.70', zIndex: '0' })}>
+  <div class={css({ fontSize: '[36px]', fontWeight: '[800]', lineHeight: '[1.6]', zIndex: '0' })}>지금 신청하기</div>
+  <div
+    class={css({
+      marginTop: '12px',
+      fontSize: '[16px]',
+      fontWeight: 'bold',
+      color: 'neutral.70',
+      lineHeight: '[1.6]',
+      zIndex: '0',
+    })}
+  >
     제품과 문서를 동기화하고 신뢰할 수 있는 가이드 문서를 만들어 보세요
   </div>
 
