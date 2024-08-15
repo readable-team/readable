@@ -123,6 +123,7 @@
 
 <Helmet
   description="빨리 움직이는 팀을 위한 가이드 문서 도구. 낡지 않는 도움센터를 지금 생성해 보세요."
+  image={{ src: 'https://cdn.rdbl.app/opengraph/cover.png', size: 'large' }}
   title="이용자들이 사랑할 도움센터, 리더블"
   trailing={null}
 />
