@@ -2,6 +2,7 @@
   import { css, cx } from '@readable/styled-system/css';
   import { center, flex, grid, gridItem } from '@readable/styled-system/patterns';
   import { Helmet, Icon } from '@readable/ui/components';
+  import { createClient } from '@supabase/supabase-js';
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import CheckIcon from '~icons/lucide/check';
@@ -12,6 +13,7 @@
   import GlyphLogo from '$assets/logos/glyph.svg?component';
   import PlanetLogo from '$assets/logos/planet.svg?component';
   import ZerobasedLogo from '$assets/logos/zerobased.svg?component';
+  import { env } from '$env/dynamic/public';
   import type { ComponentType } from 'svelte';
 
   const keywords = ['도움센터', '유저 가이드', '업데이트 노트', '개발자 문서'];
@@ -111,6 +113,38 @@
       notion: '유료 (1인당 월 $12)',
     },
   ];
+
+  const supabase = createClient(env.PUBLIC_SUPABASE_URL, env.PUBLIC_SUPABASE_KEY);
+
+  const handleSubmit = async (event: SubmitEvent) => {
+    const formData = new FormData(event.target as HTMLFormElement);
+    const privacyConsent = formData.get('privacyConsent') as string;
+
+    if (!privacyConsent) {
+      alert('개인정보 활용에 동의해 주세요');
+      return;
+    }
+
+    const companyName = formData.get('companyName') as string;
+    const name = formData.get('name') as string;
+    const phoneNumber = formData.get('phoneNumber') as string;
+    const email = formData.get('email') as string;
+
+    const { error } = await supabase.from('waitlist').insert([
+      {
+        company_name: companyName,
+        name,
+        phone_number: phoneNumber,
+        email,
+      },
+    ]);
+
+    if (error) {
+      console.error(error);
+    } else {
+      alert('신청이 완료되었습니다');
+    }
+  };
 
   onMount(() => {
     const interval = setInterval(() => {
@@ -674,26 +708,27 @@
       maxWidth: '512px',
       zIndex: '0',
     })}
+    on:submit|preventDefault={handleSubmit}
   >
     <div class={flex({ direction: 'column', gap: '20px' })}>
       <fieldset class={flex({ direction: 'column', gap: '4px' })}>
-        <label class={labelStyle} for="company">회사 이름</label>
-        <input name="company" class={inputStyle} placeholder="회사 이름을 입력해주세요" type="text" />
+        <label class={labelStyle} for="companyName">회사 이름</label>
+        <input id="companyName" name="companyName" class={inputStyle} placeholder="ACME Inc" type="text" />
       </fieldset>
 
       <fieldset class={flex({ direction: 'column', gap: '4px' })}>
         <label class={labelStyle} for="name">담당자 이름</label>
-        <input name="name" class={inputStyle} placeholder="담당자 이름을 입력해주세요" type="text" />
+        <input id="name" name="name" class={inputStyle} placeholder="홍길동" type="text" />
       </fieldset>
 
       <fieldset class={flex({ direction: 'column', gap: '4px' })}>
-        <label class={labelStyle} for="number">연락처</label>
-        <input name="number" class={inputStyle} placeholder="연락처를 입력해주세요" type="text" />
+        <label class={labelStyle} for="phoneNumber">연락처</label>
+        <input id="phoneNumber" name="phoneNumber" class={inputStyle} placeholder="010-1234-5678" type="text" />
       </fieldset>
 
       <fieldset class={flex({ direction: 'column', gap: '4px' })}>
         <label class={labelStyle} for="email">이메일 주소</label>
-        <input name="email" class={inputStyle} placeholder="이메일 주소를 입력해주세요" type="text" />
+        <input id="email" name="email" class={inputStyle} placeholder="name@company.mail" type="text" />
       </fieldset>
 
       <label class={css({ display: 'flex', alignItems: 'center', gap: '4px' })}>
@@ -707,6 +742,7 @@
           })}
         >
           <input
+            name="privacyConsent"
             class={cx(
               css({
                 display: 'flex',
@@ -724,7 +760,6 @@
               'peer',
             )}
             type="checkbox"
-            on:change
           />
           <Icon
             style={css.raw({

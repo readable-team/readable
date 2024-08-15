@@ -12,7 +12,8 @@
   "dependencies": {
     "@readable/lib": "workspace:*",
     "@readable/styled-system": "workspace:*",
-    "@readable/ui": "workspace:*"
+    "@readable/ui": "workspace:*",
+    "@supabase/supabase-js": "^2.45.1"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.1.206",
