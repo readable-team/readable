@@ -9,6 +9,7 @@ export default {
     adapter: bun(),
     alias: {
       '@/*': '../api/src/*',
+      '$assets/*': './src/assets/*',
     },
     files: {
       hooks: {

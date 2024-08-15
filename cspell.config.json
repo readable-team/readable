@@ -46,6 +46,7 @@
     "urql",
     "vcpu",
     "wonka",
-    "xcaddy"
+    "xcaddy",
+    "xlink"
   ]
 }
