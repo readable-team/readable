@@ -30,14 +30,6 @@
     fontSize: '14px',
   });
 
-  onMount(() => {
-    const interval = setInterval(() => {
-      i += 1;
-    }, 2000);
-
-    return () => clearInterval(interval);
-  });
-
   const tableContents: Record<string, ComponentType | string>[] = [
     {
       title: '콘텐츠 최신화',
@@ -118,15 +110,28 @@
       notion: '유료 (1인당 월 $12)',
     },
   ];
+
+  onMount(() => {
+    const interval = setInterval(() => {
+      i += 1;
+    }, 2000);
+
+    return () => clearInterval(interval);
+  });
 </script>
 
-<Helmet title="5초만에 만드는 도움센터, 리더블" trailing={null} />
+<Helmet
+  description="빨리 움직이는 팀을 위한 가이드 문서 도구. 낡지 않는 도움센터를 지금 생성해 보세요."
+  title="이용자들이 사랑할 도움센터, 리더블"
+  trailing={null}
+/>
 
 <div
   class={css({
     paddingTop: '80px',
     background:
       '[linear-gradient(110deg, rgba(251, 96, 189, 0.00) -5.83%, rgba(251, 96, 189, 0.10) -0.54%, rgba(251, 96, 189, 0.03) 31.21%, rgba(251, 96, 189, 0.00) 47.09%, rgba(249, 106, 25, 0.02) 61.91%, rgba(249, 106, 25, 0.10) 83.08%)]',
+    overflow: 'hidden',
   })}
 >
   <div class={flex({ marginX: 'auto', maxWidth: '1200px', paddingX: '48px' })}>
@@ -169,13 +174,13 @@
         })}
         href="#contact"
       >
-        CTA TEXT
+        지금 신청하기
       </a>
     </div>
 
     <div class={css({ flexGrow: '1', minWidth: '160px' })} />
 
-    <div class={css({ marginRight: '-48px', paddingTop: '100px', overflow: 'hidden' })}>
+    <div class={css({ marginRight: '-48px', paddingTop: '100px' })}>
       <BrowserHero class={css({ height: '450px' })} />
     </div>
   </div>
@@ -189,7 +194,7 @@
   class={center({ flexDirection: 'column', marginTop: '80px', marginX: 'auto', paddingX: '80px', maxWidth: '1200px' })}
 >
   <div class={css({ textStyle: '16sb', color: 'neutral.50', marginBottom: '24px' })}>
-    다양한 규모의 팀이 리더블과 함께 하고 있습니다.
+    다양한 규모의 팀이 리더블과 함께하고 있습니다
   </div>
 
   <div class={flex({ width: 'full', justify: 'space-between', align: 'center', color: 'neutral.50' })}>
@@ -217,169 +222,270 @@
 <div
   class={center({ flexDirection: 'column', marginX: 'auto', marginTop: '160px', paddingX: '48px', maxWidth: '1200px' })}
 >
-  <div class={css({ width: 'full', marginBottom: '48px' })}>
-    <h2 class={css({ fontSize: '[46px]', fontWeight: '[900]' })}>
-      도리의 거의 첨병에
-      <br />
-      그때야
-      <mark>안정합니다</mark>
-      <br />
-      하나의 통일하여.
-    </h2>
-    <p class={css({ fontWeight: 'bold', color: 'neutral.70' })}>
-      아주 귀의만, 선을 대한 품질도 영선공만 인체에 간석지를 구한다. 계산은 피로서 사람의 허용된 한계를 되어 수 지나다.
-    </p>
-  </div>
-
-  <section class={grid({ columns: 3, rowGap: '24px', columnGap: '24px', minChildWidth: '426px' })}>
-    <div
-      class={gridItem({
-        colSpan: 1,
-        rowSpan: 1,
-        borderRadius: '4px',
-        padding: '40px',
-        backgroundColor: 'gray.100/50',
-        height: '520px',
-        boxShadow: 'normal',
-      })}
-    >
-      <div class={flex({ direction: 'column', height: 'full' })}>
-        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
-
-        <h3 class={css({ marginTop: 'auto', fontSize: '24px', fontWeight: 'bold' })}>
-          잊고 살던 가이드 문서, 실제 제품과 동일하도록.
-        </h3>
-        <p class={css({ fontWeight: '[500]' })}>
-          아웃데이트된 문서, 리더블에서 자동으로 쏙쏙 잡아 놓치지 않게 해드려요.
-        </p>
-      </div>
-    </div>
-    <div
-      class={gridItem({
-        colSpan: 2,
-        rowSpan: 1,
-        borderRadius: '4px',
-        padding: '40px',
-        backgroundColor: 'gray.100/50',
-        height: '520px',
-        boxShadow: 'normal',
-      })}
-    >
-      <div class={flex({ direction: 'column', height: 'full' })}>
-        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
-
-        <h3 class={css({ marginTop: 'auto', fontSize: '24px', fontWeight: 'bold' })}>
-          잊고 살던 가이드 문서, 실제 제품과 동일하도록.
-        </h3>
-        <p class={css({ fontWeight: '[500]' })}>
-          아웃데이트된 문서, 리더블에서 자동으로 쏙쏙 잡아 놓치지 않게 해드려요.
-        </p>
-      </div>
-    </div>
-
-    <div
-      class={gridItem({
-        colSpan: 2,
-        rowSpan: 1,
-        borderRadius: '4px',
-        padding: '40px',
-        backgroundColor: 'gray.100/50',
-        height: '520px',
-        boxShadow: 'normal',
-      })}
-    >
-      <div class={flex({ direction: 'column', height: 'full' })}>
-        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
-
-        <h3 class={css({ marginTop: 'auto', fontSize: '24px', fontWeight: 'bold' })}>
-          잊고 살던 가이드 문서, 실제 제품과 동일하도록.
-        </h3>
-        <p class={css({ fontWeight: '[500]' })}>
-          아웃데이트된 문서, 리더블에서 자동으로 쏙쏙 잡아 놓치지 않게 해드려요.
-        </p>
-      </div>
-    </div>
-    <div
-      class={gridItem({
-        colSpan: 1,
-        rowSpan: 1,
-        borderRadius: '4px',
-        padding: '40px',
-        backgroundColor: 'gray.100/50',
-        height: '520px',
-        boxShadow: 'normal',
-      })}
-    >
-      <div class={flex({ direction: 'column', height: 'full' })}>
-        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
-
-        <h3 class={css({ marginTop: 'auto', fontSize: '24px', fontWeight: 'bold' })}>
-          잊고 살던 가이드 문서, 실제 제품과 동일하도록.
-        </h3>
-        <p class={css({ fontWeight: '[500]' })}>
-          아웃데이트된 문서, 리더블에서 자동으로 쏙쏙 잡아 놓치지 않게 해드려요.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class={grid({ columns: 2, gap: '36px', marginTop: '160px' })}>
+  <section class={grid({ columns: 2, gap: '40px' })}>
     <div
       class={css({
-        borderRadius: '4px',
+        borderRadius: '16px',
         padding: '40px',
-        backgroundColor: 'gray.100/50',
+        background:
+          '[linear-gradient(160deg, rgba(236, 219, 249, 0.60) 0%, rgba(181, 209, 253, 0.60) 70.43%, rgba(183, 189, 255, 0.60) 100%)]',
         height: '860px',
-        boxShadow: 'normal',
       })}
     >
       <div class={flex({ direction: 'column', height: 'full' })}>
-        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
-
-        <h3 class={css({ marginTop: 'auto', fontSize: '24px', fontWeight: 'bold' })}>
-          잊고 살던 가이드 문서, 실제 제품과 동일하도록.
+        <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#3730A3]' })}>
+          쉴 새 없이 변화하는 제품에
+          <br />
+          정적인 가이드 문서를 맞추는 것, 어렵습니다.
         </h3>
-        <p class={css({ fontWeight: '[500]' })}>
-          아웃데이트된 문서, 리더블에서 자동으로 쏙쏙 잡아 놓치지 않게 해드려요.
+
+        <p class={css({ fontSize: '24px', fontWeight: '[800]', flexGrow: '1', marginTop: '8px', color: '[#818CF8]' })}>
+          정확한 유저 가이드 문서는 성공적인 고객 경험에 필수적인 요소입니다.
+          <br />
+          부정확한 문서는 제품과 기업에 대한 신뢰를 저해하는 요인이지만, 문서가 낡지 않게 관리하는 것은 번거롭고 어려운 일입니다.
         </p>
+
+        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
       </div>
     </div>
 
     <div class={flex({ direction: 'column' })}>
-      <div class={css({ paddingY: '44px', paddingRight: '92px' })}>
+      <div class={flex({ flexDirection: 'column', justifyContent: 'center', flexGrow: '1' })}>
         <h2 class={css({ fontSize: '[46px]', fontWeight: '[900]' })}>
-          도리의 거의 첨병에
-          <br />
-          그때야
-          <mark>안정합니다</mark>
-          <br />
-          하나의 통일하여.
+          <div class={flex({ align: 'center' })}>
+            <span
+              class={css({
+                textGradient: 'to-l',
+                gradientFrom: '[#F96A19]',
+                gradientTo: '[#FB60BD]',
+              })}
+            >
+              빠른 팀
+            </span>
+            <span>을 위한</span>
+          </div>
+          <div>가이드 문서 도구</div>
         </h2>
-        <p class={css({ fontWeight: 'bold', color: 'neutral.70' })}>
-          아주 귀의만, 선을 대한 품질도 영선공만 인체에 간석지를 구한다. 계산은 피로서 사람의 허용된 한계를 되어 수
-          지나다.
+
+        <p class={css({ fontSize: '24px', fontWeight: 'bold', color: 'neutral.70', marginTop: '24px' })}>
+          제품과 문서를 손쉽게 동기화하는 확실한 방법,
+          <br />
+          리더블이 낡은 문서 고민을 끝내 드려요.
         </p>
       </div>
+
       <div
         class={css({
-          marginTop: 'auto',
-          borderRadius: '4px',
+          borderRadius: '16px',
           padding: '40px',
-          backgroundColor: 'gray.100/50',
+          background:
+            '[linear-gradient(127deg, rgba(236, 254, 187, 0.60) 0%, rgba(160, 218, 139, 0.54) 84.75%, rgba(169, 221, 137, 0.60) 100%)]',
           height: '465px',
-          boxShadow: 'normal',
         })}
       >
         <div class={flex({ direction: 'column', height: 'full' })}>
-          <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
-
-          <h3 class={css({ marginTop: 'auto', fontSize: '24px', fontWeight: 'bold' })}>
-            잊고 살던 가이드 문서, 실제 제품과 동일하도록.
+          <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#365314]' })}>
+            낡고 부정확한 문서, 이제 안녕!
           </h3>
-          <p class={css({ fontWeight: '[500]' })}>
-            아웃데이트된 문서, 리더블에서 자동으로 쏙쏙 잡아 놓치지 않게 해드려요.
+          <p
+            class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#65A30D]', marginTop: '8px', flexGrow: '1' })}
+          >
+            리더블은 제품의 변화를 감지해 가이드 문서에서 변경이 필요한 부분을 찾아냅니다. 더 이상 문서가 제품의 뒤에
+            있지 않게 하세요. 최신 상태로 유지되는 문서로 고객 신뢰를 높여 보세요.
           </p>
+
+          <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
         </div>
+      </div>
+    </div>
+  </section>
+
+  <div class={css({ width: 'full', marginBottom: '48px', marginTop: '160px' })}>
+    <h2 class={css({ fontSize: '[46px]', fontWeight: '[900]' })}>
+      <div class={flex({ align: 'center', gap: '10px' })}>
+        <span>실제로</span>
+        <span
+          class={css({
+            textGradient: 'to-l',
+            gradientFrom: '[#F96A19]',
+            gradientTo: '[#FB60BD]',
+          })}
+        >
+          도움이 되는
+        </span>
+      </div>
+      <div>도움센터</div>
+    </h2>
+
+    <p class={css({ fontSize: '24px', fontWeight: 'bold', color: 'neutral.70', marginTop: '24px' })}>
+      마음에 드는 쓸만한 도움센터가 없어 고민하시나요?
+      <br />
+      도움센터가 고객에게 실제로 도움이 되기 위해서 마땅히
+      <br />
+      갖춰야 할 덕목들, 빠짐없이 갖췄어요
+    </p>
+  </div>
+
+  <section class={grid({ columns: 5, rowGap: '28px', columnGap: '28px' })}>
+    <div
+      class={gridItem({
+        colSpan: 3,
+        rowSpan: 1,
+        borderRadius: '16px',
+        padding: '60px',
+        backgroundColor: '[#DBEAFE/50]',
+        height: '480px',
+      })}
+    >
+      <div class={flex({ direction: 'column', height: 'full' })}>
+        <div
+          class={center({
+            gap: '4px',
+            borderWidth: '[0.5px]',
+            borderColor: '[#93C5FD]',
+            borderRadius: 'full',
+            marginBottom: '20px',
+            paddingX: '16px',
+            paddingY: '6px',
+            width: 'fit',
+            fontSize: '14px',
+            fontWeight: '[800]',
+            color: '[#1E40AF]',
+            backgroundColor: 'neutral.0',
+          })}
+        >
+          <Icon icon={CheckIcon} size={16} />
+          <div>콘텐츠 최신화</div>
+        </div>
+
+        <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#1E40AF]' })}>언제나 새로운 도움센터</h3>
+        <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#60A5FA]', flexGrow: '1', marginTop: '4px' })}>
+          잊고 살던 가이드 문서, 실제 제품과 동일하도록 동기화하고 고객에게 낡지 않은 콘텐츠를 제공해요. 리더블에서
+          자동으로 쏙쏙 잡아 놓치지 않게 해드려요.
+        </p>
+
+        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
+      </div>
+    </div>
+
+    <div
+      class={gridItem({
+        colSpan: 2,
+        rowSpan: 1,
+        borderRadius: '16px',
+        padding: '60px',
+        backgroundColor: '[#FFEDD5/50]',
+        height: '480px',
+      })}
+    >
+      <div class={flex({ direction: 'column', height: 'full' })}>
+        <div
+          class={center({
+            gap: '4px',
+            borderWidth: '[0.5px]',
+            borderColor: '[#FCD34D]',
+            borderRadius: 'full',
+            marginBottom: '20px',
+            paddingX: '16px',
+            paddingY: '6px',
+            width: 'fit',
+            fontSize: '14px',
+            fontWeight: '[800]',
+            color: '[#9A3412]',
+            backgroundColor: 'neutral.0',
+          })}
+        >
+          <Icon icon={CheckIcon} size={16} />
+          <div>SEO</div>
+        </div>
+
+        <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#9A3412]' })}>찾을 수 있는 도움센터</h3>
+        <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#FBBF24]', flexGrow: '1', marginTop: '4px' })}>
+          고객이 필요한 바로 그 내용이 담긴 도움센터, 웹 검색결과에서 한번에 발견될 수 있도록 SEO를 충분히 고려했어요.
+        </p>
+
+        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
+      </div>
+    </div>
+
+    <div
+      class={gridItem({
+        colSpan: 2,
+        rowSpan: 1,
+        borderRadius: '16px',
+        padding: '60px',
+        backgroundColor: '[#E0E7FF/50]',
+        height: '480px',
+      })}
+    >
+      <div class={flex({ direction: 'column', height: 'full' })}>
+        <div
+          class={center({
+            gap: '4px',
+            borderWidth: '[0.5px]',
+            borderColor: '[#A5B4FC]',
+            borderRadius: 'full',
+            marginBottom: '20px',
+            paddingX: '16px',
+            paddingY: '6px',
+            width: 'fit',
+            fontSize: '14px',
+            fontWeight: '[800]',
+            color: '[#3730A3]',
+            backgroundColor: 'neutral.0',
+          })}
+        >
+          <Icon icon={CheckIcon} size={16} />
+          <div>내비게이션</div>
+        </div>
+
+        <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#3730A3]' })}>쉬운 탐색과 꽤 쓸만한 검색</h3>
+        <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#818CF8]', flexGrow: '1', marginTop: '4px' })}>
+          잘 구조화된 문서들을 사이드바로 자유롭게 탐색하고, 도움센터 내부 검색으로 필요한 내용을 곧바로 찾을 수 있어요.
+        </p>
+
+        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
+      </div>
+    </div>
+
+    <div
+      class={gridItem({
+        colSpan: 3,
+        rowSpan: 1,
+        borderRadius: '16px',
+        padding: '60px',
+        backgroundColor: '[#ECFCCB]',
+        height: '480px',
+      })}
+    >
+      <div class={flex({ direction: 'column', height: 'full' })}>
+        <div
+          class={center({
+            gap: '4px',
+            borderWidth: '[0.5px]',
+            borderColor: '[#86EFAC]',
+            borderRadius: 'full',
+            marginBottom: '20px',
+            paddingX: '16px',
+            paddingY: '6px',
+            width: 'fit',
+            fontSize: '14px',
+            fontWeight: '[800]',
+            color: '[#3F6212]',
+            backgroundColor: 'neutral.0',
+          })}
+        >
+          <Icon icon={CheckIcon} size={16} />
+          <div>접근성</div>
+        </div>
+
+        <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#3F6212]' })}>누구라도, 무엇을 쓰더라도</h3>
+        <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#39C522]', flexGrow: '1', marginTop: '4px' })}>
+          접근성을 고려한 설계로 고객이 어떤 기기를 사용하든지, 나이나 신체적 특성 등에 상관없이 원하는 내용을 손쉽게
+          찾아 읽을 수 있어요.
+        </p>
+
+        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
       </div>
     </div>
   </section>
