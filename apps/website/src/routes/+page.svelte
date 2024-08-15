@@ -216,7 +216,7 @@
       })}
       href="#contact"
     >
-      그 다음은?
+      그 다음 ?
     </a>
   </div>
 </div>
@@ -332,7 +332,7 @@
     >
       마음에 드는 쓸만한 도움센터가 없어 고민하시나요?
       <br />
-      도움센터가 고객에게 실제로 도움이 되기 위해서 마땅히
+      도움센터가 고객에게 실제로 도움이 되기 위해 마땅히
       <br />
       갖춰야 할 덕목들, 빠짐없이 갖췄어요
     </p>
@@ -413,7 +413,9 @@
 
         <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#9A3412]' })}>찾을 수 있는 도움센터</h3>
         <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#FBBF24]', flexGrow: '1', marginTop: '4px' })}>
-          고객이 필요한 바로 그 내용이 담긴 도움센터, 웹 검색결과에서 한번에 발견될 수 있도록 SEO를 충분히 고려했어요.
+          고객이 필요한 바로 그 내용,
+          <br />
+          웹 검색 결과에서 한 번에 발견될 수 있도록 SEO를 충분히 고려했어요.
         </p>
 
         <img class={css({ size: '100px' })} alt="테크놀로지스트" src="/images/technologist.png" />
@@ -493,7 +495,7 @@
 
         <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#3F6212]' })}>누구라도, 무엇을 쓰더라도</h3>
         <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#39C522]', flexGrow: '1', marginTop: '4px' })}>
-          접근성을 고려한 설계로 고객이 어떤 기기를 사용하든지, 나이나 신체적 특성 등에 상관없이 원하는 내용을 손쉽게
+          접근성을 고려한 설계로 고객이 어떤 기기를 사용하든지, 나이나 신체적 특성 등에 관계없이 원하는 내용을 손쉽게
           찾아 읽을 수 있어요.
         </p>
 
@@ -680,8 +682,8 @@
       </fieldset>
 
       <fieldset class={flex({ direction: 'column', gap: '4px' })}>
-        <label class={labelStyle} for="name">신청자 이름</label>
-        <input name="name" class={inputStyle} placeholder="신청자 이름을 입력해주세요" type="text" />
+        <label class={labelStyle} for="name">담당자 이름</label>
+        <input name="name" class={inputStyle} placeholder="담당자 이름을 입력해주세요" type="text" />
       </fieldset>
 
       <fieldset class={flex({ direction: 'column', gap: '4px' })}>
