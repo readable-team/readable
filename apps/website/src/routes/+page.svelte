@@ -1,14 +1,18 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { center, flex, grid, gridItem } from '@readable/styled-system/patterns';
-  import { Helmet } from '@readable/ui/components';
+  import { Helmet, Icon } from '@readable/ui/components';
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
+  import CheckIcon from '~icons/lucide/check';
+  import XIcon from '~icons/lucide/x';
   import BrowserHero from '$assets/hero/browser.svg?component';
+  import TableCheckIcon from '$assets/icons/table-check.svg?component';
   import FullLogo from '$assets/logos/full.svg?component';
   import GlyphLogo from '$assets/logos/glyph.svg?component';
   import PlanetLogo from '$assets/logos/planet.svg?component';
   import ZerobasedLogo from '$assets/logos/zerobased.svg?component';
+  import type { ComponentType } from 'svelte';
 
   const keywords = ['도움센터', '유저 가이드', '업데이트 노트', '개발자 문서'];
 
@@ -33,6 +37,87 @@
 
     return () => clearInterval(interval);
   });
+
+  const tableContents: Record<string, ComponentType | string>[] = [
+    {
+      title: '콘텐츠 최신화',
+      readable: TableCheckIcon,
+      zendesk: XIcon,
+      notion: XIcon,
+    },
+    {
+      title: '쉬운 브랜딩',
+      readable: TableCheckIcon,
+      zendesk: '복잡함 / 유료 (1인당 월 $149)',
+      notion: XIcon,
+    },
+    {
+      title: '검색',
+      readable: TableCheckIcon,
+      zendesk: CheckIcon,
+      notion: XIcon,
+    },
+    {
+      title: '커스텀 도메인',
+      readable: TableCheckIcon,
+      zendesk: CheckIcon,
+      notion: '유료 (월 $10)',
+    },
+    {
+      title: '24/7 지원',
+      readable: TableCheckIcon,
+      zendesk: '애드온',
+      notion: XIcon,
+    },
+    {
+      title: '다국어',
+      readable: '준비 중',
+      zendesk: '유료 (1인당 월 $149)',
+      notion: XIcon,
+    },
+    {
+      title: '동시 편집',
+      readable: TableCheckIcon,
+      zendesk: XIcon,
+      notion: CheckIcon,
+    },
+    {
+      title: '위지윅 에디터',
+      readable: TableCheckIcon,
+      zendesk: CheckIcon,
+      notion: CheckIcon,
+    },
+    {
+      title: '마크다운 에디터',
+      readable: '준비 중',
+      zendesk: XIcon,
+      notion: XIcon,
+    },
+    {
+      title: '데이터 셀프 호스팅',
+      readable: 'Git 연동 준비 중',
+      zendesk: XIcon,
+      notion: XIcon,
+    },
+    {
+      title: 'SEO',
+      readable: TableCheckIcon,
+      zendesk: CheckIcon,
+      notion: CheckIcon,
+    },
+    {
+      title: '스테이징 영역',
+      readable: TableCheckIcon,
+      zendesk: CheckIcon,
+      notion: XIcon,
+    },
+    {
+      title: '가격',
+      readable: '무료',
+      zendesk: '유료 (1인당 월 $69)',
+      notion: '유료 (1인당 월 $12)',
+    },
+  ];
 </script>
 
 <Helmet title="5초만에 만드는 도움센터, 리더블" trailing={null} />
@@ -298,6 +383,120 @@
       </div>
     </div>
   </section>
+
+  <section class={css({ marginTop: '160px', width: 'full' })}>
+    <h2 class={css({ fontSize: '[46px]', fontWeight: '[900]' })}>
+      <mark>모든 것이</mark>
+      <br />
+      그냥 돼요, 리더블로
+    </h2>
+
+    <p class={css({ marginTop: '24px', fontWeight: 'bold', color: 'neutral.70', maxWidth: '512px' })}>
+      도움센터에 필수적인 요구사항들을 고려해서 직접 개발하는 것은 비용이 많이 들고 번거로운 일입니다.
+      <br />
+      리더블이 모두 해 두었습니다. 찾을 수 있고 읽을 수 있는 꽤 쓸만한 도움센터를 만들 수 있도록 도와드려요.
+      <br />
+      지금 가이드 문서가 없어도 바로 시작해 보세요.
+    </p>
+
+    <table class={css({ marginTop: '72px', width: 'full', borderSpacing: '0', tableLayout: 'fixed' })}>
+      <thead>
+        <tr>
+          <th class={css({ borderBottomWidth: '1px', borderColor: 'neutral.70', width: '200px' })} />
+          <th
+            class={css({
+              borderBottomWidth: '1px',
+              borderColor: 'neutral.20',
+              paddingY: '18px',
+              backgroundColor: 'neutral.90',
+            })}
+          >
+            <FullLogo class={css({ color: 'neutral.0', height: '20px' })} />
+          </th>
+          <th
+            class={css({
+              borderBottomWidth: '1px',
+              borderColor: 'neutral.70',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              backgroundColor: 'gray.100/50',
+            })}
+          >
+            Zendesk
+          </th>
+          <th
+            class={css({ borderBottomWidth: '1px', borderColor: 'neutral.70', fontSize: '20px', fontWeight: 'bold' })}
+          >
+            Notion
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each tableContents as content (content.title)}
+          <tr class={css({ _last: { '& > td': { borderBottomWidth: '1px', borderColor: 'gray.1000' } } })}>
+            <td
+              class={css({
+                borderBottomWidth: '[0.5px]',
+                borderColor: 'neutral.20',
+                paddingY: '16px',
+                textStyle: '14b',
+              })}
+            >
+              {content.title}
+            </td>
+            <td
+              class={css({
+                borderBottomWidth: '[0.5px]',
+                borderColor: 'neutral.20',
+                paddingY: '16px',
+                textStyle: '14b',
+                textAlign: 'center',
+                backgroundColor: 'neutral.90',
+                color: 'neutral.0',
+              })}
+            >
+              {#if typeof content.readable === 'string'}
+                {content.readable}
+              {:else}
+                <Icon style={css.raw({ marginX: 'auto' })} icon={content.readable} size={20} />
+              {/if}
+            </td>
+            <td
+              class={css({
+                borderBottomWidth: '[0.5px]',
+                borderColor: 'neutral.20',
+                paddingY: '16px',
+                textStyle: '14b',
+                textAlign: 'center',
+                backgroundColor: 'gray.100/50',
+              })}
+            >
+              {#if typeof content.zendesk === 'string'}
+                {content.zendesk}
+              {:else}
+                <Icon style={css.raw({ marginX: 'auto' })} icon={content.zendesk} size={20} />
+              {/if}
+            </td>
+            <td
+              class={css({
+                borderBottomWidth: '[0.5px]',
+                borderColor: 'neutral.20',
+                paddingY: '16px',
+                textStyle: '14b',
+                textAlign: 'center',
+              })}
+            >
+              {#if typeof content.notion === 'string'}
+                {content.notion}
+              {:else}
+                <Icon style={css.raw({ marginX: 'auto' })} icon={content.notion} size={20} />
+              {/if}
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </section>
 </div>
 
 <div
@@ -324,6 +523,7 @@
     class={css({
       borderRadius: '4px',
       padding: '24px',
+      backgroundColor: 'white',
       boxShadow: 'normal',
       marginTop: '72px',
       width: 'full',
