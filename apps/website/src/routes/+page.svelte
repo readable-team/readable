@@ -246,7 +246,7 @@
           부정확한 문서는 제품과 기업에 대한 신뢰를 저해하는 요인이지만, 문서가 낡지 않게 관리하는 것은 번거롭고 어려운 일입니다.
         </p>
 
-        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
+        <img class={css({ size: '120px' })} alt="무한대" src="/images/infinity.png" />
       </div>
     </div>
 
@@ -303,7 +303,7 @@
             있지 않게 하세요. 최신 상태로 유지되는 문서로 고객 신뢰를 높여 보세요.
           </p>
 
-          <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
+          <img class={css({ size: '120px' })} alt="흔드는 손" src="/images/waving-hand.png" />
         </div>
       </div>
     </div>
@@ -375,7 +375,7 @@
           자동으로 쏙쏙 잡아 놓치지 않게 해드려요.
         </p>
 
-        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
+        <img class={css({ size: '100px' })} alt="반짝임" src="/images/sparkles.png" />
       </div>
     </div>
 
@@ -415,7 +415,7 @@
           고객이 필요한 바로 그 내용이 담긴 도움센터, 웹 검색결과에서 한번에 발견될 수 있도록 SEO를 충분히 고려했어요.
         </p>
 
-        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
+        <img class={css({ size: '100px' })} alt="테크놀로지스트" src="/images/technologist.png" />
       </div>
     </div>
 
@@ -455,7 +455,7 @@
           잘 구조화된 문서들을 사이드바로 자유롭게 탐색하고, 도움센터 내부 검색으로 필요한 내용을 곧바로 찾을 수 있어요.
         </p>
 
-        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
+        <img class={css({ size: '100px' })} alt="돋보기" src="/images/minifying-glass.png" />
       </div>
     </div>
 
@@ -496,7 +496,7 @@
           찾아 읽을 수 있어요.
         </p>
 
-        <div class={css({ width: 'full', height: '240px', backgroundColor: 'neutral.30' })} />
+        <img class={css({ width: '195px', height: '110px' })} alt="돋보기" src="/images/couple.png" />
       </div>
     </div>
   </section>
