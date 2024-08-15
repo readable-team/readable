@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { css } from '@readable/styled-system/css';
+  import { css, cx } from '@readable/styled-system/css';
   import { center, flex, grid, gridItem } from '@readable/styled-system/patterns';
   import { Helmet, Icon } from '@readable/ui/components';
   import { onMount } from 'svelte';
@@ -28,6 +28,7 @@
     paddingX: '12px',
     paddingY: '11px',
     fontSize: '14px',
+    backgroundColor: 'neutral.0',
   });
 
   const tableContents: Record<string, ComponentType | string>[] = [
@@ -621,25 +622,21 @@
   </div>
 
   <div class={css({ fontSize: '[36px]', fontWeight: '[800]', zIndex: '0' })}>지금 신청하기</div>
-  <div class={css({ marginTop: '12px', fontSize: '[16px]', fontWeight: '[500]', zIndex: '0' })}>
+  <div class={css({ marginTop: '12px', fontSize: '[16px]', fontWeight: '[500]', color: 'neutral.70', zIndex: '0' })}>
     제품과 문서를 동기화하고 신뢰할 수 있는 가이드 문서를 만들어 보세요
   </div>
 
   <form
     class={css({
-      borderRadius: '4px',
-      padding: '24px',
-      backgroundColor: 'white',
-      boxShadow: 'normal',
       marginTop: '72px',
       width: 'full',
-      maxWidth: '412px',
+      maxWidth: '512px',
       zIndex: '0',
     })}
   >
     <div class={flex({ direction: 'column', gap: '20px' })}>
       <fieldset class={flex({ direction: 'column', gap: '4px' })}>
-        <label class={labelStyle} for="company">회사이름</label>
+        <label class={labelStyle} for="company">회사 이름</label>
         <input name="company" class={inputStyle} placeholder="회사 이름을 입력해주세요" type="text" />
       </fieldset>
 
@@ -657,6 +654,58 @@
         <label class={labelStyle} for="email">이메일 주소</label>
         <input name="email" class={inputStyle} placeholder="이메일 주소를 입력해주세요" type="text" />
       </fieldset>
+
+      <label class={css({ display: 'flex', alignItems: 'center', gap: '4px' })}>
+        <div
+          class={css({
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+            userSelect: 'none',
+          })}
+        >
+          <input
+            class={cx(
+              css({
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 'none',
+                size: '13px',
+                borderWidth: '1px',
+                borderColor: 'gray.500',
+                borderRadius: '0',
+                cursor: 'pointer',
+                appearance: 'none',
+                _checked: { borderWidth: '0', backgroundColor: 'gray.900' },
+              }),
+              'peer',
+            )}
+            type="checkbox"
+            on:change
+          />
+          <!-- bind:checked -->
+          <Icon
+            style={css.raw({
+              display: 'none',
+              position: 'absolute',
+              top: '1/2',
+              left: '1/2',
+              translate: 'auto',
+              translateX: '-1/2',
+              translateY: '-1/2',
+              color: 'white',
+              cursor: 'pointer',
+              _peerChecked: { display: 'block' },
+            })}
+            icon={CheckIcon}
+            size={12}
+          />
+        </div>
+
+        <span class={css({ textStyle: '14m', color: 'neutral.70', cursor: 'pointer' })}>개인정보활용동의</span>
+      </label>
     </div>
 
     <button
