@@ -1,0 +1,115 @@
+name: Production
+
+on:
+  push:
+    branches:
+      - release
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_REMOTE_ONLY: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: linux-arm64-4vcpu
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::637423633734:role/actions@github
+          aws-region: ap-northeast-2
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Generate image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: 637423633734.dkr.ecr.ap-northeast-2.amazonaws.com/readable
+          tags: type=raw,value=latest
+
+      - name: Build image
+        uses: docker/build-push-action@v5
+        id: build
+        with:
+          push: true
+          context: .
+          build-args: |
+            TURBO_TEAM=${{ secrets.TURBO_TEAM }}
+            TURBO_TOKEN=${{ secrets.TURBO_TOKEN }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=637423633734.dkr.ecr.ap-northeast-2.amazonaws.com/readable:cache
+          cache-to: type=registry,ref=637423633734.dkr.ecr.ap-northeast-2.amazonaws.com/readable:cache,mode=max,image-manifest=true
+          provenance: false
+
+  deploy:
+    name: Deployment - ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    needs: build
+
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          # - api
+          # - dashboard
+          # - usersite
+          - website
+
+    concurrency:
+      group: prod/${{ matrix.app }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::637423633734:role/actions@github
+          aws-region: ap-northeast-2
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Connect tailnet
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}
+          tags: tag:github-actions
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name readable --role-arn=arn:aws:iam::637423633734:role/admin@eks
+
+      - name: Apply infrastructure
+        uses: pulumi/actions@v5
+        with:
+          command: up
+          work-dir: apps/${{ matrix.app }}
+          stack-name: readable/prod
+          upsert: true
+          config-map: |
+            { "readable:digest": { "value": "${{ needs.build.outputs.digest }}" } }
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
