@@ -55,7 +55,7 @@
 <NodeView>
   {#if node.attrs.id}
     <Img
-      style={css.raw({ width: 'full' })}
+      style={css.raw({ width: 'screen' })}
       alt=""
       placeholder={node.attrs.placeholder}
       progressive

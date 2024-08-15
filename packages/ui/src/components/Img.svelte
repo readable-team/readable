@@ -81,16 +81,14 @@
 {#if placeholderUrl}
   <div
     bind:this={containerEl}
-    style:aspect-ratio={ratio}
-    style:background-image={`url(${placeholderUrl})`}
     class={css({
       position: 'relative',
-      backgroundSize: 'cover',
-      backgroundRepeat: 'no-repeat',
-      backgroundPosition: 'center',
-      backgroundClip: 'content-box',
+      width: 'fit',
+      overflow: 'hidden',
     })}
   >
+    <img style:aspect-ratio={ratio} class={css(style)} {alt} loading="lazy" src={placeholderUrl} />
+
     {#if loaded}
       <div bind:this={contentEl} class={css({ position: 'absolute', inset: '0' })} in:fade={{ duration: 200 }} />
     {:else}

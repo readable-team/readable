@@ -20,10 +20,20 @@
       fragment Img_image on Image {
         id
         url
+        ratio
         placeholder
       }
     `),
   );
 </script>
 
-<Img {style} {alt} placeholder={$image.placeholder} {progressive} {quality} {size} url={$image.url} />
+<Img
+  {style}
+  {alt}
+  placeholder={$image.placeholder}
+  {progressive}
+  {quality}
+  ratio={$image.ratio}
+  {size}
+  url={$image.url}
+/>
