@@ -168,13 +168,23 @@
     background:
       '[linear-gradient(110deg, rgba(251, 96, 189, 0.00) -5.83%, rgba(251, 96, 189, 0.10) -0.54%, rgba(251, 96, 189, 0.03) 31.21%, rgba(251, 96, 189, 0.00) 47.09%, rgba(249, 106, 25, 0.02) 61.91%, rgba(249, 106, 25, 0.10) 83.08%)]',
     overflow: 'hidden',
+    smDown: { paddingTop: '40px' },
   })}
 >
-  <div class={flex({ marginX: 'auto', maxWidth: '1200px', paddingX: '48px' })}>
+  <div
+    class={flex({
+      marginX: 'auto',
+      maxWidth: '1200px',
+      paddingX: '48px',
+      smDown: { flexDirection: 'column', paddingX: '24px' },
+    })}
+  >
     <div class={css({ flex: 'none' })}>
       <FullLogo class={css({ height: '24px', marginBottom: '100px' })} />
 
-      <div class={css({ fontSize: '[60px]', fontWeight: '[900]', marginBottom: '64px' })}>
+      <div
+        class={css({ fontSize: '[60px]', fontWeight: '[900]', marginBottom: '64px', smDown: { fontSize: '[36px]' } })}
+      >
         <div>이용자들이 사랑할</div>
         <div class={css({ position: 'relative' })}>
           &nbsp;
@@ -227,19 +237,44 @@
 </div>
 
 <div
-  class={center({ flexDirection: 'column', marginTop: '80px', marginX: 'auto', paddingX: '80px', maxWidth: '1200px' })}
+  class={center({
+    flexDirection: 'column',
+    marginTop: '80px',
+    marginX: 'auto',
+    paddingX: '80px',
+    maxWidth: '1200px',
+    smDown: { paddingX: '24px' },
+  })}
 >
-  <div class={css({ textStyle: '16sb', color: 'neutral.50', marginBottom: '24px', lineHeight: '[1.6]' })}>
+  <div
+    class={css({
+      textStyle: '16sb',
+      color: 'neutral.50',
+      marginBottom: '24px',
+      lineHeight: '[1.6]',
+      textAlign: 'center',
+      wordBreak: 'keep-all',
+    })}
+  >
     다양한 규모의 팀이 리더블과 함께하고 있습니다
   </div>
 
-  <div class={flex({ width: 'full', justify: 'space-between', align: 'center', color: 'neutral.50' })}>
-    <GlyphLogo class={css({ height: '24px' })} />
-    <ZerobasedLogo class={css({ height: '24px' })} />
-    <PlanetLogo class={css({ height: '24px' })} />
+  <div
+    class={flex({
+      width: 'full',
+      justify: 'space-between',
+      align: 'center',
+      color: 'neutral.50',
+      smDown: { gap: '48px', overflowX: 'auto' },
+    })}
+  >
+    <GlyphLogo class={css({ flex: 'none', height: '24px' })} />
+    <ZerobasedLogo class={css({ flex: 'none', height: '24px' })} />
+    <PlanetLogo class={css({ flex: 'none', height: '24px' })} />
     <a
       class={css({
         display: 'inline-block',
+        flex: 'none',
         borderWidth: '1px',
         borderColor: 'neutral.50',
         borderStyle: 'dashed',
@@ -256,9 +291,16 @@
 </div>
 
 <div
-  class={center({ flexDirection: 'column', marginX: 'auto', marginTop: '160px', paddingX: '48px', maxWidth: '1200px' })}
+  class={center({
+    flexDirection: 'column',
+    marginX: 'auto',
+    marginTop: '160px',
+    paddingX: '48px',
+    maxWidth: '1200px',
+    smDown: { paddingX: '24px', wordBreak: 'keep-all' },
+  })}
 >
-  <section class={grid({ columns: 2, gap: '40px' })}>
+  <section class={grid({ columns: 2, gap: '40px', smDown: { gridTemplateColumns: '1' } })}>
     <div
       class={css({
         borderRadius: '16px',
@@ -266,12 +308,13 @@
         background:
           '[linear-gradient(160deg, rgba(236, 219, 249, 0.60) 0%, rgba(181, 209, 253, 0.60) 70.43%, rgba(183, 189, 255, 0.60) 100%)]',
         height: '860px',
+        smDown: { height: 'auto', padding: '32px', order: '2' },
       })}
     >
       <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
         <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#3730A3]' })}>
           쉴 새 없이 변화하는 제품에
-          <br />
+          <br class={css({ hideBelow: 'sm' })} />
           정적인 가이드 문서를 맞추는 것, 어렵습니다.
         </h3>
 
@@ -285,8 +328,15 @@
       </div>
     </div>
 
-    <div class={flex({ direction: 'column' })}>
-      <div class={flex({ flexDirection: 'column', justifyContent: 'center', flexGrow: '1' })}>
+    <div class={flex({ direction: 'column', smDown: { display: 'contents' } })}>
+      <div
+        class={flex({
+          flexDirection: 'column',
+          justifyContent: 'center',
+          flexGrow: '1',
+          smDown: { order: '1' },
+        })}
+      >
         <h2 class={css({ fontSize: '[46px]', fontWeight: '[900]' })}>
           <div class={flex({ align: 'center' })}>
             <span
@@ -313,7 +363,7 @@
           })}
         >
           제품과 문서를 손쉽게 동기화하는 확실한 방법,
-          <br />
+          <br class={css({ hideBelow: 'sm' })} />
           리더블이 낡은 문서 고민을 끝내 드려요.
         </p>
       </div>
@@ -325,6 +375,7 @@
           background:
             '[linear-gradient(127deg, rgba(236, 254, 187, 0.60) 0%, rgba(160, 218, 139, 0.54) 84.75%, rgba(169, 221, 137, 0.60) 100%)]',
           height: '465px',
+          smDown: { height: 'auto', padding: '32px', order: '2' },
         })}
       >
         <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
@@ -367,7 +418,7 @@
       마음에 드는 쓸만한 도움센터가 없어 고민하시나요?
       <br />
       도움센터가 고객에게 실제로 도움이 되기 위해 마땅히
-      <br />
+      <br class={css({ hideBelow: 'sm' })} />
       갖춰야 할 덕목들, 빠짐없이 갖췄어요
     </p>
   </div>
@@ -375,12 +426,13 @@
   <section class={grid({ columns: 5, rowGap: '28px', columnGap: '28px' })}>
     <div
       class={gridItem({
-        colSpan: 3,
+        colSpan: { base: 3, smDown: 5 },
         rowSpan: 1,
         borderRadius: '16px',
         padding: '60px',
         backgroundColor: '[#DBEAFE/50]',
         height: '480px',
+        smDown: { height: 'auto', padding: '32px' },
       })}
     >
       <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
@@ -416,12 +468,13 @@
 
     <div
       class={gridItem({
-        colSpan: 2,
+        colSpan: { base: 2, smDown: 5 },
         rowSpan: 1,
         borderRadius: '16px',
         padding: '60px',
         backgroundColor: '[#FFEDD5/50]',
         height: '480px',
+        smDown: { height: 'auto', padding: '32px' },
       })}
     >
       <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
@@ -448,7 +501,7 @@
         <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#9A3412]' })}>찾을 수 있는 도움센터</h3>
         <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#FBBF24]', flexGrow: '1', marginTop: '4px' })}>
           고객이 필요한 바로 그 내용,
-          <br />
+          <br class={css({ hideBelow: 'sm' })} />
           웹 검색 결과에서 한 번에 발견될 수 있도록 SEO를 충분히 고려했어요.
         </p>
 
@@ -458,12 +511,13 @@
 
     <div
       class={gridItem({
-        colSpan: 2,
+        colSpan: { base: 2, smDown: 5 },
         rowSpan: 1,
         borderRadius: '16px',
         padding: '60px',
         backgroundColor: '[#E0E7FF/50]',
         height: '480px',
+        smDown: { height: 'auto', padding: '32px' },
       })}
     >
       <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
@@ -498,12 +552,13 @@
 
     <div
       class={gridItem({
-        colSpan: 3,
+        colSpan: { base: 3, smDown: 5 },
         rowSpan: 1,
         borderRadius: '16px',
         padding: '60px',
         backgroundColor: '[#ECFCCB]',
         height: '480px',
+        smDown: { height: 'auto', padding: '32px' },
       })}
     >
       <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
@@ -570,104 +625,106 @@
       지금 가이드 문서가 없어도 바로 시작해 보세요.
     </p>
 
-    <table class={css({ marginTop: '72px', width: 'full', borderSpacing: '0', tableLayout: 'fixed' })}>
-      <thead>
-        <tr>
-          <th class={css({ borderBottomWidth: '1px', borderColor: 'neutral.70', width: '200px' })} />
-          <th
-            class={css({
-              borderBottomWidth: '1px',
-              borderColor: 'neutral.20',
-              paddingY: '18px',
-              backgroundColor: 'neutral.90',
-            })}
-          >
-            <FullLogo class={css({ color: 'neutral.0', height: '20px' })} />
-          </th>
-          <th
-            class={css({
-              borderBottomWidth: '1px',
-              borderColor: 'neutral.70',
-              fontSize: '20px',
-              fontWeight: 'bold',
-              backgroundColor: 'gray.100/50',
-            })}
-          >
-            Zendesk
-          </th>
-          <th
-            class={css({ borderBottomWidth: '1px', borderColor: 'neutral.70', fontSize: '20px', fontWeight: 'bold' })}
-          >
-            Notion
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each tableContents as content (content.title)}
-          <tr class={css({ _last: { '& > td': { borderBottomWidth: '1px', borderColor: 'gray.1000' } } })}>
-            <td
+    <div class={css({ marginTop: '72px', width: 'full', overflowX: 'auto' })}>
+      <table class={css({ width: 'full', borderSpacing: '0', tableLayout: 'fixed', smDown: { width: '720px' } })}>
+        <thead>
+          <tr>
+            <th class={css({ borderBottomWidth: '1px', borderColor: 'neutral.70', width: '200px' })} />
+            <th
               class={css({
-                borderBottomWidth: '[0.5px]',
+                borderBottomWidth: '1px',
                 borderColor: 'neutral.20',
-                paddingX: '20px',
-                paddingY: '16px',
-                textStyle: '14b',
-              })}
-            >
-              {content.title}
-            </td>
-            <td
-              class={css({
-                borderBottomWidth: '[0.5px]',
-                borderColor: 'neutral.20',
-                paddingY: '16px',
-                textStyle: '14b',
-                textAlign: 'center',
+                paddingY: '18px',
                 backgroundColor: 'neutral.90',
-                color: 'neutral.0',
               })}
             >
-              {#if typeof content.readable === 'string'}
-                {content.readable}
-              {:else}
-                <Icon style={css.raw({ marginX: 'auto' })} icon={content.readable} size={20} />
-              {/if}
-            </td>
-            <td
+              <FullLogo class={css({ color: 'neutral.0', height: '20px' })} />
+            </th>
+            <th
               class={css({
-                borderBottomWidth: '[0.5px]',
-                borderColor: 'neutral.20',
-                paddingY: '16px',
-                textStyle: '14b',
-                textAlign: 'center',
+                borderBottomWidth: '1px',
+                borderColor: 'neutral.70',
+                fontSize: '20px',
+                fontWeight: 'bold',
                 backgroundColor: 'gray.100/50',
               })}
             >
-              {#if typeof content.zendesk === 'string'}
-                {content.zendesk}
-              {:else}
-                <Icon style={css.raw({ marginX: 'auto' })} icon={content.zendesk} size={20} />
-              {/if}
-            </td>
-            <td
-              class={css({
-                borderBottomWidth: '[0.5px]',
-                borderColor: 'neutral.20',
-                paddingY: '16px',
-                textStyle: '14b',
-                textAlign: 'center',
-              })}
+              Zendesk
+            </th>
+            <th
+              class={css({ borderBottomWidth: '1px', borderColor: 'neutral.70', fontSize: '20px', fontWeight: 'bold' })}
             >
-              {#if typeof content.notion === 'string'}
-                {content.notion}
-              {:else}
-                <Icon style={css.raw({ marginX: 'auto' })} icon={content.notion} size={20} />
-              {/if}
-            </td>
+              Notion
+            </th>
           </tr>
-        {/each}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {#each tableContents as content (content.title)}
+            <tr class={css({ _last: { '& > td': { borderBottomWidth: '1px', borderColor: 'gray.1000' } } })}>
+              <td
+                class={css({
+                  borderBottomWidth: '[0.5px]',
+                  borderColor: 'neutral.20',
+                  paddingX: '20px',
+                  paddingY: '16px',
+                  textStyle: '14b',
+                })}
+              >
+                {content.title}
+              </td>
+              <td
+                class={css({
+                  borderBottomWidth: '[0.5px]',
+                  borderColor: 'neutral.20',
+                  paddingY: '16px',
+                  textStyle: '14b',
+                  textAlign: 'center',
+                  backgroundColor: 'neutral.90',
+                  color: 'neutral.0',
+                })}
+              >
+                {#if typeof content.readable === 'string'}
+                  {content.readable}
+                {:else}
+                  <Icon style={css.raw({ marginX: 'auto' })} icon={content.readable} size={20} />
+                {/if}
+              </td>
+              <td
+                class={css({
+                  borderBottomWidth: '[0.5px]',
+                  borderColor: 'neutral.20',
+                  paddingY: '16px',
+                  textStyle: '14b',
+                  textAlign: 'center',
+                  backgroundColor: 'gray.100/50',
+                })}
+              >
+                {#if typeof content.zendesk === 'string'}
+                  {content.zendesk}
+                {:else}
+                  <Icon style={css.raw({ marginX: 'auto' })} icon={content.zendesk} size={20} />
+                {/if}
+              </td>
+              <td
+                class={css({
+                  borderBottomWidth: '[0.5px]',
+                  borderColor: 'neutral.20',
+                  paddingY: '16px',
+                  textStyle: '14b',
+                  textAlign: 'center',
+                })}
+              >
+                {#if typeof content.notion === 'string'}
+                  {content.notion}
+                {:else}
+                  <Icon style={css.raw({ marginX: 'auto' })} icon={content.notion} size={20} />
+                {/if}
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
   </section>
 </div>
 
@@ -681,6 +738,7 @@
     background:
       '[linear-gradient(110deg, rgba(251, 96, 189, 0.00) -5.83%, rgba(251, 96, 189, 0.10) -0.54%, rgba(251, 96, 189, 0.03) 31.21%, rgba(251, 96, 189, 0.00) 47.09%, rgba(249, 106, 25, 0.02) 61.91%, rgba(249, 106, 25, 0.10) 83.08%)]',
     scrollMarginTop: '56px',
+    smDown: { paddingX: '24px' },
   })}
 >
   <div class={css({ position: 'absolute', inset: '0' })}>
