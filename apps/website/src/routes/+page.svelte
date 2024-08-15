@@ -726,7 +726,6 @@
             type="checkbox"
             on:change
           />
-          <!-- bind:checked -->
           <Icon
             style={css.raw({
               display: 'none',
