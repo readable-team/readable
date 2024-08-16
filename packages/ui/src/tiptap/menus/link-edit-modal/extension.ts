@@ -22,9 +22,19 @@ declare module '@tiptap/core' {
 export const LinkEditModal = Extension.create({
   name: 'linkEditModal',
 
+  addStorage() {
+    return {
+      opened: false,
+    };
+  },
+
   addKeyboardShortcuts() {
     return {
       'Mod-k': ({ editor }) => {
+        if (this.storage.opened) {
+          return false;
+        }
+
         const { selection } = editor.state;
         const { from, to } = selection;
 
@@ -106,11 +116,13 @@ export const LinkEditModal = Extension.create({
               onClose: () => {
                 modalComponent.$destroy();
                 modalDom.remove();
+                this.storage.opened = false;
               },
             },
           });
 
           document.body.append(modalDom);
+          this.storage.opened = true;
 
           return true;
         },
