@@ -63,6 +63,9 @@ export const Pages = pgTable(
     siteId: text('site_id')
       .notNull()
       .references(() => Sites.id),
+    sectionId: text('section_id')
+      .notNull()
+      .references(() => Sections.id),
     parentId: text('parent_id').references((): AnyPgColumn => Pages.id),
     slug: text('slug').notNull(),
     state: E._PageState('state').notNull(),
@@ -192,6 +195,26 @@ export const PageContentUpdates = pgTable(
   },
   (t) => ({
     pageIdSeqIdx: index().on(t.pageId, t.seq),
+  }),
+);
+
+export const Sections = pgTable(
+  'sections',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId('SEC')),
+    siteId: text('site_id')
+      .notNull()
+      .references(() => Sites.id),
+    name: text('name').notNull(),
+    order: bytea('order').notNull(),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    siteIdOrderUniq: unique().on(t.siteId, t.order),
   }),
 );
 

@@ -9,6 +9,7 @@ interface Blob {
 
 input CreatePageInput {
   parentId: ID
+  sectionId: ID!
   siteId: ID!
 }
 
@@ -238,7 +239,8 @@ type PublicSite implements ISite {
   id: ID!
   logo: Image
   name: String!
-  pages: [PublicPage!]!
+  pages: [PublicPage!]! @deprecated(reason: "use `PublicSite.sections` instead")
+  sections: [Section!]!
   slug: String!
   themeColor: String!
   url: String!
@@ -292,6 +294,13 @@ type SearchPublicPageResult {
   hits: [PublicPageSearchHit!]!
 }
 
+type Section {
+  id: ID!
+  name: String!
+  order: String!
+  pages: [Page!]!
+}
+
 input SetSiteCustomDomainInput {
   domain: String!
   siteId: ID!
@@ -306,7 +315,8 @@ type Site implements ISite {
   id: ID!
   logo: Image
   name: String!
-  pages: [Page!]!
+  pages: [Page!]! @deprecated(reason: "use `Site.sections` instead")
+  sections: [Section!]!
   slug: String!
   team: Team!
   themeColor: String!
@@ -391,6 +401,7 @@ input UpdatePagePositionInput {
   lower: String
   pageId: String!
   parentId: String
+  sectionId: String!
   upper: String
 }
 

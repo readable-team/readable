@@ -33,6 +33,7 @@ import {
   PageContentState,
   PublicPage,
   PublicPageContent,
+  Section,
   Site,
   User,
 } from './objects';
@@ -40,6 +41,33 @@ import {
 /**
  * * Types
  */
+
+Section.implement({
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    name: t.exposeString('name'),
+
+    order: t.string({ resolve: (section) => decoder.decode(section.order) }),
+    pages: t.field({
+      type: [Page],
+      resolve: async (section, _, ctx) => {
+        const loader = ctx.loader({
+          name: 'Pages(sectionId).many',
+          many: true,
+          load: async (sectionIds: string[]) => {
+            return await db
+              .select()
+              .from(Pages)
+              .where(and(inArray(Pages.sectionId, sectionIds), ne(Pages.state, PageState.DELETED)));
+          },
+          key: (row) => row.sectionId,
+        });
+
+        return await loader.load(section.id);
+      },
+    }),
+  }),
+});
 
 IPage.implement({
   fields: (t) => ({
@@ -291,7 +319,7 @@ builder.queryFields((t) => ({
 builder.mutationFields((t) => ({
   createPage: t.withAuth({ session: true }).fieldWithInput({
     type: Page,
-    input: { siteId: t.input.id(), parentId: t.input.id({ required: false }) },
+    input: { siteId: t.input.id(), parentId: t.input.id({ required: false }), sectionId: t.input.id() },
     resolve: async (_, { input }, ctx) => {
       await assertSitePermission({
         siteId: input.siteId,
@@ -312,6 +340,7 @@ builder.mutationFields((t) => ({
         .where(
           and(
             eq(Pages.siteId, input.siteId),
+            eq(Pages.sectionId, input.sectionId),
             input.parentId ? eq(Pages.parentId, input.parentId) : isNull(Pages.parentId),
           ),
         )
@@ -325,6 +354,7 @@ builder.mutationFields((t) => ({
           .values({
             siteId: input.siteId,
             parentId: input.parentId,
+            sectionId: input.sectionId,
             slug: createPageSlug(),
             order: encoder.encode(generateJitteredKeyBetween(last ? decoder.decode(last.order) : null, null)),
             state: 'DRAFT',
@@ -410,6 +440,7 @@ builder.mutationFields((t) => ({
     type: Page,
     input: {
       pageId: t.input.string(),
+      sectionId: t.input.string(),
       parentId: t.input.string({ required: false }),
       lower: t.input.string({ required: false }),
       upper: t.input.string({ required: false }),
@@ -424,6 +455,7 @@ builder.mutationFields((t) => ({
         .update(Pages)
         .set({
           order: encoder.encode(generateJitteredKeyBetween(input.lower ?? null, input.upper ?? null)),
+          sectionId: input.sectionId,
           parentId: input.parentId ?? null,
         })
         .where(eq(Pages.id, input.pageId))
@@ -661,6 +693,7 @@ builder.mutationFields((t) => ({
           .insert(Pages)
           .values({
             siteId: page.siteId,
+            sectionId: page.sectionId,
             parentId: page.parentId,
             slug: createPageSlug(),
             order: encoder.encode(generateJitteredKeyBetween(decoder.decode(page.order), nextPageOrder)),
