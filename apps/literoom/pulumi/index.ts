@@ -26,25 +26,12 @@ const lambda = new aws.lambda.Function('literoom', {
   ],
 
   code: new pulumi.asset.FileArchive('../dist'),
-  publish: true,
 });
 
 new aws.lambda.Permission('literoom', {
   function: lambda.name,
   principal: 'cloudfront.amazonaws.com',
   action: 'lambda:InvokeFunction',
-});
-
-const alias = new aws.lambda.Alias('literoom', {
-  name: 'latest',
-  functionName: lambda.name,
-  functionVersion: lambda.version,
-});
-
-new aws.lambda.ProvisionedConcurrencyConfig('literoom', {
-  functionName: lambda.name,
-  qualifier: alias.name,
-  provisionedConcurrentExecutions: 1,
 });
 
 const accessPoint = new aws.s3.AccessPoint('usercontents', {
