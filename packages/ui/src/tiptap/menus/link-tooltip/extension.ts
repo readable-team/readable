@@ -2,7 +2,6 @@ import { autoUpdate, computePosition } from '@floating-ui/dom';
 import { center } from '@readable/styled-system/patterns';
 import { Extension, posToDOMRect } from '@tiptap/core';
 import { Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
-import LinkEditModal from '../link-edit-modal/Component.svelte';
 import Component from './Component.svelte';
 import type { VirtualElement } from '@floating-ui/dom';
 import type { Node } from '@tiptap/pm/model';
@@ -98,24 +97,11 @@ export const LinkTooltip = Extension.create({
 
               const openLinkEditModal = () => {
                 hideTooltip();
-
-                const modalDom = document.createElement('div');
-                const modalComponent = new LinkEditModal({
-                  target: modalDom,
-                  props: {
-                    editor: this.editor,
-                    from: pos,
-                    to: pos + anchorNode.nodeSize,
-                    referenceElement: element,
-                    defaultLink: linkHref,
-                    onClose: () => {
-                      modalComponent.$destroy();
-                      modalDom.remove();
-                    },
-                  },
+                this.editor.commands.showLinkEditModal({
+                  selection,
+                  currentLink: linkHref,
+                  defaultLink: linkHref,
                 });
-
-                document.body.append(modalDom);
               };
 
               if (!tooltipComponent) {

@@ -2,9 +2,7 @@ import { autoUpdate, computePosition, hide, inline, offset, shift } from '@float
 import { center } from '@readable/styled-system/patterns';
 import { Extension, posToDOMRect } from '@tiptap/core';
 import { NodeSelection, Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
-import { isValidLinkStructure } from '../../../utils/url';
 import { BlockSelection } from '../../extensions/block-selection';
-import LinkEditModal from '../link-edit-modal/Component.svelte';
 import Component from './Component.svelte';
 import type { VirtualElement } from '@floating-ui/dom';
 
@@ -79,36 +77,7 @@ export const BubbleMenu = Extension.create({
               const openLinkEditModal = () => {
                 hideBubble();
 
-                const { from, to } = selection;
-                let defaultLink = '';
-
-                const currentLink = this.editor.getAttributes('link');
-                if (currentLink.href) {
-                  defaultLink = currentLink.href;
-                } else {
-                  const maybeLink = this.editor.state.doc.textBetween(from, to);
-                  if (isValidLinkStructure(maybeLink)) {
-                    defaultLink = maybeLink;
-                  }
-                }
-
-                const modalDom = document.createElement('div');
-                const modalComponent = new LinkEditModal({
-                  target: modalDom,
-                  props: {
-                    editor: this.editor,
-                    from: selection.from,
-                    to: selection.to,
-                    referenceElement: element as HTMLElement,
-                    defaultLink,
-                    onClose: () => {
-                      modalComponent.$destroy();
-                      modalDom.remove();
-                    },
-                  },
-                });
-
-                document.body.append(modalDom);
+                this.editor.commands.showLinkEditModalForActiveSelection();
               };
 
               if (!bubbleComponent) {

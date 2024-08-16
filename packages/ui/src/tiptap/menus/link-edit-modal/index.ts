@@ -1,0 +1,1 @@
+export { LinkEditModal } from './extension';

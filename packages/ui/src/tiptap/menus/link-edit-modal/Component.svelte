@@ -11,6 +11,7 @@
   export let from: number;
   export let to: number;
   export let referenceElement: Element | VirtualElement;
+  export let currentLink: string | null;
   export let defaultLink = '';
   export let onClose: () => void;
 
@@ -66,6 +67,8 @@
   });
 </script>
 
+<svelte:window on:keydown={(e) => e.key === 'Escape' && onClose()} />
+
 <div
   bind:this={floatingElement}
   class={css({
@@ -98,7 +101,7 @@
       }}
     />
     <Button disabled={linkDraft === ''} size="lg" variant="primary" on:click={updateLink}>
-      {#if defaultLink === ''}
+      {#if !currentLink}
         링크 업로드
       {:else}
         링크 수정
