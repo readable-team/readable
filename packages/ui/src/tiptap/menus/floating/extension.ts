@@ -115,8 +115,6 @@ export const FloatingMenu = Extension.create({
                       element.parentElement.parentElement === view.dom),
                 )!;
 
-              console.log(document.elementsFromPoint(coordsAtPos.left, coordsAtPos.top));
-
               cleanup?.();
               cleanup = autoUpdate(element, dom, async () => {
                 const style = window.getComputedStyle(element);
