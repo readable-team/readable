@@ -105,15 +105,16 @@ export const FloatingMenu = Extension.create({
               component.$set({ pos, node });
 
               const coordsAtPos = view.coordsAtPos(pos, 0);
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              const element = document
-                .elementsFromPoint(coordsAtPos.left, coordsAtPos.top)
-                .find(
-                  (element) =>
-                    element.parentElement === view.dom ||
-                    (element.parentElement?.hasAttribute('data-node-view') &&
-                      element.parentElement.parentElement === view.dom),
-                )!;
+              let element = document.elementFromPoint(coordsAtPos.left, coordsAtPos.top);
+
+              while (element !== null && element.parentElement !== view.dom) {
+                element = element.parentElement;
+              }
+
+              if (!element) {
+                dom.style.visibility = 'hidden';
+                return;
+              }
 
               cleanup?.();
               cleanup = autoUpdate(element, dom, async () => {
