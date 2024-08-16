@@ -1,4 +1,5 @@
 import { Extension } from '@tiptap/core';
+import { Plugin } from '@tiptap/pm/state';
 
 export const Behavior = Extension.create({
   name: 'behavior',
@@ -26,5 +27,25 @@ export const Behavior = Extension.create({
         return false;
       },
     };
+  },
+
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        props: {
+          handleClick: (view, pos) => {
+            const { state } = view;
+
+            const endOfDocument = pos === state.doc.content.size;
+            const lastChildEmptyParagraph =
+              state.doc.lastChild?.type.name === 'paragraph' && state.doc.lastChild?.childCount === 0;
+
+            if (endOfDocument && !lastChildEmptyParagraph) {
+              this.editor.chain().insertContentAt(pos, { type: 'paragraph' }).run();
+            }
+          },
+        },
+      }),
+    ];
   },
 });

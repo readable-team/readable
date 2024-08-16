@@ -8,7 +8,6 @@ import { Code } from '@tiptap/extension-code';
 import { Color } from '@tiptap/extension-color';
 import { Document } from '@tiptap/extension-document';
 import { Dropcursor } from '@tiptap/extension-dropcursor';
-import { Gapcursor } from '@tiptap/extension-gapcursor';
 import { HardBreak } from '@tiptap/extension-hard-break';
 import { Heading } from '@tiptap/extension-heading';
 import { HorizontalRule } from '@tiptap/extension-horizontal-rule';
@@ -161,7 +160,6 @@ export const extensions = [
 
   // extensions
   Dropcursor.configure({ width: 4, color: token('colors.accent.30') }),
-  Gapcursor,
   ListKeymap,
   Placeholder,
   TextAlign,
