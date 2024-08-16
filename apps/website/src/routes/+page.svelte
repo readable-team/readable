@@ -168,7 +168,6 @@
     background:
       '[linear-gradient(110deg, rgba(251, 96, 189, 0.00) -5.83%, rgba(251, 96, 189, 0.10) -0.54%, rgba(251, 96, 189, 0.03) 31.21%, rgba(251, 96, 189, 0.00) 47.09%, rgba(249, 106, 25, 0.02) 61.91%, rgba(249, 106, 25, 0.10) 83.08%)]',
     overflow: 'hidden',
-    smDown: { paddingTop: '40px' },
   })}
 >
   <div
@@ -180,7 +179,7 @@
     })}
   >
     <div class={css({ flex: 'none' })}>
-      <FullLogo class={css({ height: '24px', marginBottom: '100px' })} />
+      <FullLogo class={css({ height: '24px', marginBottom: '104px' })} />
 
       <div
         class={css({ fontSize: '[60px]', fontWeight: '[900]', marginBottom: '64px', smDown: { fontSize: '[36px]' } })}
@@ -250,7 +249,7 @@
     class={css({
       textStyle: '16sb',
       color: 'neutral.50',
-      marginBottom: '24px',
+      marginBottom: '48px',
       lineHeight: '[1.6]',
       textAlign: 'center',
       wordBreak: 'keep-all',
@@ -264,6 +263,7 @@
       width: 'full',
       justify: 'space-between',
       align: 'center',
+      paddingY: '40px',
       color: 'neutral.50',
       smDown: { gap: '48px', overflowX: 'auto' },
     })}
@@ -318,13 +318,17 @@
           정적인 가이드 문서를 맞추는 것, 어렵습니다.
         </h3>
 
-        <p class={css({ fontSize: '24px', fontWeight: '[800]', flexGrow: '1', marginTop: '8px', color: '[#818CF8]' })}>
+        <p class={css({ fontSize: '24px', fontWeight: '[800]', marginTop: '8px', color: '[#818CF8]' })}>
           정확한 유저 가이드 문서는 성공적인 고객 경험에 필수적인 요소입니다.
           <br />
           부정확한 문서는 제품과 기업에 대한 신뢰를 저해하는 요인이지만, 문서가 낡지 않게 관리하는 것은 번거롭고 어려운 일입니다.
         </p>
 
-        <img class={css({ size: '120px' })} alt="무한대" src="/images/infinity.png" />
+        <img
+          class={css({ marginTop: { base: '40px', sm: 'auto' }, size: '120px' })}
+          alt="무한대"
+          src="/images/infinity.png"
+        />
       </div>
     </div>
 
@@ -382,14 +386,16 @@
           <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#365314]' })}>
             낡고 부정확한 문서, 이제 안녕!
           </h3>
-          <p
-            class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#65A30D]', marginTop: '8px', flexGrow: '1' })}
-          >
+          <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#65A30D]', marginTop: '8px' })}>
             리더블은 제품의 변화를 감지해 가이드 문서에서 변경이 필요한 부분을 찾아냅니다. 더 이상 문서가 제품의 뒤에
             있지 않게 하세요. 최신 상태로 유지되는 문서로 고객 신뢰를 높여 보세요.
           </p>
 
-          <img class={css({ size: '120px' })} alt="흔드는 손" src="/images/waving-hand.png" />
+          <img
+            class={css({ marginTop: { base: '40px', sm: 'auto' }, size: '120px' })}
+            alt="흔드는 손"
+            src="/images/waving-hand.png"
+          />
         </div>
       </div>
     </div>
@@ -463,12 +469,16 @@
         </div>
 
         <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#1E40AF]' })}>언제나 새로운 도움센터</h3>
-        <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#60A5FA]', flexGrow: '1', marginTop: '4px' })}>
+        <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#60A5FA]', marginTop: '4px' })}>
           잊고 살던 가이드 문서, 실제 제품과 동일하도록 동기화하고 고객에게 낡지 않은 콘텐츠를 제공해요. 리더블에서
           자동으로 쏙쏙 잡아 놓치지 않게 해드려요.
         </p>
 
-        <img class={css({ size: '100px' })} alt="반짝임" src="/images/sparkles.png" />
+        <img
+          class={css({ marginTop: { base: '20px', sm: 'auto' }, size: '100px' })}
+          alt="반짝임"
+          src="/images/sparkles.png"
+        />
       </div>
     </div>
 
@@ -478,6 +488,7 @@
         rowSpan: 1,
         borderRadius: '16px',
         padding: '60px',
+        paddingBottom: '40px',
         backgroundColor: '[#FFEDD5/50]',
         height: '480px',
         smDown: { height: 'auto', padding: '32px' },
@@ -505,13 +516,17 @@
         </div>
 
         <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#9A3412]' })}>찾을 수 있는 도움센터</h3>
-        <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#FBBF24]', flexGrow: '1', marginTop: '4px' })}>
+        <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#FBBF24]', marginTop: '4px' })}>
           고객이 필요한 바로 그 내용,
           <br class={css({ hideBelow: 'sm' })} />
           웹 검색 결과에서 한 번에 발견될 수 있도록 SEO를 충분히 고려했어요.
         </p>
 
-        <img class={css({ size: '100px' })} alt="테크놀로지스트" src="/images/technologist.png" />
+        <img
+          class={css({ marginTop: { base: '20px', sm: 'auto' }, size: '100px' })}
+          alt="테크놀로지스트"
+          src="/images/technologist.png"
+        />
       </div>
     </div>
 
@@ -548,11 +563,15 @@
         </div>
 
         <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#3730A3]' })}>쉬운 탐색과 꽤 쓸만한 검색</h3>
-        <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#818CF8]', flexGrow: '1', marginTop: '4px' })}>
+        <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#818CF8]', marginTop: '4px' })}>
           잘 구조화된 문서들을 사이드바로 자유롭게 탐색하고, 도움센터 내부 검색으로 필요한 내용을 곧바로 찾을 수 있어요.
         </p>
 
-        <img class={css({ size: '100px' })} alt="돋보기" src="/images/minifying-glass.png" />
+        <img
+          class={css({ marginTop: { base: '20px', sm: 'auto' }, size: '100px' })}
+          alt="돋보기"
+          src="/images/minifying-glass.png"
+        />
       </div>
     </div>
 
@@ -562,6 +581,7 @@
         rowSpan: 1,
         borderRadius: '16px',
         padding: '60px',
+        paddingBottom: '50px',
         backgroundColor: '[#ECFCCB]',
         height: '480px',
         smDown: { height: 'auto', padding: '32px' },
@@ -594,7 +614,11 @@
           찾아 읽을 수 있어요.
         </p>
 
-        <img class={css({ width: '195px', height: '110px' })} alt="돋보기" src="/images/couple.png" />
+        <img
+          class={css({ marginTop: { base: '20px', sm: 'auto' }, width: '195px', height: '110px' })}
+          alt="커플"
+          src="/images/couple.png"
+        />
       </div>
     </div>
   </section>
@@ -753,7 +777,7 @@
   class={center({
     flexDirection: 'column',
     position: 'relative',
-    marginTop: '240px',
+    marginTop: '200px',
     paddingBottom: '120px',
     background:
       '[linear-gradient(110deg, rgba(251, 96, 189, 0.00) -5.83%, rgba(251, 96, 189, 0.10) -0.54%, rgba(251, 96, 189, 0.03) 31.21%, rgba(251, 96, 189, 0.00) 47.09%, rgba(249, 106, 25, 0.02) 61.91%, rgba(249, 106, 25, 0.10) 83.08%)]',
@@ -887,8 +911,8 @@
 
     <div
       class={css({
-        marginTop: '12px',
-        fontSize: '14px',
+        marginTop: { base: '40px', sm: '48px' },
+        fontWeight: 'bold',
         color: 'neutral.70',
         lineHeight: '[1.6]',
         textAlign: 'center',
