@@ -41,6 +41,13 @@ export const BubbleMenu = Extension.create({
 
               const { selection } = view.state;
 
+              const openLinkEditModal = () => {
+                hideBubble();
+                this.editor.commands.showLinkEditModalForActiveSelection();
+              };
+
+              bubbleComponent?.$set({ from: selection.from, to: selection.to, openLinkEditModal });
+
               if (
                 selection.empty ||
                 selection.from === selection.to ||
@@ -74,12 +81,6 @@ export const BubbleMenu = Extension.create({
                 contextElement: view.dom,
               };
 
-              const openLinkEditModal = () => {
-                hideBubble();
-
-                this.editor.commands.showLinkEditModalForActiveSelection();
-              };
-
               if (!bubbleComponent) {
                 bubbleComponent = new Component({
                   target: dom,
@@ -99,8 +100,6 @@ export const BubbleMenu = Extension.create({
 
                 document.body.append(dom);
               }
-
-              bubbleComponent.$set({ from: selection.from, to: selection.to, openLinkEditModal });
 
               cleanup?.();
               cleanup = autoUpdate(element, dom, async () => {

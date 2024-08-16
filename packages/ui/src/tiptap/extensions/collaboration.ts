@@ -1,6 +1,5 @@
 import { css } from '@readable/styled-system/css';
 import { Extension } from '@tiptap/core';
-import { Plugin, TextSelection } from '@tiptap/pm/state';
 import { redo, undo, yCursorPlugin, ySyncPlugin, yUndoPlugin, yUndoPluginKey } from 'y-prosemirror';
 import * as YAwareness from 'y-protocols/awareness';
 import * as Y from 'yjs';
@@ -150,19 +149,6 @@ export const Collaboration = Extension.create<CollaborationOptions>({
       ySyncPlugin(fragment),
       yUndoPluginInstance,
       yCursorPlugin(this.options.awareness, { cursorBuilder, selectionBuilder }),
-      new Plugin({
-        appendTransaction: (_, __, newState) => {
-          const { $anchor, $head } = newState.selection;
-
-          if ($anchor.pos === newState.doc.content.size && $head.pos === newState.doc.content.size) {
-            const { tr } = newState;
-            tr.setSelection(TextSelection.create(newState.doc, 0, 0));
-            return tr;
-          }
-
-          return null;
-        },
-      }),
     ];
   },
 

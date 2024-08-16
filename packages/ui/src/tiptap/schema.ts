@@ -39,7 +39,7 @@ import { Image } from './node-views/image';
 export const extensions = [
   // special nodes
   Document.extend({
-    content: 'block* paragraph',
+    content: 'block+',
   }),
   Text,
 
