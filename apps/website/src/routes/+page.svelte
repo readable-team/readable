@@ -724,6 +724,19 @@
           {/each}
         </tbody>
       </table>
+
+      <div
+        class={css({
+          marginTop: '12px',
+          fontSize: '14px',
+          color: 'neutral.70',
+          lineHeight: '[1.6]',
+          textAlign: 'right',
+          smDown: { width: '720px' },
+        })}
+      >
+        * 도움센터 제작을 지원하는 가장 저렴한 플랜 기준
+      </div>
     </div>
   </section>
 </div>
