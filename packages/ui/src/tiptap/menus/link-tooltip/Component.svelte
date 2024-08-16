@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
+  import { toast } from '@readable/ui/notification';
   import CopyIcon from '~icons/lucide/copy';
   import PencilIcon from '~icons/lucide/pencil';
 
@@ -32,9 +33,9 @@
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(linkHref);
-      // FIXME: 뭔가 피드백 주기
+      toast('링크가 복사되었습니다');
     } catch {
-      // FIXME: 뭔가 피드백 주기
+      toast('링크 복사에 실패했습니다'); // FIXME: 임시 문구
     }
     hide();
   };
