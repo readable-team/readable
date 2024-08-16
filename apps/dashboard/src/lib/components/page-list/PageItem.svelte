@@ -1,4 +1,4 @@
-<script generics="T extends PageData" lang="ts">
+<script lang="ts">
   import { css, cva, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Chip, Icon } from '@readable/ui/components';
@@ -10,23 +10,22 @@
   import { maxDepth } from './const';
   import PageList from './PageList.svelte';
   import type { ComponentProps } from 'svelte';
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  import type { PageData } from './types';
+  import type { PageData, SectionData } from './types';
 
   type $$Props = {
     depth: number;
-    item: T;
+    item: PageData | SectionData;
     openState: Record<string, boolean>;
-    onPointerDown: (e: PointerEvent, item: T) => void;
-    registerNode: (node: HTMLElement, item: T & { depth: number }) => void;
-  } & Omit<ComponentProps<PageList<T>>, 'depth' | 'items' | 'openState' | 'parent'>;
+    onPointerDown: (e: PointerEvent, item: PageData | SectionData) => void;
+    registerNode: (node: HTMLElement, item: (PageData | SectionData) & { depth: number }) => void;
+  } & Omit<ComponentProps<PageList>, 'depth' | 'items' | 'openState' | 'parent'>;
 
   export let depth: number;
-  export let item: T;
+  export let item: PageData | SectionData;
   export let openState: Record<string, boolean>;
-  export let onPointerDown: (e: PointerEvent, item: T) => void;
-  export let registerNode: (node: HTMLElement, item: T & { depth: number }) => void;
-  export let getPageUrl: (page: T) => string;
+  export let onPointerDown: (e: PointerEvent, item: PageData | SectionData) => void;
+  export let registerNode: (node: HTMLElement, item: (PageData | SectionData) & { depth: number }) => void;
+  export let getPageUrl: (page: PageData) => string;
 
   let elem: HTMLElement;
 
@@ -37,7 +36,7 @@
     });
   });
 
-  let childrenListProps: ComponentProps<PageList<T>>;
+  let childrenListProps: ComponentProps<PageList>;
   $: {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { item, onPointerDown, ...rest } = $$props as $$Props;
@@ -45,7 +44,7 @@
     childrenListProps = {
       ...rest,
       depth: depth + 1,
-      items: item.children as T[],
+      items: item.__typename === 'Section' ? item.pages : (item.children ?? []),
       parent: item,
     };
   }
@@ -94,59 +93,66 @@
       </button>
     {/if}
 
-    <a
-      class={flex({
-        alignItems: 'center',
-        gap: '6px',
-        flex: '1',
-        paddingX: '6px',
-        color: 'text.secondary',
-        width: 'full',
-        height: '34px',
-        truncate: true,
-      })}
-      aria-selected={item.id === $page.params.pageId ? 'true' : 'false'}
-      draggable="false"
-      href={getPageUrl(item)}
-      role="tab"
-    >
-      {#if item.state === 'DRAFT'}
-        <Chip>초안</Chip>
-      {/if}
-      <span
-        class={css(
-          cva({
-            base: {
-              truncate: true,
-              flex: '1',
-              textStyle: '15sb',
-            },
-            variants: {
-              root: {
-                true: {
-                  color: 'text.primary',
+    {#if item.__typename === 'Page'}
+      <a
+        class={flex({
+          alignItems: 'center',
+          gap: '6px',
+          flex: '1',
+          paddingX: '6px',
+          color: 'text.secondary',
+          width: 'full',
+          height: '34px',
+          truncate: true,
+        })}
+        aria-selected={item.id === $page.params.pageId ? 'true' : 'false'}
+        draggable="false"
+        href={getPageUrl(item)}
+        role="tab"
+      >
+        {#if item.state === 'DRAFT'}
+          <Chip>초안</Chip>
+        {/if}
+        <span
+          class={css(
+            cva({
+              base: {
+                truncate: true,
+                flex: '1',
+                textStyle: '15sb',
+              },
+              variants: {
+                root: {
+                  true: {
+                    color: 'text.primary',
+                  },
                 },
               },
+            }).raw({ root: item.parent?.id === null }),
+          )}
+        >
+          {item.content.title}
+        </span>
+        <button
+          class={css({
+            borderRadius: '6px',
+            color: 'neutral.50',
+            _hover: {
+              color: 'neutral.60',
+              backgroundColor: 'neutral.40',
             },
-          }).raw({ root: item.parent?.id === null }),
-        )}
-      >
-        {item.content.title}
-      </span>
-      <button
-        class={css({
-          borderRadius: '6px',
-          color: 'neutral.50',
-          _hover: {
-            color: 'neutral.60',
-            backgroundColor: 'neutral.40',
-          },
-        })}
-        type="button"
-      >
-        <Icon icon={EllipsisIcon} size={24} />
-      </button>
-    </a>
+          })}
+          type="button"
+        >
+          <Icon icon={EllipsisIcon} size={24} />
+        </button>
+      </a>
+    {:else}
+      <!-- TODO -->
+      <div>
+        섹션명: {item.name}
+      </div>
+    {/if}
   </div>
 
   {#if openState[item.id] && depth < maxDepth}

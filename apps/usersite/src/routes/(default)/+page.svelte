@@ -14,22 +14,16 @@
           url
         }
 
-        # NOTE: maxDepth = 3
-        pages {
+        # NOTE: maxDepth = 2
+        sections {
           id
-          slug
+          name
+          order
 
-          content {
+          pages {
             id
-            title
-          }
-
-          parent {
-            id
-          }
-
-          children {
-            id
+            state
+            order
             slug
 
             content {
@@ -43,6 +37,8 @@
 
             children {
               id
+              state
+              order
               slug
 
               content {
@@ -52,20 +48,6 @@
 
               parent {
                 id
-              }
-
-              children {
-                id
-                slug
-
-                content {
-                  id
-                  title
-                }
-
-                parent {
-                  id
-                }
               }
             }
           }
@@ -86,11 +68,11 @@ name: {$query.publicSite.name}
 <br />
 pages:
 <ul>
-  {#each $query.publicSite.pages as page (page.id)}
-    <li><a href={pageUrl(page)}>{page.content.title}</a></li>
-    {#if page.children}
+  {#each $query.publicSite.sections as section (section.id)}
+    <li>{section.name}</li>
+    {#if section.pages}
       <ul>
-        {#each page.children as child (child.id)}
+        {#each section.pages as child (child.id)}
           <li style="margin-left: 1rem;">
             <a href={pageUrl(child)}>{child.content.title}</a>
           </li>
@@ -100,15 +82,6 @@ pages:
                 <li style="margin-left: 1rem;">
                   <a href={pageUrl(grandchild)}>{grandchild.content.title}</a>
                 </li>
-                {#if grandchild.children}
-                  <ul>
-                    {#each grandchild.children as greatgrandchild (greatgrandchild.id)}
-                      <li style="margin-left: 1rem;">
-                        <a href={pageUrl(greatgrandchild)}>{greatgrandchild.content.title}</a>
-                      </li>
-                    {/each}
-                  </ul>
-                {/if}
               {/each}
             </ul>
           {/if}

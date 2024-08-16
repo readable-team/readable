@@ -4,7 +4,6 @@
   import { Button, Chip, Helmet, Icon, Tooltip } from '@readable/ui/components';
   import { toast } from '@readable/ui/notification';
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
-  import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
   import { accessToken } from '$lib/graphql';
@@ -25,14 +24,6 @@
       site(siteId: $siteId) {
         id
         name
-      }
-    }
-  `);
-
-  const createPage = graphql(`
-    mutation SitePage_CreatePage_Mutation($input: CreatePageInput!) {
-      createPage(input: $input) {
-        id
       }
     }
   `);
@@ -67,17 +58,6 @@
 <div>ID: {$query.me.id}</div>
 <div>Name: {$query.me.name}</div>
 <div>Email: {$query.me.email}</div>
-
-<button
-  type="button"
-  on:click={async () => {
-    const page = await createPage({ siteId: $query.site.id });
-
-    await goto(`/${$query.site.id}/${page.id}`);
-  }}
->
-  새 페이지
-</button>
 
 <br />
 <div class={flex({ alignItems: 'center', gap: '8px' })}><Chip>초안</Chip> 어쩌구</div>

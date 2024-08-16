@@ -19,6 +19,7 @@
             title
           }
 
+          # FIXME: 섹션
           # NOTE: maxDepth = 3
           parent {
             id
@@ -52,6 +53,7 @@
     `),
   );
 
+  // FIXME: 섹션
   // NOTE: maxDepth = 3
   $: breadcrumbs = [
     $query.page.parent?.parent?.parent,

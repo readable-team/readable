@@ -13,6 +13,7 @@
   import { PageList } from '$lib/components/page-list';
   import SiteSettingModal from './SiteSettingModal.svelte';
   import UserMenu from './UserMenu.svelte';
+  import type { PageData, SectionData } from '$lib/components/page-list/types';
 
   let openSiteSettingModal = false;
   $: openSiteSettingModal = $page.url.hash.startsWith('#/settings/site');
@@ -37,25 +38,22 @@
           ...Img_image
         }
 
-        # NOTE: maxDepth = 3
-        pages {
+        # NOTE: maxDepth = 2
+        sections {
           id
-          state
+          name
           order
+          __typename
 
-          content {
-            id
-            title
-          }
-
-          parent {
-            id
-          }
-
-          children {
+          pages {
             id
             state
             order
+            __typename
+
+            section {
+              id
+            }
 
             content {
               id
@@ -70,6 +68,11 @@
               id
               state
               order
+              __typename
+
+              section {
+                id
+              }
 
               content {
                 id
@@ -79,26 +82,22 @@
               parent {
                 id
               }
-
-              children {
-                id
-                state
-                order
-
-                content {
-                  id
-                  title
-                }
-
-                parent {
-                  id
-                }
-              }
             }
           }
         }
 
         ...SiteSettingModal_site
+      }
+    }
+  `);
+
+  const createSection = graphql(`
+    mutation SiteLayout_CreateSection_Mutation($input: CreateSectionInput!) {
+      createSection(input: $input) {
+        id
+        name
+        order
+        __typename
       }
     }
   `);
@@ -148,22 +147,35 @@
     }
   });
 
-  async function onCreatePage(parentId: string | null) {
-    const page = await createPage({
+  async function onCreatePage(parent: SectionData | PageData) {
+    const createPageInput: Parameters<typeof createPage>[0] = {
       siteId: $query.site.id,
-      parentId,
-    });
+      sectionId: '',
+      parentId: '',
+    };
+
+    if (parent.__typename === 'Section') {
+      createPageInput.sectionId = parent.id;
+      createPageInput.parentId = null;
+    } else {
+      createPageInput.sectionId = parent.section.id;
+      createPageInput.parentId = parent.id;
+    }
+
+    const page = await createPage(createPageInput);
 
     await goto(`/${$query.site.id}/${page.id}`);
   }
 
   async function onDropPage(target: {
+    sectionId: string;
     pageId: string;
     parentId: string | null;
     previousOrder?: string;
     nextOrder?: string;
   }) {
     await updatePagePosition({
+      sectionId: target.sectionId,
       pageId: target.pageId,
       parentId: target.parentId,
       lower: target.previousOrder,
@@ -307,8 +319,13 @@
       <div role="tree">
         <PageList
           getPageUrl={(page) => `/${$query.site.id}/${page.id}`}
-          items={$query.site.pages}
+          items={$query.site.sections}
           onCreate={onCreatePage}
+          onCreateSection={async () => {
+            await createSection({
+              siteId: $query.site.id,
+            });
+          }}
           onDrop={onDropPage}
         />
       </div>

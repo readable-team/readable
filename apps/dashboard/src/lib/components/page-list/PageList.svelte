@@ -1,4 +1,4 @@
-<script generics="T extends PageData" lang="ts">
+<script lang="ts">
   import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
@@ -6,10 +6,10 @@
   import PlusIcon from '~icons/lucide/plus';
   import { maxDepth } from './const';
   import PageItem from './PageItem.svelte';
-  import type { PageData, VirtualRootPageData } from './types';
+  import type { PageData, SectionData, VirtualRootPageData } from './types';
 
   type DraggingState = {
-    item: T;
+    item: SectionData | PageData;
     elem: HTMLElement;
     ghost: HTMLElement;
     event: PointerEvent;
@@ -25,21 +25,26 @@
   };
 
   export let depth = 0;
-  export let items: T[] = [];
+  export let items: (SectionData | PageData)[] = [];
   export let openState: Record<string, boolean> = {};
-  export let parent: T | null = null;
+  export let parent: PageData | SectionData | null = null;
   export let onDrop: (target: {
     pageId: string;
+    sectionId: string;
     parentId: string | null;
     previousOrder?: string;
     nextOrder?: string;
   }) => Promise<boolean>;
-  export let onCancel: ((item: T) => void) | undefined = undefined;
-  export let onCreate: (parentId: string | null) => Promise<void>;
-  export let getPageUrl: (page: T) => string;
+  export let onCancel: ((item: SectionData | PageData) => void) | undefined = undefined;
+  export let onCreate: (parent: SectionData | PageData) => Promise<void>;
+  export let onCreateSection: (() => Promise<void>) | undefined;
+  export let getPageUrl: (page: PageData) => string;
   export let indicatorElem: HTMLElement | null = null;
-  export let nodeMap = new Map<HTMLElement, (T | VirtualRootPageData) & { depth: number }>();
-  export let registerNode = (node: HTMLElement, item: (T | VirtualRootPageData) & { depth: number }) => {
+  export let nodeMap = new Map<HTMLElement, (SectionData | PageData | VirtualRootPageData) & { depth: number }>();
+  export let registerNode = (
+    node: HTMLElement,
+    item: (SectionData | PageData | VirtualRootPageData) & { depth: number },
+  ) => {
     nodeMap.set(node, item);
   };
   let listElem: HTMLElement;
@@ -50,7 +55,7 @@
     if (parent) {
       registerNode(listElem, { ...parent, depth });
     } else {
-      registerNode(listElem, { id: null, children: items, depth });
+      registerNode(listElem, { __typename: 'VirtualRootPage', id: null, sections: items as SectionData[], depth });
     }
   });
 
@@ -99,12 +104,14 @@
     );
   }
 
-  function findDeepestDepth(item: PageData, depth = 0): number {
-    if (!item.children || item.children.length === 0) {
+  function findDeepestDepth(item: SectionData | PageData, depth = 0): number {
+    const children = item.__typename === 'Section' ? item.pages : item.children;
+
+    if (!children || children.length === 0) {
       return depth;
     }
 
-    return Math.max(...item.children.map((child) => findDeepestDepth(child, depth + 1)));
+    return Math.max(...children.map((child) => findDeepestDepth(child, depth + 1)));
   }
 
   function updateIndicatorPosition(dragging: DraggingState, dropTarget: DropTarget) {
@@ -157,7 +164,7 @@
     }
   }
 
-  const onPointerDown = (event: PointerEvent, item: T) => {
+  const onPointerDown = (event: PointerEvent, item: SectionData | PageData) => {
     const draggingItemElem = (event.target as HTMLElement).closest('.dnd-item') as HTMLElement;
     const pointerTargetList = draggingItemElem?.closest('.dnd-list') as HTMLElement;
 
@@ -197,8 +204,15 @@
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const targetItem = nodeMap.get(dropTarget.targetElem)!;
 
+          if (targetItem.__typename !== 'Page') {
+            // TODO: 섹션, depth 1 페이지 드롭
+            onCancel?.(dragging.item);
+            return;
+          }
+
           const success = await onDrop({
             pageId: dragging.item.id,
+            sectionId: targetItem.section.id,
             parentId: targetItem.id,
             // 맨 앞에 추가
             nextOrder: targetItem.children ? targetItem.children[0]?.order : undefined,
@@ -215,6 +229,12 @@
           let nextOrder;
           let previousOrder;
 
+          if (targetItem.__typename !== 'Page') {
+            // TODO: 섹션, depth 1 페이지 드롭
+            onCancel?.(dragging.item);
+            return;
+          }
+
           if (dropTarget.indicatorPosition === 0 || !targetItem.children || targetItem.children.length === 0) {
             // 맨 앞
             nextOrder = targetItem.children ? targetItem.children[0]?.order : undefined;
@@ -228,6 +248,7 @@
           }
 
           onDrop({
+            sectionId: targetItem.section.id,
             pageId: dragging.item.id,
             parentId: targetItem.id,
             previousOrder,
@@ -387,6 +408,7 @@
     nodeMap,
     onCancel,
     onCreate,
+    onCreateSection,
     onDrop,
     onPointerDown,
     openState,
@@ -463,9 +485,15 @@
     aria-selected="false"
     role="treeitem"
     type="button"
-    on:click={() => onCreate(parent?.id ?? null)}
+    on:click={() => (parent ? onCreate(parent) : onCreateSection?.())}
   >
     <Icon icon={PlusIcon} size={16} />
-    <span class={css({ fontStyle: 'italic' })}>새 페이지 추가</span>
+    <span class={css({ fontStyle: 'italic' })}>
+      {#if parent === null}
+        섹션 추가
+      {:else}
+        페이지 추가
+      {/if}
+    </span>
   </button>
 </ul>
