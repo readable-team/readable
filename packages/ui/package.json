@@ -64,6 +64,7 @@
     "yjs": "^13.6.18"
   },
   "devDependencies": {
+    "@iconify-json/simple-icons": "^1.1.113",
     "@readable/tsconfig": "workspace:*",
     "@types/body-scroll-lock": "^3.1.2",
     "svelte-check": "^3.8.5",

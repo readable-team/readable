@@ -7,6 +7,7 @@
   import { fly } from 'svelte/transition';
   import CheckIcon from '~icons/lucide/check';
   import XIcon from '~icons/lucide/x';
+  import IconGithub from '~icons/simple-icons/github';
   import { page } from '$app/stores';
   import BrowserHero from '$assets/hero/browser.svg?component';
   import TableCheckIcon from '$assets/icons/table-check.svg?component';
@@ -924,3 +925,38 @@
     </div>
   </form>
 </div>
+
+<footer
+  class={flex({
+    direction: 'column',
+    gap: '39px',
+    paddingX: { base: '24px', sm: '32px' },
+    paddingY: '48px',
+    backgroundColor: 'neutral.0',
+  })}
+>
+  <div class={flex({ align: 'center', justify: 'space-between' })}>
+    <FullLogo class={css({ height: { base: '20px', sm: '24px' } })} />
+
+    <a href="https://github.com/readable-team" rel="noopener noreferrer" target="_blank">
+      <Icon style={css.raw({ color: '[#181717]', hideFrom: 'sm' })} icon={IconGithub} size={20} />
+      <Icon style={css.raw({ color: '[#181717]', hideBelow: 'sm' })} icon={IconGithub} size={24} />
+    </a>
+  </div>
+
+  <div class={css({ textStyle: { base: '12m', sm: '14m' }, color: 'neutral.70' })}>
+    <p>(주)펜슬컴퍼니 | 대표 배준현 | 서울특별시 강남구 강남대로100길 14, 6층</p>
+    <p>
+      사업자등록번호 610-88-03078 | <a
+        href="https://www.ftc.go.kr/bizCommPop.do?wrkr_no=6108803078"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        통신판매업신고번호 2023-서울강남-4541
+      </a>
+    </p>
+    <p>전화 02-565-7695</p>
+  </div>
+
+  <div class={css({ height: '20px' })}></div>
+</footer>
