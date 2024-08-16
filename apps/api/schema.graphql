@@ -74,6 +74,7 @@ input GenerateSingleSignOnAuthorizationUrlInput {
 interface IPage {
   id: ID!
   order: String!
+  section: Section!
   slug: String!
   state: PageState!
 }
@@ -171,6 +172,7 @@ type Page implements IPage {
   lastPublishedAt: DateTime
   order: String!
   parent: Page
+  section: Section!
   site: Site!
   slug: String!
   state: PageState!
@@ -239,6 +241,7 @@ type PublicPage implements IPage {
   id: ID!
   order: String!
   parent: PublicPage
+  section: Section!
   slug: String!
   state: PageState!
 }

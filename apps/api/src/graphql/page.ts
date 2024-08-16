@@ -109,6 +109,8 @@ IPage.implement({
     slug: t.exposeString('slug'),
 
     order: t.string({ resolve: (page) => decoder.decode(page.order) }),
+
+    section: t.field({ type: Section, resolve: (page) => page.sectionId }),
   }),
 });
 
