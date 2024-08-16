@@ -928,9 +928,11 @@
 
 <footer
   class={flex({
+    marginX: 'auto',
+    maxWidth: '1200px',
     direction: 'column',
-    gap: '39px',
-    paddingX: { base: '24px', sm: '32px' },
+    gap: '40px',
+    paddingX: { base: '24px', sm: '48px' },
     paddingY: '48px',
     backgroundColor: 'neutral.0',
   })}
@@ -944,18 +946,20 @@
     </a>
   </div>
 
-  <div class={css({ textStyle: { base: '12m', sm: '14m' }, color: 'neutral.70' })}>
-    <p>(주)펜슬컴퍼니 | 대표 배준현 | 서울특별시 강남구 강남대로100길 14, 6층</p>
+  <div class={flex({ textStyle: { base: '12m', sm: '14m' }, color: 'neutral.70', direction: 'column', gap: '4px' })}>
+    <p>주식회사 펜슬컴퍼니 | 대표 배준현 | 서울특별시 강남구 강남대로100길 14, 6층</p>
+
     <p>
       사업자등록번호 610-88-03078 | <a
         href="https://www.ftc.go.kr/bizCommPop.do?wrkr_no=6108803078"
         rel="noopener noreferrer"
         target="_blank"
       >
-        통신판매업신고번호 2023-서울강남-4541
+        통신판매업신고 2023-서울강남-4541
       </a>
     </p>
-    <p>전화 02-565-7695</p>
+
+    <p>02-565-7695 | hello@penxle.io</p>
   </div>
 
   <div class={css({ height: '20px' })}></div>
