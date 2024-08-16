@@ -142,7 +142,7 @@
     if (error) {
       console.error(error);
     } else {
-      alert('신청이 완료되었습니다');
+      alert('신청이 완료되었습니다.\n출시 소식을 기다려주세요!');
     }
   };
 
@@ -774,6 +774,7 @@
       color: 'neutral.70',
       lineHeight: '[1.6]',
       zIndex: '0',
+      textAlign: 'center',
     })}
   >
     제품과 문서를 동기화하고 신뢰할 수 있는 가이드 문서를 만들어 보세요
@@ -883,5 +884,17 @@
     >
       신청하기
     </button>
+
+    <div
+      class={css({
+        marginTop: '12px',
+        fontSize: '14px',
+        color: 'neutral.70',
+        lineHeight: '[1.6]',
+        textAlign: 'center',
+      })}
+    >
+      출시되면 가장 빠르게 알려드릴게요!
+    </div>
   </form>
 </div>
