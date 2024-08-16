@@ -19,20 +19,23 @@ import {
   PageContentStates,
   PageContentUpdates,
   Pages,
+  Sections,
 } from '@/db';
-import { PageContentSyncKind, PageState } from '@/enums';
+import { PageContentSyncKind, PageState, SectionState } from '@/enums';
 import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
-import { assertPagePermission, assertSitePermission } from '@/utils/permissions';
+import { assertPagePermission, assertSectionPermission, assertSitePermission } from '@/utils/permissions';
 import {
   IPage,
+  ISection,
   Page,
   PageContentContributor,
   PageContentSnapshot,
   PageContentState,
   PublicPage,
   PublicPageContent,
+  PublicSection,
   Section,
   Site,
   User,
@@ -42,23 +45,53 @@ import {
  * * Types
  */
 
-Section.implement({
+ISection.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
 
     order: t.string({ resolve: (section) => decoder.decode(section.order) }),
+  }),
+});
+
+Section.implement({
+  interfaces: [ISection],
+  fields: (t) => ({
     pages: t.field({
       type: [Page],
       resolve: async (section, _, ctx) => {
         const loader = ctx.loader({
-          name: 'Pages(sectionId).many',
+          name: 'Pages(sectionId).ne(DELETED).many',
           many: true,
           load: async (sectionIds: string[]) => {
             return await db
               .select()
               .from(Pages)
               .where(and(inArray(Pages.sectionId, sectionIds), ne(Pages.state, PageState.DELETED)));
+          },
+          key: (row) => row.sectionId,
+        });
+
+        return await loader.load(section.id);
+      },
+    }),
+  }),
+});
+
+PublicSection.implement({
+  interfaces: [ISection],
+  fields: (t) => ({
+    Pages: t.field({
+      type: [PublicPage],
+      resolve: async (section, _, ctx) => {
+        const loader = ctx.loader({
+          name: 'Pages(sectionId).eq(PUBLISHED).many',
+          many: true,
+          load: async (sectionIds: string[]) => {
+            return await db
+              .select()
+              .from(Pages)
+              .where(and(inArray(Pages.sectionId, sectionIds), eq(Pages.state, PageState.PUBLISHED)));
           },
           key: (row) => row.sectionId,
         });
@@ -317,6 +350,105 @@ builder.queryFields((t) => ({
  */
 
 builder.mutationFields((t) => ({
+  createSection: t.withAuth({ session: true }).fieldWithInput({
+    type: Section,
+    input: { siteId: t.input.id(), lower: t.input.id({ required: false }), upper: t.input.string({ required: false }) },
+    resolve: async (_, { input }, ctx) => {
+      await assertSitePermission({
+        siteId: input.siteId,
+        userId: ctx.session.userId,
+      });
+
+      const section = await db
+        .insert(Sections)
+        .values({
+          siteId: input.siteId,
+          name: '',
+          order: encoder.encode(generateJitteredKeyBetween(input.lower ?? null, input.upper ?? null)),
+        })
+        .returning()
+        .then(firstOrThrow);
+
+      pubsub.publish('site:update', input.siteId, { scope: 'site' });
+
+      return section;
+    },
+  }),
+
+  updateSection: t.withAuth({ session: true }).fieldWithInput({
+    type: Section,
+    input: { sectionId: t.input.id(), name: t.input.string() },
+    resolve: async (_, { input }, ctx) => {
+      await assertSectionPermission({
+        sectionId: input.sectionId,
+        userId: ctx.session.userId,
+      });
+
+      const section = await db
+        .update(Sections)
+        .set({ name: input.name })
+        .where(eq(Sections.id, input.sectionId))
+        .returning()
+        .then(firstOrThrow);
+
+      pubsub.publish('site:update', section.siteId, { scope: 'site' });
+
+      return section;
+    },
+  }),
+
+  updateSectionPosition: t.withAuth({ session: true }).fieldWithInput({
+    type: Section,
+    input: {
+      sectionId: t.input.string(),
+      lower: t.input.string({ required: false }),
+      upper: t.input.string({ required: false }),
+    },
+    resolve: async (_, { input }, ctx) => {
+      await assertSectionPermission({
+        sectionId: input.sectionId,
+        userId: ctx.session.userId,
+      });
+
+      const section = await db
+        .update(Sections)
+        .set({ order: encoder.encode(generateJitteredKeyBetween(input.lower ?? null, input.upper ?? null)) })
+        .where(eq(Sections.id, input.sectionId))
+        .returning()
+        .then(firstOrThrow);
+
+      pubsub.publish('site:update', section.siteId, { scope: 'site' });
+
+      return section;
+    },
+  }),
+
+  deleteSection: t.withAuth({ session: true }).fieldWithInput({
+    type: Section,
+    input: { sectionId: t.input.id() },
+    resolve: async (_, { input }, ctx) => {
+      await assertSectionPermission({
+        sectionId: input.sectionId,
+        userId: ctx.session.userId,
+      });
+
+      const section = await db.transaction(async (tx) => {
+        await tx.update(Pages).set({ state: PageState.DELETED }).where(eq(Pages.sectionId, input.sectionId));
+
+        return await tx
+          .update(Sections)
+          .set({ state: SectionState.DELETED })
+          .where(eq(Sections.id, input.sectionId))
+          .returning()
+          .then(firstOrThrow);
+      });
+
+      pubsub.publish('site:update', section.siteId, { scope: 'site' });
+
+      return section;
+    },
+  }),
+
   createPage: t.withAuth({ session: true }).fieldWithInput({
     type: Page,
     input: { siteId: t.input.id(), parentId: t.input.id({ required: false }), sectionId: t.input.id() },

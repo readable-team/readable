@@ -1,5 +1,5 @@
 import { and, eq } from 'drizzle-orm';
-import { db, first, Pages, Sites, TeamMembers, Teams } from '@/db';
+import { db, first, Pages, Sections, Sites, TeamMembers, Teams } from '@/db';
 import { SiteState, TeamMemberRole, TeamState } from '@/enums';
 import { ApiError } from '@/errors';
 
@@ -48,6 +48,38 @@ export const assertSitePermission = async ({
     .where(
       and(
         eq(Sites.id, siteId),
+        eq(TeamMembers.userId, userId),
+        eq(Teams.state, TeamState.ACTIVE),
+        eq(Sites.state, SiteState.ACTIVE),
+      ),
+    )
+    .then(first);
+
+  if (!member || teamMemberRolePrecedences.indexOf(member.role) < teamMemberRolePrecedences.indexOf(role)) {
+    throw new ApiError({ code: 'forbidden' });
+  }
+};
+
+type AssertSectionPermissionParams = {
+  sectionId: string;
+  userId: string;
+  role?: TeamMemberRole;
+};
+
+export const assertSectionPermission = async ({
+  sectionId,
+  userId,
+  role = TeamMemberRole.MEMBER,
+}: AssertSectionPermissionParams) => {
+  const member = await db
+    .select({ role: TeamMembers.role })
+    .from(TeamMembers)
+    .innerJoin(Teams, eq(TeamMembers.teamId, Teams.id))
+    .innerJoin(Sites, eq(Teams.id, Sites.teamId))
+    .innerJoin(Sections, eq(Sections.siteId, Sites.id))
+    .where(
+      and(
+        eq(Sections.id, sectionId),
         eq(TeamMembers.userId, userId),
         eq(Teams.state, TeamState.ACTIVE),
         eq(Sites.state, SiteState.ACTIVE),

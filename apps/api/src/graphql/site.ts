@@ -5,7 +5,7 @@ import { Repeater } from 'graphql-yoga';
 import { match } from 'ts-pattern';
 import { builder } from '@/builder';
 import { db, extractTableCode, first, firstOrThrow, Pages, Sections, SiteCustomDomains, Sites } from '@/db';
-import { PageState, SiteCustomDomainState, SiteState, TeamMemberRole } from '@/enums';
+import { PageState, SectionState, SiteCustomDomainState, SiteState, TeamMemberRole } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
 import * as dns from '@/external/dns';
@@ -60,7 +60,11 @@ Site.implement({
     sections: t.field({
       type: [Section],
       resolve: async (site) => {
-        return await db.select().from(Sections).where(eq(Sections.siteId, site.id)).orderBy(asc(Sections.order));
+        return await db
+          .select()
+          .from(Sections)
+          .where(and(eq(Sections.siteId, site.id), eq(Sections.state, SectionState.ACTIVE)))
+          .orderBy(asc(Sections.order));
       },
     }),
 
@@ -103,7 +107,7 @@ PublicSite.implement({
           .select(getTableColumns(Sections))
           .from(Sections)
           .innerJoin(Pages, and(eq(Sections.id, Pages.sectionId), eq(Pages.state, PageState.PUBLISHED)))
-          .where(eq(Sections.siteId, site.id))
+          .where(and(eq(Sections.siteId, site.id), eq(Sections.state, SectionState.ACTIVE)))
           .groupBy(Sections.id)
           .orderBy(asc(Sections.order));
       },

@@ -38,6 +38,7 @@ const createInterfaceRef = <T extends TableConfig>(name: string, table: TableWit
 };
 
 export const IPage = createInterfaceRef('IPage', T.Pages);
+export const ISection = createInterfaceRef('ISection', T.Sections);
 export const ISite = createInterfaceRef('ISite', T.Sites);
 
 export const Embed = createObjectRef('Embed', T.Embeds);
@@ -56,6 +57,7 @@ export const TeamMemberInvitation = createObjectRef('TeamMemberInvitation', T.Te
 export const User = createObjectRef('User', T.Users);
 
 export const PublicPage = createObjectRef('PublicPage', T.Pages);
+export const PublicSection = createObjectRef('PublicSection', T.Sections);
 export const PublicSite = createObjectRef('PublicSite', T.Sites);
 export const PublicPageContent = createObjectRef('PublicPageContent', T.PageContents);
 

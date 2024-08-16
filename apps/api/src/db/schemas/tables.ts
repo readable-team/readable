@@ -208,6 +208,7 @@ export const Sections = pgTable(
       .notNull()
       .references(() => Sites.id),
     name: text('name').notNull(),
+    state: E._SectionState('state').notNull().default('ACTIVE'),
     order: bytea('order').notNull(),
     createdAt: datetime('created_at')
       .notNull()

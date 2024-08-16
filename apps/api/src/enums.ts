@@ -20,6 +20,12 @@ export const SingleSignOnProvider = {
   GOOGLE: 'GOOGLE',
 } as const;
 
+export type SectionState = keyof typeof SectionState;
+export const SectionState = {
+  ACTIVE: 'ACTIVE',
+  DELETED: 'DELETED',
+} as const;
+
 export type SiteCustomDomainState = keyof typeof SiteCustomDomainState;
 export const SiteCustomDomainState = {
   ACTIVE: 'ACTIVE',

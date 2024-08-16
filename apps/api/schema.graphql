@@ -13,6 +13,12 @@ input CreatePageInput {
   siteId: ID!
 }
 
+input CreateSectionInput {
+  lower: ID
+  siteId: ID!
+  upper: String
+}
+
 input CreateSiteInput {
   name: String!
   teamId: ID!
@@ -26,6 +32,10 @@ scalar DateTime
 
 input DeletePageInput {
   pageId: ID!
+}
+
+input DeleteSectionInput {
+  sectionId: ID!
 }
 
 input DeleteSiteInput {
@@ -72,6 +82,12 @@ interface IPageSearchHit {
   highlight: PageSearchHighlight
 }
 
+interface ISection {
+  id: ID!
+  name: String!
+  order: String!
+}
+
 interface ISite {
   id: ID!
   logo: Image
@@ -114,10 +130,12 @@ type Mutation {
   authorizeSingleSignOn(input: AuthorizeSingleSignOnInput!): UserWithAccessToken!
   createDefaultTeam: Team!
   createPage(input: CreatePageInput!): Page!
+  createSection(input: CreateSectionInput!): Section!
   createSite(input: CreateSiteInput!): Site!
   createTeam(input: CreateTeamInput!): Team!
   deactivateUser: User!
   deletePage(input: DeletePageInput!): Page!
+  deleteSection(input: DeleteSectionInput!): Section!
   deleteSite(input: DeleteSiteInput!): Site!
   deleteTeam(input: DeleteTeamInput!): Team!
   duplicatePage(input: DuplicatePageInput!): Page!
@@ -135,6 +153,8 @@ type Mutation {
   unpublishPage(input: UnpublishPageInput!): Page!
   unsetSiteCustomDomain(input: UnsetSiteCustomDomainInput!): SiteCustomDomain!
   updatePagePosition(input: UpdatePagePositionInput!): Page!
+  updateSection(input: UpdateSectionInput!): Section!
+  updateSectionPosition(input: UpdateSectionPositionInput!): Section!
   updateSite(input: UpdateSiteInput!): Site!
   updateTeam(input: UpdateTeamInput!): Team!
   updateTeamMemberRole(input: UpdateTeamMemberRoleInput!): TeamMember!
@@ -235,6 +255,13 @@ type PublicPageSearchHit implements IPageSearchHit {
   page: PublicPage!
 }
 
+type PublicSection implements ISection {
+  Pages: [PublicPage!]!
+  id: ID!
+  name: String!
+  order: String!
+}
+
 type PublicSite implements ISite {
   id: ID!
   logo: Image
@@ -294,11 +321,16 @@ type SearchPublicPageResult {
   hits: [PublicPageSearchHit!]!
 }
 
-type Section {
+type Section implements ISection {
   id: ID!
   name: String!
   order: String!
   pages: [Page!]!
+}
+
+enum SectionState {
+  ACTIVE
+  DELETED
 }
 
 input SetSiteCustomDomainInput {
@@ -401,6 +433,17 @@ input UpdatePagePositionInput {
   lower: String
   pageId: String!
   parentId: String
+  sectionId: String!
+  upper: String
+}
+
+input UpdateSectionInput {
+  name: String!
+  sectionId: ID!
+}
+
+input UpdateSectionPositionInput {
+  lower: String
   sectionId: String!
   upper: String
 }
