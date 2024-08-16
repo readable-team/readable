@@ -21,7 +21,8 @@ export const Placeholder = Extension.create({
             const { doc, selection } = state;
             const { $anchor, empty } = selection;
 
-            const currentDocumentEmpty = doc.childCount === 1 && doc.firstChild?.childCount === 0;
+            const currentDocumentEmpty =
+              doc.childCount === 1 && doc.firstChild?.type.name === 'paragraph' && doc.firstChild?.childCount === 0;
 
             const currentParagraphEmpty =
               this.editor.isFocused &&
