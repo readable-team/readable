@@ -81,10 +81,11 @@ export const LinkTooltip = Extension.create({
                 return;
               }
 
-              const coordsAtPos = view.coordsAtPos(pos);
-
+              const coordsAtPos = view.coordsAtPos(pos, 0);
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              const element = document.elementFromPoint(coordsAtPos.left, coordsAtPos.top)!;
+              const element = document
+                .elementsFromPoint(coordsAtPos.left, coordsAtPos.top)
+                .find((element) => element.parentElement === view.dom)!;
 
               const linkHref = anchorNode.marks.find((mark) => mark.type.name === 'link')?.attrs.href;
 
@@ -138,6 +139,8 @@ export const LinkTooltip = Extension.create({
                 const { x, y } = await computePosition(element, dom, {
                   placement: 'bottom-start',
                 });
+
+                console.log(element, dom);
 
                 dom.style.left = `${x}px`;
                 dom.style.top = `${y}px`;
