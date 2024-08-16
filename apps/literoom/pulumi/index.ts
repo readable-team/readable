@@ -15,7 +15,7 @@ const lambda = new aws.lambda.Function('literoom', {
 
   architectures: ['arm64'],
 
-  memorySize: 3008,
+  memorySize: 10_240,
   timeout: 900,
 
   runtime: 'provided.al2',
