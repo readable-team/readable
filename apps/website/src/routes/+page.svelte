@@ -7,6 +7,7 @@
   import { fly } from 'svelte/transition';
   import CheckIcon from '~icons/lucide/check';
   import XIcon from '~icons/lucide/x';
+  import { page } from '$app/stores';
   import BrowserHero from '$assets/hero/browser.svg?component';
   import TableCheckIcon from '$assets/icons/table-check.svg?component';
   import FullLogo from '$assets/logos/full.svg?component';
@@ -136,6 +137,7 @@
         name,
         phone_number: phoneNumber,
         email,
+        referrer: $page.url.searchParams.get('utm_source'),
       },
     ]);
 
