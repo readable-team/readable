@@ -1,9 +1,10 @@
 import { autoUpdate, computePosition } from '@floating-ui/dom';
 import { center } from '@readable/styled-system/patterns';
-import { Extension } from '@tiptap/core';
-import { Plugin, PluginKey } from '@tiptap/pm/state';
+import { Extension, posToDOMRect } from '@tiptap/core';
+import { Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
 import LinkEditModal from '../link-edit-modal/Component.svelte';
 import Component from './Component.svelte';
+import type { VirtualElement } from '@floating-ui/dom';
 import type { Node } from '@tiptap/pm/model';
 
 type State = {
@@ -81,10 +82,17 @@ export const LinkTooltip = Extension.create({
                 return;
               }
 
-              const coordsAtPos = view.coordsAtPos(pos);
-
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              const element = document.elementFromPoint(coordsAtPos.left, coordsAtPos.top)!;
+              const selection = TextSelection.create(view.state.doc, pos, pos + anchorNode.nodeSize);
+              const element: VirtualElement = {
+                getBoundingClientRect: () => {
+                  return posToDOMRect(view, selection.from, selection.to);
+                },
+                getClientRects: () => {
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  return window.getSelection()!.getRangeAt(0).getClientRects();
+                },
+                contextElement: view.dom,
+              };
 
               const linkHref = anchorNode.marks.find((mark) => mark.type.name === 'link')?.attrs.href;
 

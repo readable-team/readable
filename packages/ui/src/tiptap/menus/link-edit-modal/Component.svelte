@@ -4,12 +4,13 @@
   import { flex } from '@readable/styled-system/patterns';
   import { onDestroy, onMount } from 'svelte';
   import { Button, TextInput } from '../../../components';
+  import type { VirtualElement } from '@floating-ui/dom';
   import type { Editor } from '@tiptap/core';
 
   export let editor: Editor;
   export let from: number;
   export let to: number;
-  export let referenceElement: Element;
+  export let referenceElement: Element | VirtualElement;
   export let defaultLink = '';
   export let onClose: () => void;
 
