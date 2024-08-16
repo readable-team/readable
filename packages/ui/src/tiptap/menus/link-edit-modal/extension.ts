@@ -117,6 +117,7 @@ export const LinkEditModal = Extension.create({
                 modalComponent.$destroy();
                 modalDom.remove();
                 this.storage.opened = false;
+                this.editor.view.focus();
               },
             },
           });

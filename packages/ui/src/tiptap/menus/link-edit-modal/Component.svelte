@@ -17,6 +17,7 @@
 
   let linkDraft = defaultLink;
   let floatingElement: HTMLElement;
+  let inputElement: HTMLInputElement;
   let cleanup: (() => void) | null = null;
 
   const addHttpScheme = (url: string) => {
@@ -57,6 +58,10 @@
     });
 
     setTimeout(() => {
+      inputElement.focus();
+    });
+
+    setTimeout(() => {
       document.addEventListener('click', clickListener);
     });
   });
@@ -77,7 +82,7 @@
     left: '0',
   })}
 >
-  <div
+  <form
     class={flex({
       width: '460px',
       flexDirection: 'column',
@@ -87,25 +92,21 @@
       gap: '14px',
       padding: '20px',
     })}
+    on:submit|preventDefault={updateLink}
   >
     <!-- FIXME: 유효한 링크인지 검사? -->
-    <!-- FIXME: form 사용 -->
     <TextInput
       name="link-draft"
       placeholder="링크를 붙여넣어주세요"
+      bind:inputEl={inputElement}
       bind:value={linkDraft}
-      on:keydown={(e) => {
-        if (e.key === 'Enter') {
-          updateLink();
-        }
-      }}
     />
-    <Button disabled={linkDraft === ''} size="lg" variant="primary" on:click={updateLink}>
+    <Button disabled={linkDraft === ''} size="lg" type="submit" variant="primary">
       {#if !currentLink}
         링크 업로드
       {:else}
         링크 수정
       {/if}
     </Button>
-  </div>
+  </form>
 </div>
