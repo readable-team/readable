@@ -67,7 +67,9 @@ Section.implement({
             return await db
               .select()
               .from(Pages)
-              .where(and(inArray(Pages.sectionId, sectionIds), ne(Pages.state, PageState.DELETED)));
+              .where(
+                and(inArray(Pages.sectionId, sectionIds), ne(Pages.state, PageState.DELETED), isNull(Pages.parentId)),
+              );
           },
           key: (row) => row.sectionId,
         });
@@ -91,7 +93,9 @@ PublicSection.implement({
             return await db
               .select()
               .from(Pages)
-              .where(and(inArray(Pages.sectionId, sectionIds), eq(Pages.state, PageState.PUBLISHED)));
+              .where(
+                and(inArray(Pages.sectionId, sectionIds), eq(Pages.state, PageState.PUBLISHED), isNull(Pages.parentId)),
+              );
           },
           key: (row) => row.sectionId,
         });
