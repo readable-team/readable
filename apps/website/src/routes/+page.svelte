@@ -397,7 +397,13 @@
 
   <div class={css({ width: 'full', marginBottom: '48px', marginTop: '160px' })}>
     <h2 class={css({ fontSize: '[46px]', fontWeight: '[900]' })}>
-      <div class={flex({ align: 'center', gap: '10px' })}>
+      <div
+        class={flex({
+          align: 'center',
+          gap: '10px',
+          smDown: { flexDirection: 'column', alignItems: 'start', gap: '0' },
+        })}
+      >
         <span>실제로</span>
         <span
           class={css({
@@ -627,7 +633,7 @@
     </p>
 
     <div class={css({ marginTop: '72px', width: 'full', overflowX: 'auto' })}>
-      <table class={css({ width: 'full', borderSpacing: '0', tableLayout: 'fixed', smDown: { width: '720px' } })}>
+      <table class={css({ width: 'full', borderSpacing: '0', tableLayout: 'fixed', smDown: { width: '800px' } })}>
         <thead>
           <tr>
             <th class={css({ borderBottomWidth: '1px', borderColor: 'neutral.70', width: '200px' })} />
@@ -733,7 +739,7 @@
           color: 'neutral.70',
           lineHeight: '[1.6]',
           textAlign: 'right',
-          smDown: { width: '720px' },
+          smDown: { width: '800px' },
         })}
       >
         * 도움센터 제작을 지원하는 가장 저렴한 플랜 기준
@@ -784,23 +790,30 @@
   >
     <div class={flex({ direction: 'column', gap: '20px' })}>
       <fieldset class={flex({ direction: 'column', gap: '4px' })}>
-        <label class={labelStyle} for="companyName">회사 이름</label>
-        <input id="companyName" name="companyName" class={inputStyle} placeholder="ACME Inc" type="text" />
+        <label class={labelStyle} for="companyName">회사 이름 *</label>
+        <input id="companyName" name="companyName" class={inputStyle} placeholder="ACME Inc" required type="text" />
       </fieldset>
 
       <fieldset class={flex({ direction: 'column', gap: '4px' })}>
-        <label class={labelStyle} for="name">담당자 이름</label>
-        <input id="name" name="name" class={inputStyle} placeholder="홍길동" type="text" />
+        <label class={labelStyle} for="name">담당자 이름 *</label>
+        <input id="name" name="name" class={inputStyle} placeholder="홍길동" required type="text" />
       </fieldset>
 
       <fieldset class={flex({ direction: 'column', gap: '4px' })}>
-        <label class={labelStyle} for="phoneNumber">연락처</label>
-        <input id="phoneNumber" name="phoneNumber" class={inputStyle} placeholder="010-1234-5678" type="text" />
+        <label class={labelStyle} for="phoneNumber">연락처 *</label>
+        <input
+          id="phoneNumber"
+          name="phoneNumber"
+          class={inputStyle}
+          placeholder="010-1234-5678"
+          required
+          type="text"
+        />
       </fieldset>
 
       <fieldset class={flex({ direction: 'column', gap: '4px' })}>
-        <label class={labelStyle} for="email">이메일 주소</label>
-        <input id="email" name="email" class={inputStyle} placeholder="name@company.mail" type="text" />
+        <label class={labelStyle} for="email">이메일 주소 *</label>
+        <input id="email" name="email" class={inputStyle} placeholder="name@company.email" required type="text" />
       </fieldset>
 
       <label class={css({ display: 'flex', alignItems: 'center', gap: '4px' })}>
