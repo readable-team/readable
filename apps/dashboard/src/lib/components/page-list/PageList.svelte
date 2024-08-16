@@ -2,7 +2,6 @@
   import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
-  import { onMount } from 'svelte';
   import PlusIcon from '~icons/lucide/plus';
   import { maxDepth } from './const';
   import PageItem from './PageItem.svelte';
@@ -35,6 +34,11 @@
     previousOrder?: string;
     nextOrder?: string;
   }) => Promise<boolean>;
+  export let onDropSection: (target: {
+    sectionId: string;
+    previousOrder?: string;
+    nextOrder?: string;
+  }) => Promise<void>;
   export let onCancel: ((item: SectionData | PageData) => void) | undefined = undefined;
   export let onCreate: (parent: SectionData | PageData) => Promise<void>;
   export let onCreateSection: (() => Promise<void>) | undefined;
@@ -42,22 +46,23 @@
   export let indicatorElem: HTMLElement | null = null;
   export let nodeMap = new Map<HTMLElement, (SectionData | PageData | VirtualRootPageData) & { depth: number }>();
   export let registerNode = (
-    node: HTMLElement,
+    node: HTMLElement | undefined,
     item: (SectionData | PageData | VirtualRootPageData) & { depth: number },
   ) => {
+    if (!node) {
+      return;
+    }
     nodeMap.set(node, item);
   };
   let listElem: HTMLElement;
   let dragging: DraggingState | null = null;
   let dropTarget: DropTarget | null = null;
 
-  onMount(() => {
-    if (parent) {
-      registerNode(listElem, { ...parent, depth });
-    } else {
-      registerNode(listElem, { __typename: 'VirtualRootPage', id: null, sections: items as SectionData[], depth });
-    }
-  });
+  $: if (parent) {
+    registerNode(listElem, { ...parent, depth });
+  } else {
+    registerNode(listElem, { __typename: 'VirtualRootPage', id: null, sections: items as SectionData[], depth });
+  }
 
   function createGhost(draggingItem: HTMLElement) {
     const clone = draggingItem.cloneNode(true) as HTMLElement;
@@ -202,23 +207,21 @@
         if (dropTarget.targetElem && dragging.elem !== dropTarget.targetElem) {
           // selection indicator: targetElem이 있으면 해당 아이템의 children으로 들어감
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const targetItem = nodeMap.get(dropTarget.targetElem)!;
+          const targetItem = nodeMap.get(dropTarget.targetElem)! as SectionData | PageData;
 
-          if (targetItem.__typename !== 'Page') {
-            // TODO: 섹션, depth 1 페이지 드롭
-            onCancel?.(dragging.item);
-            return;
-          }
+          const children = targetItem.__typename === 'Section' ? targetItem.pages : targetItem.children;
+          const sectionId = targetItem.__typename === 'Section' ? targetItem.id : targetItem.section.id;
+          const parentId = targetItem.__typename === 'Section' ? null : targetItem.id;
 
-          const success = await onDrop({
+          await onDrop({
             pageId: dragging.item.id,
-            sectionId: targetItem.section.id,
-            parentId: targetItem.id,
+            sectionId,
+            parentId,
             // 맨 앞에 추가
-            nextOrder: targetItem.children ? targetItem.children[0]?.order : undefined,
+            nextOrder: children ? children[0]?.order : undefined,
           });
 
-          if (success && targetItem.id !== null) {
+          if (targetItem.id !== null) {
             openState[targetItem.id] = true;
           }
           // eslint-disable-next-line unicorn/no-negated-condition
@@ -229,31 +232,45 @@
           let nextOrder;
           let previousOrder;
 
-          if (targetItem.__typename !== 'Page') {
-            // TODO: 섹션, depth 1 페이지 드롭
-            onCancel?.(dragging.item);
-            return;
-          }
+          const children =
+            targetItem.__typename === 'VirtualRootPage'
+              ? targetItem.sections
+              : targetItem.__typename === 'Section'
+                ? targetItem.pages
+                : targetItem.children;
 
-          if (dropTarget.indicatorPosition === 0 || !targetItem.children || targetItem.children.length === 0) {
+          if (dropTarget.indicatorPosition === 0 || !children || children.length === 0) {
             // 맨 앞
-            nextOrder = targetItem.children ? targetItem.children[0]?.order : undefined;
-          } else if (dropTarget.indicatorPosition === targetItem.children.length) {
+            nextOrder = children ? children[0]?.order : undefined;
+          } else if (dropTarget.indicatorPosition === children.length) {
             // 맨 뒤
-            previousOrder = targetItem.children.at(-1)?.order;
+            previousOrder = children.at(-1)?.order;
           } else {
             // 중간
-            previousOrder = targetItem.children[dropTarget.indicatorPosition - 1]?.order;
-            nextOrder = targetItem.children[dropTarget.indicatorPosition]?.order;
+            previousOrder = children[dropTarget.indicatorPosition - 1]?.order;
+            nextOrder = children[dropTarget.indicatorPosition]?.order;
           }
 
-          onDrop({
-            sectionId: targetItem.section.id,
-            pageId: dragging.item.id,
-            parentId: targetItem.id,
-            previousOrder,
-            nextOrder,
-          });
+          if (targetItem.__typename === 'VirtualRootPage') {
+            // 섹션 옮기기
+            await onDropSection({
+              sectionId: dragging.item.id,
+              nextOrder,
+              previousOrder,
+            });
+          } else {
+            // 페이지 옮기기
+            const sectionId = targetItem.__typename === 'Section' ? targetItem.id : targetItem.section.id;
+            const parentId = targetItem.__typename === 'Section' ? null : targetItem.id;
+
+            await onDrop({
+              pageId: dragging.item.id,
+              sectionId,
+              parentId,
+              previousOrder,
+              nextOrder,
+            });
+          }
         } else {
           // invalid drop target
           // TODO: 뭔가 피드백
@@ -302,7 +319,7 @@
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    let pointerTargetListParentId = nodeMap.get(pointerTargetList)!.id;
+    let parentId = nodeMap.get(pointerTargetList)!.id;
 
     const isDropTargetDescendant = pointerTargetList && dragging.elem.contains(pointerTargetList);
     const isValidDropTarget = pointerTargetList && !isDropTargetDescendant;
@@ -340,6 +357,7 @@
         // drop하면 해당 item의 children으로 들어감
         indicatorPositionDraft = i;
         targetElemDraft = child;
+        parentId = item.id;
         break;
       } else if (
         pointerTopInList < childTop + childRect.height &&
@@ -349,7 +367,7 @@
       ) {
         // 3/4 지점보다 아래에 있고 children list가 열려있고 현재 드래그 중인 아이템이 아닌 경우
         pointerTargetList = child.querySelector('.dnd-list') as HTMLElement;
-        pointerTargetListParentId = item.id;
+        parentId = item.id;
         indicatorPositionDraft = 0;
         break;
       }
@@ -365,14 +383,23 @@
     const draggingItemMaxDepth = findDeepestDepth(dragging.item);
 
     // (들어갈 위치의 리스트의 depth + 현재 드래그 중인 아이템 트리의 최대 높이)가 maxDepth 초과면 드래그 불가
-    if (targetListDepth + draggingItemMaxDepth > maxDepth) {
+    const isMaxDepthExceeded = targetListDepth + draggingItemMaxDepth > maxDepth;
+
+    // 섹션은 root에만 있을 수 있음
+    const isSectionOnNonRoot = dragging.item.__typename === 'Section' && parentId !== null;
+
+    // 페이지는 root에 있을 수 없음
+    const isPageOnRoot = dragging.item.__typename === 'Page' && parentId === null;
+
+    // invalid drop target
+    if (isMaxDepthExceeded || isSectionOnNonRoot || isPageOnRoot) {
       indicatorPositionDraft = null;
       targetElemDraft = null;
     }
 
     dropTarget = {
       list: pointerTargetList,
-      parentId: pointerTargetListParentId || null,
+      parentId,
       indicatorPosition: indicatorPositionDraft,
       targetElem: targetElemDraft,
     };
@@ -410,6 +437,7 @@
     onCreate,
     onCreateSection,
     onDrop,
+    onDropSection,
     onPointerDown,
     openState,
     registerNode,

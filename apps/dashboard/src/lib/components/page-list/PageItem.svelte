@@ -2,7 +2,6 @@
   import { css, cva, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Chip, Icon } from '@readable/ui/components';
-  import { onMount } from 'svelte';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import EllipsisIcon from '~icons/lucide/ellipsis';
@@ -29,11 +28,9 @@
 
   let elem: HTMLElement;
 
-  onMount(() => {
-    registerNode(elem, {
-      ...item,
-      depth,
-    });
+  $: registerNode(elem, {
+    ...item,
+    depth,
   });
 
   let childrenListProps: ComponentProps<PageList>;

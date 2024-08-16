@@ -118,6 +118,15 @@
     }
   `);
 
+  const updateSectionPosition = graphql(`
+    mutation SiteLayout_UpdateSectionPosition_Mutation($input: UpdateSectionPositionInput!) {
+      updateSectionPosition(input: $input) {
+        id
+        order
+      }
+    }
+  `);
+
   const siteUpdateStream = graphql(`
     subscription SiteLayout_SiteUpdateStream_Subscription($siteId: ID!) {
       siteUpdateStream(siteId: $siteId) {
@@ -324,9 +333,17 @@
           onCreateSection={async () => {
             await createSection({
               siteId: $query.site.id,
+              lower: $query.site.sections.at(-1)?.order,
             });
           }}
           onDrop={onDropPage}
+          onDropSection={async (target) => {
+            await updateSectionPosition({
+              sectionId: target.sectionId,
+              lower: target.previousOrder,
+              upper: target.nextOrder,
+            });
+          }}
         />
       </div>
     </nav>
