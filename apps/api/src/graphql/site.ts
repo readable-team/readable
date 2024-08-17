@@ -333,6 +333,8 @@ builder.mutationFields((t) => ({
           .returning({ id: Pages.id })
           .then((rows) => rows.map((row) => row.id));
 
+        await tx.delete(SiteCustomDomains).where(eq(SiteCustomDomains.siteId, input.siteId));
+
         const site = await tx
           .update(Sites)
           .set({ state: SiteState.DELETED })
