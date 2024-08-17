@@ -3,8 +3,8 @@
   import { flex } from '@readable/styled-system/patterns';
   import { createFloatingActions } from '@readable/ui/actions';
   import { NodeView } from '@readable/ui/tiptap';
+  import { onMount } from 'svelte';
   import FolderIcon from '~icons/lucide/folder';
-  import Trash2Icon from '~icons/lucide/trash-2';
   import { Button, Icon, RingSpinner } from '../../../components';
   import type { NodeViewProps } from '@readable/ui/tiptap';
 
@@ -15,7 +15,7 @@
   export let extension: NodeViewProps['extension'];
   export let selected: NodeViewProps['selected'];
   export let updateAttributes: NodeViewProps['updateAttributes'];
-  export let deleteNode: NodeViewProps['deleteNode'];
+  // export let deleteNode: NodeViewProps['deleteNode'];
 
   let url = '';
   let inflight = false;
@@ -43,24 +43,19 @@
       inflight = false;
     }
   };
+
+  onMount(() => {
+    if (!document.querySelector('script#iframely-embed')) {
+      const script = document.createElement('script');
+      script.id = 'iframely-embed';
+      script.async = true;
+      script.src = 'https://cdn.iframe.ly/embed.js';
+      document.head.append(script);
+    }
+  });
 </script>
 
-<NodeView
-  style={css.raw(
-    {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      borderRadius: '10px',
-      backgroundColor: {
-        base: 'neutral.10',
-        _hover: 'neutral.20',
-      },
-      _hover: { '& > button': { display: 'flex' } },
-    },
-    pickerOpened && { backgroundColor: 'neutral.30' },
-  )}
->
+<NodeView>
   {#if node.attrs.id}
     {#if node.attrs.html}
       <div class={css({ display: 'contents', pointerEvents: 'none' })}>
@@ -105,23 +100,6 @@
       {/if}
     </div>
   {/if}
-
-  <button
-    class={css({
-      display: 'none',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginRight: node.attrs.id ? '10px' : '17px',
-      borderRadius: '4px',
-      color: 'neutral.50',
-      size: '24px',
-      _hover: { backgroundColor: 'neutral.30' },
-    })}
-    type="button"
-    on:click={() => deleteNode()}
-  >
-    <Icon icon={Trash2Icon} size={12} />
-  </button>
 </NodeView>
 
 {#if pickerOpened && !node.attrs.id && !inflight}
