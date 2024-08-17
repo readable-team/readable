@@ -22,6 +22,18 @@ new aws.s3.BucketPolicy('cdn', {
 
 const usercontents = new aws.s3.Bucket('usercontents', {
   bucket: 'readable-usercontents',
+
+  lifecycleRules: [
+    {
+      enabled: true,
+      transitions: [
+        {
+          days: 0,
+          storageClass: 'INTELLIGENT_TIERING',
+        },
+      ],
+    },
+  ],
 });
 
 new aws.s3.BucketPolicy('usercontents', {
@@ -41,6 +53,7 @@ new aws.s3.BucketPolicy('usercontents', {
 
 const uploads = new aws.s3.Bucket('uploads', {
   bucket: 'readable-uploads',
+
   corsRules: [
     {
       allowedHeaders: ['*'],
