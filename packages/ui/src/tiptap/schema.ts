@@ -32,6 +32,7 @@ import { LinkEditModal } from './menus/link-edit-modal';
 import { LinkTooltip } from './menus/link-tooltip';
 import { SlashMenu } from './menus/slash';
 import { Callout } from './node-views';
+import { Embed } from './node-views/embed';
 import { File } from './node-views/file';
 import { Image } from './node-views/image';
 
@@ -177,4 +178,4 @@ export const extensions = [
   Callout,
 ];
 
-export const schema = getSchema([...extensions, Image, File]);
+export const schema = getSchema([...extensions, Embed, Image, File]);

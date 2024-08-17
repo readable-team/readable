@@ -2,7 +2,7 @@
   "topNode": "doc",
   "nodes": {
     "paragraph": { "content": "inline*", "group": "block", "parseDOM": [{ "tag": "p" }] },
-    "doc": { "content": "block* paragraph" },
+    "doc": { "content": "block+" },
     "text": { "group": "inline" },
     "heading": {
       "content": "inline*",
@@ -35,6 +35,18 @@
       "group": "block",
       "defining": true,
       "attrs": { "emoji": { "default": "alert" } },
+      "parseDOM": [{ "tag": "node-view" }]
+    },
+    "embed": {
+      "group": "block",
+      "attrs": {
+        "id": { "default": null },
+        "url": { "default": null },
+        "title": { "default": null },
+        "description": { "default": null },
+        "thumbnailUrl": { "default": null },
+        "html": { "default": null }
+      },
       "parseDOM": [{ "tag": "node-view" }]
     },
     "image": {

@@ -56,7 +56,6 @@ type Embed {
   id: ID!
   thumbnailUrl: String
   title: String
-  type: String!
   url: String!
 }
 

@@ -3,6 +3,7 @@
   import { Editor } from '@tiptap/core';
   import { generateHTML } from '@tiptap/html';
   import { onMount } from 'svelte';
+  import { Embed } from '../node-views/embed';
   import { File } from '../node-views/file';
   import { Image } from '../node-views/image';
   import { extensions } from '../schema';
@@ -16,7 +17,7 @@
   let element: HTMLElement;
   let loaded = false;
 
-  $: html = generateHTML(content, [...extensions, Image, File]);
+  $: html = generateHTML(content, [...extensions, Embed, Image, File]);
   $: editor?.commands.setContent(content);
 
   onMount(() => {
@@ -24,7 +25,7 @@
       element,
       editable: false,
       content,
-      extensions: [...extensions, Image, File],
+      extensions: [...extensions, Embed, Image, File],
       injectCSS: false,
 
       editorProps: {

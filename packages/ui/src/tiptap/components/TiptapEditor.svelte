@@ -6,6 +6,7 @@
   import * as Y from 'yjs';
   import { Collaboration } from '../extensions/collaboration';
   import { Freeze } from '../extensions/freeze';
+  import { Embed } from '../node-views/embed';
   import { File } from '../node-views/file';
   import { Image } from '../node-views/image';
   import { extensions } from '../schema';
@@ -23,6 +24,7 @@
 
   export let handleImageUpload: (file: File) => Promise<Record<string, unknown>>;
   export let handleFileUpload: (file: File) => Promise<Record<string, unknown>>;
+  export let handleEmbed: (url: string) => Promise<Record<string, unknown>>;
 
   let element: HTMLDivElement;
 
@@ -31,6 +33,7 @@
       element,
       extensions: [
         ...extensions,
+        Embed.configure({ handleEmbed }),
         Image.configure({ handleImageUpload }),
         File.configure({ handleFileUpload }),
         ...(document && awareness ? [Collaboration.configure({ document, awareness })] : []),

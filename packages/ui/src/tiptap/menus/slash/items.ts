@@ -3,6 +3,7 @@ import Heading1Icon from '~icons/lucide/heading-1';
 import Heading2Icon from '~icons/lucide/heading-2';
 import Heading3Icon from '~icons/lucide/heading-3';
 import ImageIcon from '~icons/lucide/image';
+import LinkIcon from '~icons/lucide/link';
 import ListIcon from '~icons/lucide/list';
 import ListOrderedIcon from '~icons/lucide/list-ordered';
 import MinusIcon from '~icons/lucide/minus';
@@ -118,6 +119,17 @@ export const menuItems: MenuItem[] = [
     icon: FileIcon,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setFile().run();
+    },
+  },
+  {
+    id: 'embed',
+    group: 'media',
+    name: '임베드',
+    keywords: ['embed', 'link'],
+    description: '임베드된 콘텐츠입니다.',
+    icon: LinkIcon,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setEmbed().run();
     },
   },
 ];

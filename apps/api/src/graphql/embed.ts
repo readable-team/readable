@@ -11,7 +11,6 @@ import { Embed } from './objects';
 Embed.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
-    type: t.exposeString('type'),
     url: t.exposeString('url'),
     title: t.exposeString('title', { nullable: true }),
     description: t.exposeString('description', { nullable: true }),

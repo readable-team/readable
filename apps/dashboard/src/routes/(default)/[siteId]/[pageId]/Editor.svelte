@@ -53,7 +53,7 @@
   `);
 
   const issueBlobUploadUrl = graphql(`
-    mutation PagePage_IssueBlobUploadUrl($input: IssueBlobUploadUrlInput!) {
+    mutation PagePage_IssueBlobUploadUrl_Mutation($input: IssueBlobUploadUrlInput!) {
       issueBlobUploadUrl(input: $input) {
         path
         url
@@ -63,7 +63,7 @@
   `);
 
   const persistBlobAsFile = graphql(`
-    mutation PagePage_PersistBlobAsFile($input: PersistBlobAsFileInput!) {
+    mutation PagePage_PersistBlobAsFile_Mutation($input: PersistBlobAsFileInput!) {
       persistBlobAsFile(input: $input) {
         id
         name
@@ -74,12 +74,25 @@
   `);
 
   const persistBlobAsImage = graphql(`
-    mutation PagePage_PersistBlobAsImage($input: PersistBlobAsImageInput!) {
+    mutation PagePage_PersistBlobAsImage_Mutation($input: PersistBlobAsImageInput!) {
       persistBlobAsImage(input: $input) {
         id
         url
         ratio
         placeholder
+      }
+    }
+  `);
+
+  const unfurlEmbed = graphql(`
+    mutation PagePage_UnfurlEmbed_Mutation($input: UnfurlEmbedInput!) {
+      unfurlEmbed(input: $input) {
+        id
+        url
+        title
+        description
+        thumbnailUrl
+        html
       }
     }
   `);
@@ -334,6 +347,9 @@
       })}
       awareness={yAwareness}
       document={yDoc}
+      handleEmbed={async (url) => {
+        return await unfurlEmbed({ url });
+      }}
       handleFileUpload={async (file) => {
         const path = await uploadBlob(file);
         return await persistBlobAsFile({ path });
