@@ -9,6 +9,13 @@ const role = new aws.iam.Role('literoom@lambda', {
   managedPolicyArns: [aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole],
 });
 
+const sharpLayer = new aws.lambda.LayerVersion('sharp', {
+  layerName: 'sharp',
+  compatibleRuntimes: ['nodejs20.x'],
+  compatibleArchitectures: ['arm64'],
+  code: new pulumi.asset.FileArchive('../dist/layers/sharp.zip'),
+});
+
 const lambda = new aws.lambda.Function('literoom', {
   name: 'literoom',
   role: role.arn,
@@ -18,14 +25,11 @@ const lambda = new aws.lambda.Function('literoom', {
   memorySize: 10_240,
   timeout: 900,
 
-  runtime: 'provided.al2',
-  handler: 'handler.fetch',
-  layers: [
-    aws.lambda.getLayerVersionOutput({ layerName: 'bun' }).arn,
-    aws.lambda.getLayerVersionOutput({ layerName: 'sharp' }).arn,
-  ],
+  runtime: 'nodejs20.x',
+  handler: 'handler.handler',
+  layers: [sharpLayer.arn],
 
-  code: new pulumi.asset.FileArchive('../dist'),
+  code: new pulumi.asset.FileArchive('../dist/function'),
 });
 
 new aws.lambda.Permission('literoom', {

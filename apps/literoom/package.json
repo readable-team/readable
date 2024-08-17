@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "bun build --target=bun --outfile=dist/handler.js src/handler.ts",
+    "build": "tsup",
+    "build:layers": "bun scripts/build-layers.ts",
     "lint:typecheck": "tsc"
   },
   "dependencies": {
@@ -15,6 +16,7 @@
     "@pulumi/aws": "^6.49.0",
     "@pulumi/pulumi": "^3.129.0",
     "@readable/tsconfig": "workspace:*",
+    "tsup": "^8.2.4",
     "typescript": "^5.5.4"
   }
 }
