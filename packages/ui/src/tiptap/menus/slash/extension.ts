@@ -1,4 +1,4 @@
-import { computePosition, flip } from '@floating-ui/dom';
+import { autoUpdate, computePosition, flip, hide } from '@floating-ui/dom';
 import { css } from '@readable/styled-system/css';
 import { Extension } from '@tiptap/core';
 import { Suggestion } from '@tiptap/suggestion';
@@ -56,35 +56,42 @@ export const SlashMenu = Extension.create({
           let dom: HTMLElement | null = null;
           let component: Component | null = null;
           let selectedItem: MenuItem | null = null;
+          let cleanup: (() => void) | null = null;
 
           let initialRange: { from: number; to: number } | null = null;
 
           const exitSlashMenu = () => {
             this.editor.view.dom.classList.remove('has-slash-menu');
+            cleanup?.();
             component?.$destroy();
             dom?.remove();
           };
 
-          const updateSlashMenuPosition = async (domRect: DOMRect) => {
+          const updateSlashMenuPosition = async (domRectGetter: () => DOMRect | null) => {
             if (!dom) {
               return;
             }
 
             const virtualEl: VirtualElement = {
-              getBoundingClientRect: () => domRect,
+              getBoundingClientRect: () => domRectGetter() ?? new DOMRect(),
+              contextElement: this.editor.view.dom,
             };
 
-            const { x, y } = await computePosition(virtualEl, dom, {
-              placement: 'bottom-start',
-              middleware: [
-                flip({
-                  padding: 16,
-                }),
-              ],
-            });
+            cleanup?.();
+            cleanup = autoUpdate(virtualEl, dom, async () => {
+              if (!dom) {
+                return;
+              }
 
-            dom.style.left = `${x}px`;
-            dom.style.top = `${y}px`;
+              const { x, y, middlewareData } = await computePosition(virtualEl, dom, {
+                placement: 'bottom-start',
+                middleware: [flip({ padding: 16 }), hide({ padding: 16 })],
+              });
+
+              dom.style.left = `${x}px`;
+              dom.style.top = `${y}px`;
+              dom.style.visibility = middlewareData.hide?.referenceHidden ? 'hidden' : 'visible';
+            });
           };
 
           return {
@@ -113,8 +120,7 @@ export const SlashMenu = Extension.create({
                 selectedItem = event.detail;
               });
 
-              const domRect = clientRect?.();
-              if (!domRect) {
+              if (!clientRect) {
                 return;
               }
 
@@ -123,7 +129,7 @@ export const SlashMenu = Extension.create({
               dom.style.position = 'absolute';
               dom.style.visibility = 'visible';
 
-              await updateSlashMenuPosition(domRect);
+              await updateSlashMenuPosition(clientRect);
 
               editor.view.dom.classList.add('has-slash-menu');
             },
@@ -136,9 +142,8 @@ export const SlashMenu = Extension.create({
                 exitSlashMenu();
               }
 
-              const domRect = clientRect?.();
-              if (domRect) {
-                await updateSlashMenuPosition(domRect);
+              if (clientRect) {
+                await updateSlashMenuPosition(clientRect);
               }
             },
 
