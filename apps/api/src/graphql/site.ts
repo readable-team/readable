@@ -13,7 +13,18 @@ import { enqueueJob } from '@/jobs';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
-import { Image, ISite, Page, PublicPage, PublicSite, Section, Site, SiteCustomDomain, Team } from './objects';
+import {
+  Image,
+  ISite,
+  Page,
+  PublicPage,
+  PublicSection,
+  PublicSite,
+  Section,
+  Site,
+  SiteCustomDomain,
+  Team,
+} from './objects';
 
 /**
  * * Types
@@ -101,7 +112,7 @@ PublicSite.implement({
     }),
 
     sections: t.field({
-      type: [Section],
+      type: [PublicSection],
       resolve: async (site) => {
         return await db
           .select(getTableColumns(Sections))

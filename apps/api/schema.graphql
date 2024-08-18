@@ -269,7 +269,7 @@ type PublicSite implements ISite {
   logo: Image
   name: String!
   pages: [PublicPage!]! @deprecated(reason: "use `PublicSite.sections` instead")
-  sections: [Section!]!
+  sections: [PublicSection!]!
   slug: String!
   themeColor: String!
   url: String!
