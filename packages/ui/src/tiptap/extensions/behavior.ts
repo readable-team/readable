@@ -25,7 +25,12 @@ export const Behavior = Extension.create({
 
           const blockBefore = doc.childBefore(pos).node;
           if (block.childCount === 0 && blockBefore?.isTextblock && blockBefore.childCount === 0) {
-            return editor.chain().setNodeSelection(pos).deleteSelection().run();
+            return editor
+              .chain()
+              .setNodeSelection(pos)
+              .deleteSelection()
+              .setTextSelection(pos - 1)
+              .run();
           }
         }
 
