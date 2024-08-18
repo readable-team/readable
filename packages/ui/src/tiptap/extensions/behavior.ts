@@ -36,6 +36,32 @@ export const Behavior = Extension.create({
 
         return false;
       },
+
+      Enter: ({ editor }) => {
+        const { selection } = editor.state;
+        const { $anchor, empty } = selection;
+
+        const pos = $anchor.before(1);
+        const block = $anchor.node(1);
+
+        if (
+          empty &&
+          $anchor.parent.isTextblock &&
+          $anchor.parent.childCount === 0 &&
+          $anchor.parentOffset === 0 &&
+          block.type.name !== 'paragraph' &&
+          block.childCount === 0
+        ) {
+          return editor
+            .chain()
+            .setNodeSelection(pos)
+            .deleteSelection()
+            .insertContentAt(pos, { type: 'paragraph' })
+            .run();
+        }
+
+        return false;
+      },
     };
   },
 
