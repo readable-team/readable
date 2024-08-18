@@ -115,7 +115,6 @@ export class Caddy extends pulumi.ComponentResource {
           name: args.name,
           namespace,
           annotations: {
-            'service.beta.kubernetes.io/aws-load-balancer-name': args.name,
             'service.beta.kubernetes.io/aws-load-balancer-scheme': 'internet-facing',
             'service.beta.kubernetes.io/aws-load-balancer-security-groups': 'internal, public-web',
             'external-dns.alpha.kubernetes.io/hostname': domainName,
