@@ -77,7 +77,7 @@ export const Behavior = Extension.create({
               state.doc.lastChild?.type.name === 'paragraph' && state.doc.lastChild?.childCount === 0;
 
             if (endOfDocument && !lastChildEmptyParagraph) {
-              this.editor.chain().insertContentAt(pos, { type: 'paragraph' }).run();
+              this.editor.chain().insertContentAt(pos, { type: 'paragraph' }).setTextSelection(pos).run();
             }
           },
         },
