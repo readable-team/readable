@@ -11,6 +11,32 @@
   export let pos: number | null = null;
   export let node: Node | null = null;
 
+  const handlePlusClick = () => {
+    if (pos === null || node === null) {
+      return;
+    }
+
+    const { state } = editor;
+
+    const block = state.doc.nodeAt(pos);
+    if (!block) {
+      return;
+    }
+
+    if (block.type.name === 'paragraph' && block.childCount === 0) {
+      editor.chain().deleteCurrentNode().insertContentAt(pos, '/').focus().run();
+    } else {
+      editor
+        .chain()
+        .insertContentAt(pos + node.nodeSize, {
+          type: 'paragraph',
+          content: [{ type: 'text', text: '/' }],
+        })
+        .focus()
+        .run();
+    }
+  };
+
   const handleGripClick = () => {
     if (pos === null || node === null) {
       return;
@@ -63,7 +89,7 @@
 </script>
 
 <div class={flex({ align: 'center', gap: '2px' })}>
-  <button type="button">
+  <button type="button" on:click={handlePlusClick}>
     <Icon style={css.raw({ color: 'gray.500' })} icon={PlusIcon} />
   </button>
 
