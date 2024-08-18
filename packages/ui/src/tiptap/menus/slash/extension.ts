@@ -40,9 +40,9 @@ export const SlashMenu = Extension.create({
         },
 
         allow: ({ state }) => {
-          const { selection } = state;
-          const { $from } = selection;
-          return $from.depth === 1;
+          const { $anchor, empty } = state.selection;
+          const block = $anchor.node(1);
+          return empty && block.type.name === 'paragraph';
         },
 
         items: ({ query }) => {
