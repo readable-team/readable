@@ -258,10 +258,10 @@ type PublicPageSearchHit implements IPageSearchHit {
 }
 
 type PublicSection implements ISection {
-  Pages: [PublicPage!]!
   id: ID!
   name: String!
   order: String!
+  pages: [PublicPage!]!
 }
 
 type PublicSite implements ISite {

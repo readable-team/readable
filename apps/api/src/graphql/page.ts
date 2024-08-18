@@ -83,7 +83,7 @@ Section.implement({
 PublicSection.implement({
   interfaces: [ISection],
   fields: (t) => ({
-    Pages: t.field({
+    pages: t.field({
       type: [PublicPage],
       resolve: async (section, _, ctx) => {
         const loader = ctx.loader({
