@@ -173,7 +173,7 @@ new k8s.helm.v3.Chart('karpenter', {
   chart: 'oci://public.ecr.aws/karpenter/karpenter',
   namespace: 'kube-system',
   fetchOpts: {
-    version: '0.37.0',
+    version: '1.0.0',
   },
 
   values: {
@@ -195,11 +195,20 @@ new k8s.helm.v3.Chart('karpenter', {
         spotToSpotConsolidation: true,
       },
     },
+
+    postInstallHook: {
+      image: {
+        // spell-checker:disable-next-line
+        repository: 'bitnami/kubectl',
+        tag: '1.30',
+        digest: 'sha256:4f74249f971f8ca158a03eaa0c8e7741a2a750fe53525dc69497cf23584df04a',
+      },
+    },
   },
 });
 
 const nodeClass = new k8s.apiextensions.CustomResource('default', {
-  apiVersion: 'karpenter.k8s.aws/v1beta1',
+  apiVersion: 'karpenter.k8s.aws/v1',
   kind: 'EC2NodeClass',
 
   metadata: {
@@ -207,9 +216,9 @@ const nodeClass = new k8s.apiextensions.CustomResource('default', {
   },
 
   spec: {
-    amiFamily: 'AL2023',
     role: nodeRole.name,
 
+    amiSelectorTerms: [{ alias: 'al2023@latest' }],
     subnetSelectorTerms: [{ id: subnets.private.az1.id }, { id: subnets.private.az2.id }],
     securityGroupSelectorTerms: [{ id: securityGroups.internal.id }],
 
@@ -240,7 +249,7 @@ const nodeClass = new k8s.apiextensions.CustomResource('default', {
 });
 
 new k8s.apiextensions.CustomResource('default', {
-  apiVersion: 'karpenter.sh/v1beta1',
+  apiVersion: 'karpenter.sh/v1',
   kind: 'NodePool',
 
   metadata: {
@@ -250,7 +259,12 @@ new k8s.apiextensions.CustomResource('default', {
   spec: {
     template: {
       spec: {
-        nodeClassRef: { name: nodeClass.metadata.name },
+        nodeClassRef: {
+          group: 'karpenter.k8s.aws',
+          kind: nodeClass.kind,
+          name: nodeClass.metadata.name,
+        },
+        expireAfter: '720h', // 30 * 24h
         requirements: [
           { key: 'kubernetes.io/arch', operator: 'In', values: ['arm64'] },
           { key: 'kubernetes.io/os', operator: 'In', values: ['linux'] },
@@ -267,8 +281,8 @@ new k8s.apiextensions.CustomResource('default', {
     },
 
     disruption: {
-      consolidationPolicy: 'WhenUnderutilized',
-      expireAfter: '720h', // 30 * 24h
+      consolidationPolicy: 'WhenEmptyOrUnderutilized',
+      consolidateAfter: '0s',
     },
   },
 });
