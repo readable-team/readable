@@ -9,8 +9,8 @@ const site = new readable.Site('api', {
   name: 'api',
 
   domain: {
-    production: 'api.rdbl.app',
-    dev: 'dev-api.rdbl.app',
+    production: 'api.rdbl.io',
+    dev: 'api.rdbl.ninja',
   },
 
   image: {
