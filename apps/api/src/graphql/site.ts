@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { and, asc, eq, getTableColumns, isNull, ne } from 'drizzle-orm';
+import { and, asc, eq, getTableColumns, ne } from 'drizzle-orm';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { Repeater } from 'graphql-yoga';
 import { match } from 'ts-pattern';
@@ -13,18 +13,7 @@ import { enqueueJob } from '@/jobs';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
-import {
-  Image,
-  ISite,
-  Page,
-  PublicPage,
-  PublicSection,
-  PublicSite,
-  Section,
-  Site,
-  SiteCustomDomain,
-  Team,
-} from './objects';
+import { Image, ISite, Page, PublicSection, PublicSite, Section, Site, SiteCustomDomain, Team } from './objects';
 
 /**
  * * Types
@@ -56,18 +45,6 @@ ISite.implement({
 Site.implement({
   interfaces: [ISite],
   fields: (t) => ({
-    pages: t.field({
-      deprecationReason: 'use `Site.sections` instead',
-      type: [Page],
-      resolve: async (site) => {
-        return await db
-          .select()
-          .from(Pages)
-          .where(and(eq(Pages.siteId, site.id), isNull(Pages.parentId), ne(Pages.state, PageState.DELETED)))
-          .orderBy(asc(Pages.order));
-      },
-    }),
-
     sections: t.field({
       type: [Section],
       resolve: async (site) => {
@@ -99,18 +76,6 @@ Site.implement({
 PublicSite.implement({
   interfaces: [ISite],
   fields: (t) => ({
-    pages: t.field({
-      deprecationReason: 'use `PublicSite.sections` instead',
-      type: [PublicPage],
-      resolve: async (site) => {
-        return await db
-          .select()
-          .from(Pages)
-          .where(and(eq(Pages.siteId, site.id), isNull(Pages.parentId), eq(Pages.state, PageState.PUBLISHED)))
-          .orderBy(asc(Pages.order));
-      },
-    }),
-
     sections: t.field({
       type: [PublicSection],
       resolve: async (site) => {

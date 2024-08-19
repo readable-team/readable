@@ -268,7 +268,6 @@ type PublicSite implements ISite {
   id: ID!
   logo: Image
   name: String!
-  pages: [PublicPage!]! @deprecated(reason: "use `PublicSite.sections` instead")
   sections: [PublicSection!]!
   slug: String!
   themeColor: String!
@@ -349,7 +348,6 @@ type Site implements ISite {
   id: ID!
   logo: Image
   name: String!
-  pages: [Page!]! @deprecated(reason: "use `Site.sections` instead")
   sections: [Section!]!
   slug: String!
   team: Team!
