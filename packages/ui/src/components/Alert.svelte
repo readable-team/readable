@@ -92,7 +92,14 @@
             actionStyle,
           )}
         >
-          <Button size="lg" variant="danger-fill" on:click={onAction}>
+          <Button
+            size="lg"
+            variant="danger-fill"
+            on:click={() => {
+              onAction();
+              open = false;
+            }}
+          >
             <slot name="action" />
           </Button>
 
