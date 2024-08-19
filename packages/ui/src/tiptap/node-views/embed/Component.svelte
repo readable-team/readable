@@ -21,8 +21,13 @@
   let url = '';
   let inflight = false;
   let pickerOpened = false;
+  let inputEl: HTMLInputElement;
 
   $: pickerOpened = selected;
+
+  $: if (pickerOpened && inputEl) {
+    inputEl.focus();
+  }
 
   const { anchor, floating } = createFloatingActions({
     placement: 'bottom-start',
@@ -156,7 +161,7 @@
     on:submit|preventDefault={handleInsert}
     use:floating
   >
-    <TextInput style={css.raw({ width: 'full' })} bind:value={url} />
+    <TextInput style={css.raw({ width: 'full' })} bind:value={url} bind:inputEl />
     <Button style={css.raw({ width: 'full' })} size="lg" type="submit">링크 임베드</Button>
     <span class={css({ textStyle: '13m', color: 'text.tertiary' })}>PDF, Google Drive 등의 링크와 호환됩니다</span>
   </form>
