@@ -62,9 +62,14 @@ export const SlashMenu = Extension.create({
 
           const exitSlashMenu = () => {
             this.editor.view.dom.classList.remove('has-slash-menu');
+
             cleanup?.();
             component?.$destroy();
             dom?.remove();
+
+            cleanup = null;
+            component = null;
+            dom = null;
           };
 
           const updateSlashMenuPosition = async (domRectGetter: () => DOMRect | null) => {
@@ -153,7 +158,7 @@ export const SlashMenu = Extension.create({
                 return true;
               }
 
-              if (event.key === 'Enter' && selectedItem) {
+              if (event.key === 'Enter' && selectedItem && dom && component) {
                 selectedItem.command({ editor: this.editor, range });
                 return true;
               }
