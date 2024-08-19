@@ -339,11 +339,19 @@
 
     <TiptapEditor
       style={css.raw({
-        flex: '1',
-        color: 'text.primary',
-        paddingBottom: '128px',
-        marginX: 'auto',
-        width: '720px',
+        'flex': '1',
+        'color': 'text.primary',
+        'paddingBottom': '128px',
+
+        'width': 'full',
+
+        'display': 'flex',
+        'flexDirection': 'column',
+        'alignItems': 'center',
+
+        '& > *': {
+          width: '720px',
+        },
       })}
       awareness={yAwareness}
       document={yDoc}
