@@ -1,20 +1,31 @@
-import { Resend } from 'resend';
-import { env } from '@/env';
+import { SendEmailCommand } from '@aws-sdk/client-ses';
+import { render } from '@react-email/components';
+import * as aws from '@/external/aws';
 import type * as React from 'react';
-
-const resend = new Resend(env.RESEND_API_KEY);
 
 type SendEmailParams = {
   subject: string;
   recipient: string;
-  body: React.ReactNode;
+  body: React.ReactElement;
 };
 
 export const sendEmail = async ({ subject, recipient, body }: SendEmailParams) => {
-  await resend.emails.send({
-    from: 'Readable <hello@rdbl.io>',
-    to: recipient,
-    subject,
-    react: body,
-  });
+  await aws.ses.send(
+    new SendEmailCommand({
+      Source: 'Readable <hello@rdbl.io>',
+      Destination: {
+        ToAddresses: [recipient],
+      },
+      Message: {
+        Subject: {
+          Data: subject,
+        },
+        Body: {
+          Html: {
+            Data: render(body),
+          },
+        },
+      },
+    }),
+  );
 };
