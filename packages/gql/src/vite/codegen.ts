@@ -1,5 +1,5 @@
 import path from 'node:path';
-import * as R from 'radash';
+import { F } from '@mobily/ts-belt';
 import { writeArtifactAssets, writeMiscAssets, writePublicAssets, writeTypeAssets } from '../codegen/writer';
 import { buildContext } from '../context';
 import type { Plugin } from 'vite';
@@ -21,7 +21,7 @@ export const codegenPlugin = (contextHolder: ContextHolder): Plugin => {
     }
   };
 
-  const debounced = R.debounce({ delay: 100 }, buildAndWriteContext);
+  const debounced = F.debounce(buildAndWriteContext, 100);
 
   return {
     name: '@readable/gql:codegen',

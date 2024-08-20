@@ -1,7 +1,7 @@
-import * as R from 'radash';
 import * as recast from 'recast';
 import * as AST from '../ast';
 import { scalarTSTypes } from '../const';
+import { capitalize } from '../utils';
 import type { Artifact, CompositeType, Selection, Variable } from '../types';
 
 const buildScalarRefTSType = (name: string, direction: 'Input' | 'Output') => {
@@ -202,7 +202,7 @@ export const buildGraphQLFunctions = (artifacts: Artifact[]): AST.Program => {
             artifact.kind === 'fragment'
               ? AST.b.tsTypeReference(AST.b.identifier(`types.${artifact.name}`))
               : AST.b.tsTypeReference.from({
-                  typeName: AST.b.identifier(`${R.capitalize(artifact.kind)}Store`),
+                  typeName: AST.b.identifier(`${capitalize(artifact.kind)}Store`),
                   typeParameters: AST.b.tsTypeParameterInstantiation([
                     AST.b.tsTypeReference(AST.b.identifier(artifact.name)),
                   ]),

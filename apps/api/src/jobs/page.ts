@@ -1,6 +1,6 @@
+import { A } from '@mobily/ts-belt';
 import dayjs from 'dayjs';
 import { and, asc, eq, gt, lte } from 'drizzle-orm';
-import * as R from 'radash';
 import { yXmlFragmentToProseMirrorRootNode } from 'y-prosemirror';
 import * as Y from 'yjs';
 import {
@@ -56,7 +56,7 @@ export const PageContentStateUpdateJob = defineJob('page:content:state-update', 
     const snapshot = Y.snapshot(doc);
 
     if (!Y.equalSnapshots(prevSnapshot, snapshot)) {
-      const uniqueContributorUserIds = R.unique(pendingUpdates.map((update) => update.userId));
+      const uniqueContributorUserIds = A.uniq(pendingUpdates.map((update) => update.userId));
 
       await Promise.all([
         tx.insert(PageContentSnapshots).values({
