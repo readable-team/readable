@@ -11,6 +11,7 @@ import { Image, Team, User } from './objects';
  */
 
 User.implement({
+  grantScopes: (user, context) => (user.id === context.session?.userId ? ['$owner'] : []),
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
@@ -20,6 +21,7 @@ User.implement({
 
     teams: t.field({
       type: [Team],
+      authScopes: { $granted: '$owner' },
       resolve: async (user) => {
         return await db
           .select(getTableColumns(Teams))
