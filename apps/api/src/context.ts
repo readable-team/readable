@@ -2,10 +2,9 @@ import DataLoader from 'dataloader';
 import { eq } from 'drizzle-orm';
 import stringify from 'fast-json-stable-stringify';
 import * as R from 'remeda';
-import { db, UserSessions } from './db';
-import { decodeAccessToken } from './utils/access-token';
+import { db, UserSessions } from '@/db';
+import { decodeAccessToken } from '@/utils/access-token';
 import type { YogaInitialContext } from 'graphql-yoga';
-import type { Context as HonoContext } from 'hono';
 
 type LoaderParams<T, R, S, N extends boolean, M extends boolean> = {
   name: string;
@@ -16,12 +15,12 @@ type LoaderParams<T, R, S, N extends boolean, M extends boolean> = {
 };
 
 type ServerContext = YogaInitialContext & {
-  hono: HonoContext;
+  ip: string;
 };
 
 type DefaultContext = {
   'req': Request;
-  'clientAddress'?: string;
+  'ip'?: string;
 
   'loader': <T, R, S, N extends boolean = false, M extends boolean = false, RR = N extends true ? R | null : R>(
     params: LoaderParams<T, R, S, N, M>,
@@ -38,10 +37,10 @@ export type UserContext = {
 
 export type Context = DefaultContext & Partial<UserContext>;
 
-export const createContext = async ({ request }: ServerContext) => {
+export const createContext = async ({ request, ip }: ServerContext): Promise<Context> => {
   const ctx: Context = {
     'req': request,
-    // 'clientAddress': getConnInfo(hono).remote.address,
+    ip,
 
     'loader': <
       T,

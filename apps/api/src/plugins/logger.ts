@@ -6,7 +6,7 @@ export const useLogger = (): Plugin<Context> => ({
   onExecute: ({ args }) => {
     logger.info({
       scope: 'graphql',
-      ip: args.contextValue.clientAddress,
+      ip: args.contextValue.ip,
       user: args.contextValue.session?.userId,
       operation_name: args.operationName,
       variables: args.variableValues,

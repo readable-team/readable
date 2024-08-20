@@ -1,8 +1,8 @@
-import { Hono } from 'hono';
+import Elysia from 'elysia';
 import { caddy } from './caddy';
 import { healthz } from './healthz';
 
-export const hono = new Hono();
+export const elysia = new Elysia();
 
-hono.route('/', caddy);
-hono.route('/', healthz);
+elysia.use(caddy);
+elysia.use(healthz);

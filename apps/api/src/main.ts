@@ -1,17 +1,16 @@
-import './instrument';
+import '@/instrument';
 import '@readable/lib/dayjs';
-import './jobs';
+import '@/jobs';
 
-import { Hono } from 'hono';
+import { Elysia } from 'elysia';
 import { yoga } from '@/handler';
-import { hono } from './rest';
+import { elysia } from '@/rest';
+import { ip } from './plugins/ip';
 
-const app = new Hono();
-
-app.all('/graphql', (c) => yoga.handle(c.req.raw, { hono: c }));
-app.route('/', hono);
-
-Bun.serve({
-  fetch: app.fetch,
-  port: 3000,
-});
+new Elysia()
+  .use(ip)
+  .use(elysia)
+  .all('/graphql', ({ request, ip }) => yoga(request, { ip }))
+  .listen(3000, (server) => {
+    console.log(`Listening on ${server.url}`);
+  });

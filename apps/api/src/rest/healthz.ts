@@ -1,5 +1,5 @@
-import { Hono } from 'hono';
+import Elysia from 'elysia';
 
-export const healthz = new Hono();
+export const healthz = new Elysia({ prefix: '/healthz' });
 
-healthz.get('/healthz', (c) => c.json({ '*': true }));
+healthz.get('/', () => ({ '*': true }));
