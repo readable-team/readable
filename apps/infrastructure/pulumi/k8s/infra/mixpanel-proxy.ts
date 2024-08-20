@@ -11,6 +11,11 @@ const cm = new k8s.core.v1.ConfigMap('mixpanel-proxy@infra', {
 {
   admin off
   persist_config off
+
+  servers {
+    trusted_proxies_strict
+    trusted_proxies static private_ranges
+  }
 }
 
 http:// {
