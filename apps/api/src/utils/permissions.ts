@@ -3,11 +3,20 @@ import { db, first, Pages, Sections, Sites, TeamMembers, Teams } from '@/db';
 import { SiteState, TeamMemberRole, TeamState } from '@/enums';
 import { ApiError } from '@/errors';
 
+export const throwableToBoolean = <T extends unknown[]>(
+  fn: (...args: T) => Promise<void>,
+): ((...args: T) => Promise<boolean>) => {
+  return (...args: T) =>
+    fn(...args)
+      .then(() => true)
+      .catch(() => false);
+};
+
 const teamMemberRolePrecedences: TeamMemberRole[] = [TeamMemberRole.MEMBER, TeamMemberRole.ADMIN];
 
 type AssertTeamPermissionParams = {
   teamId: string;
-  userId: string;
+  userId?: string;
   role?: TeamMemberRole;
 };
 
@@ -16,6 +25,10 @@ export const assertTeamPermission = async ({
   userId,
   role = TeamMemberRole.MEMBER,
 }: AssertTeamPermissionParams) => {
+  if (!userId) {
+    throw new ApiError({ code: 'unauthorized' });
+  }
+
   const member = await db
     .select({ role: TeamMembers.role })
     .from(TeamMembers)
@@ -30,7 +43,7 @@ export const assertTeamPermission = async ({
 
 type AssertSitePermissionParams = {
   siteId: string;
-  userId: string;
+  userId?: string;
   role?: TeamMemberRole;
 };
 
@@ -40,6 +53,10 @@ export const assertSitePermission = async ({
   role = TeamMemberRole.MEMBER,
 }: AssertSitePermissionParams) => {
   // 사실 지금은 사이트별 권한이 없어서 팀 권한만 봄
+  if (!userId) {
+    throw new ApiError({ code: 'unauthorized' });
+  }
+
   const member = await db
     .select({ role: TeamMembers.role })
     .from(TeamMembers)
@@ -62,7 +79,7 @@ export const assertSitePermission = async ({
 
 type AssertSectionPermissionParams = {
   sectionId: string;
-  userId: string;
+  userId?: string;
   role?: TeamMemberRole;
 };
 
@@ -71,6 +88,10 @@ export const assertSectionPermission = async ({
   userId,
   role = TeamMemberRole.MEMBER,
 }: AssertSectionPermissionParams) => {
+  if (!userId) {
+    throw new ApiError({ code: 'unauthorized' });
+  }
+
   const member = await db
     .select({ role: TeamMembers.role })
     .from(TeamMembers)
@@ -94,7 +115,7 @@ export const assertSectionPermission = async ({
 
 type AssertPagePermissionParams = {
   pageId: string;
-  userId: string;
+  userId?: string;
   role?: TeamMemberRole;
 };
 
@@ -103,6 +124,10 @@ export const assertPagePermission = async ({
   userId,
   role = TeamMemberRole.MEMBER,
 }: AssertPagePermissionParams) => {
+  if (!userId) {
+    throw new ApiError({ code: 'unauthorized' });
+  }
+
   const member = await db
     .select({ role: TeamMembers.role })
     .from(TeamMembers)

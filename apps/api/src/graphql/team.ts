@@ -10,7 +10,7 @@ import { env } from '@/env';
 import { ApiError } from '@/errors';
 import { dataSchemas } from '@/schemas';
 import { generateRandomAvatar } from '@/utils/image-generation';
-import { assertTeamPermission } from '@/utils/permissions';
+import { assertTeamPermission, throwableToBoolean } from '@/utils/permissions';
 import { persistBlobAsImage } from '@/utils/user-contents';
 import { Image, Site, Team, TeamMember, TeamMemberInvitation, User } from './objects';
 
@@ -49,6 +49,27 @@ Team.implement({
           .from(TeamMembers)
           .where(and(eq(TeamMembers.teamId, team.id), eq(TeamMembers.userId, ctx.session.userId)))
           .then(first);
+      },
+    }),
+
+    invitations: t.field({
+      type: [TeamMemberInvitation],
+      resolve: async (team, _, ctx) => {
+        const isAdmin = await throwableToBoolean(assertTeamPermission)({
+          teamId: team.id,
+          userId: ctx.session?.userId,
+          role: TeamMemberRole.ADMIN,
+        });
+
+        if (!isAdmin) {
+          return [];
+        }
+
+        return await db
+          .select()
+          .from(TeamMemberInvitations)
+          .where(eq(TeamMemberInvitations.teamId, team.id))
+          .orderBy(asc(TeamMemberInvitations.createdAt));
       },
     }),
 
