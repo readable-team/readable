@@ -90,7 +90,10 @@
         }
       }
     `),
-    schema: z.object({ email: dataSchemas.email }),
+    schema: z.object({
+      teamId: dataSchemas.team.id,
+      email: dataSchemas.email,
+    }),
     onSuccess: () => {
       console.log('success');
     },

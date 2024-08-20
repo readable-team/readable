@@ -51,6 +51,7 @@ export const dataSchemas = {
   },
 
   team: {
+    id: z.string(),
     name: z
       .string({ required_error: '팀 이름을 입력해 주세요' })
       .trim()
