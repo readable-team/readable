@@ -12,6 +12,7 @@
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
   import { Img } from '$lib/components';
+  import TeamSetting from './(settingModal)/TeamSetting.svelte';
   import UserSetting from './(settingModal)/UserSetting.svelte';
   import type { UserSettingModal_site, UserSettingModal_user } from '$graphql';
 
@@ -56,6 +57,7 @@
 
         team {
           id
+          ...TeamSetting_team
 
           meAsMember {
             id
@@ -207,7 +209,9 @@
     </dl>
   </svelte:fragment>
 
-  <div hidden={selectedTab !== '#/settings/team'}>팀 관리</div>
+  <div hidden={selectedTab !== '#/settings/team'}>
+    <TeamSetting $team={$site.team} />
+  </div>
   <div hidden={selectedTab !== '#/settings/team/members'}>
     <form class={flex({ align: 'center', gap: '10px' })} use:form>
       <input name="teamId" type="hidden" value={$site.team.id} />
