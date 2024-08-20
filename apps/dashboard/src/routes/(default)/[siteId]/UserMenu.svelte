@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { HorizontalDivider, Icon, Menu, MenuItem } from '@readable/ui/components';
+  import mixpanel from 'mixpanel-browser';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import { page } from '$app/stores';
   import { env } from '$env/dynamic/public';
@@ -138,7 +139,10 @@
     type="button"
     on:click={async () => {
       await logout();
+
       $accessToken = null;
+      mixpanel.reset();
+
       location.href = env.PUBLIC_WEBSITE_URL;
     }}
   >

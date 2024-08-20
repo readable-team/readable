@@ -3,6 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Button, Chip, Helmet, Icon, Tooltip } from '@readable/ui/components';
   import { toast } from '@readable/ui/notification';
+  import mixpanel from 'mixpanel-browser';
   import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
@@ -77,7 +78,10 @@
   variant="primary"
   on:click={async () => {
     await logout();
+
     $accessToken = null;
+    mixpanel.reset();
+
     location.href = '/';
   }}
 >
