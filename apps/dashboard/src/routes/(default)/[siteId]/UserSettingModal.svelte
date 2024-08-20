@@ -1,10 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, Icon, Modal, TextInput } from '@readable/ui/components';
-  import { createMutationForm } from '@readable/ui/forms';
-  import { z } from 'zod';
-  import { dataSchemas } from '@/schemas';
+  import { Icon, Modal } from '@readable/ui/components';
   import BuildingIcon from '~icons/lucide/building';
   import CircleUserIcon from '~icons/lucide/circle-user';
   import UserCogIcon from '~icons/lucide/user-cog';
@@ -12,6 +9,7 @@
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
   import { Img } from '$lib/components';
+  import TeamMembers from './(settingModal)/TeamMembers.svelte';
   import TeamSetting from './(settingModal)/TeamSetting.svelte';
   import UserSetting from './(settingModal)/UserSetting.svelte';
   import type { UserSettingModal_site, UserSettingModal_user } from '$graphql';
@@ -58,67 +56,11 @@
         team {
           id
           ...TeamSetting_team
-
-          meAsMember {
-            id
-            role
-          }
-
-          members {
-            id
-            role
-
-            user {
-              id
-              email
-            }
-          }
+          ...TeamMembers_team
         }
       }
     `),
   );
-
-  const { form } = createMutationForm({
-    mutation: graphql(`
-      mutation UserSettingModal_InviteTeamMember_Mutation($input: InviteTeamMemberInput!) {
-        inviteTeamMember(input: $input) {
-          ... on TeamMember {
-            id
-          }
-
-          ... on TeamMemberInvitation {
-            id
-            email
-            createdAt
-          }
-        }
-      }
-    `),
-    schema: z.object({
-      teamId: dataSchemas.team.id,
-      email: dataSchemas.email,
-    }),
-    onSuccess: () => {
-      console.log('success');
-    },
-  });
-
-  const updateTeamMemberRole = graphql(`
-    mutation UserSettingModal_UpdateTeamMemberRole_Mutation($input: UpdateTeamMemberRoleInput!) {
-      updateTeamMemberRole(input: $input) {
-        id
-        role
-      }
-    }
-  `);
-
-  const removeTeamMember = graphql(`
-    mutation UserSettingModal_RemoveTeamMember_Mutation($input: RemoveTeamMemberInput!) {
-      removeTeamMember(input: $input) {
-        id
-      }
-    }
-  `);
 
   const personalSettings = [
     {
@@ -213,72 +155,8 @@
     <TeamSetting $team={$site.team} />
   </div>
   <div hidden={selectedTab !== '#/settings/team/members'}>
-    <form class={flex({ align: 'center', gap: '10px' })} use:form>
-      <input name="teamId" type="hidden" value={$site.team.id} />
-      <FormField name="email">
-        <TextInput placeholder="이메일" />
-      </FormField>
-
-      <Button size="lg" type="submit">멤버 초대</Button>
-    </form>
-
-    <br />
-    <br />
-
-    <ul>
-      {#each $site.team.members as member (member.id)}
-        <li class={flex({ align: 'center', gap: '10px' })}>
-          <div>
-            <p>{member.user.email}</p>
-            <p>{member.role}</p>
-          </div>
-
-          {#if $site.team.meAsMember?.role === 'ADMIN' && member.id !== $site.team.meAsMember?.id}
-            <Button
-              size="sm"
-              variant="secondary"
-              on:click={async () =>
-                await updateTeamMemberRole({
-                  role: 'ADMIN',
-                  userId: member.user.id,
-                  teamId: $site.team.id,
-                })}
-            >
-              ADMIN으로 변경
-            </Button>
-            <Button
-              size="sm"
-              variant="secondary"
-              on:click={async () =>
-                await updateTeamMemberRole({
-                  role: 'MEMBER',
-                  userId: member.user.id,
-                  teamId: $site.team.id,
-                })}
-            >
-              MEMBER로 변경
-            </Button>
-          {/if}
-
-          {#if $site.team.meAsMember?.role === 'ADMIN' || member.id === $site.team.meAsMember?.id}
-            <Button
-              size="sm"
-              on:click={async () => {
-                // TODO: alert, cache invalidate
-                await removeTeamMember({ userId: member.user.id, teamId: $site.team.id });
-                if (member.id === $site.team.meAsMember?.id) {
-                  await goto('/');
-                }
-              }}
-            >
-              탈퇴
-            </Button>
-          {/if}
-        </li>
-      {/each}
-    </ul>
+    <TeamMembers $team={$site.team} />
   </div>
-
   <div hidden={selectedTab !== '#/settings/personal'}>
     <UserSetting {$user} />
   </div>
