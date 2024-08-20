@@ -151,13 +151,11 @@
     </dl>
   </svelte:fragment>
 
-  <div hidden={selectedTab !== '#/settings/team'}>
+  {#if selectedTab === '#/settings/team'}
     <TeamSetting $team={$site.team} />
-  </div>
-  <div hidden={selectedTab !== '#/settings/team/members'}>
+  {:else if selectedTab === '#/settings/team/members'}
     <TeamMembers $team={$site.team} />
-  </div>
-  <div hidden={selectedTab !== '#/settings/personal'}>
+  {:else if selectedTab === '#/settings/personal'}
     <UserSetting {$user} />
-  </div>
+  {/if}
 </Modal>
