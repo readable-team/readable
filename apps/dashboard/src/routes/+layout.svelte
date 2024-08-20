@@ -1,13 +1,16 @@
 <script lang="ts">
   import '../app.css';
 
-  import { css } from '@readable/styled-system/css';
+  import { flex } from '@readable/styled-system/patterns';
   import { ToastProvider } from '@readable/ui/notification';
 </script>
 
 <div
-  class={css({
+  class={flex({
+    direction: 'column',
+    grow: 1,
     minWidth: '1280px',
+    minHeight: 'screen',
   })}
 >
   <slot />
