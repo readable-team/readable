@@ -1,0 +1,1 @@
+export { LinkEditPopover } from './extension';

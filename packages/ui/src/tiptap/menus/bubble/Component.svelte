@@ -17,7 +17,7 @@
   export let editor: Editor;
   export let from: number | null = null;
   export let to: number | null = null;
-  export let openLinkEditModal: () => void;
+  export let openLinkEditPopover: () => void;
 
   let topLevelNodeTypePickerOpened = false;
   let colorPickerOpened = false;
@@ -232,7 +232,7 @@
     class={bubbleMenuButtonStyle}
     type="button"
     on:click={() => {
-      openLinkEditModal();
+      openLinkEditPopover();
     }}
   >
     <Icon icon={LinkIcon} size={16} />

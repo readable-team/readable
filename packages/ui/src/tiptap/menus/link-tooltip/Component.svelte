@@ -8,7 +8,7 @@
 
   export let hide: () => void;
   export let linkHref: string;
-  export let openLinkEditModal: () => void;
+  export let openLinkEditPopover: () => void;
 
   const menuButtonStyle = flex({
     width: '24px',
@@ -81,7 +81,7 @@
         class={menuButtonStyle}
         type="button"
         on:click={() => {
-          openLinkEditModal?.();
+          openLinkEditPopover?.();
         }}
       >
         <Icon icon={PencilIcon} size={12} />

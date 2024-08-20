@@ -95,9 +95,9 @@ export const LinkTooltip = Extension.create({
 
               const linkHref = anchorNode.marks.find((mark) => mark.type.name === 'link')?.attrs.href;
 
-              const openLinkEditModal = () => {
+              const openLinkEditPopover = () => {
                 hideTooltip();
-                this.editor.commands.showLinkEditModal({
+                this.editor.commands.showLinkEditPopover({
                   selection,
                   currentLink: linkHref,
                   defaultLink: linkHref,
@@ -110,7 +110,7 @@ export const LinkTooltip = Extension.create({
                   props: {
                     hide: hideTooltip,
                     linkHref,
-                    openLinkEditModal,
+                    openLinkEditPopover,
                   },
                 });
 
@@ -125,7 +125,7 @@ export const LinkTooltip = Extension.create({
                 document.body.append(dom);
               }
 
-              tooltipComponent.$set({ linkHref, openLinkEditModal });
+              tooltipComponent.$set({ linkHref, openLinkEditPopover });
 
               cleanup?.();
               cleanup = autoUpdate(element, dom, async () => {

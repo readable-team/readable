@@ -41,12 +41,12 @@ export const BubbleMenu = Extension.create({
 
               const { selection } = view.state;
 
-              const openLinkEditModal = () => {
+              const openLinkEditPopover = () => {
                 hideBubble();
-                this.editor.commands.showLinkEditModalForActiveSelection();
+                this.editor.commands.showLinkEditPopoverForActiveSelection();
               };
 
-              bubbleComponent?.$set({ from: selection.from, to: selection.to, openLinkEditModal });
+              bubbleComponent?.$set({ from: selection.from, to: selection.to, openLinkEditPopover });
 
               if (
                 selection.empty ||
@@ -86,7 +86,7 @@ export const BubbleMenu = Extension.create({
                   target: dom,
                   props: {
                     editor: this.editor,
-                    openLinkEditModal,
+                    openLinkEditPopover,
                   },
                 });
 

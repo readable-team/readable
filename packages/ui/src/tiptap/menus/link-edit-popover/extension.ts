@@ -8,9 +8,9 @@ import type { Selection } from '@tiptap/pm/state';
 declare module '@tiptap/core' {
   // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Commands<ReturnType> {
-    linkEditModal: {
-      showLinkEditModalForActiveSelection: () => ReturnType;
-      showLinkEditModal: (options: {
+    linkEditPopover: {
+      showLinkEditPopoverForActiveSelection: () => ReturnType;
+      showLinkEditPopover: (options: {
         selection: Selection;
         currentLink: string | null;
         defaultLink: string;
@@ -19,8 +19,8 @@ declare module '@tiptap/core' {
   }
 }
 
-export const LinkEditModal = Extension.create({
-  name: 'linkEditModal',
+export const LinkEditPopover = Extension.create({
+  name: 'linkEditPopover',
 
   addStorage() {
     return {
@@ -39,7 +39,7 @@ export const LinkEditModal = Extension.create({
         const { from, to } = selection;
 
         if (from !== to) {
-          editor.commands.showLinkEditModalForActiveSelection();
+          editor.commands.showLinkEditPopoverForActiveSelection();
           return true;
         }
 
@@ -50,7 +50,7 @@ export const LinkEditModal = Extension.create({
 
   addCommands() {
     return {
-      showLinkEditModalForActiveSelection:
+      showLinkEditPopoverForActiveSelection:
         () =>
         ({ editor, view }) => {
           const { selection } = view.state;
@@ -68,14 +68,14 @@ export const LinkEditModal = Extension.create({
             }
           }
 
-          editor.commands.showLinkEditModal({
+          editor.commands.showLinkEditPopover({
             selection,
             defaultLink,
             currentLink: currentLink.href,
           });
           return true;
         },
-      showLinkEditModal:
+      showLinkEditPopover:
         ({ selection, defaultLink, currentLink }) =>
         ({ view }) => {
           const { from, to } = selection;
