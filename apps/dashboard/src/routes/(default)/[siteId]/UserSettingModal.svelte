@@ -12,6 +12,7 @@
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
   import { Img } from '$lib/components';
+  import UserSetting from './(settingModal)/UserSetting.svelte';
   import type { UserSettingModal_site, UserSettingModal_user } from '$graphql';
 
   let _user: UserSettingModal_user;
@@ -29,6 +30,7 @@
         id
         name
         email
+        ...UserSetting_user
 
         avatar {
           id
@@ -273,5 +275,7 @@
     </ul>
   </div>
 
-  <div hidden={selectedTab !== '#/settings/personal'}>내 계정</div>
+  <div hidden={selectedTab !== '#/settings/personal'}>
+    <UserSetting {$user} />
+  </div>
 </Modal>
