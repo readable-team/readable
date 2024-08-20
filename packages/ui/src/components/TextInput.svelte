@@ -64,16 +64,11 @@
         },
       },
       _hasInvalidInput: {
-        'color': { base: 'red.600', _dark: 'red.500' },
-        'borderColor': { base: 'red.600', _dark: 'red.500' },
-        'backgroundColor': { base: 'red.100', _dark: 'red.900' },
-        '& input::placeholder': {
-          color: { base: 'red.600', _dark: 'red.500' },
-        },
-        '_hasFocusedInput': {
+        borderColor: { base: 'red.600', _dark: 'red.500' },
+        _hasFocusedInput: {
           borderColor: { base: 'red.600', _dark: 'red.500' },
         },
-        '_hasFilledInput': {
+        _hasFilledInput: {
           color: { base: 'gray.1000', _dark: 'darkgray.100' },
           backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
         },
