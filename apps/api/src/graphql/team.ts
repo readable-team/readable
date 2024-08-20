@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { and, asc, count, eq } from 'drizzle-orm';
+import { and, asc, count, eq, ne } from 'drizzle-orm';
 import { builder } from '@/builder';
 import { db, first, firstOrThrow, Sites, TeamMemberInvitations, TeamMembers, Teams, Users } from '@/db';
 import { sendEmail } from '@/email';
@@ -27,12 +27,28 @@ Team.implement({
 
     members: t.field({
       type: [TeamMember],
-      resolve: async (team) => {
-        return await db
-          .select()
-          .from(TeamMembers)
-          .where(eq(TeamMembers.teamId, team.id))
-          .orderBy(asc(TeamMembers.createdAt));
+      resolve: async (team, _, ctx) => {
+        const isMember = await throwableToBoolean(assertTeamPermission)({
+          teamId: team.id,
+          userId: ctx.session?.userId,
+        });
+
+        if (!ctx.session || !isMember) {
+          return [];
+        }
+
+        return await Promise.all([
+          db
+            .select()
+            .from(TeamMembers)
+            .where(and(eq(TeamMembers.teamId, team.id), eq(TeamMembers.userId, ctx.session.userId)))
+            .then(firstOrThrow),
+          db
+            .select()
+            .from(TeamMembers)
+            .where(and(eq(TeamMembers.teamId, team.id), ne(TeamMembers.userId, ctx.session.userId)))
+            .orderBy(asc(TeamMembers.createdAt)),
+        ]).then(([me, others]) => [me, ...others]);
       },
     }),
 
