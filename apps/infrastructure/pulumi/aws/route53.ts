@@ -46,11 +46,3 @@ new aws.route53.Record('resend._domainkey.rdbl.io|txt', {
   ],
   ttl: 300,
 });
-
-new aws.route53.Record('_dmarc.rdbl.io|txt', {
-  zoneId: zones.rdbl_io.zoneId,
-  type: 'TXT',
-  name: '_dmarc.rdbl.io',
-  records: ['v=DMARC1; p=none;'],
-  ttl: 300,
-});
