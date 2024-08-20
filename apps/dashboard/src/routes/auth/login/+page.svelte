@@ -26,7 +26,16 @@
       '[linear-gradient(123deg, rgba(251, 96, 189, 0.10) 0%, rgba(251, 96, 189, 0.03) 21.07%, rgba(251, 96, 189, 0.00) 39.96%, rgba(249, 106, 25, 0.02) 74.93%, rgba(249, 106, 25, 0.10) 90.54%)]',
   })}
 >
-  <div class={css({ borderRadius: '8px', padding: '40px', width: 'full', maxWidth: '576px', boxShadow: 'emphasize' })}>
+  <div
+    class={css({
+      borderRadius: '8px',
+      padding: '40px',
+      width: 'full',
+      maxWidth: '576px',
+      boxShadow: 'emphasize',
+      backgroundColor: 'surface.primary',
+    })}
+  >
     <a href="/">
       <FullLogo class={css({ height: '20px' })} />
     </a>
@@ -45,6 +54,8 @@
         justify: 'center',
         gap: '16px',
         paddingX: '40px',
+        textStyle: '16b',
+        color: 'neutral.90',
       })}
       size="lg"
       variant="secondary"
