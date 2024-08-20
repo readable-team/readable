@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { F } from '@mobily/ts-belt';
+import * as R from 'remeda';
 import { writeArtifactAssets, writeMiscAssets, writePublicAssets, writeTypeAssets } from '../codegen/writer';
 import { buildContext } from '../context';
 import type { Plugin } from 'vite';
@@ -21,7 +21,7 @@ export const codegenPlugin = (contextHolder: ContextHolder): Plugin => {
     }
   };
 
-  const debounced = F.debounce(buildAndWriteContext, 100);
+  const debounced = R.debounce(buildAndWriteContext, { waitMs: 100 });
 
   return {
     name: '@readable/gql:codegen',
@@ -37,7 +37,7 @@ export const codegenPlugin = (contextHolder: ContextHolder): Plugin => {
 
     watchChange: (id) => {
       if (contextHolder.context && id.startsWith(path.join(contextHolder.context.projectDir, 'src'))) {
-        debounced();
+        debounced.call();
       }
     },
   };

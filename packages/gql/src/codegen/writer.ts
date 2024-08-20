@@ -1,9 +1,9 @@
 import path from 'node:path';
-import { A } from '@mobily/ts-belt';
 import * as graphql from 'graphql';
+import * as R from 'remeda';
 import * as AST from '../ast';
 import { getReferencedFragments } from '../parser/selection';
-import { addIdAndTypenameField, capitalize, removeDirective, writeFile } from '../utils';
+import { addIdAndTypenameField, removeDirective, writeFile } from '../utils';
 import { buildGraphQLFunctions, buildGraphQLTypes, buildSelectionsTSType, buildVariablesTSType } from './generator';
 import type { Context, FragmentArtifact, OperationArtifact, StoreSchema } from '../types';
 
@@ -13,7 +13,7 @@ export const writeArtifactAssets = async ({ gqlDir, schema, artifacts }: Context
   const fragmentMap = new Map(fragmentArtifacts.map((v) => [v.name, v]));
 
   for (const operation of operationArtifacts) {
-    const fragments = A.uniqBy(getReferencedFragments(operation.selections, fragmentMap), (v) => v.name);
+    const fragments = R.uniqueBy(getReferencedFragments(operation.selections, fragmentMap), (v) => v.name);
 
     const source = [operation.node, ...fragments.map((v) => v.node)]
       .map((v) => graphql.print(addIdAndTypenameField(schema, removeDirective(v, ['required', 'manual']))))
@@ -30,7 +30,7 @@ export const writeArtifactAssets = async ({ gqlDir, schema, artifacts }: Context
       meta: operation.meta,
     };
 
-    const fn = `create${capitalize(operation.kind)}Store`;
+    const fn = `create${R.capitalize(operation.kind)}Store`;
 
     const program = AST.b.program([
       AST.b.importDeclaration.from({

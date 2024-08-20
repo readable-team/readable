@@ -1,7 +1,7 @@
-import { A } from '@mobily/ts-belt';
 import DataLoader from 'dataloader';
 import { eq } from 'drizzle-orm';
 import stringify from 'fast-json-stable-stringify';
+import * as R from 'remeda';
 import { db, UserSessions } from './db';
 import { decodeAccessToken } from './utils/access-token';
 import type { YogaInitialContext } from 'graphql-yoga';
@@ -66,7 +66,7 @@ export const createContext = async ({ request }: ServerContext) => {
       const loader = new DataLoader<T, F, string>(
         async (keys) => {
           const rows = await load(keys as T[]);
-          const values = A.groupBy(rows, (row) => stringify(key(row)));
+          const values = R.groupBy(rows, (row) => stringify(key(row)));
           return keys.map((key) => {
             const value = values[stringify(key)];
 

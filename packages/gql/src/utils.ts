@@ -85,5 +85,3 @@ export const writeFile = async (path_: string, content: string) => {
   await fs.mkdir(path.dirname(path_), { recursive: true });
   await fs.writeFile(path_, content);
 };
-
-export const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1);

@@ -36,6 +36,7 @@
     "pulumi",
     "rabbitmq",
     "rdbl",
+    "remeda",
     "repeaterjs",
     "resvg",
     "sortablejs",
