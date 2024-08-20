@@ -42,10 +42,10 @@
       base: flex.raw({
         alignItems: 'center',
         gap: '10px',
-        borderRadius: '8px',
+        borderRadius: '6px',
         paddingX: '10px',
         paddingY: '8px',
-        textStyle: '16sb',
+        textStyle: '14sb',
         textAlign: 'left',
         color: 'text.secondary',
         width: 'full',
