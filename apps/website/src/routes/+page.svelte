@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { css, cx } from '@readable/styled-system/css';
+  import { css } from '@readable/styled-system/css';
   import { center, flex, grid, gridItem } from '@readable/styled-system/patterns';
   import { Helmet, Icon } from '@readable/ui/components';
   import { createClient } from '@supabase/supabase-js';
@@ -22,18 +22,6 @@
 
   let i = 0;
   $: idx = i % keywords.length;
-
-  const labelStyle = css({ fontSize: '12px', fontWeight: 'bold' });
-
-  const inputStyle = css({
-    borderWidth: '1px',
-    borderColor: 'neutral.30',
-    borderRadius: '4px',
-    paddingX: '12px',
-    paddingY: '11px',
-    fontSize: '14px',
-    backgroundColor: 'neutral.0',
-  });
 
   const tableContents: Record<string, ComponentType | string>[] = [
     {
@@ -120,23 +108,14 @@
 
   const handleSubmit = async (event: SubmitEvent) => {
     const formData = new FormData(event.target as HTMLFormElement);
-    const privacyConsent = formData.get('privacyConsent') as string;
 
-    if (!privacyConsent) {
-      alert('개인정보 활용에 동의해 주세요');
-      return;
-    }
-
-    const companyName = formData.get('companyName') as string;
-    const name = formData.get('name') as string;
-    const phoneNumber = formData.get('phoneNumber') as string;
     const email = formData.get('email') as string;
 
     const { error } = await supabase.from('waitlist').insert([
       {
-        company_name: companyName,
-        name,
-        phone_number: phoneNumber,
+        company_name: '',
+        name: '',
+        phone_number: '',
         email,
         referrer: $page.url.searchParams.get('utm_source'),
       },
@@ -804,7 +783,9 @@
       textAlign: 'center',
     })}
   >
-    제품과 문서를 동기화하고 신뢰할 수 있는 가이드 문서를 만들어 보세요
+    출시 알림을 받을 이메일을 입력해 주세요.
+    <br class={css({ hideFrom: 'sm' })} />
+    가장 빠르게 알려드릴게요!
   </div>
 
   <form
@@ -816,112 +797,40 @@
     })}
     on:submit|preventDefault={handleSubmit}
   >
-    <div class={flex({ direction: 'column', gap: '20px' })}>
-      <fieldset class={flex({ direction: 'column', gap: '4px' })}>
-        <label class={labelStyle} for="companyName">회사 이름 *</label>
-        <input id="companyName" name="companyName" class={inputStyle} placeholder="ACME Inc" required type="text" />
-      </fieldset>
+    <div class={flex({ gap: '12px' })}>
+      <input
+        id="email"
+        name="email"
+        class={css({
+          flexGrow: '1',
+          borderWidth: '1px',
+          borderColor: 'neutral.30',
+          borderRadius: '8px',
+          paddingX: '12px',
+          paddingY: '11px',
+          fontSize: '16px',
+          fontWeight: '[500]',
+          backgroundColor: 'neutral.0',
+        })}
+        placeholder="you@example.com"
+        required
+        type="email"
+      />
 
-      <fieldset class={flex({ direction: 'column', gap: '4px' })}>
-        <label class={labelStyle} for="name">담당자 이름 *</label>
-        <input id="name" name="name" class={inputStyle} placeholder="홍길동" required type="text" />
-      </fieldset>
-
-      <fieldset class={flex({ direction: 'column', gap: '4px' })}>
-        <label class={labelStyle} for="phoneNumber">연락처 *</label>
-        <input
-          id="phoneNumber"
-          name="phoneNumber"
-          class={inputStyle}
-          placeholder="010-1234-5678"
-          required
-          type="text"
-        />
-      </fieldset>
-
-      <fieldset class={flex({ direction: 'column', gap: '4px' })}>
-        <label class={labelStyle} for="email">이메일 주소 *</label>
-        <input id="email" name="email" class={inputStyle} placeholder="name@company.email" required type="text" />
-      </fieldset>
-
-      <label class={css({ display: 'flex', alignItems: 'center', gap: '4px' })}>
-        <div
-          class={css({
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-            userSelect: 'none',
-          })}
-        >
-          <input
-            name="privacyConsent"
-            class={cx(
-              css({
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flex: 'none',
-                size: '13px',
-                borderWidth: '1px',
-                borderColor: 'gray.500',
-                borderRadius: '0',
-                cursor: 'pointer',
-                appearance: 'none',
-                _checked: { borderWidth: '0', backgroundColor: 'gray.900' },
-              }),
-              'peer',
-            )}
-            type="checkbox"
-          />
-          <Icon
-            style={css.raw({
-              display: 'none',
-              position: 'absolute',
-              top: '1/2',
-              left: '1/2',
-              translate: 'auto',
-              translateX: '-1/2',
-              translateY: '-1/2',
-              color: 'white',
-              cursor: 'pointer',
-              _peerChecked: { display: 'block' },
-            })}
-            icon={CheckIcon}
-            size={12}
-          />
-        </div>
-
-        <span class={css({ textStyle: '14m', color: 'neutral.70', cursor: 'pointer' })}>개인정보활용동의</span>
-      </label>
-    </div>
-
-    <button
-      class={css({
-        borderRadius: '4px',
-        marginTop: '48px',
-        fontSize: '14px',
-        fontWeight: '[800]',
-        color: 'neutral.0',
-        backgroundColor: 'neutral.100',
-        width: 'full',
-        height: '40px',
-      })}
-      type="submit"
-    >
-      신청하기
-    </button>
-
-    <div
-      class={css({
-        marginTop: { base: '40px', sm: '48px' },
-        fontWeight: 'bold',
-        color: 'neutral.70',
-        lineHeight: '[1.6]',
-        textAlign: 'center',
-      })}
-    >
-      출시되면 가장 빠르게 알려드릴게요!
+      <button
+        class={css({
+          borderRadius: '8px',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          color: 'neutral.0',
+          backgroundColor: 'neutral.100',
+          paddingX: '30px',
+          paddingY: '12px',
+        })}
+        type="submit"
+      >
+        신청
+      </button>
     </div>
   </form>
 </div>
