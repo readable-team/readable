@@ -64,7 +64,10 @@ usersite
 {/if}
 id: {$query.publicSite.id}
 <br />
-name: {$query.publicSite.name}
+name:
+<span class={css({ color: 'var(--usersite-theme-color)', backgroundColor: 'var(--usersite-theme-color)/20' })}>
+  {$query.publicSite.name}
+</span>
 <br />
 pages:
 <ul>

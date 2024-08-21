@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { css } from '@readable/styled-system/css';
   import { graphql } from '$graphql';
 
   $: query = graphql(`
@@ -6,6 +7,7 @@
       publicSite(hostname: $hostname) {
         id
         url
+        themeColor
 
         logo {
           id
@@ -22,4 +24,6 @@
   {/if}
 </svelte:head>
 
-<slot />
+<div style:--usersite-theme-color={$query.publicSite.themeColor} class={css({ display: 'contents' })}>
+  <slot />
+</div>

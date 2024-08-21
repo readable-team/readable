@@ -1,7 +1,7 @@
 import { definePreset } from '@pandacss/dev';
 import { breakpoints } from './breakpoints';
 import { conditions } from './conditions';
-import { globalCss, globalFontface } from './global';
+import { globalCss, globalFontface, globalVars } from './global';
 import { semanticTokens } from './semantic-tokens';
 import { textStyles } from './text-styles';
 import { tokens } from './tokens';
@@ -25,4 +25,5 @@ export const preset = definePreset({
 
   globalCss,
   globalFontface,
+  globalVars,
 });

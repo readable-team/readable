@@ -97,3 +97,10 @@ export const globalFontface = defineGlobalFontface({
     fontDisplay: 'swap',
   },
 });
+
+export const globalVars = {
+  '--usersite-theme-color': {
+    syntax: '<color>',
+    inherits: true,
+  },
+};

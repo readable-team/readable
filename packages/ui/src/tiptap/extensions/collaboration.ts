@@ -107,7 +107,7 @@ export const Collaboration = Extension.create<CollaborationOptions>({
         'position': 'relative',
         'marginX': '-1px',
         'borderXWidth': '1px',
-        'borderColor': 'var(--user-color)',
+        'borderColor': '[var(--user-color)]',
         'pointerEvents': 'none',
         '& + .ProseMirror-separator': {
           display: 'none',
@@ -128,7 +128,7 @@ export const Collaboration = Extension.create<CollaborationOptions>({
           lineHeight: 'none',
           textIndent: '0',
           color: 'gray.100',
-          backgroundColor: 'var(--user-color)',
+          backgroundColor: '[var(--user-color)]',
           translate: 'auto',
           translateY: '-full',
         },
@@ -141,7 +141,7 @@ export const Collaboration = Extension.create<CollaborationOptions>({
     const selectionBuilder = (user: User) => {
       return {
         style: `--user-color: color-mix(in srgb, ${user.color} 50%, transparent);`,
-        class: css({ backgroundColor: 'var(--user-color)' }),
+        class: css({ backgroundColor: '[var(--user-color)]' }),
       };
     };
 
