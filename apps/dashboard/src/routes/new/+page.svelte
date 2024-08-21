@@ -107,6 +107,7 @@
     })}
     use:form
   >
+    <input name="teamId" type="hidden" />
     <FormField name="name" description="설정에서 언제든지 변경할 수 있어요." label="사이트 이름 *">
       <TextInput placeholder="예: ACME 도움센터" />
       <svelte:fragment slot="right-text">{$data.name?.length ?? 0}/50</svelte:fragment>
