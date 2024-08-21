@@ -808,6 +808,7 @@
           borderRadius: '8px',
           paddingX: '12px',
           paddingY: '11px',
+          width: 'full',
           fontSize: '16px',
           fontWeight: '[500]',
           backgroundColor: 'neutral.0',
@@ -819,6 +820,7 @@
 
       <button
         class={css({
+          flex: 'none',
           borderRadius: '8px',
           fontSize: '16px',
           fontWeight: 'bold',
