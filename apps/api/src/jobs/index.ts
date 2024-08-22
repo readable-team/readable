@@ -1,3 +1,5 @@
+import './cron';
+
 import { nanoid } from 'nanoid';
 import { dev, env } from '@/env';
 import { pub, rabbit } from '@/mq';
