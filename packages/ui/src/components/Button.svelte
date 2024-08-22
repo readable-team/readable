@@ -1,6 +1,7 @@
 <script generics="T extends 'button' | 'submit' | 'link' = 'button'" lang="ts">
   import { css, cva } from '@readable/styled-system/css';
   import { center } from '@readable/styled-system/patterns';
+  import { getFormContext } from '../forms';
   import RingSpinner from './RingSpinner.svelte';
   import type { RecipeVariant, RecipeVariantProps } from '@readable/styled-system/css';
   import type { SystemStyleObject } from '@readable/styled-system/types';
@@ -33,7 +34,9 @@
 
   $: element = type === 'link' ? 'a' : 'button';
 
-  $: showSpinner = loading;
+  const { isSubmitting } = getFormContext().form ?? {};
+
+  $: showSpinner = !!(loading || (type === 'submit' && $isSubmitting));
   $: props = type === 'link' ? ({ 'aria-disabled': disabled ? 'true' : 'false' } as const) : { type, disabled };
 
   type Variants = RecipeVariant<typeof recipe>;
