@@ -50,7 +50,7 @@
     }
   `);
 
-  const { form, data } = createMutationForm({
+  const { form, data, isSubmitting } = createMutationForm({
     mutation: async ({ name }) => {
       const team = await createDefaultTeam();
       return await createSite({ teamId: team.id, name });
@@ -203,6 +203,8 @@
       <MenuItem on:click={() => (jobRole = '응답하고 싶지 않음')}>응답하고 싶지 않음</MenuItem>
     </Menu>
 
-    <Button style={css.raw({ marginTop: '32px', width: 'full' })} size="lg" type="submit">만들기</Button>
+    <Button style={css.raw({ marginTop: '32px', width: 'full' })} loading={$isSubmitting} size="lg" type="submit">
+      만들기
+    </Button>
   </form>
 </div>
