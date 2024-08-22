@@ -3,13 +3,16 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Button, FormField, HorizontalDivider, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
+  import mixpanel from 'mixpanel-browser';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import LogOutIcon from '~icons/lucide/log-out';
   import { goto } from '$app/navigation';
   import FullLogo from '$assets/logos/full.svg?component';
+  import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
+  import { accessToken } from '$lib/graphql';
 
   $: query = graphql(`
     query NewPage_Query {
@@ -22,6 +25,12 @@
           id
         }
       }
+    }
+  `);
+
+  const logout = graphql(`
+    mutation NewPage_Logout_Mutation {
+      logout
     }
   `);
 
@@ -62,7 +71,19 @@
 <header
   class={flex({ align: 'center', justify: 'space-between', paddingTop: '24px', paddingX: '24px', height: '64px' })}
 >
-  <Button style={flex.raw({ align: 'center', gap: '6px', paddingLeft: '10px' })} size="sm" variant="secondary">
+  <Button
+    style={flex.raw({ align: 'center', gap: '6px', paddingLeft: '10px' })}
+    size="sm"
+    variant="secondary"
+    on:click={async () => {
+      await logout();
+
+      $accessToken = null;
+      mixpanel.reset();
+
+      location.href = env.PUBLIC_WEBSITE_URL;
+    }}
+  >
     <Icon icon={LogOutIcon} />
     <span>로그아웃</span>
   </Button>
