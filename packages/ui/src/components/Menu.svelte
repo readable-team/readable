@@ -13,6 +13,7 @@
   export let setFullWidth = false;
 
   let buttonEl: HTMLButtonElement | undefined;
+  let menuEl: HTMLUListElement | undefined;
 
   const { anchor, floating } = createFloatingActions({
     placement,
@@ -27,14 +28,58 @@
   afterNavigate(() => {
     open = false;
   });
+
+  const onKeydown = (e: KeyboardEvent) => {
+    if (open) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        open = false;
+        buttonEl?.focus();
+      }
+
+      const target = e.target as HTMLElement;
+      const focusInList = menuEl?.contains(target);
+
+      const menuItems = menuEl?.querySelectorAll('[role="menuitem"]');
+      if (!menuItems || menuItems.length === 0) {
+        return;
+      }
+
+      // eslint-disable-next-line unicorn/prefer-spread
+      const pos = Array.from(menuItems).indexOf(target);
+
+      if (focusInList) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          const next = (menuItems[pos + 1] || menuItems[0]) as HTMLElement;
+          next?.focus();
+        }
+
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          // eslint-disable-next-line unicorn/prefer-at
+          const prev = (menuItems[pos - 1] || menuItems[menuItems.length - 1]) as HTMLElement;
+          prev?.focus();
+        }
+      } else {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          (menuItems[0] as HTMLElement).focus();
+        }
+      }
+    }
+  };
 </script>
 
-<button bind:this={buttonEl} type="button" on:click={() => (open = !open)} use:anchor>
+<svelte:window on:keydown={onKeydown} />
+
+<button bind:this={buttonEl} aria-expanded={open} type="button" on:click={() => (open = !open)} use:anchor>
   <slot name="button" {open} />
 </button>
 
 {#if open}
   <ul
+    bind:this={menuEl}
     style:width={setFullWidth ? `${buttonEl?.getBoundingClientRect().width}px` : 'auto'}
     class={css(
       {
@@ -51,6 +96,7 @@
       $$slots.action && { paddingBottom: '0' },
       listStyle,
     )}
+    role="menu"
     use:floating
   >
     {#if $$slots.action}

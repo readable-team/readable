@@ -52,6 +52,9 @@
         _hover: {
           backgroundColor: 'neutral.10',
         },
+        _focus: {
+          backgroundColor: 'neutral.10',
+        },
         _selected: {
           color: 'text.primary',
           backgroundColor: 'neutral.20',
@@ -71,7 +74,7 @@
     css(style),
   )}
   role="menuitem"
-  tabindex="-1"
+  tabindex="0"
   on:click
   on:click={close}
   {...external && {
