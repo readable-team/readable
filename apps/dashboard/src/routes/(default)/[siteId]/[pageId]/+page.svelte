@@ -277,7 +277,7 @@
   {/if}
 
   <p class={css({ marginTop: '20px', marginBottom: '4px', textStyle: '13m', color: 'text.tertiary' })}>
-    마지막 수정 시간
+    마지막 편집 시간
   </p>
 
   <time
