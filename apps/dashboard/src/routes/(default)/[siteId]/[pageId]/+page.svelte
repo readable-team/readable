@@ -29,6 +29,7 @@
         content {
           id
           title
+          updatedAt
         }
 
         parent {
@@ -267,7 +268,10 @@
       마지막 발행 시간
     </p>
 
-    <time class={css({ display: 'block', textStyle: '13r', color: 'text.secondary' })}>
+    <time
+      class={css({ display: 'block', textStyle: '13r', color: 'text.secondary' })}
+      datetime={$query.page.lastPublishedAt}
+    >
       {dayjs($query.page.lastPublishedAt).formatAsDateTime()}
     </time>
   {/if}
@@ -276,7 +280,12 @@
     마지막 수정 시간
   </p>
 
-  <time class={css({ display: 'block', textStyle: '13r', color: 'text.secondary' })}>2024.11.12 11:00</time>
+  <time
+    class={css({ display: 'block', textStyle: '13r', color: 'text.secondary' })}
+    datetime={$query.page.content.updatedAt}
+  >
+    {dayjs($query.page.content.updatedAt).formatAsDateTime()}
+  </time>
 </aside>
 
 <Alert
