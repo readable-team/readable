@@ -78,6 +78,14 @@ const developerAccessKey = new aws.iam.AccessKey('developer@team', {
   user: developer.name,
 });
 
+new aws.iam.Role('slack-app@support', {
+  name: 'slack-app@support',
+  assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({
+    Service: 'supportapp.amazonaws.com',
+  }),
+  managedPolicyArns: [aws.iam.ManagedPolicy.AWSSupportAppReadOnlyAccess],
+});
+
 const datadogIntegration = new aws.iam.Role('integration@datadog', {
   name: 'integration@datadog',
   assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({
