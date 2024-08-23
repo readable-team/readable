@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Button, FormField, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import { fragment, graphql } from '$graphql';
-  import { Img } from '$lib/components';
   import { uploadBlobAsImage } from '$lib/utils/blob.svelte';
+  import AvatarInput from './AvatarInput.svelte';
   import type { UserSetting_user } from '$graphql';
 
   let _user: UserSetting_user;
@@ -43,7 +42,7 @@
     }
   `);
 
-  const { form, data, setInitialValues, isDirty, reset, setIsDirty } = createMutationForm({
+  const { form, setInitialValues, isDirty, reset, setIsDirty } = createMutationForm({
     schema: z.object({
       avatarId: z.string(),
       avatarDraftFile: z.any(),
@@ -92,21 +91,7 @@
 <form use:form>
   <input name="avatarId" type="hidden" />
   <FormField name="avatar">
-    {#if $data.avatarDraftFile}
-      <img
-        class={css({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full' })}
-        alt="아바타"
-        src={URL.createObjectURL($data.avatarDraftFile)}
-      />
-    {:else}
-      <Img
-        style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full' })}
-        $image={$user.avatar}
-        alt="아바타"
-        size={64}
-      />
-    {/if}
-    <input name="avatarDraftFile" type="file" />
+    <AvatarInput name="avatarDraftFile" avatar={$user.avatar} />
   </FormField>
   <FormField name="name">
     <TextInput name="name" placeholder="이름" />
