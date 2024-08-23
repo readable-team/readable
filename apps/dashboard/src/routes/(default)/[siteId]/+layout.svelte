@@ -10,10 +10,10 @@
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
-  import { PageList } from '$lib/components/page-list';
+  import { PageList } from './(pageTree)';
   import SiteSettingModal from './SiteSettingModal.svelte';
   import UserMenu from './UserMenu.svelte';
-  import type { CategoryData, PageData } from '$lib/components/page-list/types';
+  import type { CategoryData, PageData } from './(pageTree)/types';
 
   let openSiteSettingModal = false;
   $: openSiteSettingModal = $page.url.hash.startsWith('#/settings/site');
