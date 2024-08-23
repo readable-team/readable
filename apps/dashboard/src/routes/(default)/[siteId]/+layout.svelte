@@ -6,6 +6,7 @@
   import EarthIcon from '~icons/lucide/earth';
   import SettingsIcon from '~icons/lucide/settings';
   import ReadableIcon from '~icons/rdbl/readable';
+  import SlashDividerIcon from '~icons/rdbl/slash-divider';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
@@ -236,16 +237,14 @@
   >
     <div
       class={flex({
-        gap: '8px',
+        gap: '2px',
         alignItems: 'center',
         paddingX: '8px',
         paddingY: '6px',
       })}
     >
       <Icon icon={ReadableIcon} size={18} />
-      <svg fill="none" height="12" viewBox="0 0 5 12" width="5" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4.52876 0.102272L1.48189 11.4219H0.24929L3.29617 0.102272H4.52876Z" fill="#ECEDEE" />
-      </svg>
+      <Icon icon={SlashDividerIcon} size={18} />
       {#if $query.site.logo}
         <Img
           style={css.raw({ borderRadius: 'full', size: '19px', borderWidth: '1px', borderColor: 'border.image' })}
