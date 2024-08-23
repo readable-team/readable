@@ -7,7 +7,7 @@
     "lint:typecheck": "tsc"
   },
   "devDependencies": {
-    "@pulumi/aws": "^6.49.1",
+    "@pulumi/aws": "^6.50.0",
     "@pulumi/kubernetes": "^4.17.1",
     "@pulumi/pulumi": "^3.129.0",
     "@pulumi/random": "^4.16.3",

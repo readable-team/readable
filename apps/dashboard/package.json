@@ -14,9 +14,9 @@
     "@readable/lib": "workspace:*",
     "@readable/styled-system": "workspace:*",
     "@readable/ui": "workspace:*",
-    "dayjs": "^1.11.12",
+    "dayjs": "^1.11.13",
     "js-base64": "^3.7.7",
-    "ky": "^1.7.0",
+    "ky": "^1.7.1",
     "mixpanel-browser": "^2.55.0",
     "nanoid": "^5.0.7",
     "query-string": "^9.1.0",
@@ -33,16 +33,16 @@
     "@readable/lintconfig": "workspace:*",
     "@readable/pulumi": "workspace:*",
     "@readable/tsconfig": "workspace:*",
-    "@sveltejs/kit": "^2.5.22",
-    "@sveltejs/vite-plugin-svelte": "^3.1.1",
+    "@sveltejs/kit": "^2.5.24",
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@types/mixpanel-browser": "^2.49.1",
     "@types/sortablejs": "^1.15.8",
     "svelte": "^4.2.18",
-    "svelte-check": "^3.8.5",
+    "svelte-check": "^3.8.6",
     "svelte-preprocess": "^6.0.2",
     "tslib": "^2.6.3",
     "typescript": "^5.5.4",
     "unplugin-icons": "^0.19.2",
-    "vite": "^5.4.1"
+    "vite": "^5.4.2"
   }
 }

@@ -14,7 +14,7 @@
     "lint:typecheck": "tsc"
   },
   "dependencies": {
-    "dayjs": "^1.11.12",
+    "dayjs": "^1.11.13",
     "svgo": "^3.3.2"
   },
   "devDependencies": {

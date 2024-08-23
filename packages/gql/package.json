@@ -20,7 +20,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@sveltejs/kit": "^2.5.22",
+    "@sveltejs/kit": "^2.5.24",
     "@urql/core": "^5.0.5",
     "@urql/exchange-graphcache": "^7.1.2",
     "dataloader": "^2.2.2",
@@ -40,7 +40,7 @@
   "devDependencies": {
     "@readable/tsconfig": "workspace:*",
     "typescript": "^5.5.4",
-    "vite": "^5.4.1",
+    "vite": "^5.4.2",
     "vitest": "^2.0.5"
   }
 }
