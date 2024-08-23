@@ -105,7 +105,7 @@
   class={flex({
     'direction': 'column',
     'grow': 1,
-    'paddingTop': '28px',
+    'position': 'relative',
     'backgroundColor': 'surface.primary',
     'overflowY': 'auto',
 
@@ -115,7 +115,32 @@
   })}
 >
   {#key $query.page.id}
-    <div class={css({ paddingX: '80px' })}>
+    {#if $query.page.hasUnpublishedChanges || $query.page.state === PageState.DRAFT}
+      <div
+        class={css(
+          {
+            position: 'absolute',
+            paddingY: '5px',
+            paddingX: '80px',
+            textStyle: '13m',
+            color: 'text.accent',
+            textAlign: 'center',
+            backgroundColor: 'accent.10',
+            width: 'full',
+          },
+          $query.page.state === PageState.DRAFT && {
+            backgroundColor: 'neutral.60',
+            color: 'neutral.0',
+          },
+        )}
+      >
+        {$query.page.state === PageState.DRAFT
+          ? '아직 발행되지 않은 페이지입니다'
+          : '발행되지 않은 수정 내역이 있습니다'}
+      </div>
+    {/if}
+
+    <div class={css({ paddingTop: '42px', paddingX: '80px' })}>
       <Breadcrumb _query={$query} />
     </div>
 
@@ -215,7 +240,10 @@
 
   <div class={flex({ align: 'center', wrap: 'wrap', paddingLeft: '4px' })}>
     {#each $query.page.contentContributor as contributor (contributor.id)}
-      <Tooltip style={css.raw({ size: '24px' })} message={contributor.user.name}>
+      <Tooltip
+        style={css.raw({ marginLeft: '-4px', size: '20px', marginBottom: '4px' })}
+        message={contributor.user.name}
+      >
         <Img
           style={css.raw({
             flex: 'none',
@@ -223,8 +251,6 @@
             borderColor: 'border.image',
             borderRadius: 'full',
             size: '20px',
-            marginLeft: '-4px',
-            marginBottom: '4px',
           })}
           $image={contributor.user.avatar}
           alt={contributor.user.name}

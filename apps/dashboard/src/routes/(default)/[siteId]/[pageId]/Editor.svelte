@@ -293,7 +293,7 @@
   };
 </script>
 
-<div class={css({ flex: '1', paddingTop: '62px', paddingX: '80px', overflowY: 'auto' })}>
+<div class={css({ flex: '1', paddingTop: '42px', paddingX: '80px', overflowY: 'auto' })}>
   <div class={flex({ height: 'full', flexDirection: 'column' })}>
     <div
       class={flex({
