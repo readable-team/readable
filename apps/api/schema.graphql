@@ -7,16 +7,28 @@ interface Blob {
   id: ID!
 }
 
-input CreatePageInput {
-  parentId: ID
-  sectionId: ID!
-  siteId: ID!
+type Category implements ICategory {
+  id: ID!
+  name: String!
+  order: String!
+  pages: [Page!]!
 }
 
-input CreateSectionInput {
+enum CategoryState {
+  ACTIVE
+  DELETED
+}
+
+input CreateCategoryInput {
   lower: ID
   siteId: ID!
   upper: String
+}
+
+input CreatePageInput {
+  categoryId: ID!
+  parentId: ID
+  siteId: ID!
 }
 
 input CreateSiteInput {
@@ -30,12 +42,12 @@ input CreateTeamInput {
 
 scalar DateTime
 
-input DeletePageInput {
-  pageId: ID!
+input DeleteCategoryInput {
+  categoryId: ID!
 }
 
-input DeleteSectionInput {
-  sectionId: ID!
+input DeletePageInput {
+  pageId: ID!
 }
 
 input DeleteSiteInput {
@@ -70,22 +82,22 @@ input GenerateSingleSignOnAuthorizationUrlInput {
   provider: SingleSignOnProvider!
 }
 
+interface ICategory {
+  id: ID!
+  name: String!
+  order: String!
+}
+
 interface IPage {
+  category: Category!
   id: ID!
   order: String!
-  section: Section!
   slug: String!
   state: PageState!
 }
 
 interface IPageSearchHit {
   highlight: PageSearchHighlight
-}
-
-interface ISection {
-  id: ID!
-  name: String!
-  order: String!
 }
 
 interface ISite {
@@ -128,14 +140,14 @@ scalar JSON
 
 type Mutation {
   authorizeSingleSignOn(input: AuthorizeSingleSignOnInput!): UserWithAccessToken!
+  createCategory(input: CreateCategoryInput!): Category!
   createDefaultTeam: Team!
   createPage(input: CreatePageInput!): Page!
-  createSection(input: CreateSectionInput!): Section!
   createSite(input: CreateSiteInput!): Site!
   createTeam(input: CreateTeamInput!): Team!
   deactivateUser: User!
+  deleteCategory(input: DeleteCategoryInput!): Category!
   deletePage(input: DeletePageInput!): Page!
-  deleteSection(input: DeleteSectionInput!): Section!
   deleteSite(input: DeleteSiteInput!): Site!
   deleteTeam(input: DeleteTeamInput!): Team!
   duplicatePage(input: DuplicatePageInput!): Page!
@@ -152,9 +164,9 @@ type Mutation {
   unfurlEmbed(input: UnfurlEmbedInput!): Embed!
   unpublishPage(input: UnpublishPageInput!): Page!
   unsetSiteCustomDomain(input: UnsetSiteCustomDomainInput!): SiteCustomDomain!
+  updateCategory(input: UpdateCategoryInput!): Category!
+  updateCategoryPosition(input: UpdateCategoryPositionInput!): Category!
   updatePagePosition(input: UpdatePagePositionInput!): Page!
-  updateSection(input: UpdateSectionInput!): Section!
-  updateSectionPosition(input: UpdateSectionPositionInput!): Section!
   updateSite(input: UpdateSiteInput!): Site!
   updateTeam(input: UpdateTeamInput!): Team!
   updateTeamMemberRole(input: UpdateTeamMemberRoleInput!): TeamMember!
@@ -162,6 +174,7 @@ type Mutation {
 }
 
 type Page implements IPage {
+  category: Category!
   children: [Page!]!
   content: PageContentState!
   contentContributor: [PageContentContributor!]!
@@ -171,7 +184,6 @@ type Page implements IPage {
   lastPublishedAt: DateTime
   order: String!
   parent: Page
-  section: Section!
   site: Site!
   slug: String!
   state: PageState!
@@ -234,13 +246,20 @@ input PersistBlobAsImageInput {
   path: String!
 }
 
+type PublicCategory implements ICategory {
+  id: ID!
+  name: String!
+  order: String!
+  pages: [PublicPage!]!
+}
+
 type PublicPage implements IPage {
+  category: Category!
   children: [PublicPage!]!
   content: PublicPageContent!
   id: ID!
   order: String!
   parent: PublicPage
-  section: Section!
   slug: String!
   state: PageState!
 }
@@ -257,18 +276,11 @@ type PublicPageSearchHit implements IPageSearchHit {
   page: PublicPage!
 }
 
-type PublicSection implements ISection {
-  id: ID!
-  name: String!
-  order: String!
-  pages: [PublicPage!]!
-}
-
 type PublicSite implements ISite {
+  categories: [PublicCategory!]!
   id: ID!
   logo: Image
   name: String!
-  sections: [PublicSection!]!
   slug: String!
   themeColor: String!
   url: String!
@@ -322,18 +334,6 @@ type SearchPublicPageResult {
   hits: [PublicPageSearchHit!]!
 }
 
-type Section implements ISection {
-  id: ID!
-  name: String!
-  order: String!
-  pages: [Page!]!
-}
-
-enum SectionState {
-  ACTIVE
-  DELETED
-}
-
 input SetSiteCustomDomainInput {
   domain: String!
   siteId: ID!
@@ -344,11 +344,11 @@ enum SingleSignOnProvider {
 }
 
 type Site implements ISite {
+  categories: [Category!]!
   customDomain(state: SiteCustomDomainState!): SiteCustomDomain
   id: ID!
   logo: Image
   name: String!
-  sections: [Section!]!
   slug: String!
   team: Team!
   themeColor: String!
@@ -430,22 +430,22 @@ input UnsetSiteCustomDomainInput {
   siteCustomDomainId: ID!
 }
 
-input UpdatePagePositionInput {
+input UpdateCategoryInput {
+  categoryId: ID!
+  name: String!
+}
+
+input UpdateCategoryPositionInput {
+  categoryId: String!
   lower: String
-  pageId: String!
-  parentId: String
-  sectionId: String!
   upper: String
 }
 
-input UpdateSectionInput {
-  name: String!
-  sectionId: ID!
-}
-
-input UpdateSectionPositionInput {
+input UpdatePagePositionInput {
+  categoryId: String!
   lower: String
-  sectionId: String!
+  pageId: String!
+  parentId: String
   upper: String
 }
 

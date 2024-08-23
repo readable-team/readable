@@ -4,8 +4,8 @@ import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { Repeater } from 'graphql-yoga';
 import { match } from 'ts-pattern';
 import { builder } from '@/builder';
-import { db, extractTableCode, first, firstOrThrow, Pages, Sections, SiteCustomDomains, Sites } from '@/db';
-import { PageState, SectionState, SiteCustomDomainState, SiteState, TeamMemberRole } from '@/enums';
+import { Categories, db, extractTableCode, first, firstOrThrow, Pages, SiteCustomDomains, Sites } from '@/db';
+import { CategoryState, PageState, SiteCustomDomainState, SiteState, TeamMemberRole } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
 import * as dns from '@/external/dns';
@@ -13,7 +13,7 @@ import { enqueueJob } from '@/jobs';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
-import { Image, ISite, Page, PublicSection, PublicSite, Section, Site, SiteCustomDomain, Team } from './objects';
+import { Category, Image, ISite, Page, PublicCategory, PublicSite, Site, SiteCustomDomain, Team } from './objects';
 
 /**
  * * Types
@@ -45,14 +45,14 @@ ISite.implement({
 Site.implement({
   interfaces: [ISite],
   fields: (t) => ({
-    sections: t.field({
-      type: [Section],
+    categories: t.field({
+      type: [Category],
       resolve: async (site) => {
         return await db
           .select()
-          .from(Sections)
-          .where(and(eq(Sections.siteId, site.id), eq(Sections.state, SectionState.ACTIVE)))
-          .orderBy(asc(Sections.order));
+          .from(Categories)
+          .where(and(eq(Categories.siteId, site.id), eq(Categories.state, CategoryState.ACTIVE)))
+          .orderBy(asc(Categories.order));
       },
     }),
 
@@ -76,16 +76,16 @@ Site.implement({
 PublicSite.implement({
   interfaces: [ISite],
   fields: (t) => ({
-    sections: t.field({
-      type: [PublicSection],
+    categories: t.field({
+      type: [PublicCategory],
       resolve: async (site) => {
         return await db
-          .select(getTableColumns(Sections))
-          .from(Sections)
-          .innerJoin(Pages, and(eq(Sections.id, Pages.sectionId), eq(Pages.state, PageState.PUBLISHED)))
-          .where(and(eq(Sections.siteId, site.id), eq(Sections.state, SectionState.ACTIVE)))
-          .groupBy(Sections.id)
-          .orderBy(asc(Sections.order));
+          .select(getTableColumns(Categories))
+          .from(Categories)
+          .innerJoin(Pages, and(eq(Categories.id, Pages.categoryId), eq(Pages.state, PageState.PUBLISHED)))
+          .where(and(eq(Categories.siteId, site.id), eq(Categories.state, CategoryState.ACTIVE)))
+          .groupBy(Categories.id)
+          .orderBy(asc(Categories.order));
       },
     }),
   }),
@@ -182,7 +182,7 @@ builder.mutationFields((t) => ({
         .returning()
         .then(firstOrThrow);
 
-      await db.insert(Sections).values({
+      await db.insert(Categories).values({
         siteId: site.id,
         name: '섹션',
         order: new TextEncoder().encode(generateJitteredKeyBetween(null, null)),

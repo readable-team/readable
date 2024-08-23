@@ -13,7 +13,7 @@
   import { PageList } from '$lib/components/page-list';
   import SiteSettingModal from './SiteSettingModal.svelte';
   import UserMenu from './UserMenu.svelte';
-  import type { PageData, SectionData } from '$lib/components/page-list/types';
+  import type { CategoryData, PageData } from '$lib/components/page-list/types';
 
   let openSiteSettingModal = false;
   $: openSiteSettingModal = $page.url.hash.startsWith('#/settings/site');
@@ -39,7 +39,7 @@
         }
 
         # NOTE: maxDepth = 2
-        sections {
+        categories {
           id
           name
           order
@@ -51,7 +51,7 @@
             order
             __typename
 
-            section {
+            category {
               id
             }
 
@@ -70,7 +70,7 @@
               order
               __typename
 
-              section {
+              category {
                 id
               }
 
@@ -91,9 +91,9 @@
     }
   `);
 
-  const createSection = graphql(`
-    mutation SiteLayout_CreateSection_Mutation($input: CreateSectionInput!) {
-      createSection(input: $input) {
+  const createCategory = graphql(`
+    mutation SiteLayout_CreateCategory_Mutation($input: CreateCategoryInput!) {
+      createCategory(input: $input) {
         id
         name
         order
@@ -118,9 +118,9 @@
     }
   `);
 
-  const updateSectionPosition = graphql(`
-    mutation SiteLayout_UpdateSectionPosition_Mutation($input: UpdateSectionPositionInput!) {
-      updateSectionPosition(input: $input) {
+  const updateCategoryPosition = graphql(`
+    mutation SiteLayout_UpdateCategoryPosition_Mutation($input: UpdateCategoryPositionInput!) {
+      updateCategoryPosition(input: $input) {
         id
         order
       }
@@ -156,18 +156,18 @@
     }
   });
 
-  async function onCreatePage(parent: SectionData | PageData) {
+  async function onCreatePage(parent: CategoryData | PageData) {
     const createPageInput: Parameters<typeof createPage>[0] = {
       siteId: $query.site.id,
-      sectionId: '',
+      categoryId: '',
       parentId: '',
     };
 
-    if (parent.__typename === 'Section') {
-      createPageInput.sectionId = parent.id;
+    if (parent.__typename === 'Category') {
+      createPageInput.categoryId = parent.id;
       createPageInput.parentId = null;
     } else {
-      createPageInput.sectionId = parent.section.id;
+      createPageInput.categoryId = parent.category.id;
       createPageInput.parentId = parent.id;
     }
 
@@ -177,14 +177,14 @@
   }
 
   async function onDropPage(target: {
-    sectionId: string;
+    categoryId: string;
     pageId: string;
     parentId: string | null;
     previousOrder?: string;
     nextOrder?: string;
   }) {
     await updatePagePosition({
-      sectionId: target.sectionId,
+      categoryId: target.categoryId,
       pageId: target.pageId,
       parentId: target.parentId,
       lower: target.previousOrder,
@@ -320,18 +320,18 @@
         <div role="tree">
           <PageList
             getPageUrl={(page) => `/${$query.site.id}/${page.id}`}
-            items={$query.site.sections}
+            items={$query.site.categories}
             onCreate={onCreatePage}
-            onCreateSection={async () => {
-              await createSection({
+            onCreateCategory={async () => {
+              await createCategory({
                 siteId: $query.site.id,
-                lower: $query.site.sections.at(-1)?.order,
+                lower: $query.site.categories.at(-1)?.order,
               });
             }}
             onDrop={onDropPage}
-            onDropSection={async (target) => {
-              await updateSectionPosition({
-                sectionId: target.sectionId,
+            onDropCategory={async (target) => {
+              await updateCategoryPosition({
+                categoryId: target.categoryId,
                 lower: target.previousOrder,
                 upper: target.nextOrder,
               });

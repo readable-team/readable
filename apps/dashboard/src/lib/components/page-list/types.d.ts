@@ -1,5 +1,5 @@
-export type SectionData = {
-  __typename: 'Section';
+export type CategoryData = {
+  __typename: 'Category';
   id: string;
   name: string;
   order: string;
@@ -9,7 +9,7 @@ export type SectionData = {
 export type PageData = {
   __typename: 'Page';
   id: string;
-  section: {
+  category: {
     id: string;
   };
   order: string;
@@ -29,5 +29,5 @@ export type PageData = {
 export type VirtualRootPageData = {
   __typename: 'VirtualRootPage';
   id: null;
-  sections: SectionData[];
+  categories: CategoryData[];
 };

@@ -10,6 +10,7 @@ import { prosemirrorToYDoc, yXmlFragmentToProseMirrorRootNode } from 'y-prosemir
 import * as Y from 'yjs';
 import { builder } from '@/builder';
 import {
+  Categories,
   db,
   first,
   firstOrThrow,
@@ -19,24 +20,23 @@ import {
   PageContentStates,
   PageContentUpdates,
   Pages,
-  Sections,
 } from '@/db';
-import { PageContentSyncKind, PageState, SectionState } from '@/enums';
+import { CategoryState, PageContentSyncKind, PageState } from '@/enums';
 import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
-import { assertPagePermission, assertSectionPermission, assertSitePermission } from '@/utils/permissions';
+import { assertCategoryPermission, assertPagePermission, assertSitePermission } from '@/utils/permissions';
 import {
+  Category,
+  ICategory,
   IPage,
-  ISection,
   Page,
   PageContentContributor,
   PageContentSnapshot,
   PageContentState,
+  PublicCategory,
   PublicPage,
   PublicPageContent,
-  PublicSection,
-  Section,
   Site,
   User,
 } from './objects';
@@ -45,62 +45,66 @@ import {
  * * Types
  */
 
-ISection.implement({
+ICategory.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
 
-    order: t.string({ resolve: (section) => decoder.decode(section.order) }),
+    order: t.string({ resolve: (category) => decoder.decode(category.order) }),
   }),
 });
 
-Section.implement({
-  interfaces: [ISection],
+Category.implement({
+  interfaces: [ICategory],
   fields: (t) => ({
     pages: t.field({
       type: [Page],
-      resolve: async (section, _, ctx) => {
+      resolve: async (category, _, ctx) => {
         const loader = ctx.loader({
-          name: 'Pages(sectionId).ne(DELETED).many',
+          name: 'Pages(categoryId).ne(DELETED).many',
           many: true,
-          load: async (sectionIds: string[]) => {
+          load: async (categoryIds: string[]) => {
             return await db
               .select()
               .from(Pages)
               .where(
-                and(inArray(Pages.sectionId, sectionIds), ne(Pages.state, PageState.DELETED), isNull(Pages.parentId)),
+                and(inArray(Pages.categoryId, categoryIds), ne(Pages.state, PageState.DELETED), isNull(Pages.parentId)),
               );
           },
-          key: (row) => row.sectionId,
+          key: (row) => row.categoryId,
         });
 
-        return await loader.load(section.id);
+        return await loader.load(category.id);
       },
     }),
   }),
 });
 
-PublicSection.implement({
-  interfaces: [ISection],
+PublicCategory.implement({
+  interfaces: [ICategory],
   fields: (t) => ({
     pages: t.field({
       type: [PublicPage],
-      resolve: async (section, _, ctx) => {
+      resolve: async (category, _, ctx) => {
         const loader = ctx.loader({
-          name: 'Pages(sectionId).eq(PUBLISHED).many',
+          name: 'Pages(categoryId).eq(PUBLISHED).many',
           many: true,
-          load: async (sectionIds: string[]) => {
+          load: async (categoryIds: string[]) => {
             return await db
               .select()
               .from(Pages)
               .where(
-                and(inArray(Pages.sectionId, sectionIds), eq(Pages.state, PageState.PUBLISHED), isNull(Pages.parentId)),
+                and(
+                  inArray(Pages.categoryId, categoryIds),
+                  eq(Pages.state, PageState.PUBLISHED),
+                  isNull(Pages.parentId),
+                ),
               );
           },
-          key: (row) => row.sectionId,
+          key: (row) => row.categoryId,
         });
 
-        return await loader.load(section.id);
+        return await loader.load(category.id);
       },
     }),
   }),
@@ -114,7 +118,7 @@ IPage.implement({
 
     order: t.string({ resolve: (page) => decoder.decode(page.order) }),
 
-    section: t.field({ type: Section, resolve: (page) => page.sectionId }),
+    category: t.field({ type: Category, resolve: (page) => page.categoryId }),
   }),
 });
 
@@ -356,8 +360,8 @@ builder.queryFields((t) => ({
  */
 
 builder.mutationFields((t) => ({
-  createSection: t.withAuth({ session: true }).fieldWithInput({
-    type: Section,
+  createCategory: t.withAuth({ session: true }).fieldWithInput({
+    type: Category,
     input: { siteId: t.input.id(), lower: t.input.id({ required: false }), upper: t.input.string({ required: false }) },
     resolve: async (_, { input }, ctx) => {
       await assertSitePermission({
@@ -365,11 +369,11 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
       });
 
-      const section = await db
-        .insert(Sections)
+      const category = await db
+        .insert(Categories)
         .values({
           siteId: input.siteId,
-          name: '',
+          name: '새 카테고리',
           order: encoder.encode(generateJitteredKeyBetween(input.lower ?? null, input.upper ?? null)),
         })
         .returning()
@@ -377,87 +381,87 @@ builder.mutationFields((t) => ({
 
       pubsub.publish('site:update', input.siteId, { scope: 'site' });
 
-      return section;
+      return category;
     },
   }),
 
-  updateSection: t.withAuth({ session: true }).fieldWithInput({
-    type: Section,
-    input: { sectionId: t.input.id(), name: t.input.string() },
+  updateCategory: t.withAuth({ session: true }).fieldWithInput({
+    type: Category,
+    input: { categoryId: t.input.id(), name: t.input.string() },
     resolve: async (_, { input }, ctx) => {
-      await assertSectionPermission({
-        sectionId: input.sectionId,
+      await assertCategoryPermission({
+        categoryId: input.categoryId,
         userId: ctx.session.userId,
       });
 
-      const section = await db
-        .update(Sections)
+      const category = await db
+        .update(Categories)
         .set({ name: input.name })
-        .where(eq(Sections.id, input.sectionId))
+        .where(eq(Categories.id, input.categoryId))
         .returning()
         .then(firstOrThrow);
 
-      pubsub.publish('site:update', section.siteId, { scope: 'site' });
+      pubsub.publish('site:update', category.siteId, { scope: 'site' });
 
-      return section;
+      return category;
     },
   }),
 
-  updateSectionPosition: t.withAuth({ session: true }).fieldWithInput({
-    type: Section,
+  updateCategoryPosition: t.withAuth({ session: true }).fieldWithInput({
+    type: Category,
     input: {
-      sectionId: t.input.string(),
+      categoryId: t.input.string(),
       lower: t.input.string({ required: false }),
       upper: t.input.string({ required: false }),
     },
     resolve: async (_, { input }, ctx) => {
-      await assertSectionPermission({
-        sectionId: input.sectionId,
+      await assertCategoryPermission({
+        categoryId: input.categoryId,
         userId: ctx.session.userId,
       });
 
-      const section = await db
-        .update(Sections)
+      const category = await db
+        .update(Categories)
         .set({ order: encoder.encode(generateJitteredKeyBetween(input.lower ?? null, input.upper ?? null)) })
-        .where(eq(Sections.id, input.sectionId))
+        .where(eq(Categories.id, input.categoryId))
         .returning()
         .then(firstOrThrow);
 
-      pubsub.publish('site:update', section.siteId, { scope: 'site' });
+      pubsub.publish('site:update', category.siteId, { scope: 'site' });
 
-      return section;
+      return category;
     },
   }),
 
-  deleteSection: t.withAuth({ session: true }).fieldWithInput({
-    type: Section,
-    input: { sectionId: t.input.id() },
+  deleteCategory: t.withAuth({ session: true }).fieldWithInput({
+    type: Category,
+    input: { categoryId: t.input.id() },
     resolve: async (_, { input }, ctx) => {
-      await assertSectionPermission({
-        sectionId: input.sectionId,
+      await assertCategoryPermission({
+        categoryId: input.categoryId,
         userId: ctx.session.userId,
       });
 
-      const section = await db.transaction(async (tx) => {
-        await tx.update(Pages).set({ state: PageState.DELETED }).where(eq(Pages.sectionId, input.sectionId));
+      const category = await db.transaction(async (tx) => {
+        await tx.update(Pages).set({ state: PageState.DELETED }).where(eq(Pages.categoryId, input.categoryId));
 
         return await tx
-          .update(Sections)
-          .set({ state: SectionState.DELETED })
-          .where(eq(Sections.id, input.sectionId))
+          .update(Categories)
+          .set({ state: CategoryState.DELETED })
+          .where(eq(Categories.id, input.categoryId))
           .returning()
           .then(firstOrThrow);
       });
 
-      pubsub.publish('site:update', section.siteId, { scope: 'site' });
+      pubsub.publish('site:update', category.siteId, { scope: 'site' });
 
-      return section;
+      return category;
     },
   }),
 
   createPage: t.withAuth({ session: true }).fieldWithInput({
     type: Page,
-    input: { siteId: t.input.id(), parentId: t.input.id({ required: false }), sectionId: t.input.id() },
+    input: { siteId: t.input.id(), parentId: t.input.id({ required: false }), categoryId: t.input.id() },
     resolve: async (_, { input }, ctx) => {
       await assertSitePermission({
         siteId: input.siteId,
@@ -478,7 +482,7 @@ builder.mutationFields((t) => ({
         .where(
           and(
             eq(Pages.siteId, input.siteId),
-            eq(Pages.sectionId, input.sectionId),
+            eq(Pages.categoryId, input.categoryId),
             input.parentId ? eq(Pages.parentId, input.parentId) : isNull(Pages.parentId),
           ),
         )
@@ -492,7 +496,7 @@ builder.mutationFields((t) => ({
           .values({
             siteId: input.siteId,
             parentId: input.parentId,
-            sectionId: input.sectionId,
+            categoryId: input.categoryId,
             slug: createPageSlug(),
             order: encoder.encode(generateJitteredKeyBetween(last ? decoder.decode(last.order) : null, null)),
             state: 'DRAFT',
@@ -578,7 +582,7 @@ builder.mutationFields((t) => ({
     type: Page,
     input: {
       pageId: t.input.string(),
-      sectionId: t.input.string(),
+      categoryId: t.input.string(),
       parentId: t.input.string({ required: false }),
       lower: t.input.string({ required: false }),
       upper: t.input.string({ required: false }),
@@ -593,7 +597,7 @@ builder.mutationFields((t) => ({
         .update(Pages)
         .set({
           order: encoder.encode(generateJitteredKeyBetween(input.lower ?? null, input.upper ?? null)),
-          sectionId: input.sectionId,
+          categoryId: input.categoryId,
           parentId: input.parentId ?? null,
         })
         .where(eq(Pages.id, input.pageId))
@@ -831,7 +835,7 @@ builder.mutationFields((t) => ({
           .insert(Pages)
           .values({
             siteId: page.siteId,
-            sectionId: page.sectionId,
+            categoryId: page.categoryId,
             parentId: page.parentId,
             slug: createPageSlug(),
             order: encoder.encode(generateJitteredKeyBetween(decoder.decode(page.order), nextPageOrder)),

@@ -8,6 +8,27 @@ import { bytea, datetime, jsonb } from './types';
 import type { JSONContent } from '@tiptap/core';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 
+export const Categories = pgTable(
+  'categories',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId('SEC')),
+    siteId: text('site_id')
+      .notNull()
+      .references(() => Sites.id),
+    name: text('name').notNull(),
+    state: E._CategoryState('state').notNull().default('ACTIVE'),
+    order: bytea('order').notNull(),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    siteIdOrderUniq: unique().on(t.siteId, t.order),
+  }),
+);
+
 export const Embeds = pgTable('embeds', {
   id: text('id')
     .primaryKey()
@@ -63,9 +84,9 @@ export const Pages = pgTable(
     siteId: text('site_id')
       .notNull()
       .references(() => Sites.id),
-    sectionId: text('section_id')
+    categoryId: text('category_id')
       .notNull()
-      .references(() => Sections.id),
+      .references(() => Categories.id),
     parentId: text('parent_id').references((): AnyPgColumn => Pages.id),
     slug: text('slug').notNull(),
     state: E._PageState('state').notNull(),
@@ -195,27 +216,6 @@ export const PageContentUpdates = pgTable(
   },
   (t) => ({
     pageIdSeqIdx: index().on(t.pageId, t.seq),
-  }),
-);
-
-export const Sections = pgTable(
-  'sections',
-  {
-    id: text('id')
-      .primaryKey()
-      .$defaultFn(() => createDbId('SEC')),
-    siteId: text('site_id')
-      .notNull()
-      .references(() => Sites.id),
-    name: text('name').notNull(),
-    state: E._SectionState('state').notNull().default('ACTIVE'),
-    order: bytea('order').notNull(),
-    createdAt: datetime('created_at')
-      .notNull()
-      .default(sql`now()`),
-  },
-  (t) => ({
-    siteIdOrderUniq: unique().on(t.siteId, t.order),
   }),
 );
 

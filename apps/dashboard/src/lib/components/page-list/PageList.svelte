@@ -5,10 +5,10 @@
   import PlusIcon from '~icons/lucide/plus';
   import { maxDepth } from './const';
   import PageItem from './PageItem.svelte';
-  import type { PageData, SectionData, VirtualRootPageData } from './types';
+  import type { CategoryData, PageData, VirtualRootPageData } from './types';
 
   type DraggingState = {
-    item: SectionData | PageData;
+    item: CategoryData | PageData;
     elem: HTMLElement;
     ghost: HTMLElement;
     event: PointerEvent;
@@ -24,30 +24,30 @@
   };
 
   export let depth = 0;
-  export let items: (SectionData | PageData)[] = [];
+  export let items: (CategoryData | PageData)[] = [];
   export let openState: Record<string, boolean> = {};
-  export let parent: PageData | SectionData | null = null;
+  export let parent: PageData | CategoryData | null = null;
   export let onDrop: (target: {
     pageId: string;
-    sectionId: string;
+    categoryId: string;
     parentId: string | null;
     previousOrder?: string;
     nextOrder?: string;
   }) => Promise<boolean>;
-  export let onDropSection: (target: {
-    sectionId: string;
+  export let onDropCategory: (target: {
+    categoryId: string;
     previousOrder?: string;
     nextOrder?: string;
   }) => Promise<void>;
-  export let onCancel: ((item: SectionData | PageData) => void) | undefined = undefined;
-  export let onCreate: (parent: SectionData | PageData) => Promise<void>;
-  export let onCreateSection: (() => Promise<void>) | undefined;
+  export let onCancel: ((item: CategoryData | PageData) => void) | undefined = undefined;
+  export let onCreate: (parent: CategoryData | PageData) => Promise<void>;
+  export let onCreateCategory: (() => Promise<void>) | undefined;
   export let getPageUrl: (page: PageData) => string;
   export let indicatorElem: HTMLElement | null = null;
-  export let nodeMap = new Map<HTMLElement, (SectionData | PageData | VirtualRootPageData) & { depth: number }>();
+  export let nodeMap = new Map<HTMLElement, (CategoryData | PageData | VirtualRootPageData) & { depth: number }>();
   export let registerNode = (
     node: HTMLElement | undefined,
-    item: (SectionData | PageData | VirtualRootPageData) & { depth: number },
+    item: (CategoryData | PageData | VirtualRootPageData) & { depth: number },
   ) => {
     if (!node) {
       return;
@@ -61,7 +61,7 @@
   $: if (parent) {
     registerNode(listElem, { ...parent, depth });
   } else {
-    registerNode(listElem, { __typename: 'VirtualRootPage', id: null, sections: items as SectionData[], depth });
+    registerNode(listElem, { __typename: 'VirtualRootPage', id: null, categories: items as CategoryData[], depth });
   }
 
   function createGhost(draggingItem: HTMLElement) {
@@ -109,8 +109,8 @@
     );
   }
 
-  function findDeepestDepth(item: SectionData | PageData, depth = 0): number {
-    const children = item.__typename === 'Section' ? item.pages : item.children;
+  function findDeepestDepth(item: CategoryData | PageData, depth = 0): number {
+    const children = item.__typename === 'Category' ? item.pages : item.children;
 
     if (!children || children.length === 0) {
       return depth;
@@ -169,7 +169,7 @@
     }
   }
 
-  const onPointerDown = (event: PointerEvent, item: SectionData | PageData) => {
+  const onPointerDown = (event: PointerEvent, item: CategoryData | PageData) => {
     const draggingItemElem = (event.target as HTMLElement).closest('.dnd-item') as HTMLElement;
     const pointerTargetList = draggingItemElem?.closest('.dnd-list') as HTMLElement;
 
@@ -207,15 +207,15 @@
         if (dropTarget.targetElem && dragging.elem !== dropTarget.targetElem) {
           // selection indicator: targetElem이 있으면 해당 아이템의 children으로 들어감
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const targetItem = nodeMap.get(dropTarget.targetElem)! as SectionData | PageData;
+          const targetItem = nodeMap.get(dropTarget.targetElem)! as CategoryData | PageData;
 
-          const children = targetItem.__typename === 'Section' ? targetItem.pages : targetItem.children;
-          const sectionId = targetItem.__typename === 'Section' ? targetItem.id : targetItem.section.id;
-          const parentId = targetItem.__typename === 'Section' ? null : targetItem.id;
+          const children = targetItem.__typename === 'Category' ? targetItem.pages : targetItem.children;
+          const categoryId = targetItem.__typename === 'Category' ? targetItem.id : targetItem.category.id;
+          const parentId = targetItem.__typename === 'Category' ? null : targetItem.id;
 
           await onDrop({
             pageId: dragging.item.id,
-            sectionId,
+            categoryId,
             parentId,
             // 맨 앞에 추가
             nextOrder: children ? children[0]?.order : undefined,
@@ -234,8 +234,8 @@
 
           const children =
             targetItem.__typename === 'VirtualRootPage'
-              ? targetItem.sections
-              : targetItem.__typename === 'Section'
+              ? targetItem.categories
+              : targetItem.__typename === 'Category'
                 ? targetItem.pages
                 : targetItem.children;
 
@@ -253,19 +253,19 @@
 
           if (targetItem.__typename === 'VirtualRootPage') {
             // 섹션 옮기기
-            await onDropSection({
-              sectionId: dragging.item.id,
+            await onDropCategory({
+              categoryId: dragging.item.id,
               nextOrder,
               previousOrder,
             });
           } else {
             // 페이지 옮기기
-            const sectionId = targetItem.__typename === 'Section' ? targetItem.id : targetItem.section.id;
-            const parentId = targetItem.__typename === 'Section' ? null : targetItem.id;
+            const categoryId = targetItem.__typename === 'Category' ? targetItem.id : targetItem.category.id;
+            const parentId = targetItem.__typename === 'Category' ? null : targetItem.id;
 
             await onDrop({
               pageId: dragging.item.id,
-              sectionId,
+              categoryId,
               parentId,
               previousOrder,
               nextOrder,
@@ -386,13 +386,13 @@
     const isMaxDepthExceeded = targetListDepth + draggingItemMaxDepth > maxDepth;
 
     // 섹션은 root에만 있을 수 있음
-    const isSectionOnNonRoot = dragging.item.__typename === 'Section' && parentId !== null;
+    const isCategoryOnNonRoot = dragging.item.__typename === 'Category' && parentId !== null;
 
     // 페이지는 root에 있을 수 없음
     const isPageOnRoot = dragging.item.__typename === 'Page' && parentId === null;
 
     // invalid drop target
-    if (isMaxDepthExceeded || isSectionOnNonRoot || isPageOnRoot) {
+    if (isMaxDepthExceeded || isCategoryOnNonRoot || isPageOnRoot) {
       indicatorPositionDraft = null;
       targetElemDraft = null;
     }
@@ -435,9 +435,9 @@
     nodeMap,
     onCancel,
     onCreate,
-    onCreateSection,
+    onCreateCategory,
     onDrop,
-    onDropSection,
+    onDropCategory,
     onPointerDown,
     openState,
     registerNode,
@@ -513,7 +513,7 @@
     aria-selected="false"
     role="treeitem"
     type="button"
-    on:click={() => (parent ? onCreate(parent) : onCreateSection?.())}
+    on:click={() => (parent ? onCreate(parent) : onCreateCategory?.())}
   >
     <Icon icon={PlusIcon} size={16} />
     <span class={css({ fontStyle: 'italic' })}>

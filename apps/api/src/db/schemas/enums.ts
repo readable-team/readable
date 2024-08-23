@@ -5,8 +5,8 @@ function createPgEnum<T extends string>(enumName: string, obj: Record<string, T>
   return pgEnum(enumName, Object.values(obj) as [T, ...T[]]);
 }
 
+export const _CategoryState = createPgEnum('_category_state', E.CategoryState);
 export const _PageState = createPgEnum('_page_state', E.PageState);
-export const _SectionState = createPgEnum('_section_state', E.SectionState);
 export const _SingleSignOnProvider = createPgEnum('_single_sign_on_provider', E.SingleSignOnProvider);
 export const _SiteCustomDomainState = createPgEnum('_site_custom_domain_state', E.SiteCustomDomainState);
 export const _SiteState = createPgEnum('_site_state', E.SiteState);

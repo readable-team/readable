@@ -9,21 +9,21 @@
   import { maxDepth } from './const';
   import PageList from './PageList.svelte';
   import type { ComponentProps } from 'svelte';
-  import type { PageData, SectionData } from './types';
+  import type { CategoryData, PageData } from './types';
 
   type $$Props = {
     depth: number;
-    item: PageData | SectionData;
+    item: PageData | CategoryData;
     openState: Record<string, boolean>;
-    onPointerDown: (e: PointerEvent, item: PageData | SectionData) => void;
-    registerNode: (node: HTMLElement, item: (PageData | SectionData) & { depth: number }) => void;
+    onPointerDown: (e: PointerEvent, item: PageData | CategoryData) => void;
+    registerNode: (node: HTMLElement, item: (PageData | CategoryData) & { depth: number }) => void;
   } & Omit<ComponentProps<PageList>, 'depth' | 'items' | 'openState' | 'parent'>;
 
   export let depth: number;
-  export let item: PageData | SectionData;
+  export let item: PageData | CategoryData;
   export let openState: Record<string, boolean>;
-  export let onPointerDown: (e: PointerEvent, item: PageData | SectionData) => void;
-  export let registerNode: (node: HTMLElement, item: (PageData | SectionData) & { depth: number }) => void;
+  export let onPointerDown: (e: PointerEvent, item: PageData | CategoryData) => void;
+  export let registerNode: (node: HTMLElement, item: (PageData | CategoryData) & { depth: number }) => void;
   export let getPageUrl: (page: PageData) => string;
 
   let elem: HTMLElement;
@@ -41,7 +41,7 @@
     childrenListProps = {
       ...rest,
       depth: depth + 1,
-      items: item.__typename === 'Section' ? item.pages : (item.children ?? []),
+      items: item.__typename === 'Category' ? item.pages : (item.children ?? []),
       parent: item,
     };
   }

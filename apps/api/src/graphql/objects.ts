@@ -37,10 +37,11 @@ const createInterfaceRef = <T extends TableConfig>(name: string, table: TableWit
   });
 };
 
+export const ICategory = createInterfaceRef('ICategory', T.Categories);
 export const IPage = createInterfaceRef('IPage', T.Pages);
-export const ISection = createInterfaceRef('ISection', T.Sections);
 export const ISite = createInterfaceRef('ISite', T.Sites);
 
+export const Category = createObjectRef('Category', T.Categories);
 export const Embed = createObjectRef('Embed', T.Embeds);
 export const File = createObjectRef('File', T.Files);
 export const Image = createObjectRef('Image', T.Images);
@@ -48,7 +49,6 @@ export const Page = createObjectRef('Page', T.Pages);
 export const PageContentContributor = createObjectRef('PageContentContributor', T.PageContentContributors);
 export const PageContentSnapshot = createObjectRef('PageContentSnapshot', T.PageContentSnapshots);
 export const PageContentState = createObjectRef('PageContentState', T.PageContentStates);
-export const Section = createObjectRef('Section', T.Sections);
 export const Site = createObjectRef('Site', T.Sites);
 export const SiteCustomDomain = createObjectRef('SiteCustomDomain', T.SiteCustomDomains);
 export const Team = createObjectRef('Team', T.Teams);
@@ -56,8 +56,8 @@ export const TeamMember = createObjectRef('TeamMember', T.TeamMembers);
 export const TeamMemberInvitation = createObjectRef('TeamMemberInvitation', T.TeamMemberInvitations);
 export const User = createObjectRef('User', T.Users);
 
+export const PublicCategory = createObjectRef('PublicCategory', T.Categories);
 export const PublicPage = createObjectRef('PublicPage', T.Pages);
-export const PublicSection = createObjectRef('PublicSection', T.Sections);
 export const PublicSite = createObjectRef('PublicSite', T.Sites);
 export const PublicPageContent = createObjectRef('PublicPageContent', T.PageContents);
 

@@ -15,7 +15,7 @@
         }
 
         # NOTE: maxDepth = 2
-        sections {
+        categories {
           id
           name
           order
@@ -71,11 +71,11 @@ name:
 <br />
 pages:
 <ul>
-  {#each $query.publicSite.sections as section (section.id)}
-    <li>{section.name}</li>
-    {#if section.pages}
+  {#each $query.publicSite.categories as category (category.id)}
+    <li>{category.name}</li>
+    {#if category.pages}
       <ul>
-        {#each section.pages as child (child.id)}
+        {#each category.pages as child (child.id)}
           <li style="margin-left: 1rem;">
             <a href={pageUrl(child)}>{child.content.title}</a>
           </li>

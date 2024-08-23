@@ -1,5 +1,5 @@
 import { and, eq } from 'drizzle-orm';
-import { db, first, Pages, Sections, Sites, TeamMembers, Teams } from '@/db';
+import { Categories, db, first, Pages, Sites, TeamMembers, Teams } from '@/db';
 import { SiteState, TeamMemberRole, TeamState } from '@/enums';
 import { ApiError } from '@/errors';
 
@@ -77,17 +77,17 @@ export const assertSitePermission = async ({
   }
 };
 
-type AssertSectionPermissionParams = {
-  sectionId: string;
+type AssertCategoryPermissionParams = {
+  categoryId: string;
   userId?: string;
   role?: TeamMemberRole;
 };
 
-export const assertSectionPermission = async ({
-  sectionId,
+export const assertCategoryPermission = async ({
+  categoryId,
   userId,
   role = TeamMemberRole.MEMBER,
-}: AssertSectionPermissionParams) => {
+}: AssertCategoryPermissionParams) => {
   if (!userId) {
     throw new ApiError({ code: 'unauthorized' });
   }
@@ -97,10 +97,10 @@ export const assertSectionPermission = async ({
     .from(TeamMembers)
     .innerJoin(Teams, eq(TeamMembers.teamId, Teams.id))
     .innerJoin(Sites, eq(Teams.id, Sites.teamId))
-    .innerJoin(Sections, eq(Sections.siteId, Sites.id))
+    .innerJoin(Categories, eq(Categories.siteId, Sites.id))
     .where(
       and(
-        eq(Sections.id, sectionId),
+        eq(Categories.id, categoryId),
         eq(TeamMembers.userId, userId),
         eq(Teams.state, TeamState.ACTIVE),
         eq(Sites.state, SiteState.ACTIVE),

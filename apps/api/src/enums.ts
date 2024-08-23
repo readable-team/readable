@@ -1,3 +1,9 @@
+export type CategoryState = keyof typeof CategoryState;
+export const CategoryState = {
+  ACTIVE: 'ACTIVE',
+  DELETED: 'DELETED',
+} as const;
+
 export type PageContentSyncKind = keyof typeof PageContentSyncKind;
 export const PageContentSyncKind = {
   PING: 'PING',
@@ -18,12 +24,6 @@ export const PageState = {
 export type SingleSignOnProvider = keyof typeof SingleSignOnProvider;
 export const SingleSignOnProvider = {
   GOOGLE: 'GOOGLE',
-} as const;
-
-export type SectionState = keyof typeof SectionState;
-export const SectionState = {
-  ACTIVE: 'ACTIVE',
-  DELETED: 'DELETED',
 } as const;
 
 export type SiteCustomDomainState = keyof typeof SiteCustomDomainState;
