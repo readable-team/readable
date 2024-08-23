@@ -7,6 +7,8 @@
   import DotIcon from '~icons/lucide/dot';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import { page } from '$app/stores';
+  import { graphql } from '$graphql';
+  import { invokeAlert } from '$lib/components/invoke-alert';
   import { maxDepth } from './const';
   import PageList from './PageList.svelte';
   import type { ComponentProps } from 'svelte';
@@ -46,6 +48,30 @@
       parent: item,
     };
   }
+
+  const deleteCategory = graphql(`
+    mutation PageTree_DeleteCategory_Mutation($input: DeleteCategoryInput!) {
+      deleteCategory(input: $input) {
+        id
+      }
+    }
+  `);
+
+  const deletePage = graphql(`
+    mutation PageTree_DeletePage_Mutation($input: DeletePageInput!) {
+      deletePage(input: $input) {
+        id
+      }
+    }
+  `);
+
+  const duplicatePage = graphql(`
+    mutation PageTree_DuplicatePage_Mutation($input: DuplicatePageInput!) {
+      duplicatePage(input: $input) {
+        id
+      }
+    }
+  `);
 </script>
 
 <li
@@ -174,10 +200,19 @@
             >
               <Icon icon={EllipsisIcon} size={14} />
             </button>
-            <MenuItem on:click={() => alert('TODO')}>
+            <MenuItem on:click={() => duplicatePage({ pageId: item.id })}>
               <span>복제</span>
             </MenuItem>
-            <MenuItem variant="danger" on:click={() => alert('TODO')}>
+            <MenuItem
+              variant="danger"
+              on:click={() =>
+                invokeAlert({
+                  title: '페이지 삭제',
+                  content: '페이지를 삭제하시겠습니까?',
+                  actionText: '삭제',
+                  action: () => deletePage({ pageId: item.id }),
+                })}
+            >
               <span>삭제</span>
             </MenuItem>
           </Menu>
@@ -229,7 +264,16 @@
           <MenuItem on:click={() => alert('TODO')}>
             <span>이름 변경</span>
           </MenuItem>
-          <MenuItem variant="danger" on:click={() => alert('TODO')}>
+          <MenuItem
+            variant="danger"
+            on:click={() =>
+              invokeAlert({
+                title: '카테고리 삭제',
+                content: '카테고리를 삭제하시겠습니까?',
+                actionText: '삭제',
+                action: () => deleteCategory({ categoryId: item.id }),
+              })}
+          >
             <span>삭제</span>
           </MenuItem>
         </Menu>
