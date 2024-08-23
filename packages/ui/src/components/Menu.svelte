@@ -11,6 +11,7 @@
   export let offset = 6;
   export let listStyle: SystemStyleObject | undefined = undefined;
   export let setFullWidth = false;
+  export let disableAutoUpdate = false;
 
   let buttonEl: HTMLButtonElement | undefined;
   let menuEl: HTMLUListElement | undefined;
@@ -18,6 +19,7 @@
   const { anchor, floating } = createFloatingActions({
     placement,
     offset,
+    disableAutoUpdate,
     onClickOutside: () => {
       open = false;
     },
@@ -73,7 +75,13 @@
 
 <svelte:window on:keydown={onKeydown} />
 
-<button bind:this={buttonEl} aria-expanded={open} type="button" on:click={() => (open = !open)} use:anchor>
+<button
+  bind:this={buttonEl}
+  aria-expanded={open}
+  type="button"
+  on:click|preventDefault={() => (open = !open)}
+  use:anchor
+>
   <slot name="button" {open} />
 </button>
 

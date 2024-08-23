@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon } from '@readable/ui/components';
+  import { Icon, Menu, MenuItem } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import DotIcon from '~icons/lucide/dot';
@@ -145,23 +145,43 @@
         >
           {item.content.title}
         </span>
-        <button
-          class={css({
+        <div
+          class={flex({
             display: 'none',
             _groupHover: {
-              display: 'block',
+              display: 'flex',
             },
-            borderRadius: '2px',
-            padding: '4px',
-            color: 'neutral.50',
-            _hover: {
-              backgroundColor: 'neutral.30',
-            },
+            alignItems: 'center',
+            justifyContent: 'center',
           })}
-          type="button"
         >
-          <Icon icon={EllipsisIcon} size={14} />
-        </button>
+          <Menu disableAutoUpdate placement="bottom-start">
+            <button
+              slot="button"
+              class={css({
+                display: 'none',
+                _groupHover: {
+                  display: 'block',
+                },
+                borderRadius: '2px',
+                padding: '4px',
+                color: 'neutral.50',
+                _hover: {
+                  backgroundColor: 'neutral.30',
+                },
+              })}
+              type="button"
+            >
+              <Icon icon={EllipsisIcon} size={14} />
+            </button>
+            <MenuItem on:click={() => alert('TODO')}>
+              <span>복제</span>
+            </MenuItem>
+            <MenuItem variant="danger" on:click={() => alert('TODO')}>
+              <span>삭제</span>
+            </MenuItem>
+          </Menu>
+        </div>
       </a>
     {:else}
       <!-- 섹션 (카테고리) -->
@@ -171,9 +191,48 @@
           paddingY: '4px',
           textStyle: '13b',
           color: 'text.secondary',
+          truncate: true,
+          flex: '1',
         })}
       >
         {item.name}
+      </div>
+      <div
+        class={flex({
+          display: 'none',
+          _groupHover: {
+            display: 'flex',
+          },
+          alignItems: 'center',
+          justifyContent: 'center',
+        })}
+      >
+        <Menu disableAutoUpdate placement="bottom-start">
+          <button
+            slot="button"
+            class={css({
+              display: 'none',
+              _groupHover: {
+                display: 'block',
+              },
+              borderRadius: '2px',
+              padding: '4px',
+              color: 'neutral.50',
+              _hover: {
+                backgroundColor: 'neutral.30',
+              },
+            })}
+            type="button"
+          >
+            <Icon icon={EllipsisIcon} size={14} />
+          </button>
+          <MenuItem on:click={() => alert('TODO')}>
+            <span>이름 변경</span>
+          </MenuItem>
+          <MenuItem variant="danger" on:click={() => alert('TODO')}>
+            <span>삭제</span>
+          </MenuItem>
+        </Menu>
       </div>
     {/if}
   </div>

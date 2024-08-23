@@ -13,6 +13,7 @@ type CreateFloatingActionsOptions = {
   offset?: number;
   arrow?: boolean;
   middleware?: Middleware[];
+  disableAutoUpdate?: boolean;
   onClickOutside?: () => void;
 };
 
@@ -102,8 +103,10 @@ export function createFloatingActions(options?: CreateFloatingActionsOptions): C
 
     await updatePosition();
 
-    cleanupAutoUpdate?.();
-    cleanupAutoUpdate = autoUpdate(referenceElement, floatingElement, updatePosition);
+    if (options?.disableAutoUpdate !== true) {
+      cleanupAutoUpdate?.();
+      cleanupAutoUpdate = autoUpdate(referenceElement, floatingElement, updatePosition);
+    }
 
     setTimeout(() => {
       window.addEventListener('click', clickListener);
