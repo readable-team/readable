@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { css, cva, cx } from '@readable/styled-system/css';
+  import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Chip, Icon } from '@readable/ui/components';
+  import { Icon } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
+  import DotIcon from '~icons/lucide/dot';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import { page } from '$app/stores';
   import { maxDepth } from './const';
@@ -50,7 +51,7 @@
 <li
   bind:this={elem}
   class="dnd-item"
-  aria-expanded={openState[item.id] ? 'true' : 'false'}
+  aria-expanded={openState[item.id] || item.__typename === 'Category' ? 'true' : 'false'}
   aria-selected={item.id === $page.params.pageId ? 'true' : 'false'}
   role="treeitem"
   on:pointerdown={(e) => onPointerDown(e, item)}
@@ -58,49 +59,62 @@
   <div
     class={cx(
       'dnd-item-body',
+      'group',
       flex({
         'alignItems': 'center',
         'borderRadius': '6px',
-        'height': '36px',
+        'height': '30px',
+        'paddingX': '4px',
+        'gap': '2px',
         '_hover': {
-          backgroundColor: 'surface.secondary',
+          backgroundColor: 'neutral.20',
         },
         '&:has(a[aria-selected=true])': {
-          backgroundColor: 'neutral.30',
+          backgroundColor: 'neutral.20',
+          color: 'text.primary',
         },
+        'paddingLeft': depth === 2 ? '20px' : '4px',
       }),
     )}
   >
-    {#if depth < maxDepth}
-      <button
-        class={css({
-          color: 'neutral.70',
-          borderRadius: '2px',
-          _hover: {
-            backgroundColor: 'neutral.30',
-          },
-        })}
-        aria-expanded={openState[item.id] ? 'true' : 'false'}
-        type="button"
-        on:click={() => {
-          openState[item.id] = !openState[item.id];
-        }}
-      >
-        <Icon icon={openState[item.id] ? ChevronDownIcon : ChevronRightIcon} size={16} />
-      </button>
+    {#if item.__typename !== 'Category'}
+      {#if depth < maxDepth}
+        <button
+          class={css({
+            color: 'neutral.50',
+            borderRadius: '2px',
+            padding: '4px',
+            _hover: {
+              backgroundColor: 'neutral.30',
+            },
+          })}
+          aria-expanded={openState[item.id] ? 'true' : 'false'}
+          type="button"
+          on:click={() => {
+            openState[item.id] = !openState[item.id];
+          }}
+        >
+          <Icon icon={openState[item.id] ? ChevronDownIcon : ChevronRightIcon} size={14} />
+        </button>
+      {:else}
+        <div class={css({ color: 'neutral.50', padding: '4px' })}>
+          <Icon icon={DotIcon} size={14} />
+        </div>
+      {/if}
     {/if}
 
     {#if item.__typename === 'Page'}
       <a
         class={flex({
           alignItems: 'center',
-          gap: '6px',
+          gap: '4px',
           flex: '1',
-          paddingX: '6px',
           color: 'text.secondary',
           width: 'full',
-          height: '34px',
           truncate: true,
+          _selected: {
+            color: 'text.primary',
+          },
         })}
         aria-selected={item.id === $page.params.pageId ? 'true' : 'false'}
         draggable="false"
@@ -108,51 +122,63 @@
         role="tab"
       >
         {#if item.state === 'DRAFT'}
-          <Chip>초안</Chip>
+          <div
+            class={flex({
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingX: '4px',
+              backgroundColor: 'neutral.50',
+              color: 'neutral.0',
+              textStyle: '11b',
+              borderRadius: '3px',
+            })}
+          >
+            미발행
+          </div>
         {/if}
         <span
-          class={css(
-            cva({
-              base: {
-                truncate: true,
-                flex: '1',
-                textStyle: '15sb',
-              },
-              variants: {
-                root: {
-                  true: {
-                    color: 'text.primary',
-                  },
-                },
-              },
-            }).raw({ root: item.parent?.id === null }),
-          )}
+          class={css({
+            truncate: true,
+            flex: '1',
+            textStyle: '14m',
+          })}
         >
           {item.content.title}
         </span>
         <button
           class={css({
-            borderRadius: '6px',
+            display: 'none',
+            _groupHover: {
+              display: 'block',
+            },
+            borderRadius: '2px',
+            padding: '4px',
             color: 'neutral.50',
             _hover: {
-              color: 'neutral.60',
-              backgroundColor: 'neutral.40',
+              backgroundColor: 'neutral.30',
             },
           })}
           type="button"
         >
-          <Icon icon={EllipsisIcon} size={24} />
+          <Icon icon={EllipsisIcon} size={14} />
         </button>
       </a>
     {:else}
-      <!-- TODO -->
-      <div>
-        섹션명: {item.name}
+      <!-- 섹션 (카테고리) -->
+      <div
+        class={flex({
+          paddingX: '8px',
+          paddingY: '4px',
+          textStyle: '13b',
+          color: 'text.secondary',
+        })}
+      >
+        {item.name}
       </div>
     {/if}
   </div>
 
-  {#if openState[item.id] && depth < maxDepth}
+  {#if (openState[item.id] && depth < maxDepth) || item.__typename === 'Category'}
     <PageList {...childrenListProps} />
   {/if}
 </li>

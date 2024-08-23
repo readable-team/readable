@@ -1,9 +1,9 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { HorizontalDivider, Icon } from '@readable/ui/components';
+  import { Icon } from '@readable/ui/components';
   import { onMount } from 'svelte';
-  import HouseIcon from '~icons/lucide/house';
+  import EarthIcon from '~icons/lucide/earth';
   import SettingsIcon from '~icons/lucide/settings';
   import ReadableIcon from '~icons/rdbl/readable';
   import { goto } from '$app/navigation';
@@ -198,21 +198,16 @@
 
   const sidebarMenuItemStyle = flex({
     alignItems: 'center',
-    gap: '13px',
+    gap: '2px',
     flex: '1',
     borderRadius: '6px',
-    paddingX: '12px',
-    paddingY: '8px',
-    textStyle: '16m',
-    color: 'text.tertiary',
+    padding: '5px',
+    textStyle: '14m',
+    color: 'text.secondary',
     width: 'full',
-    height: '39px',
+    height: '30px',
     _hover: {
-      backgroundColor: 'surface.secondary', // TODO: 다시 지정 필요
-    },
-    _selected: {
-      backgroundColor: 'surface.secondary', // TODO: 다시 지정 필요
-      color: 'text.secondary',
+      backgroundColor: 'neutral.20',
     },
   });
 
@@ -275,49 +270,21 @@
       class={flex({
         flexDirection: 'column',
         flex: 'none',
-        paddingTop: '30px',
-        paddingX: '10px',
-        paddingBottom: '36px',
         backgroundColor: 'sidebar.surface',
-        width: '300px',
+        width: '240px',
+        borderRightWidth: '1px',
+        borderColor: 'border.secondary',
         overflowY: 'auto',
       })}
     >
-      <nav class={css({ marginTop: '24px', marginBottom: 'auto' })}>
-        <ul
-          class={flex({
-            flexDirection: 'column',
-            gap: '7px',
+      <nav class={flex({ flex: '1', flexDirection: 'column' })}>
+        <div
+          class={css({
+            flex: '1',
+            padding: '20px',
           })}
+          role="tree"
         >
-          <li>
-            <a
-              class={sidebarMenuItemStyle}
-              aria-selected={$page.url.pathname === `/${$query.site.id}/`}
-              href={`/${$query.site.id}`}
-              role="tab"
-            >
-              <Icon style={css.raw({ color: 'text.tertiary' })} icon={HouseIcon} size={20} />
-              <span>홈</span>
-            </a>
-          </li>
-          <li>
-            <a
-              class={sidebarMenuItemStyle}
-              data-sveltekit-preload-data="false"
-              href="#/settings/site"
-              role="tab"
-              type="button"
-            >
-              <Icon style={css.raw({ color: 'text.tertiary' })} icon={SettingsIcon} size={20} />
-              <span>설정</span>
-            </a>
-          </li>
-        </ul>
-
-        <HorizontalDivider style={css.raw({ marginTop: '24px', marginBottom: '28px', height: '2px' })} />
-
-        <div role="tree">
           <PageList
             getPageUrl={(page) => `/${$query.site.id}/${page.id}`}
             items={$query.site.categories}
@@ -338,35 +305,60 @@
             }}
           />
         </div>
+
+        <ul
+          class={flex({
+            padding: '20px',
+            flexDirection: 'column',
+            gap: '1px',
+          })}
+        >
+          <li>
+            <a
+              class={sidebarMenuItemStyle}
+              href={$query.site.url}
+              rel="noopener noreferrer"
+              target="_blank"
+              type="link"
+            >
+              <div class={css({ padding: '5px' })}>
+                <Icon style={css.raw({ color: 'neutral.50' })} icon={EarthIcon} size={14} />
+              </div>
+              <span>사이트 바로가기</span>
+            </a>
+          </li>
+          <li>
+            <a
+              class={sidebarMenuItemStyle}
+              data-sveltekit-preload-data="false"
+              href="#/settings/site"
+              role="tab"
+              type="button"
+            >
+              <div class={css({ padding: '5px' })}>
+                <Icon style={css.raw({ color: 'neutral.50' })} icon={SettingsIcon} size={14} />
+              </div>
+              <span>설정</span>
+            </a>
+          </li>
+        </ul>
       </nav>
     </aside>
 
     <div
       class={flex({
-        direction: 'column',
-        grow: 1,
-        paddingTop: '30px',
-        backgroundColor: 'sidebar.surface',
-        width: 'full',
-        truncate: true,
+        'direction': 'column',
+        'grow': 1,
+        'paddingTop': '28px',
+        'backgroundColor': 'surface.primary',
+        'overflowY': 'auto',
+
+        '&:has(.has-slash-menu)': {
+          overflowY: 'hidden',
+        },
       })}
     >
-      <div
-        class={flex({
-          'direction': 'column',
-          'grow': 1,
-          'borderTopLeftRadius': '[36px]',
-          'paddingTop': '28px',
-          'backgroundColor': 'surface.primary',
-          'overflowY': 'auto',
-
-          '&:has(.has-slash-menu)': {
-            overflowY: 'hidden',
-          },
-        })}
-      >
-        <slot />
-      </div>
+      <slot />
     </div>
   </div>
 </div>

@@ -2,6 +2,7 @@
   import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
+  import FolderPlusIcon from '~icons/lucide/folder-plus';
   import PlusIcon from '~icons/lucide/plus';
   import { maxDepth } from './const';
   import PageItem from './PageItem.svelte';
@@ -464,9 +465,10 @@
         display: 'flex',
         flexDirection: 'column',
         userSelect: 'none',
+        paddingTop: '1px',
+        gap: '1px',
       },
-      parent === null ? { gap: '32px' } : { marginLeft: '20px' },
-      depth === maxDepth && { borderLeftWidth: '2px', borderColor: 'border.tertiary', paddingLeft: '12px' },
+      parent === null ? { gap: '34px' } : {},
     ),
   )}
   role="group"
@@ -497,31 +499,57 @@
     {/each}
   {/if}
 
-  <button
-    class={flex({
-      align: 'center',
-      gap: '6px',
-      borderRadius: '6px',
-      paddingX: '8px',
-      textStyle: '16m',
-      color: 'text.tertiary',
-      height: '39px',
-      _hover: {
-        backgroundColor: 'surface.secondary',
-      },
-    })}
-    aria-selected="false"
-    role="treeitem"
-    type="button"
-    on:click={() => (parent ? onCreate(parent) : onCreateCategory?.())}
-  >
-    <Icon icon={PlusIcon} size={16} />
-    <span class={css({ fontStyle: 'italic' })}>
-      {#if parent === null}
-        섹션 추가
-      {:else}
-        페이지 추가
-      {/if}
-    </span>
-  </button>
+  {#if parent === null}
+    <button
+      class={flex({
+        align: 'center',
+        gap: '6px',
+        borderRadius: '6px',
+        borderWidth: '1px',
+        borderColor: 'border.secondary',
+        paddingX: '4px',
+        textStyle: '14m',
+        color: 'text.tertiary',
+        height: '30px',
+        paddingLeft: depth === 2 ? '20px' : '4px',
+        _hover: {
+          backgroundColor: 'neutral.20',
+        },
+      })}
+      aria-selected="false"
+      role="treeitem"
+      type="button"
+      on:click={() => onCreateCategory?.()}
+    >
+      <div class={css({ padding: '4px', color: 'neutral.50' })}>
+        <Icon icon={FolderPlusIcon} size={14} />
+      </div>
+      <span>카테고리 추가</span>
+    </button>
+  {:else}
+    <button
+      class={flex({
+        align: 'center',
+        gap: '6px',
+        borderRadius: '6px',
+        paddingX: '4px',
+        textStyle: '14m',
+        color: 'text.tertiary',
+        height: '30px',
+        paddingLeft: depth === 2 ? '20px' : '4px',
+        _hover: {
+          backgroundColor: 'neutral.20',
+        },
+      })}
+      aria-selected="false"
+      role="treeitem"
+      type="button"
+      on:click={() => onCreate(parent)}
+    >
+      <div class={css({ padding: '4px', color: 'neutral.50' })}>
+        <Icon icon={PlusIcon} size={14} />
+      </div>
+      <span>페이지 추가</span>
+    </button>
+  {/if}
 </ul>
