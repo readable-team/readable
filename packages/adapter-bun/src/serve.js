@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { getClientAddress } from '@readable/lib';
 
 /**
  * @typedef {Object} ServeParams
@@ -70,15 +71,7 @@ export const serve = async ({ Server, manifest, prerendered }) => {
 
       const response = await sveltekit.respond(effectiveRequest, {
         getClientAddress: () => {
-          const xff = request.headers.get('x-forwarded-for');
-          const hop = Number(process.env.HTTP_XFF_HOP) || 0;
-
-          if (xff && hop > 0) {
-            const addresses = xff.split(',');
-            return addresses.at(-hop)?.trim() ?? '';
-          }
-
-          return server.requestIP(request)?.address ?? '';
+          return getClientAddress(request, server);
         },
       });
 

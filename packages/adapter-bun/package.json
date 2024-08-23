@@ -13,6 +13,7 @@
     "lint:typecheck": "tsc"
   },
   "devDependencies": {
+    "@readable/lib": "workspace:*",
     "@readable/tsconfig": "workspace:*",
     "@sveltejs/kit": "^2.5.24",
     "@types/bun": "^1.1.6",

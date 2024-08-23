@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./dayjs": "./src/dayjs/index.ts",
+    "./svelte": "./src/svelte/index.ts",
     "./vite": {
       "types": "./src/vite/index.d.ts",
       "default": "./src/vite/index.js"
@@ -16,12 +17,16 @@
   },
   "dependencies": {
     "dayjs": "^1.11.13",
+    "ipaddr.js": "^2.2.0",
+    "pino": "^9.3.2",
+    "remeda": "^2.11.0",
     "svgo": "^3.3.2",
     "xmlbuilder2": "^3.1.1"
   },
   "devDependencies": {
     "@readable/tsconfig": "workspace:*",
     "@sveltejs/kit": "^2.5.24",
+    "@types/bun": "^1.1.6",
     "typescript": "^5.5.4"
   }
 }

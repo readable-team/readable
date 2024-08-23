@@ -1,4 +1,4 @@
-import { sitemap } from '@readable/lib';
+import { sitemap } from '@readable/lib/svelte';
 
 export const GET = async (event) => {
   return sitemap(event, ['/']);

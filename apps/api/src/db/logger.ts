@@ -1,4 +1,4 @@
-import { logger } from '@/logging';
+import { logger } from '@readable/lib';
 import type { Logger } from 'drizzle-orm/logger';
 
 export class DrizzleLogger implements Logger {
