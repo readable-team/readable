@@ -18,7 +18,7 @@
 
   const { anchor, floating, arrow } = createFloatingActions({
     placement,
-    offset: offset ?? 0,
+    offset: offset ?? 2,
     arrow: true,
   });
 </script>
@@ -30,38 +30,30 @@
 {#if enabled && ($hovered || keepShowing)}
   <div
     class={css({
-      zIndex: 'tooltip.body',
-      borderRadius: '8px',
-      maxWidth: '224px',
-      pointerEvents: 'none',
+      borderRadius: '4px',
+      paddingX: '12px',
+      paddingY: '8px',
+      textStyle: '12m',
+      textAlign: 'center',
+      backgroundColor: { base: 'gray.800', _dark: 'darkgray.500' },
+      color: 'white',
+      zIndex: '100',
+      maxWidth: '220px',
+      whiteSpace: 'pre-wrap',
+      wordBreak: 'break-all',
     })}
     role="tooltip"
     use:floating
     transition:scale={{ start: 0.9, duration: 200 }}
   >
+    <slot name="message">
+      {message}
+    </slot>
     <div
       class={css({
-        position: 'relative',
-        zIndex: 'tooltip.content',
-        borderRadius: '6px',
-        paddingX: '14px',
-        paddingY: '10px',
-        textStyle: '14sb',
-        color: 'white',
-        backgroundColor: 'neutral.100',
-      })}
-    >
-      <slot name="message">
-        {message}
-      </slot>
-    </div>
-    <div
-      class={css({
-        position: 'relative',
-        zIndex: 'tooltip.arrow',
-        borderRadius: '2px',
-        size: '16px',
-        backgroundColor: 'neutral.100',
+        borderTopLeftRadius: '2px',
+        size: '8px',
+        backgroundColor: { base: 'gray.800', _dark: 'darkgray.500' },
       })}
       use:arrow
     />
