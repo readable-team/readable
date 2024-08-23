@@ -21,7 +21,7 @@
       tabindex="-1"
       on:click={() => (open = false)}
       on:keypress={null}
-      transition:fade={{ duration: 150 }}
+      transition:fade|global={{ duration: 150 }}
     />
 
     <div
@@ -54,8 +54,8 @@
           containerStyle,
         )}
         use:scrollLock
-        in:fly={{ y: 10 }}
-        out:fade={{ duration: 150 }}
+        in:fly|global={{ y: 10 }}
+        out:fade|global={{ duration: 150 }}
       >
         <header>
           <h3
