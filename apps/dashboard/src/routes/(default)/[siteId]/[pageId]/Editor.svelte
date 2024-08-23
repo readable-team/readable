@@ -343,6 +343,7 @@
         'color': 'text.primary',
         'paddingBottom': '128px',
 
+        'minWidth': '720px',
         'width': 'full',
 
         'display': 'flex',
