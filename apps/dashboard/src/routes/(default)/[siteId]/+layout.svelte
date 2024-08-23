@@ -1,11 +1,11 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { HorizontalDivider, Icon, LogoPlaceholder } from '@readable/ui/components';
+  import { HorizontalDivider, Icon } from '@readable/ui/components';
   import { onMount } from 'svelte';
-  import ExternalLinkIcon from '~icons/lucide/external-link';
   import HouseIcon from '~icons/lucide/house';
   import SettingsIcon from '~icons/lucide/settings';
+  import ReadableIcon from '~icons/rdbl/readable';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
@@ -227,155 +227,146 @@
   });
 </script>
 
-<div class={flex({ height: 'screen' })}>
-  <aside
+<div class={flex({ flexDirection: 'column', height: 'screen' })}>
+  <header
     class={flex({
-      flexDirection: 'column',
-      flex: 'none',
-      paddingTop: '30px',
-      paddingX: '10px',
-      paddingBottom: '36px',
-      backgroundColor: 'sidebar.surface',
-      width: '300px',
-      overflowY: 'auto',
+      justifyContent: 'space-between',
+      height: '52px',
+      borderBottomWidth: '1px',
+      borderBottomColor: 'border.secondary',
+      paddingLeft: '20px',
+      paddingRight: '16px',
+      paddingY: '10px',
     })}
   >
     <div
-      class={css({
-        display: 'flex',
+      class={flex({
+        gap: '8px',
         alignItems: 'center',
-        gap: '10px',
-        borderRadius: '8px',
-        paddingX: '10px',
-        paddingY: '8px',
+        paddingX: '8px',
+        paddingY: '6px',
       })}
     >
+      <Icon icon={ReadableIcon} size={18} />
+      <svg fill="none" height="12" viewBox="0 0 5 12" width="5" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4.52876 0.102272L1.48189 11.4219H0.24929L3.29617 0.102272H4.52876Z" fill="#ECEDEE" />
+      </svg>
       {#if $query.site.logo}
         <Img
-          style={css.raw({ borderRadius: '8px', size: '36px' })}
+          style={css.raw({ borderRadius: 'full', size: '19px', borderWidth: '1px', borderColor: 'border.image' })}
           $image={$query.site.logo}
           alt={`${$query.site.name}의 로고`}
           size={48}
         />
-      {:else}
-        <LogoPlaceholder style={css.raw({ flex: 'none', borderRadius: '8px', size: '36px' })} />
       {/if}
-      <h1 class={css({ textStyle: '16b', truncate: true })}>
+      <h1 class={css({ textStyle: '14m' })}>
         {$query.site.name}
       </h1>
     </div>
-
-    <a
-      class={flex({
-        align: 'center',
-        justify: 'space-between',
-        marginTop: '14px',
-        borderWidth: '1px',
-        borderColor: 'border.secondary',
-        borderRadius: '10px',
-        paddingLeft: '22px',
-        paddingY: '14px',
-        paddingRight: '19px',
-        textStyle: '16m',
-        color: 'text.secondary',
-        backgroundColor: 'surface.primary',
-        truncate: true,
-      })}
-      href={$query.site.url}
-      rel="noopener noreferrer"
-      target="_blank"
-      type="link"
-    >
-      <span class={css({ truncate: true })}>{$query.site.url}</span>
-
-      <Icon style={css.raw({ color: 'text.tertiary' })} icon={ExternalLinkIcon} size={20} />
-    </a>
-
-    <nav class={css({ marginTop: '24px', marginBottom: 'auto' })}>
-      <ul
-        class={flex({
-          flexDirection: 'column',
-          gap: '7px',
-        })}
-      >
-        <li>
-          <a
-            class={sidebarMenuItemStyle}
-            aria-selected={$page.url.pathname === `/${$query.site.id}/`}
-            href={`/${$query.site.id}`}
-            role="tab"
-          >
-            <Icon style={css.raw({ color: 'text.tertiary' })} icon={HouseIcon} size={20} />
-            <span>홈</span>
-          </a>
-        </li>
-        <li>
-          <a
-            class={sidebarMenuItemStyle}
-            data-sveltekit-preload-data="false"
-            href="#/settings/site"
-            role="tab"
-            type="button"
-          >
-            <Icon style={css.raw({ color: 'text.tertiary' })} icon={SettingsIcon} size={20} />
-            <span>설정</span>
-          </a>
-        </li>
-      </ul>
-
-      <HorizontalDivider style={css.raw({ marginTop: '24px', marginBottom: '28px', height: '2px' })} />
-
-      <div role="tree">
-        <PageList
-          getPageUrl={(page) => `/${$query.site.id}/${page.id}`}
-          items={$query.site.sections}
-          onCreate={onCreatePage}
-          onCreateSection={async () => {
-            await createSection({
-              siteId: $query.site.id,
-              lower: $query.site.sections.at(-1)?.order,
-            });
-          }}
-          onDrop={onDropPage}
-          onDropSection={async (target) => {
-            await updateSectionPosition({
-              sectionId: target.sectionId,
-              lower: target.previousOrder,
-              upper: target.nextOrder,
-            });
-          }}
-        />
-      </div>
-    </nav>
-
     <UserMenu {$query} />
-  </aside>
+  </header>
 
   <div
     class={flex({
-      direction: 'column',
-      grow: 1,
-      paddingTop: '30px',
-      backgroundColor: 'sidebar.surface',
-      width: 'full',
-      truncate: true,
+      flex: '1',
     })}
   >
-    <div
+    <aside
       class={flex({
-        'direction': 'column',
-        'grow': 1,
-        'borderTopLeftRadius': '[36px]',
-        'paddingTop': '28px',
-        'backgroundColor': 'surface.primary',
-        'overflowY': 'auto',
-
-        '&:has(.has-slash-menu)': {
-          overflowY: 'hidden',
-        },
+        flexDirection: 'column',
+        flex: 'none',
+        paddingTop: '30px',
+        paddingX: '10px',
+        paddingBottom: '36px',
+        backgroundColor: 'sidebar.surface',
+        width: '300px',
+        overflowY: 'auto',
       })}
     >
-      <slot />
+      <nav class={css({ marginTop: '24px', marginBottom: 'auto' })}>
+        <ul
+          class={flex({
+            flexDirection: 'column',
+            gap: '7px',
+          })}
+        >
+          <li>
+            <a
+              class={sidebarMenuItemStyle}
+              aria-selected={$page.url.pathname === `/${$query.site.id}/`}
+              href={`/${$query.site.id}`}
+              role="tab"
+            >
+              <Icon style={css.raw({ color: 'text.tertiary' })} icon={HouseIcon} size={20} />
+              <span>홈</span>
+            </a>
+          </li>
+          <li>
+            <a
+              class={sidebarMenuItemStyle}
+              data-sveltekit-preload-data="false"
+              href="#/settings/site"
+              role="tab"
+              type="button"
+            >
+              <Icon style={css.raw({ color: 'text.tertiary' })} icon={SettingsIcon} size={20} />
+              <span>설정</span>
+            </a>
+          </li>
+        </ul>
+
+        <HorizontalDivider style={css.raw({ marginTop: '24px', marginBottom: '28px', height: '2px' })} />
+
+        <div role="tree">
+          <PageList
+            getPageUrl={(page) => `/${$query.site.id}/${page.id}`}
+            items={$query.site.sections}
+            onCreate={onCreatePage}
+            onCreateSection={async () => {
+              await createSection({
+                siteId: $query.site.id,
+                lower: $query.site.sections.at(-1)?.order,
+              });
+            }}
+            onDrop={onDropPage}
+            onDropSection={async (target) => {
+              await updateSectionPosition({
+                sectionId: target.sectionId,
+                lower: target.previousOrder,
+                upper: target.nextOrder,
+              });
+            }}
+          />
+        </div>
+      </nav>
+    </aside>
+
+    <div
+      class={flex({
+        direction: 'column',
+        grow: 1,
+        paddingTop: '30px',
+        backgroundColor: 'sidebar.surface',
+        width: 'full',
+        truncate: true,
+      })}
+    >
+      <div
+        class={flex({
+          'direction': 'column',
+          'grow': 1,
+          'borderTopLeftRadius': '[36px]',
+          'paddingTop': '28px',
+          'backgroundColor': 'surface.primary',
+          'overflowY': 'auto',
+
+          '&:has(.has-slash-menu)': {
+            overflowY: 'hidden',
+          },
+        })}
+      >
+        <slot />
+      </div>
     </div>
   </div>
 </div>

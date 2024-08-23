@@ -1,9 +1,8 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { HorizontalDivider, Icon, Menu, MenuItem } from '@readable/ui/components';
+  import { HorizontalDivider, Menu, MenuItem } from '@readable/ui/components';
   import mixpanel from 'mixpanel-browser';
-  import ChevronDownIcon from '~icons/lucide/chevron-down';
   import { page } from '$app/stores';
   import { env } from '$env/dynamic/public';
   import { fragment, graphql } from '$graphql';
@@ -60,48 +59,18 @@
 </script>
 
 <Menu placement="top" setFullWidth>
-  <div
-    slot="button"
-    class={flex({
-      align: 'center',
-      justify: 'space-between',
-      gap: '10px',
-      borderWidth: '1px',
-      borderColor: 'border.secondary',
-      borderRadius: '10px',
-      paddingX: '18px',
-      paddingY: '16px',
-    })}
-  >
-    <div class={flex({ align: 'center', gap: '16px' })}>
-      <div class={css({ position: 'relative' })}>
-        <Img
-          style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '40px' })}
-          $image={$query.site.team.avatar}
-          alt={`${$query.site.team.name}의 아바타`}
-          size={48}
-        />
-        <Img
-          style={css.raw({
-            position: 'absolute',
-            right: '-6px',
-            bottom: '-6px',
-            borderWidth: '1px',
-            borderColor: 'border.image',
-            borderRadius: 'full',
-            size: '23px',
-          })}
-          $image={$query.me.avatar}
-          alt={`${$query.me.name}의 아바타`}
-          size={24}
-        />
-      </div>
-      <div class={flex({ flexDirection: 'column', align: 'flex-start', gap: '2px' })}>
-        <p class={css({ textStyle: '15sb', color: 'text.secondary' })}>{$query.site.team.name}</p>
-        <p class={css({ textStyle: '14m', color: 'text.tertiary' })}>{$query.me.name}</p>
-      </div>
-    </div>
-    <Icon style={css.raw({ color: 'text.tertiary' })} icon={ChevronDownIcon} />
+  <div slot="button">
+    <Img
+      style={css.raw({
+        borderWidth: '1px',
+        borderColor: 'border.image',
+        borderRadius: 'full',
+        size: '32px',
+      })}
+      $image={$query.me.avatar}
+      alt={`${$query.me.name}의 아바타`}
+      size={32}
+    />
   </div>
 
   <p class={css({ textStyle: '14b', color: 'text.tertiary' })}>팀</p>
