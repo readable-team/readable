@@ -36,7 +36,10 @@ const dynamicOriginRequestPolicy = new aws.cloudfront.OriginRequestPolicy('dynam
   comment: 'Origin request policy for dynamic contents',
 
   cookiesConfig: { cookieBehavior: 'all' },
-  headersConfig: { headerBehavior: 'allViewer' },
+  headersConfig: {
+    headerBehavior: 'allViewerAndWhitelistCloudFront',
+    headers: { items: ['CloudFront-Viewer-Address'] },
+  },
   queryStringsConfig: { queryStringBehavior: 'all' },
 });
 

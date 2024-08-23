@@ -3,6 +3,12 @@ import * as R from 'remeda';
 import type { Server } from 'bun';
 
 export const getClientAddress = (request: Request, server: Server) => {
+  const cf = request.headers.get('CloudFront-Viewer-Address');
+  if (cf) {
+    const [address] = cf.split(/:\d+$/);
+    return IPAddr.process(address).toString();
+  }
+
   const xff = request.headers.get('x-forwarded-for');
   if (xff) {
     const ip = R.pipe(
