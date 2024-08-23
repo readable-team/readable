@@ -1,4 +1,4 @@
-<script generics="T extends 'button' | 'submit' | 'link' = 'button'" lang="ts">
+<script generics="T extends 'button' | 'reset' | 'submit' | 'link' = 'button'" lang="ts">
   import { css, cva } from '@readable/styled-system/css';
   import { center } from '@readable/styled-system/patterns';
   import { getFormContext } from '../forms';
@@ -21,7 +21,7 @@
 
   type $$Events = T extends 'link' ? unknown : { click: MouseEvent };
 
-  export let type: 'button' | 'submit' | 'link' = 'button';
+  export let type: 'button' | 'reset' | 'submit' | 'link' = 'button';
 
   export let style: SystemStyleObject | undefined = undefined;
 

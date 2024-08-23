@@ -42,7 +42,7 @@
     }
   `);
 
-  const { form, setInitialValues, isDirty, reset, setIsDirty } = createMutationForm({
+  const { form, setInitialValues, isDirty, setIsDirty } = createMutationForm({
     schema: z.object({
       avatarId: z.string(),
       avatarDraftFile: z.any(),
@@ -99,7 +99,7 @@
 
   <div class={flex()}>
     {#if $isDirty}
-      <Button size="lg" type="button" variant="secondary" on:click={reset}>되돌리기</Button>
+      <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
     {/if}
     <Button disabled={!$isDirty} size="lg" type="submit">저장</Button>
   </div>
