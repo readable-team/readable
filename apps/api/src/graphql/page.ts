@@ -304,6 +304,7 @@ PageContentSnapshot.implement({
 PageContentState.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
 
     title: t.string({ resolve: (state) => state.title ?? '(제목 없음)' }),
   }),

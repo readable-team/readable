@@ -203,6 +203,7 @@ type PageContentSnapshot {
 type PageContentState {
   id: ID!
   title: String!
+  updatedAt: DateTime!
 }
 
 enum PageContentSyncKind {

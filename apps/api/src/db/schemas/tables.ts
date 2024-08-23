@@ -13,7 +13,7 @@ export const Categories = pgTable(
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createDbId('SEC')),
+      .$defaultFn(() => createDbId('CTG')),
     siteId: text('site_id')
       .notNull()
       .references(() => Sites.id),
