@@ -347,21 +347,7 @@
       </nav>
     </aside>
 
-    <div
-      class={flex({
-        'direction': 'column',
-        'grow': 1,
-        'paddingTop': '28px',
-        'backgroundColor': 'surface.primary',
-        'overflowY': 'auto',
-
-        '&:has(.has-slash-menu)': {
-          overflowY: 'hidden',
-        },
-      })}
-    >
-      <slot />
-    </div>
+    <slot />
   </div>
 </div>
 
