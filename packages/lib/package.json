@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    ".": "./src/index.ts",
     "./dayjs": "./src/dayjs/index.ts",
     "./vite": {
       "types": "./src/vite/index.d.ts",
@@ -15,10 +16,12 @@
   },
   "dependencies": {
     "dayjs": "^1.11.13",
-    "svgo": "^3.3.2"
+    "svgo": "^3.3.2",
+    "xmlbuilder2": "^3.1.1"
   },
   "devDependencies": {
     "@readable/tsconfig": "workspace:*",
+    "@sveltejs/kit": "^2.5.24",
     "typescript": "^5.5.4"
   }
 }
