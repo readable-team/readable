@@ -264,6 +264,7 @@
   <div
     class={flex({
       flex: '1',
+      overflow: 'auto',
     })}
   >
     <aside
@@ -277,11 +278,12 @@
         overflowY: 'auto',
       })}
     >
-      <nav class={flex({ flex: '1', flexDirection: 'column' })}>
+      <nav class={flex({ flex: '1', flexDirection: 'column', overflow: 'auto' })}>
         <div
           class={css({
             flex: '1',
             padding: '20px',
+            overflow: 'auto',
           })}
           role="tree"
         >
