@@ -241,16 +241,18 @@
   <div class={flex({ align: 'center', wrap: 'wrap', paddingLeft: '4px' })}>
     {#each $query.page.contentContributor as contributor (contributor.id)}
       <Tooltip
-        style={css.raw({ marginLeft: '-4px', size: '20px', marginBottom: '4px' })}
+        style={css.raw({ borderRadius: 'full', marginLeft: '-4px', size: '20px', marginBottom: '4px' })}
         message={contributor.user.name}
+        offset={8}
       >
         <Img
           style={css.raw({
             flex: 'none',
-            borderWidth: '1px',
-            borderColor: 'border.image',
+            ringWidth: '1px',
+            ringColor: 'border.image',
             borderRadius: 'full',
             size: '20px',
+            _hover: { ringWidth: '2px', ringColor: { base: 'gray.800', _dark: 'darkgray.500' } },
           })}
           $image={contributor.user.avatar}
           alt={contributor.user.name}
