@@ -15,12 +15,16 @@
         page(pageId: $pageId) {
           id
 
+          category {
+            id
+            name
+          }
+
           content {
             title
           }
 
-          # FIXME: 섹션
-          # NOTE: maxDepth = 3
+          # NOTE: maxDepth = 2
           parent {
             id
 
@@ -34,14 +38,6 @@
               content {
                 title
               }
-
-              parent {
-                id
-
-                content {
-                  title
-                }
-              }
             }
           }
 
@@ -53,14 +49,10 @@
     `),
   );
 
-  // FIXME: 섹션
-  // NOTE: maxDepth = 3
-  $: breadcrumbs = [
-    $query.page.parent?.parent?.parent,
-    $query.page.parent?.parent,
-    $query.page.parent,
-    $query.page,
-  ].filter(Boolean) as NonNullable<typeof $query.page>[];
+  // NOTE: maxDepth = 2
+  $: breadcrumbs = [$query.page.parent?.parent, $query.page.parent, $query.page].filter(Boolean) as NonNullable<
+    typeof $query.page
+  >[];
 </script>
 
 <nav class={css({ truncate: true })} aria-label="Breadcrumb">
@@ -71,18 +63,18 @@
       'truncate': true,
       '& > li': {
         display: 'inline-block',
-        borderRadius: '6px',
-        textStyle: '15m',
+        borderRadius: '4px',
+        textStyle: '14r',
         color: 'text.tertiary',
       },
       '& > li > a': {
-        paddingX: '8px',
-        paddingY: '4px',
+        paddingX: '6px',
+        paddingY: '3px',
       },
     })}
   >
-    <li class={css({ _hover: { backgroundColor: 'surface.secondary' } })}>
-      <a href={`/${$query.page.site.id}`}>홈</a>
+    <li class={css({ paddingX: '6px', paddingY: '3px' })}>
+      <span>{$query.page.category.name}</span>
     </li>
     <li aria-hidden="true">
       <Icon icon={ChevronRightIcon} />
@@ -96,7 +88,7 @@
         })}
       >
         <a
-          class={css({ textStyle: '15m' }, current && { textStyle: '15sb', color: 'text.primary' })}
+          class={css(current && { color: 'text.primary' })}
           aria-current={current ? 'page' : undefined}
           href={`/${$query.page.site.id}/${page.id}`}
         >
