@@ -45,6 +45,11 @@ new readable.Caddy('usersite-proxy', {
   storage dynamodb usersite-proxy
   persist_config off
 
+  servers {
+    trusted_proxies_strict
+    trusted_proxies static private_ranges
+  }
+
   on_demand_tls {
     ask http://api:3000/caddy/tls
   }
