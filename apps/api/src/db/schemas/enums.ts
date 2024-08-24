@@ -6,6 +6,7 @@ function createPgEnum<T extends string>(enumName: string, obj: Record<string, T>
 }
 
 export const _CategoryState = createPgEnum('_category_state', E.CategoryState);
+export const _JobState = createPgEnum('_job_state', E.JobState);
 export const _PageState = createPgEnum('_page_state', E.PageState);
 export const _SingleSignOnProvider = createPgEnum('_single_sign_on_provider', E.SingleSignOnProvider);
 export const _SiteCustomDomainState = createPgEnum('_site_custom_domain_state', E.SiteCustomDomainState);

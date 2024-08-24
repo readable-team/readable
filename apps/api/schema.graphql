@@ -138,6 +138,13 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
+enum JobState {
+  COMPLETED
+  FAILED
+  PENDING
+  RUNNING
+}
+
 type Mutation {
   authorizeSingleSignOn(input: AuthorizeSingleSignOnInput!): UserWithAccessToken!
   createCategory(input: CreateCategoryInput!): Category!

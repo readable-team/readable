@@ -1,56 +1,101 @@
 import './cron';
 
-import { nanoid } from 'nanoid';
+import os from 'node:os';
+import { Semaphore } from 'async-mutex';
+import dayjs from 'dayjs';
+import { and, asc, eq } from 'drizzle-orm';
+import { db, first, Jobs } from '@/db';
+import { JobState } from '@/enums';
 import { dev, env } from '@/env';
-import { pub, rabbit } from '@/mq';
 import { PageContentStateUpdateJob, PageSearchIndexUpdateJob, PageSummarizeJob } from './page';
+import type { Transaction } from '@/db';
 import type { JobFn } from './types';
 
 const jobs = [PageContentStateUpdateJob, PageSearchIndexUpdateJob, PageSummarizeJob];
 
 type Jobs = typeof jobs;
-type JobNames = Jobs[number]['name'];
+type JobName = Jobs[number]['name'];
 type JobMap = { [Job in Jobs[number] as Job['name']]: Job['fn'] };
-type Body = { name: JobNames; payload: unknown; meta: { retry: number } };
 
-const exchange = 'jobs';
-const queue = dev ? `jobs:local:${nanoid()}` : `jobs:${env.PUBLIC_PULUMI_STACK}`;
-const routingKey = queue;
-
-await rabbit.exchangeDeclare({ exchange, type: 'direct' });
-
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const lane = dev ? os.hostname() : env.PUBLIC_PULUMI_STACK!;
 const jobMap = Object.fromEntries(jobs.map((job) => [job.name, job.fn])) as JobMap;
-rabbit.createConsumer(
-  {
-    queue,
-    queueOptions: { exclusive: dev },
-    queueBindings: [{ exchange, queue, routingKey }],
-  },
-  async (msg) => {
-    const { name, payload, meta } = msg.body as Body;
-    try {
-      await jobMap[name]?.(payload as never);
-    } catch (err: unknown) {
-      if (meta.retry < 3) {
-        try {
-          const body = { name, payload, meta: { retry: meta.retry + 1 } } satisfies Body;
-          await pub.send({ exchange, routingKey }, body);
-          return;
-        } catch {
-          // pass
-        }
+
+const semaphore = new Semaphore(10);
+
+const loop = async () => {
+  await semaphore.runExclusive(async () => {
+    await db.transaction(async (tx) => {
+      const job = await tx
+        .select()
+        .from(Jobs)
+        .where(and(eq(Jobs.lane, lane), eq(Jobs.state, JobState.PENDING)))
+        .limit(1)
+        .orderBy(asc(Jobs.createdAt))
+        .for('update', { skipLocked: true })
+        .then(first);
+
+      if (job) {
+        loop();
+        await work(tx, job);
+      } else {
+        setTimeout(loop, 1000);
       }
+    });
+  });
+};
 
-      // Sentry.captureException(err);
-      console.error(err);
+const work = async (tx: Transaction, job: typeof Jobs.$inferSelect) => {
+  try {
+    const fn = jobMap[job.name as JobName];
+    if (!fn) {
+      throw new Error('job not found');
     }
-  },
-);
 
-export const enqueueJob = async <N extends JobNames, F extends JobMap[N]>(
+    if (job.retries >= 3) {
+      throw new Error('max retries');
+    }
+
+    await fn(job.payload as never);
+
+    await tx
+      .update(Jobs)
+      .set({
+        state: JobState.COMPLETED,
+        updatedAt: dayjs(),
+      })
+      .where(eq(Jobs.id, job.id));
+  } catch {
+    if (job.retries < 3) {
+      await tx
+        .update(Jobs)
+        .set({
+          retries: job.retries + 1,
+          updatedAt: dayjs(),
+        })
+        .where(eq(Jobs.id, job.id));
+    } else {
+      await tx
+        .update(Jobs)
+        .set({
+          state: JobState.FAILED,
+          updatedAt: dayjs(),
+        })
+        .where(eq(Jobs.id, job.id));
+    }
+  }
+};
+
+export const enqueueJob = async <N extends JobName, F extends JobMap[N]>(
+  tx: Transaction,
   name: N,
   payload: F extends JobFn<infer P> ? P : never,
 ) => {
-  const body = { name, payload, meta: { retry: 0 } } satisfies Body;
-  await pub.send({ exchange, routingKey }, body);
+  await tx.insert(Jobs).values({
+    name,
+    lane,
+    payload,
+  });
 };
+
+loop();

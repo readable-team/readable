@@ -14,12 +14,27 @@ const subnetGroup = new aws.rds.SubnetGroup('private', {
   subnetIds: [subnets.private.az1.id, subnets.private.az2.id],
 });
 
+const parameterGroup = new aws.rds.ClusterParameterGroup('readable', {
+  name: 'readable-aurora-postgresql16',
+  family: 'aurora-postgresql16',
+
+  parameters: [
+    {
+      name: 'rds.logical_replication',
+      value: '1',
+      applyMethod: 'pending-reboot',
+    },
+  ],
+});
+
 const devCluster = new aws.rds.Cluster('readable-dev', {
   clusterIdentifier: 'readable-dev',
 
   engine: 'aurora-postgresql',
   engineMode: 'provisioned',
   engineVersion: '16.3',
+
+  dbClusterParameterGroupName: parameterGroup.name,
 
   dbSubnetGroupName: subnetGroup.name,
   vpcSecurityGroupIds: [securityGroups.internal.id],

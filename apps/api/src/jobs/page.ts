@@ -102,12 +102,12 @@ export const PageContentStateUpdateJob = defineJob('page:content:state-update', 
     await tx
       .delete(PageContentUpdates)
       .where(and(eq(PageContentUpdates.pageId, pageId), lte(PageContentUpdates.seq, updatedUpToSeq)));
+
+    await enqueueJob(tx, 'page:search:index-update', pageId);
   });
 
   const page = await db.select({ siteId: Pages.siteId }).from(Pages).where(eq(Pages.id, pageId)).then(firstOrThrow);
   pubsub.publish('site:update', page.siteId, { scope: 'page', pageId });
-
-  await enqueueJob('page:search:index-update', pageId);
 });
 
 export const PageSearchIndexUpdateJob = defineJob('page:search:index-update', async (pageId: string) => {

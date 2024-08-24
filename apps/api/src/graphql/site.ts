@@ -315,7 +315,7 @@ builder.mutationFields((t) => ({
         role: TeamMemberRole.ADMIN,
       });
 
-      const [site, deletedPageIds] = await db.transaction(async (tx) => {
+      const site = await db.transaction(async (tx) => {
         const deletedPageIds = await tx
           .update(Pages)
           .set({ state: PageState.DELETED })
@@ -332,10 +332,10 @@ builder.mutationFields((t) => ({
           .returning()
           .then(firstOrThrow);
 
-        return [site, deletedPageIds];
-      });
+        await Promise.all(deletedPageIds.map((pageId) => enqueueJob(tx, 'page:search:index-update', pageId)));
 
-      await Promise.all(deletedPageIds.map((pageId) => enqueueJob('page:search:index-update', pageId)));
+        return site;
+      });
 
       return site;
     },

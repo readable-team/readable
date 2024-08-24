@@ -4,6 +4,14 @@ export const CategoryState = {
   DELETED: 'DELETED',
 } as const;
 
+export type JobState = keyof typeof JobState;
+export const JobState = {
+  PENDING: 'PENDING',
+  RUNNING: 'RUNNING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+} as const;
+
 export type PageContentSyncKind = keyof typeof PageContentSyncKind;
 export const PageContentSyncKind = {
   PING: 'PING',

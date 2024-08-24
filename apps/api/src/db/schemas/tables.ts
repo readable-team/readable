@@ -76,6 +76,23 @@ export const Images = pgTable('images', {
     .default(sql`now()`),
 });
 
+export const Jobs = pgTable('jobs', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('J', { length: 'long' })),
+  lane: text('lane').notNull(),
+  name: text('name').notNull(),
+  payload: jsonb('payload').notNull(),
+  retries: integer('retries').notNull().default(0),
+  state: E._JobState('state').notNull().default('PENDING'),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+  updatedAt: datetime('updated_at')
+    .notNull()
+    .default(sql`now()`),
+});
+
 export const Pages = pgTable(
   'pages',
   {
