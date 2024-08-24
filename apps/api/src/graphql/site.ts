@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { and, asc, eq, getTableColumns, ne } from 'drizzle-orm';
+import { and, asc, count, eq, getTableColumns, ne } from 'drizzle-orm';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { Repeater } from 'graphql-yoga';
 import { match } from 'ts-pattern';
@@ -13,6 +13,7 @@ import { enqueueJob } from '@/jobs';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
+import { getPlanRule } from '@/utils/plan';
 import { Category, Image, ISite, Page, PublicCategory, PublicSite, Site, SiteCustomDomain, Team } from './objects';
 
 /**
@@ -164,6 +165,19 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
         role: TeamMemberRole.ADMIN,
       });
+
+      const [siteCountLimit, currnetSiteCount] = await Promise.all([
+        getPlanRule({ teamId: input.teamId, rule: 'siteLimit' }),
+        db
+          .select({ count: count(Sites.id) })
+          .from(Sites)
+          .where(and(eq(Sites.teamId, input.teamId), eq(Sites.state, SiteState.ACTIVE)))
+          .then((rows) => rows[0]?.count ?? 0),
+      ]);
+
+      if (currnetSiteCount >= siteCountLimit) {
+        throw new ApiError({ code: 'site_limit_exceeded' });
+      }
 
       const slug = [
         faker.word.adjective({ length: { min: 3, max: 5 } }),

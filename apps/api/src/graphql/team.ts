@@ -382,7 +382,11 @@ const createTeam = async (userId: string, teamName: string) => {
       file: await generateRandomAvatar(),
     });
 
-    const team = await tx.insert(Teams).values({ name: teamName, avatarId: avatar.id }).returning().then(firstOrThrow);
+    const team = await tx
+      .insert(Teams)
+      .values({ name: teamName, avatarId: avatar.id, planId: 'PLN0FREE' })
+      .returning()
+      .then(firstOrThrow);
 
     await tx.insert(TeamMembers).values({
       teamId: team.id,

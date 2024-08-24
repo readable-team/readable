@@ -7,6 +7,7 @@ import { createDbId } from './id';
 import { bytea, datetime, jsonb } from './types';
 import type { JSONContent } from '@tiptap/core';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
+import type { PlanRules } from './json';
 
 export const Categories = pgTable(
   'categories',
@@ -219,6 +220,17 @@ export const PageContentUpdates = pgTable(
   }),
 );
 
+export const Plans = pgTable('plans', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('PLN')),
+  name: text('name').notNull(),
+  rules: jsonb('rules').notNull().$type<Partial<PlanRules>>(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
+
 export const Sites = pgTable(
   'sites',
   {
@@ -273,6 +285,9 @@ export const Teams = pgTable(
       .$defaultFn(() => createDbId('T', { length: 'short' })),
     name: text('name').notNull(),
     state: E._TeamState('state').notNull().default('ACTIVE'),
+    planId: text('plan_id')
+      .notNull()
+      .references(() => Plans.id),
     avatarId: text('avatar_id')
       .notNull()
       .references(() => Images.id),
