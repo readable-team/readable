@@ -16,8 +16,11 @@ new aws.route53.Record('rdbl.io|txt', {
   zoneId: zones.rdbl_io.zoneId,
   type: 'TXT',
   name: 'rdbl.io',
-  // spell-checker:disable-next-line
-  records: ['google-site-verification=aVWE05YPOxEGxeH-X5NRyfb_IYilB3KL7QlN-xkFrU0'],
+  records: [
+    // spell-checker:disable-next-line
+    'google-site-verification=aVWE05YPOxEGxeH-X5NRyfb_IYilB3KL7QlN-xkFrU0',
+    'v=spf1 include:_spf.google.com ~all',
+  ],
   ttl: 300,
 });
 
