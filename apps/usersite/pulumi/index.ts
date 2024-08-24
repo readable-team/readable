@@ -46,17 +46,32 @@ new readable.Caddy('usersite-proxy', {
   persist_config off
 
   servers {
-    trusted_proxies_strict
-    trusted_proxies static private_ranges
+    listener_wrappers {
+      proxy_protocol {
+        allow 10.10.0.0/16
+      }
+
+      tls
+    }
   }
 
   on_demand_tls {
     ask http://api:3000/caddy/tls
   }
+  
+  log {
+    format json {
+      time_key time
+      time_format iso8601
+      duration_format string
+    }
+  }
 }
 
 http:// {
   respond /healthz 200
+
+  log
 }
 
 https:// {
@@ -74,6 +89,8 @@ https:// {
     X-Content-Type-Options nosniff
     X-Frame-Options DENY
   }
+
+  log
 }
   `,
 

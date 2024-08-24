@@ -117,6 +117,7 @@ export class Caddy extends pulumi.ComponentResource {
           annotations: {
             'service.beta.kubernetes.io/aws-load-balancer-scheme': 'internet-facing',
             'service.beta.kubernetes.io/aws-load-balancer-security-groups': 'internal, public-web',
+            'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
             'external-dns.alpha.kubernetes.io/hostname': domainName,
             'pulumi.com/skipAwait': 'true',
           },
