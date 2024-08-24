@@ -8,15 +8,7 @@
   & > * + * {
     margin-top: 2px;
   }
-
-  & *::selection {
-    background-color: #b3d4fc;
-  }
 }
-
-/* .ProseMirror-focused {
-  outline: none;
-} */
 
 .ProseMirror-hideselection {
   caret-color: transparent;

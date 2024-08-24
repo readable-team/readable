@@ -1,7 +1,6 @@
 {
   "extends": ["@readable/tsconfig"],
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "$*": ["./pulumi/*"]
     }

@@ -2,8 +2,6 @@
   import { css } from '@readable/styled-system/css';
   import { Editor } from '@tiptap/core';
   import { createEventDispatcher, onMount } from 'svelte';
-  import * as YAwareness from 'y-protocols/awareness';
-  import * as Y from 'yjs';
   import { Collaboration } from '../extensions/collaboration';
   import { Freeze } from '../extensions/freeze';
   import { Embed } from '../node-views/embed';
@@ -11,6 +9,8 @@
   import { Image } from '../node-views/image';
   import { extensions } from '../schema';
   import type { SystemStyleObject } from '@readable/styled-system/types';
+  import type * as YAwareness from 'y-protocols/awareness';
+  import type * as Y from 'yjs';
 
   const dispatch = createEventDispatcher<{ initialize: null; file: { pos: number; files: File[] } }>();
 

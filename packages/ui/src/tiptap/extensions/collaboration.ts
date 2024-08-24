@@ -1,9 +1,9 @@
 import { css } from '@readable/styled-system/css';
 import { Extension } from '@tiptap/core';
 import { redo, undo, yCursorPlugin, ySyncPlugin, yUndoPlugin, yUndoPluginKey } from 'y-prosemirror';
-import * as YAwareness from 'y-protocols/awareness';
-import * as Y from 'yjs';
 import type { EditorView } from '@tiptap/pm/view';
+import type * as YAwareness from 'y-protocols/awareness';
+import type * as Y from 'yjs';
 
 declare module '@tiptap/core' {
   // eslint-disable-next-line @typescript-eslint/consistent-type-definitions

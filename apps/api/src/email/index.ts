@@ -22,7 +22,7 @@ export const sendEmail = async ({ subject, recipient, body }: SendEmailParams) =
         },
         Body: {
           Html: {
-            Data: render(body),
+            Data: await render(body),
           },
         },
       },

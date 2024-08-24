@@ -1,4 +1,6 @@
 {
+  "cSpell.autoFormatConfigFile": true,
+  "cSpell.mergeCSpellSettings": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
     "source.formatDocument": "explicit"
@@ -9,10 +11,10 @@
   "eslint.format.enable": true,
   "eslint.useFlatConfig": true,
   "eslint.validate": ["javascript", "typescript", "svelte"],
+  "npm.packageManager": "bun",
   "prettier.documentSelectors": ["**/*"],
   "svelte.enable-ts-plugin": true,
   "svelte.plugin.svelte.defaultScriptLanguage": "ts",
-  "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "npm.packageManager": "bun"
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
