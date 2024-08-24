@@ -18,13 +18,7 @@ const parameterGroup = new aws.rds.ClusterParameterGroup('readable', {
   name: 'readable-aurora-postgresql16',
   family: 'aurora-postgresql16',
 
-  parameters: [
-    {
-      name: 'rds.logical_replication',
-      value: '1',
-      applyMethod: 'pending-reboot',
-    },
-  ],
+  parameters: [],
 });
 
 const devCluster = new aws.rds.Cluster('readable-dev', {
