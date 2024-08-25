@@ -76,22 +76,28 @@ export const Images = pgTable('images', {
     .default(sql`now()`),
 });
 
-export const Jobs = pgTable('jobs', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => createDbId('J', { length: 'long' })),
-  lane: text('lane').notNull(),
-  name: text('name').notNull(),
-  payload: jsonb('payload').notNull(),
-  retries: integer('retries').notNull().default(0),
-  state: E._JobState('state').notNull().default('PENDING'),
-  createdAt: datetime('created_at')
-    .notNull()
-    .default(sql`now()`),
-  updatedAt: datetime('updated_at')
-    .notNull()
-    .default(sql`now()`),
-});
+export const Jobs = pgTable(
+  'jobs',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId('J', { length: 'long' })),
+    lane: text('lane').notNull(),
+    name: text('name').notNull(),
+    payload: jsonb('payload').notNull(),
+    retries: integer('retries').notNull().default(0),
+    state: E._JobState('state').notNull().default('PENDING'),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+    updatedAt: datetime('updated_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    laneStateCreatedAtIdx: index().on(t.lane, t.state, t.createdAt),
+  }),
+);
 
 export const Pages = pgTable(
   'pages',
@@ -282,6 +288,7 @@ export const Sites = pgTable(
     slugUniqIdx: uniqueIndex()
       .on(t.slug)
       .where(sql`${t.state} = 'ACTIVE'`),
+    teamIdStateIdx: index().on(t.teamId, t.state),
   }),
 );
 
@@ -301,6 +308,7 @@ export const SiteCustomDomains = pgTable(
       .default(sql`now()`),
   },
   (t) => ({
+    domainStateIdx: index().on(t.domain, t.state),
     domainUniqIdx: uniqueIndex().on(t.domain).where(eq(t.state, 'ACTIVE')),
   }),
 );
@@ -351,19 +359,25 @@ export const TeamMembers = pgTable(
   }),
 );
 
-export const TeamMemberInvitations = pgTable('team_member_invitations', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => createDbId('TMIV')),
-  teamId: text('team_id')
-    .notNull()
-    .references(() => Teams.id),
-  email: text('email').notNull(),
-  createdAt: datetime('created_at')
-    .notNull()
-    .default(sql`now()`),
-  expiresAt: datetime('expires_at').notNull(),
-});
+export const TeamMemberInvitations = pgTable(
+  'team_member_invitations',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId('TMIV')),
+    teamId: text('team_id')
+      .notNull()
+      .references(() => Teams.id),
+    email: text('email').notNull(),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+    expiresAt: datetime('expires_at').notNull(),
+  },
+  (t) => ({
+    teamIdEmailUniq: unique().on(t.teamId, t.email),
+  }),
+);
 
 export const Users = pgTable(
   'users',
