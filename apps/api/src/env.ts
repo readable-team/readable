@@ -13,7 +13,6 @@ const schema = z.object({
   PUBLIC_PULUMI_PROJECT: z.string().optional(),
   PUBLIC_PULUMI_STACK: z.string().optional(),
   PUBLIC_USERCONTENTS_URL: z.string(),
-  RABBITMQ_URL: z.string(),
   SENTRY_DSN: z.string().optional(),
   USERSITE_CNAME_HOST: z.string(),
   USERSITE_DEFAULT_HOST: z.string(),
