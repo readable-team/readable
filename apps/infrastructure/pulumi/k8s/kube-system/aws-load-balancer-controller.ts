@@ -1,6 +1,6 @@
 import * as aws from '@pulumi/aws';
 import * as k8s from '@pulumi/kubernetes';
-import { cluster, oidcProvider } from '$aws/eks';
+import { cluster } from '$aws/eks';
 import { vpc } from '$aws/vpc';
 
 const role = new aws.iam.Role('aws-load-balancer-controller@eks', {
@@ -10,14 +10,8 @@ const role = new aws.iam.Role('aws-load-balancer-controller@eks', {
     Statement: [
       {
         Effect: 'Allow',
-        Principal: { Federated: oidcProvider.arn },
-        Action: 'sts:AssumeRoleWithWebIdentity',
-        Condition: oidcProvider.url.apply((url) => ({
-          StringEquals: {
-            [`${url}:aud`]: 'sts.amazonaws.com',
-            [`${url}:sub`]: 'system:serviceaccount:kube-system:aws-load-balancer-controller',
-          },
-        })),
+        Principal: { Service: 'pods.eks.amazonaws.com' },
+        Action: ['sts:AssumeRole', 'sts:TagSession'],
       },
     ],
   },
@@ -237,14 +231,11 @@ new aws.iam.RolePolicy('aws-load-balancer-controller@eks', {
 });
 // spell-checker:enable
 
-const serviceAccount = new k8s.core.v1.ServiceAccount('aws-load-balancer-controller', {
-  metadata: {
-    name: 'aws-load-balancer-controller',
-    namespace: 'kube-system',
-    annotations: {
-      'eks.amazonaws.com/role-arn': role.arn,
-    },
-  },
+new aws.eks.PodIdentityAssociation('aws-load-balancer-controller', {
+  clusterName: cluster.name,
+  namespace: 'kube-system',
+  serviceAccount: 'aws-load-balancer-controller',
+  roleArn: role.arn,
 });
 
 new k8s.helm.v3.Chart('aws-load-balancer-controller', {
@@ -257,10 +248,6 @@ new k8s.helm.v3.Chart('aws-load-balancer-controller', {
     vpcId: vpc.id,
 
     clusterName: cluster.name,
-    serviceAccount: {
-      create: false,
-      name: serviceAccount.metadata.name,
-    },
 
     enableCertManager: true,
     enableBackendSecurityGroup: false,

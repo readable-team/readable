@@ -23,10 +23,6 @@ export class IAMServiceAccount extends pulumi.ComponentResource {
   constructor(name: string, args: IAMServiceAccountArgs, opts?: pulumi.ComponentResourceOptions) {
     super('readable:index:IAMServiceAccount', name, {}, opts);
 
-    const ref = new pulumi.StackReference('readable/infrastructure/base', {}, { parent: this });
-
-    const oidcProviderUrl = ref.requireOutput('AWS_EKS_CLUSTER_OIDC_PROVIDER_URL');
-
     const role = new aws.iam.Role(
       `${name}@eks`,
       {
@@ -36,14 +32,8 @@ export class IAMServiceAccount extends pulumi.ComponentResource {
           Statement: [
             {
               Effect: 'Allow',
-              Principal: { Federated: ref.requireOutput('AWS_EKS_CLUSTER_OIDC_PROVIDER_ARN') },
-              Action: 'sts:AssumeRoleWithWebIdentity',
-              Condition: oidcProviderUrl.apply((url) => ({
-                StringEquals: {
-                  [`${url}:aud`]: 'sts.amazonaws.com',
-                  [`${url}:sub`]: pulumi.interpolate`system:serviceaccount:${args.metadata.namespace}:${args.metadata.name}`,
-                },
-              })),
+              Principal: { Service: 'pods.eks.amazonaws.com' },
+              Action: ['sts:AssumeRole', 'sts:TagSession'],
             },
           ],
         },
@@ -66,13 +56,17 @@ export class IAMServiceAccount extends pulumi.ComponentResource {
         metadata: {
           name: args.metadata.name,
           namespace: args.metadata.namespace,
-          annotations: {
-            'eks.amazonaws.com/role-arn': role.arn,
-          },
         },
       },
       { parent: this },
     );
+
+    new aws.eks.PodIdentityAssociation(name, {
+      clusterName: 'readable',
+      namespace: serviceAccount.metadata.namespace,
+      serviceAccount: serviceAccount.metadata.name,
+      roleArn: role.arn,
+    });
 
     this.metadata = pulumi.output({
       name: serviceAccount.metadata.name,

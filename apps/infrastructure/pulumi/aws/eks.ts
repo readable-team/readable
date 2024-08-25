@@ -88,6 +88,22 @@ new aws.eks.Addon('aws-efs-csi-driver', {
   }).version,
 });
 
+new aws.eks.Addon('eks-pod-identity-agent', {
+  clusterName: cluster.name,
+  addonName: 'eks-pod-identity-agent',
+  addonVersion: aws.eks.getAddonVersionOutput({
+    addonName: 'eks-pod-identity-agent',
+    kubernetesVersion: cluster.version,
+    mostRecent: true,
+  }).version,
+});
+
+new aws.eks.AccessEntry('fargate@eks', {
+  clusterName: cluster.name,
+  principalArn: fargateRole.arn,
+  type: 'FARGATE_LINUX',
+});
+
 new aws.eks.AccessEntry('admin@eks', {
   clusterName: cluster.name,
   principalArn: adminRole.arn,
@@ -119,8 +135,3 @@ export const oidcProvider = new aws.iam.OpenIdConnectProvider('cluster@eks', {
   clientIdLists: ['sts.amazonaws.com'],
   thumbprintLists: [certificate.certificates[0].sha1Fingerprint],
 });
-
-export const outputs = {
-  AWS_EKS_CLUSTER_OIDC_PROVIDER_ARN: oidcProvider.arn,
-  AWS_EKS_CLUSTER_OIDC_PROVIDER_URL: oidcProvider.url,
-};
