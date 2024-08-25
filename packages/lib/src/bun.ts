@@ -2,7 +2,7 @@ import IPAddr from 'ipaddr.js';
 import * as R from 'remeda';
 import type { Server } from 'bun';
 
-export const getClientAddress = (request: Request, server: Server) => {
+export const getClientAddress = (request: Request, server?: Server | null) => {
   const cf = request.headers.get('CloudFront-Viewer-Address');
   if (cf) {
     const [address] = cf.split(/:\d+$/);
@@ -25,7 +25,7 @@ export const getClientAddress = (request: Request, server: Server) => {
     }
   }
 
-  const ip = server.requestIP(request)?.address;
+  const ip = server?.requestIP(request)?.address;
   if (ip) {
     return IPAddr.process(ip).toString();
   }
