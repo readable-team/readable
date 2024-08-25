@@ -3,7 +3,7 @@ import './cron';
 import os from 'node:os';
 import { Semaphore } from 'async-mutex';
 import dayjs from 'dayjs';
-import { and, asc, eq } from 'drizzle-orm';
+import { and, asc, eq, sql } from 'drizzle-orm';
 import { db, first, Jobs } from '@/db';
 import { JobState } from '@/enums';
 import { dev, env } from '@/env';
@@ -27,7 +27,13 @@ const loop = async () => {
   await semaphore.runExclusive(async () => {
     await db.transaction(async (tx) => {
       const job = await tx
-        .select()
+        .select({
+          id: Jobs.id,
+          name: Jobs.name,
+          payload: Jobs.payload,
+          retries: Jobs.retries,
+          _: sql`'@silent@'`,
+        })
         .from(Jobs)
         .where(and(eq(Jobs.lane, lane), eq(Jobs.state, JobState.PENDING)))
         .limit(1)
@@ -45,7 +51,7 @@ const loop = async () => {
   });
 };
 
-const work = async (tx: Transaction, job: typeof Jobs.$inferSelect) => {
+const work = async (tx: Transaction, job: Pick<typeof Jobs.$inferSelect, 'id' | 'name' | 'payload' | 'retries'>) => {
   try {
     const fn = jobMap[job.name as JobName];
     if (!fn) {
