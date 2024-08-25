@@ -248,6 +248,17 @@ export const Plans = pgTable('plans', {
     .default(sql`now()`),
 });
 
+export const Pubsubs = pgTable('pubsubs', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('PS', { length: 'long' })),
+  channel: text('channel').notNull(),
+  payload: text('payload').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
+
 export const Sites = pgTable(
   'sites',
   {

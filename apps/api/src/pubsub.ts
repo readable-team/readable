@@ -1,37 +1,39 @@
+import os from 'node:os';
+import { eq } from 'drizzle-orm';
 import { createPubSub } from 'graphql-yoga';
-import { nanoid } from 'nanoid';
+import { db, firstOrThrow, pg, Pubsubs } from '@/db';
 import { dev, env } from '@/env';
-import { pub, rabbit } from '@/mq';
 import type { TypedEventTarget } from '@graphql-yoga/typed-event-target';
 import type { PageContentSyncKind } from '@/enums';
 
-const key = nanoid();
-const exchange = 'pubsub';
-const queue = dev ? `pubsub:local:${key}` : `pubsub:${env.PUBLIC_PULUMI_STACK}:${key}`;
-const routingKey = dev ? `pubsub:local:${key}` : `pubsub:${env.PUBLIC_PULUMI_STACK}`;
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const channel = `pubsub_${dev ? Bun.sha(os.hostname(), 'hex').slice(0, 6) : env.PUBLIC_PULUMI_STACK!}`;
 
 export const createEventTarget = async <T extends CustomEvent>(): Promise<TypedEventTarget<T>> => {
   const handlersMap = new Map<string, Set<(event: T) => void>>();
 
-  await rabbit.exchangeDeclare({ exchange, type: 'topic' });
+  await pg.listen(channel, async (value) => {
+    let payload = JSON.parse(value);
 
-  rabbit.createConsumer(
-    {
-      queue,
-      queueOptions: { exclusive: true },
-      queueBindings: [{ exchange, queue, routingKey }],
-    },
-    async (msg) => {
-      const event = new CustomEvent(msg.body.name, { detail: msg.body.detail }) as T;
-      const handlers = handlersMap.get(event.type);
+    if (payload.id) {
+      const pubsub = await db
+        .select({ payload: Pubsubs.payload })
+        .from(Pubsubs)
+        .where(eq(Pubsubs.id, payload.id))
+        .then(firstOrThrow);
 
-      if (handlers) {
-        for (const handler of handlers) {
-          handler(event);
-        }
+      payload = JSON.parse(pubsub.payload);
+    }
+
+    const event = new CustomEvent(payload.name, { detail: payload.detail }) as T;
+    const handlers = handlersMap.get(event.type);
+
+    if (handlers) {
+      for (const handler of handlers) {
+        handler(event);
       }
-    },
-  );
+    }
+  });
 
   return {
     addEventListener: (type, callback) => {
@@ -50,7 +52,19 @@ export const createEventTarget = async <T extends CustomEvent>(): Promise<TypedE
       }
     },
     dispatchEvent: (event) => {
-      pub.send({ exchange, routingKey }, { name: event.type, detail: event.detail });
+      const payload = JSON.stringify({ name: event.type, detail: event.detail });
+
+      if (payload.length >= 4096) {
+        db.insert(Pubsubs)
+          .values({ channel, payload })
+          .returning({ id: Pubsubs.id })
+          .then(firstOrThrow)
+          .then(({ id }) => pg.notify(channel, JSON.stringify({ id })))
+          .catch(() => null);
+      } else {
+        pg.notify(channel, payload).catch(() => null);
+      }
+
       return true;
     },
   };
