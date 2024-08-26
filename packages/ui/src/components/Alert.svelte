@@ -16,7 +16,7 @@
 {#if open}
   <div class={css({ position: 'fixed', inset: '0', zIndex: '50' })} use:portal>
     <div
-      class={css({ position: 'absolute', inset: '0', backgroundColor: 'gray.1000/60' })}
+      class={css({ position: 'absolute', inset: '0', backgroundColor: 'gray.1000/40' })}
       role="button"
       tabindex="-1"
       on:click={() => (open = false)}
@@ -42,14 +42,15 @@
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
-            borderRadius: '16px',
-            paddingTop: '44px',
-            paddingX: '40px',
-            paddingBottom: '36px',
+            borderRadius: '8px',
+            padding: '32px',
             backgroundColor: 'white',
-            width: '410px',
             pointerEvents: 'auto',
             userSelect: 'text',
+            width: 'auto',
+            minWidth: '430px',
+            maxWidth: '480px',
+            boxShadow: 'strong',
           },
           containerStyle,
         )}
@@ -60,8 +61,7 @@
         <header>
           <h3
             class={css({
-              textStyle: '22eb',
-              textAlign: 'center',
+              textStyle: '16sb',
               wordBreak: 'keep-all',
             })}
           >
@@ -71,10 +71,9 @@
 
         <div
           class={css({
-            marginTop: '4px',
-            textStyle: '15b',
-            color: 'text.tertiary',
-            textAlign: 'center',
+            marginTop: '6px',
+            textStyle: '14r',
+            color: 'text.secondary',
             whiteSpace: 'pre-wrap',
           })}
         >
@@ -85,15 +84,19 @@
           class={css(
             {
               display: 'flex',
-              flexDirection: 'column',
-              gap: '9px',
-              marginTop: '30px',
+              gap: '8px',
+              marginTop: '16px',
+              justifyContent: 'flex-end',
             },
             actionStyle,
           )}
         >
+          <Button style={css.raw({ minWidth: '86px' })} size="md" variant="secondary" on:click={() => (open = false)}>
+            <slot name="cancel" />
+          </Button>
           <Button
-            size="lg"
+            style={css.raw({ minWidth: '86px' })}
+            size="md"
             variant="danger-fill"
             on:click={() => {
               onAction();
@@ -102,14 +105,6 @@
           >
             <slot name="action" />
           </Button>
-
-          <button
-            class={css({ paddingX: '16px', paddingY: '8px', textStyle: '14sb', color: 'text.secondary' })}
-            type="button"
-            on:click={() => (open = false)}
-          >
-            <slot name="cancel" />
-          </button>
         </div>
       </div>
     </div>
