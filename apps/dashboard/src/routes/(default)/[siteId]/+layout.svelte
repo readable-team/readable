@@ -12,12 +12,8 @@
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
   import { PageList } from './(pageTree)';
-  import SiteSettingModal from './SiteSettingModal.svelte';
   import UserMenu from './UserMenu.svelte';
   import type { CategoryData, PageData } from './(pageTree)/types';
-
-  let openSiteSettingModal = false;
-  $: openSiteSettingModal = $page.url.hash.startsWith('#/settings/site');
 
   $: query = graphql(`
     query SiteLayout_Query($siteId: ID!) {
@@ -25,8 +21,6 @@
 
       me @required {
         id
-
-        ...SiteSettingModal_user
       }
 
       site(siteId: $siteId) {
@@ -86,8 +80,6 @@
             }
           }
         }
-
-        ...SiteSettingModal_site
       }
     }
   `);
@@ -346,9 +338,9 @@
           <li>
             <a
               class={sidebarMenuItemStyle}
-              aria-selected={openSiteSettingModal}
+              aria-selected={$page.url.pathname.startsWith(`/${$query.site.id}/settings`)}
               data-sveltekit-preload-data="false"
-              href="#/settings/site"
+              href={`/${$query.site.id}/settings`}
               role="tab"
               type="button"
             >
@@ -365,5 +357,3 @@
     <slot />
   </div>
 </div>
-
-<SiteSettingModal $site={$query.site} $user={$query.me} bind:open={openSiteSettingModal} />
