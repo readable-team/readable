@@ -79,8 +79,8 @@ export const semanticColors = defineSemanticTokens.colors({
   },
   surface: {
     primary: { value: { base: '{colors.white}', _dark: '{colors.darkgray.1000}' } },
-    secondary: { value: { base: '{colors.gray.200}', _dark: '{colors.darkgray.800}' } },
-    tertiary: { value: { base: '{colors.white}', _dark: '{colors.darkgray.700}' } },
+    secondary: { value: { base: '{colors.gray.100}', _dark: '{colors.darkgray.900}' } },
+    tertiary: { value: { base: '{colors.gray.200}', _dark: '{colors.darkgray.800}' } },
   },
   link: {
     DEFAULT: { value: { base: '{colors.brand.600}', _dark: '{colors.brand.500}' } },

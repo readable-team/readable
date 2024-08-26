@@ -89,10 +89,13 @@
       flex({
         'alignItems': 'center',
         'borderRadius': '6px',
-        'height': '30px',
+        'height': '32px',
         'paddingX': '4px',
         'gap': '2px',
         '_hover': {
+          backgroundColor: 'neutral.20',
+        },
+        '&:has(button[aria-expanded=true])': {
           backgroundColor: 'neutral.20',
         },
         '&:has(a[aria-selected=true])': {
@@ -153,8 +156,9 @@
               alignItems: 'center',
               justifyContent: 'center',
               paddingX: '4px',
-              backgroundColor: 'neutral.50',
-              color: 'neutral.0',
+              paddingY: '2px',
+              backgroundColor: 'neutral.30',
+              color: 'text.secondary',
               textStyle: '11b',
               borderRadius: '3px',
             })}
@@ -171,20 +175,11 @@
         >
           {item.content.title}
         </span>
-        <div
-          class={flex({
-            display: 'none',
-            _groupHover: {
-              display: 'flex',
-            },
-            alignItems: 'center',
-            justifyContent: 'center',
-          })}
-        >
-          <Menu disableAutoUpdate placement="bottom-start">
-            <button
-              slot="button"
-              class={css({
+        <Menu disableAutoUpdate offset={2} placement="bottom-start">
+          <div
+            slot="button"
+            class={css(
+              {
                 display: 'none',
                 _groupHover: {
                   display: 'block',
@@ -195,28 +190,29 @@
                 _hover: {
                   backgroundColor: 'neutral.30',
                 },
+              },
+              open && { display: 'block' },
+            )}
+            let:open
+          >
+            <Icon icon={EllipsisIcon} size={14} />
+          </div>
+          <MenuItem on:click={() => duplicatePage({ pageId: item.id })}>
+            <span>복제</span>
+          </MenuItem>
+          <MenuItem
+            variant="danger"
+            on:click={() =>
+              invokeAlert({
+                title: '페이지 삭제',
+                content: '페이지를 삭제하시겠습니까?',
+                actionText: '삭제',
+                action: () => deletePage({ pageId: item.id }),
               })}
-              type="button"
-            >
-              <Icon icon={EllipsisIcon} size={14} />
-            </button>
-            <MenuItem on:click={() => duplicatePage({ pageId: item.id })}>
-              <span>복제</span>
-            </MenuItem>
-            <MenuItem
-              variant="danger"
-              on:click={() =>
-                invokeAlert({
-                  title: '페이지 삭제',
-                  content: '페이지를 삭제하시겠습니까?',
-                  actionText: '삭제',
-                  action: () => deletePage({ pageId: item.id }),
-                })}
-            >
-              <span>삭제</span>
-            </MenuItem>
-          </Menu>
-        </div>
+          >
+            <span>삭제</span>
+          </MenuItem>
+        </Menu>
       </a>
     {:else}
       <!-- 섹션 (카테고리) -->

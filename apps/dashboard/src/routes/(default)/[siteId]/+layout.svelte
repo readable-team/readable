@@ -202,13 +202,22 @@
     gap: '2px',
     flex: '1',
     borderRadius: '6px',
-    padding: '5px',
+    paddingX: '4px',
+    paddingY: '5px',
     textStyle: '14m',
     color: 'text.secondary',
     width: 'full',
     height: '30px',
     _hover: {
       backgroundColor: 'neutral.20',
+    },
+    _active: {
+      backgroundColor: 'neutral.20',
+      color: 'text.primary',
+    },
+    _selected: {
+      backgroundColor: 'neutral.20',
+      color: 'text.primary',
     },
   });
 
@@ -229,10 +238,11 @@
       justifyContent: 'space-between',
       height: '52px',
       borderBottomWidth: '1px',
-      borderBottomColor: 'border.secondary',
+      borderBottomColor: 'border.primary',
       paddingLeft: '20px',
       paddingRight: '16px',
       paddingY: '10px',
+      backgroundColor: 'surface.secondary',
     })}
   >
     <div
@@ -275,7 +285,7 @@
         width: '[18.75%]',
         maxWidth: '340px',
         borderRightWidth: '1px',
-        borderColor: 'border.secondary',
+        borderColor: 'border.primary',
         overflowY: 'auto',
       })}
     >
@@ -311,9 +321,12 @@
 
         <ul
           class={flex({
-            padding: '20px',
+            marginX: '20px',
+            paddingY: '20px',
             flexDirection: 'column',
             gap: '1px',
+            borderTopWidth: '1px',
+            borderColor: 'border.primary',
           })}
         >
           <li>
@@ -333,6 +346,7 @@
           <li>
             <a
               class={sidebarMenuItemStyle}
+              aria-selected={openSiteSettingModal}
               data-sveltekit-preload-data="false"
               href="#/settings/site"
               role="tab"

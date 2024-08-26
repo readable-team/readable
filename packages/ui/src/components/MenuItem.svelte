@@ -42,18 +42,22 @@
       base: flex.raw({
         alignItems: 'center',
         gap: '10px',
-        borderRadius: '6px',
-        paddingX: '10px',
-        paddingY: '8px',
-        textStyle: '14sb',
+        borderRadius: '4px',
+        paddingX: '12px',
+        paddingY: '6px',
+        textStyle: '14m',
         textAlign: 'left',
         color: 'text.secondary',
         width: 'full',
         _hover: {
-          backgroundColor: 'neutral.10',
+          backgroundColor: 'neutral.20',
         },
         _focus: {
-          backgroundColor: 'neutral.10',
+          backgroundColor: 'neutral.20',
+        },
+        _active: {
+          color: 'text.primary',
+          backgroundColor: 'neutral.20',
         },
         _selected: {
           color: 'text.primary',

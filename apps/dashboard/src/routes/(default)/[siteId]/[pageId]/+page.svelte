@@ -4,8 +4,11 @@
   import { Alert, Button, Helmet, Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
   import dayjs from 'dayjs';
   import { PageState } from '@/enums';
+  import CopyIcon from '~icons/lucide/copy';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import ExternalLinkIcon from '~icons/lucide/external-link';
+  import TrashIcon from '~icons/lucide/trash';
+  import UndoIcon from '~icons/lucide/undo';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
@@ -130,8 +133,8 @@
             width: 'full',
           },
           $query.page.state === PageState.DRAFT && {
-            backgroundColor: 'neutral.60',
-            color: 'neutral.0',
+            backgroundColor: 'neutral.20',
+            color: 'text.secondary',
           },
         )}
       >
@@ -186,8 +189,8 @@
           <Icon icon={ExternalLinkIcon} size={14} />
         </a>
       {/if}
-      <Menu>
-        <button
+      <Menu offset={2} placement="bottom-end">
+        <div
           slot="button"
           class={css({
             borderRadius: '2px',
@@ -195,26 +198,28 @@
             color: 'neutral.60',
             _hover: { backgroundColor: 'neutral.10' },
           })}
-          type="button"
         >
           <Icon icon={EllipsisIcon} size={14} />
-        </button>
+        </div>
 
         <MenuItem
           on:click={async () => {
             await duplicatePage({ pageId: $query.page.id });
           }}
         >
+          <Icon icon={CopyIcon} size={14} />
           <span>복제</span>
-        </MenuItem>
-        <MenuItem variant="danger" on:click={() => (deletePageOpen = true)}>
-          <span>삭제</span>
         </MenuItem>
         {#if $query.page.state === PageState.PUBLISHED}
           <MenuItem on:click={() => (unpublishPageOpen = true)}>
+            <Icon icon={UndoIcon} size={14} />
             <span>발행 취소</span>
           </MenuItem>
         {/if}
+        <MenuItem variant="danger" on:click={() => (deletePageOpen = true)}>
+          <Icon icon={TrashIcon} size={14} />
+          <span>삭제</span>
+        </MenuItem>
       </Menu>
     </div>
   </div>
