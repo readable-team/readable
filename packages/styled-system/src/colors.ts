@@ -6,15 +6,15 @@ export const colors = defineTokens.colors({
   transparent: { value: 'rgb(0 0 0 / 0)' },
 
   gray: {
-    '100': { value: '#f4f4f5' },
-    '200': { value: '#ecedee' },
-    '300': { value: '#e2e3e5' },
-    '400': { value: '#d1d3d7' },
-    '500': { value: '#a9acb1' },
-    '600': { value: '#8f9298' },
-    '700': { value: '#6f7379' },
-    '800': { value: '#50545a' },
-    '900': { value: '#424548' },
+    '100': { value: '#f9fbff' },
+    '200': { value: '#f2f4fa' },
+    '300': { value: '#e4e5ea' },
+    '400': { value: '#cbccd2' },
+    '500': { value: '#b7b9c0' },
+    '600': { value: '#92949a' },
+    '700': { value: '#727576' },
+    '800': { value: '#56585a' },
+    '900': { value: '#363839' },
     '1000': { value: '#191b1c' },
   },
   darkgray: {
@@ -62,9 +62,8 @@ export const semanticColors = defineSemanticTokens.colors({
     accent: { value: { base: '{colors.brand.600}', _dark: '{colors.brand.500}' } },
     primary: { value: { base: '{colors.gray.1000}', _dark: '{colors.darkgray.100}' } },
     secondary: { value: { base: '{colors.gray.700}', _dark: '{colors.darkgray.300}' } },
-    tertiary: { value: { base: '{colors.gray.500}', _dark: '{colors.darkgray.500}' } },
+    tertiary: { value: { base: '{colors.gray.600}', _dark: '{colors.darkgray.700}' } },
     danger: { value: { base: '{colors.red.600}', _dark: '{colors.red.500}' } },
-    placeholder: { value: { base: '{colors.gray.500}', _dark: '{colors.darkgray.400}' } },
   },
   sidebar: {
     surface: { value: { base: '{colors.gray.100}', _dark: '{colors.darkgray.900}' } },
@@ -74,10 +73,9 @@ export const semanticColors = defineSemanticTokens.colors({
     secondary: { value: { base: '{colors.gray.300}', _dark: '{colors.darkgray.800}' } },
   },
   border: {
-    primary: { value: { base: '{colors.gray.100}', _dark: '{colors.darkgray.800}' } },
-    secondary: { value: { base: '{colors.gray.200}', _dark: '{colors.darkgray.900}' } },
-    tertiary: { value: { base: '{colors.gray.300}', _dark: '{colors.darkgray.800}' } },
     image: { value: { base: '{colors.gray.400/60}', _dark: '{colors.darkgray.800/60}' } },
+    primary: { value: { base: '{colors.gray.200}', _dark: '{colors.darkgray.800}' } },
+    secondary: { value: { base: '{colors.gray.300}', _dark: '{colors.darkgray.900}' } },
   },
   surface: {
     primary: { value: { base: '{colors.white}', _dark: '{colors.darkgray.1000}' } },

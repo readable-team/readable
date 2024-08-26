@@ -65,7 +65,7 @@ export const globalCss = defineGlobalStyles({
   },
 
   '::placeholder': {
-    color: 'text.placeholder',
+    color: 'text.tertiary',
   },
 
   '::-webkit-search-cancel-button': {

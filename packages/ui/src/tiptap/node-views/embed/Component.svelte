@@ -70,7 +70,7 @@
           {@html node.attrs.html}
         </div>
       {:else}
-        <div class={flex({ borderWidth: '1px', borderColor: 'border.tertiary', borderRadius: '6px' })}>
+        <div class={flex({ borderWidth: '1px', borderColor: 'border.primary', borderRadius: '6px' })}>
           <div class={flex({ direction: 'column', grow: '1', paddingX: '16px', paddingY: '15px', truncate: true })}>
             <p class={css({ marginBottom: '3px', textStyle: '14m', truncate: true })}>
               {node.attrs.title ?? '(제목 없음)'}
