@@ -40,30 +40,32 @@
   type Variants = RecipeVariant<typeof recipe>;
   const recipe = cva({
     base: {
-      display: 'flex',
-      alignItems: 'center',
-      borderWidth: '1px',
-      borderColor: { base: 'gray.200', _dark: 'darkgray.700' },
-      padding: '10px',
-      color: { base: 'gray.500', _dark: 'darkgray.400' },
-      backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
-      transition: 'common',
-      _hasFocusedInput: {
-        borderColor: { base: 'gray.500', _dark: 'darkgray.700' },
+      'display': 'flex',
+      'alignItems': 'center',
+      'borderWidth': '1px',
+      'borderColor': { base: 'gray.300', _dark: 'darkgray.700' },
+      'color': { base: 'gray.500', _dark: 'darkgray.400' },
+      'backgroundColor': { base: 'white', _dark: 'darkgray.1000' },
+      'transition': 'common',
+      '& input::placeholder': {
+        color: { base: 'gray.500', _dark: 'darkgray.600' },
       },
-      _hasFilledInput: {
+      '_hover': {
+        borderColor: { base: 'gray.400', _dark: 'darkgray.600' },
+      },
+      '_hasFocusedInput': {
+        borderColor: { base: 'brand.600', _dark: 'brand.500' },
+      },
+      '_hasFilledInput': {
         color: { base: 'gray.1000', _dark: 'darkgray.100' },
+        borderColor: { base: 'gray.300', _dark: 'darkgray.700' },
+      },
+      '_hasDisabledInput': {
+        color: { base: 'gray.500', _dark: 'darkgray.600' },
+        backgroundColor: { base: 'gray.300', _dark: 'darkgray.900' },
         borderColor: { base: 'gray.200', _dark: 'darkgray.700' },
       },
-      _hasDisabledInput: {
-        'color': { base: 'gray.500', _dark: 'darkgray.600' },
-        'backgroundColor': { base: 'gray.200', _dark: 'darkgray.900' },
-        'borderColor': { base: 'gray.200', _dark: 'darkgray.700' },
-        '& input::placeholder': {
-          color: { base: 'gray.500', _dark: 'darkgray.600' },
-        },
-      },
-      _hasInvalidInput: {
+      '_hasInvalidInput': {
         borderColor: { base: 'red.600', _dark: 'red.500' },
         _hasFocusedInput: {
           borderColor: { base: 'red.600', _dark: 'red.500' },
@@ -80,11 +82,13 @@
           borderRadius: '8px',
           textStyle: '14m',
           height: '38px',
+          paddingX: '12px',
         },
         lg: {
           borderRadius: '10px',
           textStyle: '16m',
           height: '48px',
+          paddingX: '16px',
         },
       },
     },
