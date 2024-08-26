@@ -1,6 +1,7 @@
 <script lang="ts">
   import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import { token } from '@readable/styled-system/tokens';
   import { Icon } from '@readable/ui/components';
   import FolderPlusIcon from '~icons/lucide/folder-plus';
   import PlusIcon from '~icons/lucide/plus';
@@ -74,9 +75,11 @@
     clone.style.top = `${originalRect.top}px`;
     clone.style.width = `${originalRect.width}px`;
     clone.style.height = `${originalRect.height}px`;
-    clone.style.filter = 'brightness(0.5)';
+    clone.style.filter = 'brightness(0.7)';
     clone.style.pointerEvents = 'none';
     clone.style.display = 'none';
+    clone.style.backgroundColor = token('colors.sidebar.surface');
+    clone.style.borderRadius = '6px';
     document.body.append(clone);
 
     return clone;
