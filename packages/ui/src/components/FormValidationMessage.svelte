@@ -21,7 +21,7 @@
   }
 
   $: store = type === 'error' ? form.errors : form.warnings;
-  $: message = isSubmitted && $store[errorFor]?.[0];
+  $: message = $store[errorFor]?.[0];
 </script>
 
 {#if message}
