@@ -71,6 +71,32 @@ Site.implement({
           .then(first);
       },
     }),
+
+    hasPage: t.field({
+      type: 'Boolean',
+      resolve: async (site) => {
+        return await db
+          .select({ count: count(Pages.id) })
+          .from(Pages)
+          .where(and(eq(Pages.siteId, site.id), ne(Pages.state, PageState.DELETED)))
+          .then((rows) => rows[0].count > 0);
+      },
+    }),
+
+    firstPage: t.field({
+      type: Page,
+      nullable: true,
+      resolve: async (site) => {
+        return await db
+          .select(getTableColumns(Pages))
+          .from(Categories)
+          .innerJoin(Pages, and(eq(Categories.id, Pages.categoryId), ne(Pages.state, PageState.DELETED)))
+          .where(and(eq(Categories.siteId, site.id), eq(Categories.state, CategoryState.ACTIVE)))
+          .orderBy(asc(Categories.order), asc(Pages.order))
+          .limit(1)
+          .then(first);
+      },
+    }),
   }),
 });
 

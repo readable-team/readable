@@ -364,6 +364,8 @@ enum SingleSignOnProvider {
 type Site implements ISite {
   categories: [Category!]!
   customDomain(state: SiteCustomDomainState!): SiteCustomDomain
+  firstPage: Page
+  hasPage: Boolean!
   id: ID!
   logo: Image
   name: String!
