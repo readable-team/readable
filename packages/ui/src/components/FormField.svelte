@@ -5,6 +5,7 @@
   import { setFormField } from '../forms';
   import FormValidationMessage from './FormValidationMessage.svelte';
   import Icon from './Icon.svelte';
+  import Tooltip from './Tooltip.svelte';
   import type { SystemStyleObject } from '@readable/styled-system/types';
 
   export let style: SystemStyleObject | undefined = undefined;
@@ -19,15 +20,19 @@
 
 <fieldset class={css({ display: 'flex', flexDirection: 'column' }, style)}>
   {#if label}
-    <label class={css({ marginBottom: '4px', textStyle: '14b', color: 'neutral.80' })} for={name}>
-      {label}
+    <label
+      class={flex({ marginBottom: '8px', textStyle: '14b', color: 'neutral.70', alignItems: 'center', gap: '4px' })}
+      for={name}
+    >
+      <span>
+        {label}
+      </span>
+      {#if description}
+        <Tooltip message={description} placement="right">
+          <Icon style={css.raw({ color: 'neutral.50' })} icon={InfoIcon} size={14} />
+        </Tooltip>
+      {/if}
     </label>
-  {/if}
-
-  {#if description}
-    <p class={css({ marginBottom: '4px', textStyle: '12m', color: 'neutral.70' })}>
-      {description}
-    </p>
   {/if}
 
   <slot />

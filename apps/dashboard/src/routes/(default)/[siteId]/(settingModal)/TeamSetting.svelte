@@ -87,10 +87,10 @@
 <form use:form>
   <input name="teamId" type="hidden" />
   <input name="avatarId" type="hidden" />
-  <FormField name="avatar">
+  <FormField name="avatar" label="이미지">
     <AvatarInput name="avatarDraftFile" avatar={$team.avatar} />
   </FormField>
-  <FormField name="name">
+  <FormField name="name" label="이름">
     <TextInput name="name" placeholder="이름" />
   </FormField>
 

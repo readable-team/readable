@@ -81,20 +81,16 @@
 
 <h1>내 계정</h1>
 
-<br />
-<br />
-<h2>이메일</h2>
-<p>{$user.email}</p>
-<br />
-<br />
-
 <form use:form>
   <input name="avatarId" type="hidden" />
-  <FormField name="avatar">
+  <FormField name="avatar" label="이미지">
     <AvatarInput name="avatarDraftFile" avatar={$user.avatar} />
   </FormField>
-  <FormField name="name">
+  <FormField name="name" label="이름">
     <TextInput name="name" placeholder="이름" />
+  </FormField>
+  <FormField name="email" description="FIXME: 이메일은 변경할 수 없습니다." label="이메일">
+    <TextInput name="email" disabled value={$user.email} />
   </FormField>
 
   <div class={flex()}>
