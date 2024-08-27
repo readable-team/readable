@@ -48,7 +48,7 @@
       'backgroundColor': { base: 'white', _dark: 'darkgray.1000' },
       'transition': 'common',
       '& input::placeholder': {
-        color: { base: 'gray.500', _dark: 'darkgray.600' },
+        color: { base: 'gray.600', _dark: 'darkgray.400' },
       },
       '_hover': {
         borderColor: { base: 'gray.400', _dark: 'darkgray.600' },
@@ -62,7 +62,7 @@
       },
       '_hasDisabledInput': {
         color: { base: 'gray.500', _dark: 'darkgray.600' },
-        backgroundColor: { base: 'gray.300', _dark: 'darkgray.900' },
+        backgroundColor: { base: 'gray.200', _dark: 'darkgray.900' },
         borderColor: { base: 'gray.200', _dark: 'darkgray.700' },
       },
       '_hasInvalidInput': {

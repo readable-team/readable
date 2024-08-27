@@ -85,7 +85,7 @@
             {
               display: 'flex',
               gap: '8px',
-              marginTop: '16px',
+              marginTop: '24px',
               justifyContent: 'flex-end',
             },
             actionStyle,
