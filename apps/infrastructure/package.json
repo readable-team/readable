@@ -6,6 +6,9 @@
   "scripts": {
     "lint:typecheck": "tsc"
   },
+  "dependencies": {
+    "@readable/pulumi": "workspace:*"
+  },
   "devDependencies": {
     "@pulumi/aws": "^6.50.1",
     "@pulumi/kubernetes": "^4.17.1",
