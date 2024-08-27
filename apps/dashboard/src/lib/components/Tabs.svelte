@@ -1,39 +1,20 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { page } from '$app/stores';
+  import { flex } from '@readable/styled-system/patterns';
 
   export let tabs: {
     title: string;
     path: string;
+    selected: boolean;
   }[] = [];
-
-  $: currentPath = $page.url.pathname;
 </script>
 
-<div
-  class={css({
-    display: 'flex',
-    gap: '8px',
-    position: 'relative',
-    paddingLeft: '30px',
-  })}
->
-  {#each tabs as { title, path }, i (i)}
-    <div
-      class={css({
-        width: 'full',
-        position: 'absolute',
-        left: '0',
-        bottom: '0',
-        borderBottomWidth: '1px',
-        borderColor: 'divider.primary',
-        userSelect: 'none',
-      })}
-    />
+<div class={flex({ position: 'relative', paddingTop: '4px' })}>
+  {#each tabs as { title, path, selected }, i (i)}
     <a
       class={css({
         'zIndex': '10',
-        'height': '36px',
+        'height': '42px',
         'paddingBottom': '4px',
         '_selected': {
           'borderBottomWidth': '[1.5px]',
@@ -44,29 +25,28 @@
           },
         },
         '_hover': {
-          'color': { base: 'gray.1000', _dark: 'darkgray.100' },
+          'color': { base: 'gray.700', _dark: 'darkgray.300' },
           '& > span': {
             backgroundColor: { base: 'gray.100', _dark: 'darkgray.900' },
           },
         },
-        'color': { base: 'gray.500', _dark: 'darkgray.600' },
+        'color': { base: 'gray.700', _dark: 'darkgray.300' },
         '& > span': {
           backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
         },
       })}
-      aria-selected={path === currentPath ? 'true' : 'false'}
+      aria-selected={selected}
       href={path}
       role="tab"
     >
       <span
-        class={css({
-          display: 'flex',
-          height: '31px',
-          paddingX: '14px',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textStyle: '16b',
+        class={flex({
+          align: 'center',
+          justify: 'center',
           borderRadius: '4px',
+          paddingX: '16px',
+          textStyle: '14m',
+          height: '38px',
         })}
       >
         {title}

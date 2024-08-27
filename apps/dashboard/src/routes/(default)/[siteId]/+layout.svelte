@@ -1,16 +1,14 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon } from '@readable/ui/components';
+  import { Button, Icon } from '@readable/ui/components';
   import { onMount } from 'svelte';
-  import EarthIcon from '~icons/lucide/earth';
-  import SettingsIcon from '~icons/lucide/settings';
   import ReadableIcon from '~icons/rdbl/readable';
   import SlashDividerIcon from '~icons/rdbl/slash-divider';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
-  import { Img } from '$lib/components';
+  import { Img, Tabs } from '$lib/components';
   import { PageList } from './(pageTree)';
   import UserMenu from './UserMenu.svelte';
   import type { CategoryData, PageData } from './(pageTree)/types';
@@ -189,30 +187,6 @@
     return true;
   }
 
-  const sidebarMenuItemStyle = flex({
-    alignItems: 'center',
-    gap: '2px',
-    flex: '1',
-    borderRadius: '6px',
-    paddingX: '4px',
-    paddingY: '5px',
-    textStyle: '14m',
-    color: 'text.secondary',
-    width: 'full',
-    height: '30px',
-    _hover: {
-      backgroundColor: 'neutral.20',
-    },
-    _active: {
-      backgroundColor: 'neutral.20',
-      color: 'text.primary',
-    },
-    _selected: {
-      backgroundColor: 'neutral.20',
-      color: 'text.primary',
-    },
-  });
-
   onMount(() => {
     const unsubscribe = siteUpdateStream.subscribe({
       siteId: $query.site.id,
@@ -228,13 +202,11 @@
   <header
     class={flex({
       justifyContent: 'space-between',
-      height: '52px',
-      borderBottomWidth: '1px',
-      borderBottomColor: 'border.primary',
+      height: '48px',
       paddingLeft: '20px',
       paddingRight: '16px',
       paddingY: '10px',
-      backgroundColor: 'surface.secondary',
+      backgroundColor: 'surface.primary',
     })}
   >
     <div
@@ -261,6 +233,38 @@
     </div>
     <UserMenu {$query} />
   </header>
+
+  <nav
+    class={flex({
+      align: 'center',
+      justify: 'space-between',
+      borderBottomWidth: '1px',
+      borderColor: 'border.primary',
+      paddingX: '20px',
+      height: '46px',
+    })}
+  >
+    <Tabs
+      tabs={[
+        {
+          title: '콘텐츠',
+          path: `/${$query.site.id}`,
+          selected:
+            $page.url.pathname.startsWith(`/${$query.site.id}`) &&
+            !$page.url.pathname.startsWith(`/${$query.site.id}/settings`),
+        },
+        {
+          title: '사이트 설정',
+          path: `/${$query.site.id}/settings`,
+          selected: `/${$query.site.id}/settings/` === $page.url.pathname,
+        },
+      ]}
+    />
+
+    <Button href={$query.site.url} rel="noopener noreferrer" size="sm" target="_blank" type="link" variant="secondary">
+      사이트 바로가기
+    </Button>
+  </nav>
 
   <div
     class={flex({
@@ -310,47 +314,6 @@
             }}
           />
         </div>
-
-        <ul
-          class={flex({
-            marginX: '20px',
-            paddingY: '20px',
-            flexDirection: 'column',
-            gap: '1px',
-            borderTopWidth: '1px',
-            borderColor: 'border.primary',
-          })}
-        >
-          <li>
-            <a
-              class={sidebarMenuItemStyle}
-              href={$query.site.url}
-              rel="noopener noreferrer"
-              target="_blank"
-              type="link"
-            >
-              <div class={css({ padding: '5px' })}>
-                <Icon style={css.raw({ color: 'neutral.50' })} icon={EarthIcon} size={14} />
-              </div>
-              <span>사이트 바로가기</span>
-            </a>
-          </li>
-          <li>
-            <a
-              class={sidebarMenuItemStyle}
-              aria-selected={$page.url.pathname.startsWith(`/${$query.site.id}/settings`)}
-              data-sveltekit-preload-data="false"
-              href={`/${$query.site.id}/settings`}
-              role="tab"
-              type="button"
-            >
-              <div class={css({ padding: '5px' })}>
-                <Icon style={css.raw({ color: 'neutral.50' })} icon={SettingsIcon} size={14} />
-              </div>
-              <span>설정</span>
-            </a>
-          </li>
-        </ul>
       </nav>
     </aside>
 
