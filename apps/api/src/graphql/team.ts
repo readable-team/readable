@@ -342,6 +342,37 @@ builder.mutationFields((t) => ({
     },
   }),
 
+  revokeInvitation: t.withAuth({ session: true }).fieldWithInput({
+    type: TeamMemberInvitation,
+    input: { invitationId: t.input.string() },
+    resolve: async (_, { input }, ctx) => {
+      const invitation = await db
+        .select({
+          ...getTableColumns(TeamMemberInvitations),
+          team: {
+            id: Teams.id,
+            name: Teams.name,
+          },
+        })
+        .from(TeamMemberInvitations)
+        .innerJoin(Teams, eq(TeamMemberInvitations.teamId, Teams.id))
+        .where(eq(TeamMemberInvitations.id, input.invitationId))
+        .then(firstOrThrow);
+
+      await assertTeamPermission({
+        teamId: invitation.teamId,
+        userId: ctx.session.userId,
+        role: TeamMemberRole.ADMIN,
+      });
+
+      return await db
+        .delete(TeamMemberInvitations)
+        .where(eq(TeamMemberInvitations.id, input.invitationId))
+        .returning()
+        .then(firstOrThrow);
+    },
+  }),
+
   removeTeamMember: t.withAuth({ session: true }).fieldWithInput({
     type: TeamMember,
     input: { teamId: t.input.string(), userId: t.input.string() },

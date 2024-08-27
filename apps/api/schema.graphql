@@ -167,6 +167,7 @@ type Mutation {
   publishPage(input: PublishPageInput!): Page!
   removeTeamMember(input: RemoveTeamMemberInput!): TeamMember!
   resendInvitationEmail(input: ResendInvitationEmailInput!): TeamMemberInvitation!
+  revokeInvitation(input: RevokeInvitationInput!): TeamMemberInvitation!
   setSiteCustomDomain(input: SetSiteCustomDomainInput!): SiteCustomDomain!
   syncPageContent(input: SyncPageContentInput!): [PageContentSyncOperation!]!
   unfurlEmbed(input: UnfurlEmbedInput!): Embed!
@@ -317,6 +318,10 @@ input RemoveTeamMemberInput {
 }
 
 input ResendInvitationEmailInput {
+  invitationId: String!
+}
+
+input RevokeInvitationInput {
   invitationId: String!
 }
 
