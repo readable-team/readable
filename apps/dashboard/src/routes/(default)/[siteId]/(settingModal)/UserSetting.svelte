@@ -1,6 +1,7 @@
 <script lang="ts">
+  import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, TextInput } from '@readable/ui/components';
+  import { Button, FormField, HorizontalDivider, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
@@ -79,21 +80,26 @@
   }
 </script>
 
-<h1>내 계정</h1>
+<h1 class={css({ textStyle: '28eb' })}>개인 설정</h1>
+
+<HorizontalDivider style={css.raw({ marginTop: '20px', marginBottom: '40px' })} />
 
 <form use:form>
   <input name="avatarId" type="hidden" />
-  <FormField name="avatar" label="이미지">
-    <AvatarInput name="avatarDraftFile" avatar={$user.avatar} />
-  </FormField>
-  <FormField name="name" label="이름">
-    <TextInput name="name" placeholder="이름" />
-  </FormField>
-  <FormField name="email" description="FIXME: 이메일은 변경할 수 없습니다." label="이메일">
-    <TextInput name="email" disabled value={$user.email} />
-  </FormField>
 
-  <div class={flex()}>
+  <div class={flex({ flexDirection: 'column', gap: '24px' })}>
+    <FormField name="avatar" label="이미지" noMessage>
+      <AvatarInput name="avatarDraftFile" avatar={$user.avatar} />
+    </FormField>
+    <FormField name="name" label="이름">
+      <TextInput name="name" placeholder="이름" />
+    </FormField>
+    <FormField name="email" description="FIXME: 이메일은 변경할 수 없습니다." label="이메일">
+      <TextInput name="email" disabled value={$user.email} />
+    </FormField>
+  </div>
+
+  <div class={flex({ marginTop: '8px', gap: '8px', justify: 'flex-end' })}>
     {#if $isDirty}
       <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
     {/if}
