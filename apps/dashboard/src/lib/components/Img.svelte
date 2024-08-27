@@ -2,9 +2,10 @@
   import { Img } from '@readable/ui/components';
   import { fragment, graphql } from '$graphql';
   import type { SystemStyleObject } from '@readable/styled-system/types';
+  import type { ComponentProps } from 'svelte';
   import type { Img_image } from '$graphql';
 
-  type Size = 16 | 24 | 32 | 48 | 64 | 96 | 128 | 256 | 512 | 1024 | 'full';
+  type Size = ComponentProps<Img>['size'];
 
   let _image: Img_image;
   export { _image as $image };

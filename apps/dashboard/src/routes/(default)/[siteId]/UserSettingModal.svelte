@@ -1,10 +1,10 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon, Modal } from '@readable/ui/components';
-  import BuildingIcon from '~icons/lucide/building';
+  import { HorizontalDivider, Icon } from '@readable/ui/components';
+  import Building2Icon from '~icons/lucide/building-2';
   import CircleUserIcon from '~icons/lucide/circle-user';
-  import UserCogIcon from '~icons/lucide/user-cog';
+  import UsersRoundIcon from '~icons/lucide/users-round';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
@@ -55,6 +55,12 @@
 
         team {
           id
+          name
+          avatar {
+            id
+            ...Img_image
+          }
+
           ...TeamSetting_team
           ...TeamMembers_team
         }
@@ -65,19 +71,19 @@
   const personalSettings = [
     {
       icon: CircleUserIcon,
-      text: '내 계정',
+      text: '개인 설정',
       tab: '#/settings/personal',
     },
   ];
 
   const teamSettings = [
     {
-      icon: BuildingIcon,
-      text: '팀 관리',
+      icon: Building2Icon,
+      text: '팀 설정',
       tab: '#/settings/team',
     },
     {
-      icon: UserCogIcon,
+      icon: UsersRoundIcon,
       text: '멤버 관리',
       tab: '#/settings/team/members',
     },
@@ -85,77 +91,152 @@
 
   const tabItemStyle = flex({
     align: 'center',
-    gap: '6px',
-    borderRadius: '6px',
-    paddingX: '6px',
-    paddingY: '5px',
-    textStyle: '15sb',
+    gap: '10px',
+    borderRadius: '4px',
+    paddingX: '12px',
+    paddingY: '6px',
+    textStyle: '14m',
     color: 'text.secondary',
     width: 'full',
     _hover: { backgroundColor: 'neutral.20' },
-    _selected: { backgroundColor: 'neutral.30' },
+    _selected: { backgroundColor: 'neutral.20', color: 'text.primary' },
   });
 </script>
 
-<Modal
-  style={css.raw({ display: 'flex' })}
-  close={() => {
-    const currentPath = $page.url.pathname;
-    goto(currentPath, { replaceState: true });
-  }}
-  bind:open
->
-  <svelte:fragment slot="sidebar">
-    <div class={flex({ align: 'center', gap: '6px' })}>
-      <Img
-        style={css.raw({
-          flex: 'none',
-          borderWidth: '1px',
-          borderColor: 'border.image',
-          borderRadius: 'full',
-          size: '36px',
-        })}
-        $image={$user.avatar}
-        alt={`${$user.name}의 아바타`}
-        size={48}
-      />
+{#if open}
+  <div
+    class={flex({
+      position: 'fixed',
+      inset: '0',
+      zIndex: '100',
+      width: 'screen',
+      height: 'screen',
+    })}
+  >
+    <div
+      class={css({ position: 'absolute', left: '0', width: '1/2', height: 'full', backgroundColor: 'sidebar.surface' })}
+      aria-hidden="true"
+    />
+    <div
+      class={css({
+        position: 'absolute',
+        right: '0',
+        width: '1/2',
+        height: 'full',
+        backgroundColor: 'surface.primary',
+      })}
+      aria-hidden="true"
+    />
 
-      <div class={css({ truncate: true })}>
-        <p class={css({ textStyle: '14b', truncate: true })}>{$user.name}</p>
-        <p class={css({ textStyle: '13m', color: 'text.tertiary', truncate: true })}>{$user.email}</p>
+    <button
+      class={css({
+        position: 'absolute',
+        top: '50px',
+        right: '50px',
+        width: '100px',
+        height: '100px',
+        backgroundColor: '[red]',
+      })}
+      type="button"
+      on:click={() => {
+        const currentPath = $page.url.pathname;
+        goto(currentPath, { replaceState: true });
+      }}
+    >
+      close
+    </button>
+
+    <div
+      class={flex({
+        position: 'relative',
+        width: '1064px',
+        height: 'full',
+        marginX: 'auto',
+        display: 'flex',
+      })}
+    >
+      <div
+        class={flex({
+          flexDirection: 'column',
+          width: '220px',
+          paddingX: '20px',
+          paddingY: '60px',
+        })}
+      >
+        <div class={flex({ align: 'center', gap: '6px', paddingX: '10px', paddingY: '5px', alignItems: 'center' })}>
+          <Img
+            style={css.raw({
+              flex: 'none',
+              borderWidth: '1px',
+              borderColor: 'border.image',
+              borderRadius: 'full',
+              size: '18px',
+            })}
+            $image={$site.team.avatar}
+            alt={`${$site.team.name}의 아바타`}
+            size={24}
+          />
+
+          <p class={css({ textStyle: '13b', truncate: true, color: 'text.secondary' })}>{$site.team.name}</p>
+        </div>
+
+        <dl class={flex({ direction: 'column', gap: '1px', paddingTop: '1px' })}>
+          {#each teamSettings as setting (setting.text)}
+            <dd>
+              <a class={tabItemStyle} aria-selected={selectedTab === setting.tab} href={setting.tab} role="tab">
+                <Icon icon={setting.icon} />
+                <span>{setting.text}</span>
+              </a>
+            </dd>
+          {/each}
+        </dl>
+
+        <HorizontalDivider style={css.raw({ marginY: '16px' })} />
+
+        <div class={flex({ align: 'center', gap: '6px', paddingX: '10px', paddingY: '5px', alignItems: 'center' })}>
+          <Img
+            style={css.raw({
+              flex: 'none',
+              borderWidth: '1px',
+              borderColor: 'border.image',
+              borderRadius: 'full',
+              size: '18px',
+            })}
+            $image={$user.avatar}
+            alt={`${$user.name}의 아바타`}
+            size={24}
+          />
+
+          <p class={css({ textStyle: '13b', truncate: true, color: 'text.secondary' })}>{$user.name}</p>
+        </div>
+
+        <dl class={flex({ direction: 'column', gap: '4px', paddingTop: '1px' })}>
+          {#each personalSettings as setting (setting.text)}
+            <dd>
+              <a class={tabItemStyle} aria-selected={selectedTab === setting.tab} href={setting.tab} role="tab">
+                <Icon icon={setting.icon} />
+                <span>{setting.text}</span>
+              </a>
+            </dd>
+          {/each}
+        </dl>
+      </div>
+
+      <div
+        class={flex({
+          flex: '1',
+          flexDirection: 'column',
+          backgroundColor: 'surface.primary',
+        })}
+      >
+        {#if selectedTab === '#/settings/team'}
+          <TeamSetting $team={$site.team} />
+        {:else if selectedTab === '#/settings/team/members'}
+          <TeamMembers $team={$site.team} />
+        {:else if selectedTab === '#/settings/personal'}
+          <UserSetting {$user} />
+        {/if}
       </div>
     </div>
-
-    <dl class={flex({ direction: 'column', gap: '4px', paddingTop: '16px', paddingBottom: '8px' })}>
-      <dt class={css({ textStyle: '12sb', color: 'text.tertiary' })}>팀 설정</dt>
-      {#each teamSettings as setting (setting.text)}
-        <dd>
-          <a class={tabItemStyle} aria-selected={selectedTab === setting.tab} href={setting.tab} role="tab">
-            <Icon icon={setting.icon} />
-            <span>{setting.text}</span>
-          </a>
-        </dd>
-      {/each}
-    </dl>
-
-    <dl class={flex({ direction: 'column', gap: '4px', paddingTop: '16px', paddingBottom: '8px' })}>
-      <dt class={css({ textStyle: '12sb', color: 'text.tertiary' })}>개인 설정</dt>
-      {#each personalSettings as setting (setting.text)}
-        <dd>
-          <a class={tabItemStyle} aria-selected={selectedTab === setting.tab} href={setting.tab} role="tab">
-            <Icon icon={setting.icon} />
-            <span>{setting.text}</span>
-          </a>
-        </dd>
-      {/each}
-    </dl>
-  </svelte:fragment>
-
-  {#if selectedTab === '#/settings/team'}
-    <TeamSetting $team={$site.team} />
-  {:else if selectedTab === '#/settings/team/members'}
-    <TeamMembers $team={$site.team} />
-  {:else if selectedTab === '#/settings/personal'}
-    <UserSetting {$user} />
-  {/if}
-</Modal>
+  </div>
+{/if}
