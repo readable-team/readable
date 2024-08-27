@@ -226,13 +226,6 @@ const nodeClass = new k8s.apiextensions.CustomResource('default', {
       },
     ],
 
-    metadataOptions: {
-      httpEndpoint: 'enabled',
-      httpProtocolIPv6: 'disabled',
-      httpPutResponseHopLimit: 2,
-      httpTokens: 'required',
-    },
-
     tags: {
       Name: 'node@eks',
     },
