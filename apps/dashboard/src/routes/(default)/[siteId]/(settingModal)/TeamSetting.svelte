@@ -1,6 +1,7 @@
 <script lang="ts">
+  import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, TextInput } from '@readable/ui/components';
+  import { Button, FormField, HorizontalDivider, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
@@ -79,25 +80,27 @@
   }
 </script>
 
-<h1>팀 관리</h1>
+<h1 class={css({ textStyle: '28eb' })}>팀 설정</h1>
 
-<br />
-<br />
+<HorizontalDivider style={css.raw({ marginTop: '20px', marginBottom: '40px' })} />
 
 <form use:form>
   <input name="teamId" type="hidden" />
   <input name="avatarId" type="hidden" />
-  <FormField name="avatar" label="이미지">
-    <AvatarInput name="avatarDraftFile" avatar={$team.avatar} />
-  </FormField>
-  <FormField name="name" label="이름">
-    <TextInput name="name" placeholder="이름" />
-  </FormField>
 
-  <div class={flex()}>
+  <div class={flex({ flexDirection: 'column', gap: '24px' })}>
+    <FormField name="avatar" label="이미지" noMessage>
+      <AvatarInput name="avatarDraftFile" avatar={$team.avatar} />
+    </FormField>
+    <FormField name="name" label="이름">
+      <TextInput name="name" placeholder="이름" />
+    </FormField>
+  </div>
+
+  <div class={flex({ marginTop: '8px', gap: '8px', justify: 'flex-end' })}>
     {#if $isDirty}
       <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
     {/if}
-    <Button disabled={!$isDirty} size="lg" type="submit">저장</Button>
+    <Button disabled={!$isDirty} size="lg" type="submit">변경</Button>
   </div>
 </form>

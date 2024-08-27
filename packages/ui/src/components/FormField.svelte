@@ -12,6 +12,7 @@
   export let name: string;
   export let label: string | undefined = undefined;
   export let description: string | undefined = undefined;
+  export let noMessage = false;
 
   setFormField({
     name,
@@ -37,27 +38,30 @@
 
   <slot />
 
-  <div
-    class={flex({
-      align: 'center',
-      justify: 'space-between',
-      gap: '4px',
-      textStyle: '12r',
-      marginTop: '4px',
-      color: { base: 'red.600', _dark: 'red.500' },
-    })}
-  >
-    <div class={flex({ align: 'center', gap: '4px' })}>
-      <FormValidationMessage for={name} let:message>
-        <Icon icon={InfoIcon} size={12} />
-        {message}
-      </FormValidationMessage>
-    </div>
+  {#if !noMessage}
+    <div
+      class={flex({
+        align: 'center',
+        justify: 'space-between',
+        gap: '4px',
+        height: '17px',
+        textStyle: '12r',
+        marginTop: '4px',
+        color: { base: 'red.600', _dark: 'red.500' },
+      })}
+    >
+      <div class={flex({ align: 'center', gap: '4px' })}>
+        <FormValidationMessage for={name} let:message>
+          <Icon icon={InfoIcon} size={12} />
+          {message}
+        </FormValidationMessage>
+      </div>
 
-    {#if 'right-text' in $$slots}
-      <span class={css({ textStyle: '12m', color: 'neutral.70' })}>
-        <slot name="right-text" />
-      </span>
-    {/if}
-  </div>
+      {#if 'right-text' in $$slots}
+        <span class={css({ textStyle: '12m', color: 'neutral.70' })}>
+          <slot name="right-text" />
+        </span>
+      {/if}
+    </div>
+  {/if}
 </fieldset>

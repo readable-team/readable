@@ -227,6 +227,8 @@
           flex: '1',
           flexDirection: 'column',
           backgroundColor: 'surface.primary',
+          paddingY: '60px',
+          paddingX: '32px',
         })}
       >
         {#if selectedTab === '#/settings/team'}
