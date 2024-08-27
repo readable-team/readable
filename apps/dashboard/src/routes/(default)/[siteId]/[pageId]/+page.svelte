@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Alert, Button, Helmet, Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
+  import { redirect } from '@sveltejs/kit';
   import dayjs from 'dayjs';
   import { PageState } from '@/enums';
   import CopyIcon from '~icons/lucide/copy';
@@ -9,9 +10,10 @@
   import ExternalLinkIcon from '~icons/lucide/external-link';
   import TrashIcon from '~icons/lucide/trash';
   import UndoIcon from '~icons/lucide/undo';
-  import { goto } from '$app/navigation';
+  import { afterNavigate, goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
+  import { lastVisitedPage } from '$lib/stores';
   import { pageUrl } from '$lib/utils/url';
   import Breadcrumb from './Breadcrumb.svelte';
   import Editor from './Editor.svelte';
@@ -101,6 +103,15 @@
       }
     }
   `);
+
+  afterNavigate(() => {
+    if ($query.page.state === 'DELETED') {
+      $lastVisitedPage = null;
+      redirect(302, `/${$query.page.site.id}/`);
+    } else {
+      $lastVisitedPage = $query.page.id;
+    }
+  });
 </script>
 
 <Helmet title={$query.page.content.title} trailing={$query.page.site.name} />
