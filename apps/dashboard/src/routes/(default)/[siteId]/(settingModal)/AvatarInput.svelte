@@ -46,13 +46,13 @@
         size: 'full',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'neutral.100/40',
+        backgroundColor: 'neutral.100/16',
         color: 'neutral.0',
         borderRadius: 'full',
         transition: '[opacity 0.2s]',
       },
       _groupActive: {
-        backgroundColor: 'neutral.100/60',
+        backgroundColor: 'neutral.100/24',
       },
     })}
   >
