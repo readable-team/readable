@@ -62,18 +62,21 @@
       'gap': '4px',
       'truncate': true,
       '& > li': {
-        display: 'inline-block',
-        borderRadius: '4px',
-        textStyle: '14r',
+        textStyle: '14m',
         color: 'text.tertiary',
+        paddingY: '4px',
       },
       '& > li > a': {
+        display: 'block',
+        borderRadius: '4px',
         paddingX: '6px',
-        paddingY: '3px',
+        paddingY: '4px',
+        truncate: true,
+        _hover: { backgroundColor: 'neutral.20' },
       },
     })}
   >
-    <li class={css({ paddingX: '6px', paddingY: '3px' })}>
+    <li class={css({ paddingX: '6px', paddingY: '8px', truncate: true })}>
       <span>{$query.page.category.name}</span>
     </li>
     <li aria-hidden="true">
@@ -81,12 +84,7 @@
     </li>
     {#each breadcrumbs as page, i (page.id)}
       {@const current = i === breadcrumbs.length - 1}
-      <li
-        class={css({
-          truncate: true,
-          _hover: { backgroundColor: 'surface.secondary' },
-        })}
-      >
+      <li class={css({ truncate: true })}>
         <a
           class={css(current && { color: 'text.primary' })}
           aria-current={current ? 'page' : undefined}
