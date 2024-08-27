@@ -1,5 +1,6 @@
 import * as aws from '@pulumi/aws';
 import * as k8s from '@pulumi/kubernetes';
+import { tables } from '$aws/dynamodb';
 import { cluster } from '$aws/eks';
 
 const role = new aws.iam.Role('external-dns@eks', {
@@ -31,6 +32,17 @@ new aws.iam.RolePolicy('external-dns@eks', {
         Action: ['route53:ListHostedZones', 'route53:ListResourceRecordSets', 'route53:ListTagsForResource'],
         Resource: ['*'],
       },
+      {
+        Effect: 'Allow',
+        Action: [
+          'DynamoDB:DescribeTable',
+          'DynamoDB:PartiQLDelete',
+          'DynamoDB:PartiQLInsert',
+          'DynamoDB:PartiQLUpdate',
+          'DynamoDB:Scan',
+        ],
+        Resource: [tables.externalDns.arn],
+      },
     ],
   },
 });
@@ -55,8 +67,8 @@ new k8s.helm.v3.Chart('external-dns', {
     triggerLoopOnEvent: true,
     sources: ['ingress', 'service'],
 
+    registry: 'dynamodb',
     txtOwnerId: 'eks',
-    txtPrefix: 'ed.',
 
     extraArgs: ['--aws-zones-cache-duration=1h'],
   },

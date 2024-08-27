@@ -173,7 +173,7 @@ new k8s.helm.v3.Chart('karpenter', {
   chart: 'oci://public.ecr.aws/karpenter/karpenter',
   namespace: 'kube-system',
   fetchOpts: {
-    version: '1.0.0',
+    version: '1.0.1',
   },
 
   values: {
@@ -193,15 +193,6 @@ new k8s.helm.v3.Chart('karpenter', {
       interruptionQueue: interruptionQueue.name,
       featureGates: {
         spotToSpotConsolidation: true,
-      },
-    },
-
-    postInstallHook: {
-      image: {
-        // spell-checker:disable-next-line
-        repository: 'bitnami/kubectl',
-        tag: '1.30',
-        digest: 'sha256:4f74249f971f8ca158a03eaa0c8e7741a2a750fe53525dc69497cf23584df04a',
       },
     },
   },
@@ -243,7 +234,7 @@ const nodeClass = new k8s.apiextensions.CustomResource('default', {
     },
 
     tags: {
-      Name: 'eks-node',
+      Name: 'node@eks',
     },
   },
 });
