@@ -71,7 +71,7 @@
               borderBottomLeftRadius: '16px',
               paddingX: '16px',
               paddingY: '32px',
-              backgroundColor: 'sidebar.surface',
+              backgroundColor: 'surface.secondary',
               width: '240px',
               overflowY: 'auto',
             })}

@@ -78,7 +78,7 @@
     clone.style.filter = 'brightness(0.7)';
     clone.style.pointerEvents = 'none';
     clone.style.display = 'none';
-    clone.style.backgroundColor = token('colors.sidebar.surface');
+    clone.style.backgroundColor = token('colors.surface.secondary');
     clone.style.borderRadius = '6px';
     document.body.append(clone);
 

@@ -114,7 +114,13 @@
     })}
   >
     <div
-      class={css({ position: 'absolute', left: '0', width: '1/2', height: 'full', backgroundColor: 'sidebar.surface' })}
+      class={css({
+        position: 'absolute',
+        left: '0',
+        width: '1/2',
+        height: 'full',
+        backgroundColor: 'surface.secondary',
+      })}
       aria-hidden="true"
     />
     <div

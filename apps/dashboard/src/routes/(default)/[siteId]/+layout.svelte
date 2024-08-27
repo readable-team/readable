@@ -276,7 +276,7 @@
       class={flex({
         flexDirection: 'column',
         flex: 'none',
-        backgroundColor: 'sidebar.surface',
+        backgroundColor: 'surface.secondary',
         minWidth: '240px',
         width: '[18.75%]',
         maxWidth: '340px',
