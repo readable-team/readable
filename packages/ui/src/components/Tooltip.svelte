@@ -23,9 +23,9 @@
   });
 </script>
 
-<span class={css(style)} use:anchor use:hover={hovered}>
+<div class={css(style)} use:anchor use:hover={hovered}>
   <slot />
-</span>
+</div>
 
 {#if enabled && ($hovered || keepShowing)}
   <div
@@ -34,13 +34,12 @@
       paddingX: '12px',
       paddingY: '8px',
       textStyle: '12m',
-      textAlign: 'center',
       backgroundColor: { base: 'gray.800', _dark: 'darkgray.500' },
       color: 'white',
       zIndex: '100',
       maxWidth: '220px',
       whiteSpace: 'pre-wrap',
-      wordBreak: 'break-all',
+      wordBreak: 'keep-all',
     })}
     role="tooltip"
     use:floating
