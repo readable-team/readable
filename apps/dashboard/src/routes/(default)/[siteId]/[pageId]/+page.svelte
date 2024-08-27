@@ -225,12 +225,13 @@
   </div>
 
   <Tooltip
+    style={css.raw({ marginBottom: '34px' })}
     enabled={$query.page.hasUnpublishedParents ||
       ($query.page.state === PageState.PUBLISHED && !$query.page.hasUnpublishedChanges)}
     message="이미 최신 버전으로 발행되어 있어요"
   >
     <Button
-      style={css.raw({ marginBottom: '34px', width: 'full' })}
+      style={css.raw({ width: 'full' })}
       disabled={$query.page.hasUnpublishedParents ||
         ($query.page.state === PageState.PUBLISHED && !$query.page.hasUnpublishedChanges)}
       size="sm"
@@ -244,7 +245,7 @@
 
   <p class={css({ marginBottom: '6px', textStyle: '13m', color: 'text.tertiary' })}>편집자</p>
 
-  <div class={flex({ align: 'center', wrap: 'wrap', paddingLeft: '4px' })}>
+  <div class={flex({ align: 'center', wrap: 'wrap', paddingLeft: '4px', marginBottom: '16px' })}>
     {#each $query.page.contentContributor as contributor (contributor.id)}
       <Tooltip
         style={css.raw({ borderRadius: 'full', marginLeft: '-4px', size: '20px', marginBottom: '4px' })}
@@ -269,21 +270,17 @@
   </div>
 
   {#if $query.page.state === PageState.PUBLISHED}
-    <p class={css({ marginTop: '16px', marginBottom: '4px', textStyle: '13m', color: 'text.tertiary' })}>
-      마지막 발행 시간
-    </p>
+    <p class={css({ marginBottom: '4px', textStyle: '13m', color: 'text.tertiary' })}>마지막 발행 시간</p>
 
     <time
-      class={css({ display: 'block', textStyle: '13r', color: 'text.secondary' })}
+      class={css({ display: 'block', marginBottom: '20px', textStyle: '13r', color: 'text.secondary' })}
       datetime={$query.page.lastPublishedAt}
     >
       {dayjs($query.page.lastPublishedAt).formatAsDateTime()}
     </time>
   {/if}
 
-  <p class={css({ marginTop: '20px', marginBottom: '4px', textStyle: '13m', color: 'text.tertiary' })}>
-    마지막 편집 시간
-  </p>
+  <p class={css({ marginBottom: '4px', textStyle: '13m', color: 'text.tertiary' })}>마지막 편집 시간</p>
 
   <time
     class={css({ display: 'block', textStyle: '13r', color: 'text.secondary' })}
