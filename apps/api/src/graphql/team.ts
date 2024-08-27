@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { and, asc, count, eq, ne } from 'drizzle-orm';
+import { and, asc, count, eq, getTableColumns, ne } from 'drizzle-orm';
 import { builder } from '@/builder';
 import { db, first, firstOrThrow, Sites, TeamMemberInvitations, TeamMembers, Teams, Users } from '@/db';
 import { sendEmail } from '@/email';
@@ -298,6 +298,47 @@ builder.mutationFields((t) => ({
 
         return invitation;
       }
+    },
+  }),
+
+  resendInvitationEmail: t.withAuth({ session: true }).fieldWithInput({
+    type: TeamMemberInvitation,
+    input: { invitationId: t.input.string() },
+    resolve: async (_, { input }, ctx) => {
+      const invitation = await db
+        .select({
+          ...getTableColumns(TeamMemberInvitations),
+          team: {
+            id: Teams.id,
+            name: Teams.name,
+          },
+        })
+        .from(TeamMemberInvitations)
+        .innerJoin(Teams, eq(TeamMemberInvitations.teamId, Teams.id))
+        .where(eq(TeamMemberInvitations.id, input.invitationId))
+        .then(firstOrThrow);
+
+      await assertTeamPermission({
+        teamId: invitation.teamId,
+        userId: ctx.session.userId,
+        role: TeamMemberRole.ADMIN,
+      });
+
+      await sendEmail({
+        recipient: invitation.email,
+        subject: `[Readable] ${invitation.team.name}에 참여하세요`,
+        body: TeamMemberInvitedEmail({
+          dashboardUrl: env.PUBLIC_DASHBOARD_URL,
+          teamName: invitation.team.name,
+        }),
+      });
+
+      return await db
+        .update(TeamMemberInvitations)
+        .set({ expiresAt: dayjs().add(1, 'day') })
+        .where(eq(TeamMemberInvitations.id, input.invitationId))
+        .returning()
+        .then(firstOrThrow);
     },
   }),
 
