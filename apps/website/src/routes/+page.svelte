@@ -309,7 +309,9 @@
         <img
           class={css({ marginTop: { base: '40px', sm: 'auto' }, size: '120px' })}
           alt="무한대"
-          src="/images/infinity.png"
+          height="120px"
+          src="/images/infinity.webp"
+          width="120px"
         />
       </div>
     </div>
@@ -376,7 +378,9 @@
           <img
             class={css({ marginTop: { base: '40px', sm: 'auto' }, size: '120px' })}
             alt="흔드는 손"
-            src="/images/waving-hand.png"
+            height="120px"
+            src="/images/waving-hand.webp"
+            width="120px"
           />
         </div>
       </div>
@@ -459,7 +463,9 @@
         <img
           class={css({ marginTop: { base: '20px', sm: 'auto' }, size: '100px' })}
           alt="반짝임"
-          src="/images/sparkles.png"
+          height="100px"
+          src="/images/sparkles.webp"
+          width="100px"
         />
       </div>
     </div>
@@ -507,7 +513,9 @@
         <img
           class={css({ marginTop: { base: '20px', sm: 'auto' }, size: '100px' })}
           alt="테크놀로지스트"
-          src="/images/technologist.png"
+          height="100px"
+          src="/images/technologist.webp"
+          width="100px"
         />
       </div>
     </div>
@@ -552,7 +560,9 @@
         <img
           class={css({ marginTop: { base: '20px', sm: 'auto' }, size: '100px' })}
           alt="돋보기"
-          src="/images/minifying-glass.png"
+          height="100px"
+          src="/images/minifying-glass.webp"
+          width="100px"
         />
       </div>
     </div>
@@ -599,7 +609,9 @@
         <img
           class={css({ marginTop: { base: '20px', sm: 'auto' }, width: '195px', height: '110px' })}
           alt="커플"
-          src="/images/couple.png"
+          height="110px"
+          src="/images/couple.webp"
+          width="195px"
         />
       </div>
     </div>
@@ -851,7 +863,7 @@
   <div class={flex({ align: 'center', justify: 'space-between' })}>
     <FullLogo class={css({ height: { base: '20px', sm: '24px' } })} />
 
-    <a href="https://github.com/readable-team" rel="noopener noreferrer" target="_blank">
+    <a aria-label="GitHub" href="https://github.com/readable-team" rel="noopener noreferrer" target="_blank">
       <Icon style={css.raw({ color: '[#181717]', hideFrom: 'sm' })} icon={IconGithub} size={20} />
       <Icon style={css.raw({ color: '[#181717]', hideBelow: 'sm' })} icon={IconGithub} size={24} />
     </a>
