@@ -31,7 +31,11 @@ const parameterGroup = new aws.rds.ClusterParameterGroup('readable', {
   name: 'readable-aurora-postgresql16',
   family: 'aurora-postgresql16',
 
-  parameters: [],
+  parameters: [
+    { name: 'pg_stat_statements.track', value: 'ALL' },
+    { name: 'pg_stat_statements.max', value: '10000', applyMethod: 'pending-reboot' },
+    { name: 'pg_stat_statements.track_utility', value: '0' },
+  ],
 });
 
 const cluster = new aws.rds.Cluster('readable', {

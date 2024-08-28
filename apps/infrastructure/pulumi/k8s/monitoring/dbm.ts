@@ -1,3 +1,5 @@
+// spell-checker:words dbname dbstrict
+
 import * as k8s from '@pulumi/kubernetes';
 import * as pulumi from '@pulumi/pulumi';
 import * as random from '@pulumi/random';
@@ -27,10 +29,11 @@ new k8s.core.v1.Service('dbm', {
               port: 5432,
               username: 'datadog',
               password: password.result,
-              // spell-checker:disable
               dbname: 'readable',
               dbstrict: true,
-              // spell-checker:enable
+              collect_schemas: { enabled: true },
+              collect_settings: { enabled: true },
+              relations: [{ relation_regex: '.*' }],
             },
           ],
         },
