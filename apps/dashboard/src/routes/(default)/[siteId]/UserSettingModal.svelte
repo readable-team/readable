@@ -6,6 +6,7 @@
   import CircleUserIcon from '~icons/lucide/circle-user';
   import CreditCardIcon from '~icons/lucide/credit-card';
   import UsersRoundIcon from '~icons/lucide/users-round';
+  import XIcon from '~icons/lucide/x';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
@@ -144,19 +145,30 @@
     <button
       class={css({
         position: 'absolute',
-        top: '50px',
-        right: '50px',
-        width: '100px',
-        height: '100px',
-        backgroundColor: '[red]',
+        top: '24px',
+        right: '24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '40px',
+        height: '40px',
+        borderRadius: 'full',
+        backgroundColor: 'surface.primary',
+        color: 'text.secondary',
+        transition: '[background-color 0.2s]',
+        _hover: {
+          backgroundColor: 'neutral.20',
+          color: 'text.primary',
+        },
       })}
+      aria-label="닫기"
       type="button"
       on:click={() => {
         const currentPath = $page.url.pathname;
         goto(currentPath, { replaceState: true });
       }}
     >
-      close
+      <Icon icon={XIcon} size={24} />
     </button>
 
     <div
