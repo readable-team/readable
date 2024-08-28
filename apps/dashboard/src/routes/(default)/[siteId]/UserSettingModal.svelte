@@ -160,6 +160,7 @@
           backgroundColor: 'neutral.20',
           color: 'text.primary',
         },
+        zIndex: '30',
       })}
       aria-label="닫기"
       type="button"
