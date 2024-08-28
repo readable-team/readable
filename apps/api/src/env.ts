@@ -9,6 +9,8 @@ const schema = z.object({
   MEILISEARCH_API_KEY: z.string(),
   MEILISEARCH_URL: z.string(),
   OPENAI_API_KEY: z.string(),
+  PORTONE_API_KEY: z.string(),
+  PORTONE_CHANNEL_KEY: z.string(),
   PUBLIC_DASHBOARD_URL: z.string(),
   PUBLIC_PULUMI_PROJECT: z.string().optional(),
   PUBLIC_PULUMI_STACK: z.string().optional(),
