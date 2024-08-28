@@ -165,6 +165,7 @@ type Mutation {
   persistBlobAsFile(input: PersistBlobAsFileInput!): File!
   persistBlobAsImage(input: PersistBlobAsImageInput!): Image!
   publishPage(input: PublishPageInput!): Page!
+  registerCard(input: RegisterCardInput!): Boolean!
   removeTeamMember(input: RemoveTeamMemberInput!): TeamMember!
   resendInvitationEmail(input: ResendInvitationEmailInput!): TeamMemberInvitation!
   revokeInvitation(input: RevokeInvitationInput!): TeamMemberInvitation!
@@ -310,6 +311,14 @@ type Query {
   searchPublicPage(query: String!, siteId: String!): SearchPublicPageResult!
   site(siteId: ID!): Site!
   team(teamId: ID!): Team!
+}
+
+input RegisterCardInput {
+  birthOrBusinessRegistrationNumber: String!
+  cardNumber: String!
+  expiry: String!
+  passwordTwoDigits: String!
+  teamId: String!
 }
 
 input RemoveTeamMemberInput {

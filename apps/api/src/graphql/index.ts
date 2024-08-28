@@ -4,6 +4,7 @@ import './auth';
 import './blob';
 import './embed';
 import './page';
+import './payment';
 import './search';
 import './site';
 import './team';
