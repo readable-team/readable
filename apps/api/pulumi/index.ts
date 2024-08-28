@@ -8,6 +8,11 @@ const ref = new pulumi.StackReference('readable/infrastructure/base');
 const site = new readable.Site('api', {
   name: 'api',
 
+  priority: {
+    production: '10',
+    dev: '110',
+  },
+
   domain: {
     production: 'api.rdbl.io',
     dev: 'api.rdbl.ninja',

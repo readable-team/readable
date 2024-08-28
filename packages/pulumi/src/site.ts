@@ -8,6 +8,11 @@ import { IAMServiceAccount } from './iam-service-account';
 type SiteArgs = {
   name: pulumi.Input<string>;
 
+  priority: {
+    production: pulumi.Input<string>;
+    dev: pulumi.Input<string>;
+  };
+
   domain: {
     production: pulumi.Input<string>;
     dev: pulumi.Input<string>;
@@ -70,9 +75,9 @@ export class Site extends pulumi.ComponentResource {
       .with('dev', () => 'dev')
       .run();
 
-    const order = match(stack)
-      .with('prod', () => '-500')
-      .with('dev', () => '500')
+    const priority = match(stack)
+      .with('prod', () => args.priority.production)
+      .with('dev', () => args.priority.dev)
       .run();
 
     this.url = pulumi.output(pulumi.interpolate`https://${domainName}`);
@@ -248,7 +253,7 @@ export class Site extends pulumi.ComponentResource {
           namespace,
           annotations: {
             'alb.ingress.kubernetes.io/group.name': 'public-alb',
-            'alb.ingress.kubernetes.io/group.order': order,
+            'alb.ingress.kubernetes.io/group.order': priority,
             'alb.ingress.kubernetes.io/listen-ports': JSON.stringify([{ HTTPS: 443 }]),
             'alb.ingress.kubernetes.io/healthcheck-path': '/healthz',
             ...(useCloudfront && { 'external-dns.alpha.kubernetes.io/ingress-hostname-source': 'annotation-only' }),

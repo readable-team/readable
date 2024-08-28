@@ -15,6 +15,11 @@ type RedirectConfig = {
 type RedirectArgs = {
   name: pulumi.Input<string>;
 
+  priority: {
+    production: pulumi.Input<string>;
+    dev: pulumi.Input<string>;
+  };
+
   code: pulumi.Input<301 | 302>;
 
   production: RedirectConfig;
@@ -37,9 +42,9 @@ export class Redirect extends pulumi.ComponentResource {
       .with('dev', () => args.dev)
       .run();
 
-    const order = match(stack)
-      .with('prod', () => '-400')
-      .with('dev', () => '600')
+    const priority = match(stack)
+      .with('prod', () => args.priority.production)
+      .with('dev', () => args.priority.dev)
       .run();
 
     new k8s.networking.v1.Ingress(
@@ -50,7 +55,7 @@ export class Redirect extends pulumi.ComponentResource {
           namespace,
           annotations: {
             'alb.ingress.kubernetes.io/group.name': 'public-alb',
-            'alb.ingress.kubernetes.io/group.order': order,
+            'alb.ingress.kubernetes.io/group.order': priority,
             'alb.ingress.kubernetes.io/listen-ports': JSON.stringify([{ HTTPS: 443 }]),
             'pulumi.com/skipAwait': 'true',
 
