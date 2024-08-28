@@ -108,7 +108,7 @@
     class={flex({
       position: 'fixed',
       inset: '0',
-      zIndex: '100',
+      zIndex: '20',
       width: 'screen',
       height: 'screen',
     })}
@@ -230,7 +230,7 @@
 
       <div
         class={flex({
-          flex: '1',
+          width: '720px',
           flexDirection: 'column',
           backgroundColor: 'surface.primary',
           paddingY: '60px',

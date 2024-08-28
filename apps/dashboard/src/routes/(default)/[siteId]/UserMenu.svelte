@@ -4,7 +4,6 @@
   import { HorizontalDivider, Menu, MenuItem } from '@readable/ui/components';
   import mixpanel from 'mixpanel-browser';
   import { page } from '$app/stores';
-  import { env } from '$env/dynamic/public';
   import { fragment, graphql } from '$graphql';
   import { Img } from '$lib/components';
   import { accessToken } from '$lib/graphql';
@@ -112,7 +111,7 @@
       $accessToken = null;
       mixpanel.reset();
 
-      location.href = env.PUBLIC_WEBSITE_URL;
+      location.href = '/';
     }}
   >
     로그아웃

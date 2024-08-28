@@ -63,6 +63,7 @@
             class={css({
               textStyle: '16sb',
               wordBreak: 'keep-all',
+              overflowWrap: 'break-word',
             })}
           >
             <slot name="title" />

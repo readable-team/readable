@@ -42,7 +42,7 @@
       const target = e.target as HTMLElement;
       const focusInList = menuEl?.contains(target);
 
-      const menuItems = menuEl?.querySelectorAll('[role="menuitem"]');
+      const menuItems = menuEl?.querySelectorAll('[role="menuitem"], [role="menuitemradio"]');
       if (!menuItems || menuItems.length === 0) {
         return;
       }
@@ -102,6 +102,7 @@
         minWidth: '140px',
         boxShadow: 'normal',
         overflowY: 'auto',
+        zIndex: '50',
       },
       $$slots.action && { paddingBottom: '0' },
       listStyle,

@@ -1,11 +1,18 @@
 <script lang="ts">
+  import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, TextInput } from '@readable/ui/components';
+  import { Button, FormField, HorizontalDivider, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
+  import CheckIcon from '~icons/lucide/check';
+  import ChevronDownIcon from '~icons/lucide/chevron-down';
+  import EllipsisIcon from '~icons/lucide/ellipsis';
+  import UserRoundMinusIcon from '~icons/lucide/user-round-minus';
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
+  import Img from '$lib/components/Img.svelte';
+  import { invokeAlert } from '$lib/components/invoke-alert';
   import type { TeamMembers_team } from '$graphql';
 
   let _team: TeamMembers_team;
@@ -17,6 +24,7 @@
     graphql(`
       fragment TeamMembers_team on Team {
         id
+        name
         meAsMember {
           id
           role
@@ -25,10 +33,17 @@
         members {
           id
           role
+          isSoleAdmin
 
           user {
             id
             email
+            name
+
+            avatar {
+              id
+              ...Img_image
+            }
           }
         }
       }
@@ -78,6 +93,10 @@
   `);
 </script>
 
+<h1 class={css({ textStyle: '28eb' })}>멤버 관리</h1>
+
+<HorizontalDivider style={css.raw({ marginTop: '20px' })} />
+
 <form class={flex({ align: 'center', gap: '10px' })} use:form>
   <input name="teamId" type="hidden" value={$team.id} />
   <FormField name="email">
@@ -87,58 +106,217 @@
   <Button size="lg" type="submit">멤버 초대</Button>
 </form>
 
-<br />
-<br />
-
-<ul>
-  {#each $team.members as member (member.id)}
-    <li class={flex({ align: 'center', gap: '10px' })}>
-      <div>
-        <p>{member.user.email}</p>
-        <p>{member.role}</p>
-      </div>
-
-      {#if $team.meAsMember?.role === 'ADMIN' && member.id !== $team.meAsMember?.id}
-        <Button
-          size="sm"
-          variant="secondary"
-          on:click={async () =>
-            await updateTeamMemberRole({
-              role: 'ADMIN',
-              userId: member.user.id,
-              teamId: $team.id,
+<div class={flex({ flexDirection: 'column', paddingY: '40px', gap: '8px' })}>
+  <div class={css({ textStyle: '14sb', color: 'neutral.70' })}>
+    {$team.members.length}명의 멤버
+  </div>
+  <ul>
+    {#each $team.members as member (member.id)}
+      <li class={flex({ alignItems: 'center', gap: '16px', borderBottomWidth: '1px', borderColor: 'border.primary' })}>
+        <div class={flex({ flex: '1', alignItems: 'center', gap: '8px', truncate: true })}>
+          <Img
+            style={css.raw({
+              borderWidth: '1px',
+              borderColor: 'border.image',
+              borderRadius: 'full',
+              size: '32px',
             })}
-        >
-          ADMIN으로 변경
-        </Button>
-        <Button
-          size="sm"
-          variant="secondary"
-          on:click={async () =>
-            await updateTeamMemberRole({
-              role: 'MEMBER',
-              userId: member.user.id,
-              teamId: $team.id,
-            })}
-        >
-          MEMBER로 변경
-        </Button>
-      {/if}
+            $image={member.user.avatar}
+            alt={`${member.user.name}의 아바타`}
+            size={32}
+          />
+          <div class={flex({ flexDirection: 'column', truncate: true })}>
+            <p class={css({ textStyle: '14sb', color: 'text.secondary', truncate: true })}>{member.user.name}</p>
+            <p class={css({ textStyle: '12m', color: 'text.tertiary', truncate: true })}>{member.user.email}</p>
+          </div>
+        </div>
 
-      {#if $team.meAsMember?.role === 'ADMIN' || member.id === $team.meAsMember?.id}
-        <Button
-          size="sm"
-          on:click={async () => {
-            // TODO: alert, cache invalidate
-            await removeTeamMember({ userId: member.user.id, teamId: $team.id });
-            if (member.id === $team.meAsMember?.id) {
-              await goto('/');
-            }
-          }}
-        >
-          탈퇴
-        </Button>
-      {/if}
-    </li>
-  {/each}
-</ul>
+        <div class={css({ flexShrink: 0, padding: '16px' })}>
+          {#if $team.meAsMember?.role === 'ADMIN'}
+            <Menu listStyle={css.raw({ gap: '1px' })} offset={2} placement="bottom-start">
+              <div
+                slot="button"
+                class={flex({
+                  width: '86px',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingX: '8px',
+                  paddingY: '4px',
+                  textStyle: '14sb',
+                  color: 'text.secondary',
+                  borderRadius: '4px',
+                  _hover: {
+                    backgroundColor: 'neutral.20',
+                  },
+                })}
+              >
+                <span>{member.role === 'ADMIN' ? '관리자' : '멤버'}</span>
+                <Icon icon={ChevronDownIcon} size={20} />
+              </div>
+
+              <button
+                class={flex({
+                  width: '260px',
+                  gap: '20px',
+                  paddingY: '10px',
+                  paddingX: '12px',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  _hover: {
+                    backgroundColor: 'neutral.20',
+                  },
+                  _checked: {
+                    backgroundColor: 'neutral.20',
+                  },
+                })}
+                aria-checked={member.role === 'ADMIN'}
+                role="menuitemradio"
+                type="button"
+                on:click={async () =>
+                  await updateTeamMemberRole({
+                    role: 'ADMIN',
+                    userId: member.user.id,
+                    teamId: $team.id,
+                  })}
+              >
+                <div class={flex({ flexDirection: 'column', alignItems: 'start', gap: '2px' })}>
+                  <p class={css({ textStyle: '15sb', color: 'text.primary' })}>관리자</p>
+                  <p class={css({ textStyle: '13m', color: 'text.tertiary' })}>사이트 설정 변경, 멤버 초대 및 관리</p>
+                </div>
+                {#if member.role === 'ADMIN'}
+                  <Icon style={css.raw({ color: 'accent.60' })} icon={CheckIcon} size={16} />
+                {/if}
+              </button>
+              <button
+                class={flex({
+                  width: '260px',
+                  gap: '20px',
+                  paddingY: '10px',
+                  paddingX: '12px',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  _enabled: {
+                    _hover: {
+                      backgroundColor: 'neutral.20',
+                    },
+                    _checked: {
+                      backgroundColor: 'neutral.20',
+                    },
+                  },
+                  _disabled: {
+                    '& p': {
+                      color: 'text.disabled',
+                    },
+                  },
+                })}
+                aria-checked={member.role === 'MEMBER'}
+                disabled={member.role === 'ADMIN' && member.isSoleAdmin}
+                role="menuitemradio"
+                type="button"
+                on:click={async () =>
+                  await updateTeamMemberRole({
+                    role: 'MEMBER',
+                    userId: member.user.id,
+                    teamId: $team.id,
+                  })}
+              >
+                <div class={flex({ flexDirection: 'column', alignItems: 'start', gap: '2px' })}>
+                  <p class={css({ textStyle: '15sb', color: 'text.primary' })}>멤버</p>
+                  <p class={css({ textStyle: '13m', color: 'text.tertiary' })}>사이트 설정 변경</p>
+                </div>
+                {#if member.role === 'MEMBER'}
+                  <Icon style={css.raw({ color: 'accent.60' })} icon={CheckIcon} size={16} />
+                {/if}
+              </button>
+            </Menu>
+          {:else}
+            <div
+              class={flex({
+                width: '86px',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingX: '8px',
+                paddingY: '4px',
+                textStyle: '14sb',
+                color: 'text.secondary',
+              })}
+            >
+              {member.role === 'ADMIN' ? '관리자' : '멤버'}
+            </div>
+          {/if}
+        </div>
+
+        <div class={flex({ width: '60px', justifyContent: 'center', alignItems: 'center' })}>
+          {#if member.id === $team.meAsMember?.id && !member.isSoleAdmin}
+            <Menu offset={2} placement="bottom-start">
+              <div
+                slot="button"
+                class={flex({
+                  padding: '4px',
+                  color: 'text.secondary',
+                  _hover: {
+                    backgroundColor: 'neutral.20',
+                  },
+                })}
+              >
+                <Icon icon={EllipsisIcon} size={14} />
+              </div>
+              <MenuItem
+                variant="danger"
+                on:click={async () => {
+                  invokeAlert({
+                    title: `"${$team.name}" 팀에서 떠나시겠어요?`,
+                    content: '팀에서 떠나게 될 시 팀에 접근할 수 없으며, 관련 권한이 모두 해제됩니다',
+                    actionText: '떠나기',
+                    action: async () => {
+                      // TODO: alert, cache invalidate
+                      await removeTeamMember({ userId: member.user.id, teamId: $team.id });
+                      if (member.id === $team.meAsMember?.id) {
+                        await goto('/');
+                      }
+                    },
+                  });
+                }}
+              >
+                <Icon slot="prefix" icon={UserRoundMinusIcon} size={14} />
+                <span>팀 떠나기</span>
+              </MenuItem>
+            </Menu>
+          {:else if $team.meAsMember?.role === 'ADMIN' && !(member.id === $team.meAsMember?.id && member.isSoleAdmin)}
+            <Menu offset={2} placement="bottom-start">
+              <div
+                slot="button"
+                class={flex({
+                  padding: '4px',
+                  color: 'text.secondary',
+                  _hover: {
+                    backgroundColor: 'neutral.20',
+                  },
+                })}
+              >
+                <Icon icon={EllipsisIcon} size={14} />
+              </div>
+              <MenuItem
+                variant="danger"
+                on:click={async () => {
+                  invokeAlert({
+                    title: `"${member.user.name}"을 팀 멤버에서 제거하시겠어요?`,
+                    content: '제거된 멤버는 팀 리소스에 접근할 수 없게 되며, 관련 권한이 모두 해제됩니다 ',
+                    actionText: '제거',
+                    action: async () => {
+                      // TODO: alert, cache invalidate
+                      await removeTeamMember({ userId: member.user.id, teamId: $team.id });
+                    },
+                  });
+                }}
+              >
+                <Icon slot="prefix" icon={UserRoundMinusIcon} size={14} />
+                <span>멤버 제거</span>
+              </MenuItem>
+            </Menu>
+          {/if}
+        </div>
+      </li>
+    {/each}
+  </ul>
+</div>

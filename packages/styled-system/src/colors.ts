@@ -64,6 +64,7 @@ export const semanticColors = defineSemanticTokens.colors({
     secondary: { value: { base: '{colors.gray.700}', _dark: '{colors.darkgray.300}' } },
     tertiary: { value: { base: '{colors.gray.600}', _dark: '{colors.darkgray.700}' } },
     danger: { value: { base: '{colors.red.600}', _dark: '{colors.red.500}' } },
+    disabled: { value: { base: '{colors.gray.400}', _dark: '{colors.darkgray.600}' } },
   },
   divider: {
     primary: { value: { base: '{colors.gray.200}', _dark: '{colors.darkgray.900}' } },
