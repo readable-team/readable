@@ -1,5 +1,7 @@
-import ky from 'ky';
+import { Errors, PortOneApi } from '@portone/server-sdk';
 import { env } from '@/env';
+
+const client = PortOneApi(env.PORTONE_API_KEY);
 
 type IssueBillingKeyParams = {
   cardNumber: string;
@@ -23,62 +25,51 @@ type IssueBillingKeyResult = {
 export const issueBillingKey = async (params: IssueBillingKeyParams): Promise<IssueBillingKeyResult> => {
   const {
     billingKeyInfo: { billingKey },
-  } = await ky
-    .post('https://api.portone.io/billing-keys', {
-      headers: {
-        Authorization: `PortOne ${env.PORTONE_API_KEY}`,
-      },
-      json: {
-        channelKey: env.PORTONE_CHANNEL_KEY,
-        method: {
-          card: {
-            credential: {
-              number: params.cardNumber,
-              expiryYear: params.expiryYear,
-              expiryMonth: params.expiryMonth,
-              birthOrBusinessRegistrationNumber: params.birthOrBusinessRegistrationNumber,
-              passwordTwoDigits: params.passwordTwoDigits,
-            },
-          },
-        },
-        customer: {
-          id: params.customerId,
+  } = await client.issueBillingKey(
+    {
+      card: {
+        credential: {
+          number: params.cardNumber,
+          expiryYear: params.expiryYear,
+          expiryMonth: params.expiryMonth,
+          birthOrBusinessRegistrationNumber: params.birthOrBusinessRegistrationNumber,
+          passwordTwoDigits: params.passwordTwoDigits,
         },
       },
-    })
-    .then((res) => res.json<{ billingKeyInfo: { billingKey: string } }>());
-
-  const resp = await ky
-    .get(`https://api.portone.io/billing-keys/${billingKey}`, {
-      headers: {
-        Authorization: `PortOne ${env.PORTONE_API_KEY}`,
+    },
+    {
+      channelKey: env.PORTONE_CHANNEL_KEY,
+      customer: {
+        id: params.customerId,
       },
-    })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .then((res) => res.json<any>());
+    },
+  );
 
-  if (resp.status !== 'ISSUED') {
+  const resp = await client.getBillingKey(billingKey);
+
+  if (!resp || resp.status !== 'ISSUED' || resp.methods?.[0].type !== 'BillingKeyPaymentMethodCard') {
     throw new Error('Failed to issue billing key');
   }
 
-  const card = resp.methods[0].card;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const card = resp.methods[0].card!;
 
   return {
     billingKey,
     card: {
-      name: card.name,
-      type: card.type,
-      ownerType: card.ownerType,
-      issuer: card.issuer,
-      publisher: card.publisher,
-      brand: card.brand,
+      name: card.name ?? '',
+      type: card.type ?? '',
+      ownerType: card.ownerType ?? '',
+      issuer: card.issuer ?? '',
+      publisher: card.publisher ?? '',
+      brand: card.brand ?? '',
     },
   };
 };
 
 type MakePaymentParams = {
-  billingKey: string;
   paymentId: string;
+  billingKey: string;
   orderName: string;
   amount: number;
 };
@@ -86,45 +77,41 @@ type MakePaymentResult =
   | { status: 'succeeded'; approvalNumber: string; receiptUrl: string }
   | { status: 'failed'; reason: string };
 export const makePayment = async (params: MakePaymentParams): Promise<MakePaymentResult> => {
-  const resp = await ky.post(`https://api.portone.io/payments/${params.paymentId}/billing-key`, {
-    throwHttpErrors: false,
-    headers: {
-      Authorization: `PortOne ${env.PORTONE_API_KEY}`,
-    },
-    json: {
+  try {
+    await client.payWithBillingKey(params.paymentId, {
       billingKey: params.billingKey,
       orderName: params.orderName,
-      amount: {
-        total: params.amount,
-      },
+      amount: { total: params.amount },
       currency: 'KRW',
-    },
-  });
-
-  if (resp.status !== 200) {
-    const { pgMessage } = await resp.json<{ pgMessage: string }>();
-    return {
-      status: 'failed',
-      reason: pgMessage,
-    } as const;
+    });
+  } catch (err) {
+    if (err instanceof Errors.PgProviderError) {
+      return {
+        status: 'failed',
+        reason: err.pgMessage,
+      } as const;
+    } else if (err instanceof Error) {
+      return {
+        status: 'failed',
+        reason: err.message,
+      } as const;
+    } else {
+      return {
+        status: 'failed',
+        reason: String(err),
+      } as const;
+    }
   }
 
-  const payment = await ky
-    .get(`https://api.portone.io/payments/${params.paymentId}`, {
-      headers: {
-        Authorization: `PortOne ${env.PORTONE_API_KEY}`,
-      },
-    })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .then((res) => res.json<any>());
+  const payment = await client.getPayment(params.paymentId);
 
-  if (payment.status !== 'PAID') {
+  if (!payment || payment.status !== 'PAID' || payment.method?.type !== 'PaymentMethodCard') {
     throw new Error('Failed to make payment');
   }
 
   return {
     status: 'succeeded',
-    approvalNumber: payment.method.approvalNumber,
-    receiptUrl: payment.receiptUrl,
+    approvalNumber: payment.method.approvalNumber ?? '',
+    receiptUrl: payment.receiptUrl ?? '',
   } as const;
 };
