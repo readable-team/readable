@@ -8,7 +8,7 @@
   import CopyIcon from '~icons/lucide/copy';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import ExternalLinkIcon from '~icons/lucide/external-link';
-  import TrashIcon from '~icons/lucide/trash';
+  import Trash2Icon from '~icons/lucide/trash-2';
   import UndoIcon from '~icons/lucide/undo';
   import { afterNavigate, goto } from '$app/navigation';
   import { graphql } from '$graphql';
@@ -228,7 +228,7 @@
           </MenuItem>
         {/if}
         <MenuItem variant="danger" on:click={() => (deletePageOpen = true)}>
-          <Icon icon={TrashIcon} size={14} />
+          <Icon icon={Trash2Icon} size={14} />
           <span>삭제</span>
         </MenuItem>
       </Menu>

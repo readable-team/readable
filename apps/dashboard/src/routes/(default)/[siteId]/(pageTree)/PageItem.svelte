@@ -4,8 +4,10 @@
   import { Icon, Menu, MenuItem } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
+  import CopyIcon from '~icons/lucide/copy';
   import DotIcon from '~icons/lucide/dot';
   import EllipsisIcon from '~icons/lucide/ellipsis';
+  import Trash2Icon from '~icons/lucide/trash-2';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
   import { invokeAlert } from '$lib/components/invoke-alert';
@@ -198,6 +200,7 @@
             <Icon icon={EllipsisIcon} size={14} />
           </div>
           <MenuItem on:click={() => duplicatePage({ pageId: item.id })}>
+            <Icon icon={CopyIcon} size={14} />
             <span>복제</span>
           </MenuItem>
           <MenuItem
@@ -210,6 +213,7 @@
                 action: () => deletePage({ pageId: item.id }),
               })}
           >
+            <Icon icon={Trash2Icon} size={14} />
             <span>삭제</span>
           </MenuItem>
         </Menu>
