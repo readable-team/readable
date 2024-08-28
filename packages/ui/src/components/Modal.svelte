@@ -1,6 +1,5 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
   import { fade, fly } from 'svelte/transition';
   import { portal, scrollLock } from '../actions';
   import type { SystemStyleObject } from '@readable/styled-system/types';
@@ -41,7 +40,8 @@
         alignItems: 'center',
         justifyContent: 'center',
         padding: '40px',
-        width: 'full',
+        width: '[fit-content]',
+        margin: 'auto',
         pointerEvents: 'none',
       })}
     >
@@ -52,9 +52,9 @@
           flexDirection: 'column',
           flexGrow: '1',
           borderRadius: '16px',
-          backgroundColor: 'surface.tertiary',
+          backgroundColor: 'surface.primary',
           pointerEvents: 'auto',
-          size: 'full',
+          size: '[fit-content]',
           maxWidth: '946px',
           maxHeight: '705px',
         })}
@@ -63,22 +63,6 @@
         out:fade={{ duration: 150 }}
       >
         <div class={css({ height: 'full', overflowY: 'auto' }, style)} data-scroll-lock-ignore>
-          <aside
-            class={flex({
-              direction: 'column',
-              gap: '16px',
-              borderTopLeftRadius: '16px',
-              borderBottomLeftRadius: '16px',
-              paddingX: '16px',
-              paddingY: '32px',
-              backgroundColor: 'surface.secondary',
-              width: '240px',
-              overflowY: 'auto',
-            })}
-          >
-            <slot name="sidebar" />
-          </aside>
-
           <section class={css({ flexGrow: '1', padding: '32px', overflowY: 'auto' })}>
             <slot />
           </section>
