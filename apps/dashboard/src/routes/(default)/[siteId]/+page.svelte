@@ -1,91 +1,28 @@
 <script lang="ts">
-  import { css } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
-  import { Button, Chip, Helmet, Icon, Tooltip } from '@readable/ui/components';
-  import { toast } from '@readable/ui/notification';
-  import mixpanel from 'mixpanel-browser';
-  import LayoutDashboardIcon from '~icons/lucide/layout-dashboard';
   import { graphql } from '$graphql';
-  import { Img } from '$lib/components';
-  import { accessToken } from '$lib/graphql';
 
   $: query = graphql(`
     query SitePage_Query($siteId: ID!) {
-      me @required {
-        id
-        name
-        email
-
-        avatar {
-          id
-          ...Img_image
-        }
-      }
-
       site(siteId: $siteId) {
         id
-        name
-      }
-    }
-  `);
+        hasPage
 
-  const logout = graphql(`
-    mutation SitePage_Logout_Mutation {
-      logout
+        categories {
+          id
+
+          pages {
+            id
+          }
+        }
+      }
     }
   `);
 </script>
 
-<Helmet title="홈" trailing={$query.site.name} />
-
-<div class={flex({ align: 'center', gap: '4px', fontSize: '32px', fontWeight: 'bold', marginBottom: '12px' })}>
-  <Icon icon={LayoutDashboardIcon} size={32} />
-  dashboard
-</div>
-
-<Tooltip message="안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요" placement="right">
-  <Img
-    style={css.raw({
-      borderRadius: 'full',
-      size: '64px',
-    })}
-    $image={$query.me.avatar}
-    alt={`${$query.me.name}의 아바타`}
-    progressive
-    size={64}
-  />
-</Tooltip>
-
-<div>ID: {$query.me.id}</div>
-<div>Name: {$query.me.name}</div>
-<div>Email: {$query.me.email}</div>
-
-<br />
-<div class={flex({ alignItems: 'center', gap: '8px' })}><Chip>초안</Chip> 어쩌구</div>
-
-<br />
-<br />
-
-<button type="button" on:click={() => toast('토스트 나와랏')}>토스트</button>
-
-<br />
-<br />
-
-<Button
-  style={{ marginTop: '12px' }}
-  size="sm"
-  type="button"
-  variant="primary"
-  on:click={async () => {
-    await logout();
-
-    $accessToken = null;
-    mixpanel.reset();
-
-    location.href = '/';
-  }}
->
-  Logout
-</Button>
-
-<!-- <div class={css({ minHeight: '[10000px]' })} /> -->
+{#if $query.site.categories.length === 0}
+  카테고리를 추가해주세요
+{:else if $query.site.hasPage}
+  페이지를 선택해주세요
+{:else}
+  페이지를 추가해주세요
+{/if}
