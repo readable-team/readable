@@ -108,6 +108,21 @@ TeamMember.implement({
     role: t.expose('role', { type: TeamMemberRole }),
 
     user: t.field({ type: User, resolve: (member) => member.userId }),
+
+    isSoleAdmin: t.field({
+      type: 'Boolean',
+      resolve: async (member) => {
+        if (member.role !== TeamMemberRole.ADMIN) {
+          return false;
+        }
+
+        return await db
+          .select({ count: count(TeamMembers.id) })
+          .from(TeamMembers)
+          .where(and(eq(TeamMembers.teamId, member.teamId), eq(TeamMembers.role, TeamMemberRole.ADMIN)))
+          .then((rows) => rows[0].count === 1);
+      },
+    }),
   }),
 });
 
