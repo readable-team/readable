@@ -68,9 +68,9 @@ jobs:
       fail-fast: false
       matrix:
         app:
-          # - api
-          # - dashboard
-          # - usersite
+          - api
+          - dashboard
+          - usersite
           - website
 
     concurrency:
