@@ -4,11 +4,13 @@
   import { HorizontalDivider, Icon } from '@readable/ui/components';
   import Building2Icon from '~icons/lucide/building-2';
   import CircleUserIcon from '~icons/lucide/circle-user';
+  import CreditCardIcon from '~icons/lucide/credit-card';
   import UsersRoundIcon from '~icons/lucide/users-round';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
   import { Img } from '$lib/components';
+  import Subscription from './(settingModal)/Subscription.svelte';
   import TeamMembers from './(settingModal)/TeamMembers.svelte';
   import TeamSetting from './(settingModal)/TeamSetting.svelte';
   import UserSetting from './(settingModal)/UserSetting.svelte';
@@ -86,6 +88,11 @@
       icon: UsersRoundIcon,
       text: '멤버 관리',
       tab: '#/settings/team/members',
+    },
+    {
+      icon: CreditCardIcon,
+      text: '구독 및 결제',
+      tab: '#/settings/team/subscription',
     },
   ];
 
@@ -241,6 +248,8 @@
           <TeamSetting $team={$site.team} />
         {:else if selectedTab === '#/settings/team/members'}
           <TeamMembers $team={$site.team} />
+        {:else if selectedTab === '#/settings/team/subscription'}
+          <Subscription />
         {:else if selectedTab === '#/settings/personal'}
           <UserSetting {$user} />
         {/if}
