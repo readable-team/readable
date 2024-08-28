@@ -83,10 +83,18 @@
   }
 
   const agreements = [
-    '리더블 개인정보 수집·이용 동의',
-    'NICEPAY 전자금융거래 이용약관 동의',
-    'NICEPAY 개인정보 수집·이용 동의',
-    'NICEPAY 개인정보 3자 제공 동의',
+    {
+      name: '리더블 개인정보처리방침',
+      url: 'https://gist.github.com/devunt/c1661ae3d20781bc2504219bd3a3d5f1',
+    },
+    {
+      name: 'NICEPAY 전자금융거래 기본약관',
+      url: 'https://www.nicepay.co.kr/cs/terms/policy1.do',
+    },
+    {
+      name: 'NICEPAY 개인정보처리방침',
+      url: 'https://www.nicepay.co.kr/cs/terms/private.do',
+    },
   ];
 
   let agreementChecks = agreements.map(() => false);
@@ -296,11 +304,19 @@
           </label>
 
           <div class={css({ paddingLeft: '12px' })}>
-            {#each agreements as agreement (agreement)}
+            {#each agreements as agreement (agreement.name)}
               <label class={flex({ alignItems: 'center', gap: '8px', marginBottom: '8px' })}>
                 <input type="checkbox" bind:checked={agreementChecks[agreements.indexOf(agreement)]} />
                 <span class={css({ textStyle: '14r', color: 'text.secondary' })}>
-                  (필수) {agreement}
+                  (필수) <a
+                    class={css({ textDecoration: 'underline' })}
+                    href={agreement.url}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {agreement.name}
+                  </a>
+                  동의
                 </span>
               </label>
             {/each}
@@ -355,11 +371,19 @@
           </label>
 
           <div class={css({ paddingLeft: '12px' })}>
-            {#each agreements as agreement (agreement)}
+            {#each agreements as agreement (agreement.name)}
               <label class={flex({ alignItems: 'center', gap: '8px', marginBottom: '8px' })}>
                 <input type="checkbox" bind:checked={agreementChecks[agreements.indexOf(agreement)]} />
                 <span class={css({ textStyle: '14r', color: 'text.secondary' })}>
-                  (필수) {agreement}
+                  (필수) <a
+                    class={css({ textDecoration: 'underline' })}
+                    href={agreement.url}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {agreement.name}
+                  </a>
+                  동의
                 </span>
               </label>
             {/each}
