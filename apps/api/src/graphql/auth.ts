@@ -39,10 +39,13 @@ const UserWithAccessToken = builder.simpleObject('UserWithAccessToken', {
 builder.mutationFields((t) => ({
   generateSingleSignOnAuthorizationUrl: t.fieldWithInput({
     type: 'String',
-    input: { provider: t.input.field({ type: SingleSignOnProvider }) },
+    input: {
+      provider: t.input.field({ type: SingleSignOnProvider }),
+      email: t.input.field({ type: 'String', required: false }),
+    },
     resolve: async (_, { input }) => {
       return match(input.provider)
-        .with(SingleSignOnProvider.GOOGLE, () => google.generateAuthorizationUrl())
+        .with(SingleSignOnProvider.GOOGLE, () => google.generateAuthorizationUrl(input.email ?? undefined))
         .exhaustive();
     },
   }),

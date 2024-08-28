@@ -310,6 +310,7 @@ builder.mutationFields((t) => ({
           body: TeamMemberInvitedEmail({
             dashboardUrl: env.PUBLIC_DASHBOARD_URL,
             teamName: team.name,
+            email: input.email,
           }),
         });
 
@@ -347,6 +348,7 @@ builder.mutationFields((t) => ({
         body: TeamMemberInvitedEmail({
           dashboardUrl: env.PUBLIC_DASHBOARD_URL,
           teamName: invitation.team.name,
+          email: invitation.email,
         }),
       });
 

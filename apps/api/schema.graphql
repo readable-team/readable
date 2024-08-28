@@ -79,6 +79,7 @@ type File implements Blob {
 }
 
 input GenerateSingleSignOnAuthorizationUrlInput {
+  email: String
   provider: SingleSignOnProvider!
 }
 

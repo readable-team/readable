@@ -3,6 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Button } from '@readable/ui/components';
   import { SingleSignOnProvider } from '@/enums';
+  import { page } from '$app/stores';
   import GoogleLogo from '$assets/icons/google.svg?component';
   import FullLogo from '$assets/logos/full.svg?component';
   import { graphql } from '$graphql';
@@ -62,6 +63,7 @@
       on:click={async () => {
         const url = await generateSingleSignOnAuthorizationUrl({
           provider: SingleSignOnProvider.GOOGLE,
+          email: $page.url.searchParams.get('email'),
         });
 
         location.href = url;

@@ -2,6 +2,7 @@ import { Body, Button, Container, Head, Html, Preview, Section, Text } from '@re
 
 type Props = {
   dashboardUrl: string;
+  email?: string;
   teamName: string;
 };
 
@@ -15,7 +16,7 @@ const Email = (props: Props) => {
           <Section style={{ border: '1px solid #e2e3e5', borderRadius: '4px', padding: '24px', textAlign: 'center' }}>
             <Text>아래 버튼을 클릭해 "{props.teamName}" 팀에 참여하세요</Text>
             <Button
-              href={`${props.dashboardUrl}/auth/login`}
+              href={`${props.dashboardUrl}/auth/login${props.email ? `?email=${props.email}` : ''}`}
               style={{
                 borderRadius: '8px',
                 padding: '12px 24px',
@@ -37,6 +38,7 @@ const Email = (props: Props) => {
 Email.PreviewProps = {
   dashboardUrl: 'http://localhost:4100',
   teamName: '테스트컴퍼니',
+  email: 'test@test.com',
 };
 
 export default Email;

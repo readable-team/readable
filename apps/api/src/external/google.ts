@@ -10,10 +10,11 @@ const createOAuthClient = () => {
   });
 };
 
-export const generateAuthorizationUrl = () => {
+export const generateAuthorizationUrl = (email?: string) => {
   const client = createOAuthClient();
   return client.generateAuthUrl({
     scope: ['email', 'profile'],
+    login_hint: email,
   });
 };
 
