@@ -9,6 +9,7 @@
   export let open = false;
   export let placement: Placement = 'bottom';
   export let offset = 6;
+  export let style: SystemStyleObject | undefined = undefined;
   export let listStyle: SystemStyleObject | undefined = undefined;
   export let setFullWidth = false;
   export let disableAutoUpdate = false;
@@ -77,6 +78,7 @@
 
 <button
   bind:this={buttonEl}
+  class={css(style)}
   aria-expanded={open}
   type="button"
   on:click|preventDefault={() => (open = !open)}
@@ -93,12 +95,12 @@
       {
         display: 'flex',
         flexDirection: 'column',
-        gap: '4px',
-        borderRadius: '6px',
-        padding: '4px',
-        backgroundColor: 'surface.primary',
+        gap: '1px',
         borderWidth: '1px',
         borderColor: 'border.secondary',
+        borderRadius: '6px',
+        padding: '3px',
+        backgroundColor: 'surface.primary',
         minWidth: '140px',
         boxShadow: 'normal',
         overflowY: 'auto',

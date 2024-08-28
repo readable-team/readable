@@ -1,8 +1,13 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { HorizontalDivider, Menu, MenuItem } from '@readable/ui/components';
+  import { HorizontalDivider, Icon, Menu, MenuItem } from '@readable/ui/components';
   import mixpanel from 'mixpanel-browser';
+  import BookMinusIcon from '~icons/lucide/book-minus';
+  import Building2Icon from '~icons/lucide/building-2';
+  import CircleUserRoundIcon from '~icons/lucide/circle-user-round';
+  import InfoIcon from '~icons/lucide/info';
+  import LogOutIcon from '~icons/lucide/log-out';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
   import { Img } from '$lib/components';
@@ -57,7 +62,7 @@
   `);
 </script>
 
-<Menu placement="top" setFullWidth>
+<Menu style={css.raw({ height: 'fit' })} listStyle={css.raw({ width: '[180px!]' })} placement="top">
   <div slot="button">
     <Img
       style={css.raw({
@@ -72,36 +77,50 @@
     />
   </div>
 
-  <p class={css({ textStyle: '14b', color: 'text.tertiary' })}>팀</p>
-  <div class={flex({ align: 'center', gap: '10px', paddingY: '8px' })}>
+  <div
+    class={flex({
+      align: 'center',
+      gap: '6px',
+      borderRadius: '4px',
+      paddingX: '12px',
+      paddingY: '7px',
+      backgroundColor: 'neutral.10',
+    })}
+  >
     <Img
-      style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '34px' })}
-      $image={$query.site.team.avatar}
-      alt={`${$query.site.team.name}의 아바타`}
-      size={48}
-    />
-
-    <p class={css({ textStyle: '14sb', color: 'text.secondary' })}>{$query.site.team.name}</p>
-  </div>
-  <MenuItem external={false} href="#/settings/team" type="link">팀 설정</MenuItem>
-
-  <HorizontalDivider style={css.raw({ marginY: '12px' })} color="secondary" />
-
-  <p class={css({ textStyle: '14b', color: 'text.tertiary' })}>개인</p>
-  <div class={flex({ align: 'center', gap: '10px', paddingY: '8px' })}>
-    <Img
-      style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '34px' })}
+      style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '32px' })}
       $image={$query.me.avatar}
       alt={`${$query.me.name}의 아바타`}
-      size={48}
+      size={32}
     />
 
-    <div>
-      <p class={css({ textStyle: '14sb', color: 'text.secondary' })}>{$query.me.name}</p>
-      <p class={css({ textStyle: '12sb', color: 'text.tertiary' })}>{$query.me.email}</p>
+    <div class={css({ truncate: true })}>
+      <p class={css({ textStyle: '14sb', color: 'text.secondary', truncate: true })}>{$query.me.name}</p>
+      <p class={css({ textStyle: '12m', color: 'text.tertiary', truncate: true })}>{$query.me.email}</p>
     </div>
   </div>
-  <MenuItem external={false} href="#/settings/personal" type="link">개인 설정</MenuItem>
+
+  <MenuItem external={false} href="#/settings/team" type="link">
+    <Icon icon={Building2Icon} size={14} />
+    <span>팀 설정</span>
+  </MenuItem>
+  <MenuItem external={false} href="#/settings/personal" type="link">
+    <Icon icon={CircleUserRoundIcon} size={14} />
+    <span>개인 설정</span>
+  </MenuItem>
+
+  <HorizontalDivider />
+
+  <MenuItem>
+    <Icon icon={InfoIcon} size={14} />
+    <span>문의하기</span>
+  </MenuItem>
+  <MenuItem>
+    <Icon icon={BookMinusIcon} size={14} />
+    <span>사용가이드</span>
+  </MenuItem>
+
+  <HorizontalDivider />
 
   <MenuItem
     type="button"
@@ -114,7 +133,8 @@
       location.href = '/';
     }}
   >
-    로그아웃
+    <Icon icon={LogOutIcon} size={14} />
+    <span>로그아웃</span>
   </MenuItem>
 </Menu>
 
