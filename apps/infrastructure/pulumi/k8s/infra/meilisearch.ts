@@ -52,6 +52,7 @@ new k8s.helm.v3.Chart('meilisearch', {
       className: 'alb',
       annotations: {
         'alb.ingress.kubernetes.io/group.name': 'private-alb',
+        'alb.ingress.kubernetes.io/group.order': '-500',
         'alb.ingress.kubernetes.io/listen-ports': JSON.stringify([{ HTTPS: 443 }]),
         'alb.ingress.kubernetes.io/healthcheck-path': '/health',
       },

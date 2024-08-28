@@ -40,4 +40,20 @@ const site = new readable.Site('website', {
   },
 });
 
+new readable.Redirect('www.website', {
+  name: 'www.website',
+
+  production: {
+    from: { host: 'www.rdbl.io' },
+    to: { host: 'rdbl.io' },
+  },
+
+  dev: {
+    from: { host: 'www.rdbl.ninja' },
+    to: { host: 'rdbl.ninja' },
+  },
+
+  code: 301,
+});
+
 export const SITE_URL = site.url;

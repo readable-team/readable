@@ -79,6 +79,7 @@ new k8s.networking.v1.Ingress('mixpanel-proxy@infra', {
     namespace: namespace.metadata.name,
     annotations: {
       'alb.ingress.kubernetes.io/group.name': 'public-alb',
+      'alb.ingress.kubernetes.io/group.order': '-100',
       'alb.ingress.kubernetes.io/listen-ports': JSON.stringify([{ HTTPS: 443 }]),
       'alb.ingress.kubernetes.io/healthcheck-path': '/healthz',
       'pulumi.com/skipAwait': 'true',
