@@ -19,7 +19,7 @@
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import UserRoundMinusIcon from '~icons/lucide/user-round-minus';
   import XIcon from '~icons/lucide/x';
-  import { goto } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
   import { invokeAlert } from '$lib/components/invoke-alert';
@@ -291,6 +291,7 @@
                       // TODO: alert, cache invalidate
                       await removeTeamMember({ userId: member.user.id, teamId: $team.id });
                       if (member.id === $team.meAsMember?.id) {
+                        await invalidateAll();
                         await goto('/');
                       }
                     },
