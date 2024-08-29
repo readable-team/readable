@@ -175,7 +175,7 @@
   <span class={css({ textStyle: '16r' })}>등록된 카드 정보가 없습니다.</span>
 </div> -->
 
-<Modal style={css.raw({ width: '900px' })} close={() => (plansModal = false)} open={plansModal}>
+<Modal style={css.raw({ width: '900px', padding: '32px' })} close={() => (plansModal = false)} open={plansModal}>
   <h2 class={css({ textStyle: '24eb', marginBottom: '24px' })}>플랜 선택</h2>
 
   <div class={flex({ flexDirection: 'row', gap: '16px', justifyContent: 'space-between' })}>
@@ -222,7 +222,7 @@
   </div>
 </Modal>
 
-<Modal style={css.raw({ width: '500px' })} close={() => (cardModal = false)} open={cardModal}>
+<Modal style={css.raw({ width: '500px', padding: '32px' })} close={() => (cardModal = false)} open={cardModal}>
   <h2 class={css({ textStyle: '24eb', marginBottom: '24px' })}>결제 카드 추가</h2>
 
   <div class={flex({ flexDirection: 'column', gap: '24px' })}>
