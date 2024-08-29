@@ -21,6 +21,7 @@
           }
 
           content {
+            id
             title
           }
 
@@ -29,6 +30,7 @@
             id
 
             content {
+              id
               title
             }
 
@@ -36,6 +38,7 @@
               id
 
               content {
+                id
                 title
               }
             }
