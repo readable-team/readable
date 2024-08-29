@@ -19,15 +19,6 @@ new aws.route53.Record('rdbl.io|txt', {
   records: [
     // spell-checker:disable-next-line
     'google-site-verification=aVWE05YPOxEGxeH-X5NRyfb_IYilB3KL7QlN-xkFrU0',
-    'v=spf1 include:_spf.google.com ~all',
   ],
-  ttl: 300,
-});
-
-new aws.route53.Record('rdbl.io|mx', {
-  zoneId: zones.rdbl_io.zoneId,
-  type: 'MX',
-  name: 'rdbl.io',
-  records: ['1 smtp.google.com'],
   ttl: 300,
 });
