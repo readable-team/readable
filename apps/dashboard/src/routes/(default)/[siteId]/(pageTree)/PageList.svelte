@@ -469,9 +469,9 @@
         flexDirection: 'column',
         userSelect: 'none',
         paddingTop: '1px',
-        gap: '1px',
+        gap: '2px',
       },
-      parent === null ? { gap: '34px' } : {},
+      parent === null ? { gap: '20px' } : {},
     ),
   )}
   role="group"
@@ -511,9 +511,9 @@
         borderWidth: '1px',
         borderColor: 'border.secondary',
         paddingX: '4px',
-        textStyle: '14m',
+        textStyle: '14b',
         color: 'text.tertiary',
-        height: '30px',
+        height: '34px',
         paddingLeft: depth === 2 ? '20px' : '4px',
         _hover: {
           backgroundColor: 'neutral.20',
@@ -538,7 +538,7 @@
         paddingX: '4px',
         textStyle: '14m',
         color: 'text.tertiary',
-        height: '30px',
+        height: '34px',
         paddingLeft: depth === 2 ? '20px' : '4px',
         _hover: {
           backgroundColor: 'neutral.20',

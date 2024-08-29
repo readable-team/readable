@@ -167,20 +167,22 @@
   class={css({
     flex: 'none',
     borderLeftWidth: '1px',
-    borderColor: 'border.secondary',
+    borderColor: 'border.primary',
     padding: '20px',
-    width: '196px',
+    minWidth: '200px',
+    width: '[16.75%]',
+    maxWidth: '280px',
   })}
 >
   <div class={flex({ align: 'center', justify: 'space-between', marginBottom: '10px' })}>
-    <span class={css({ textStyle: '13b', color: 'text.secondary' })}>페이지</span>
-    <div class={flex({ align: 'center', gap: '8px' })}>
+    <span class={css({ textStyle: '14b', color: 'text.secondary' })}>페이지</span>
+    <div class={flex({ align: 'center', gap: '12px' })}>
       {#if $query.page.state === PageState.DRAFT}
         <div
           class={css({
             borderRadius: '2px',
             padding: '4px',
-            color: 'neutral.60',
+            color: 'text.secondary',
           })}
         >
           <Icon icon={ExternalLinkIcon} size={14} />
@@ -190,7 +192,7 @@
           class={css({
             borderRadius: '2px',
             padding: '4px',
-            color: 'neutral.60',
+            color: 'text.secondary',
             _hover: { backgroundColor: 'neutral.10' },
           })}
           href={pageUrl($query.page)}
@@ -206,11 +208,11 @@
           class={css({
             borderRadius: '2px',
             padding: '4px',
-            color: 'neutral.60',
+            color: 'text.secondary',
             _hover: { backgroundColor: 'neutral.10' },
           })}
         >
-          <Icon icon={EllipsisIcon} size={14} />
+          <Icon icon={EllipsisIcon} size={16} />
         </div>
 
         <MenuItem
@@ -245,7 +247,7 @@
       style={css.raw({ width: 'full' })}
       disabled={$query.page.hasUnpublishedParents ||
         ($query.page.state === PageState.PUBLISHED && !$query.page.hasUnpublishedChanges)}
-      size="sm"
+      size="md"
       on:click={async () => {
         await publishPage({ pageId: $query.page.id });
       }}
@@ -254,12 +256,12 @@
     </Button>
   </Tooltip>
 
-  <p class={css({ marginBottom: '6px', textStyle: '13m', color: 'text.tertiary' })}>편집자</p>
+  <p class={css({ marginBottom: '8px', textStyle: '14b', color: 'text.secondary' })}>편집자</p>
 
   <div class={flex({ align: 'center', wrap: 'wrap', paddingLeft: '4px', marginBottom: '16px' })}>
     {#each $query.page.contentContributor as contributor (contributor.id)}
       <Tooltip
-        style={css.raw({ borderRadius: 'full', marginLeft: '-4px', size: '20px', marginBottom: '4px' })}
+        style={css.raw({ borderRadius: 'full', marginLeft: '-4px', size: '28px', marginBottom: '4px' })}
         message={contributor.user.name}
         offset={8}
       >
@@ -269,7 +271,7 @@
             ringWidth: '1px',
             ringColor: 'border.image',
             borderRadius: 'full',
-            size: '20px',
+            size: '28px',
             _hover: { ringWidth: '2px', ringColor: { base: 'gray.800', _dark: 'darkgray.500' } },
           })}
           $image={contributor.user.avatar}
@@ -281,20 +283,20 @@
   </div>
 
   {#if $query.page.state === PageState.PUBLISHED}
-    <p class={css({ marginBottom: '4px', textStyle: '13m', color: 'text.tertiary' })}>마지막 발행 시간</p>
+    <p class={css({ marginBottom: '4px', textStyle: '14b', color: 'text.secondary' })}>마지막 발행 시간</p>
 
     <time
-      class={css({ display: 'block', marginBottom: '20px', textStyle: '13r', color: 'text.secondary' })}
+      class={css({ display: 'block', marginBottom: '20px', textStyle: '15m', color: 'text.tertiary' })}
       datetime={$query.page.lastPublishedAt}
     >
       {dayjs($query.page.lastPublishedAt).formatAsDateTime()}
     </time>
   {/if}
 
-  <p class={css({ marginBottom: '4px', textStyle: '13m', color: 'text.tertiary' })}>마지막 편집 시간</p>
+  <p class={css({ marginBottom: '4px', textStyle: '14b', color: 'text.secondary' })}>마지막 편집 시간</p>
 
   <time
-    class={css({ display: 'block', textStyle: '13r', color: 'text.secondary' })}
+    class={css({ display: 'block', textStyle: '15m', color: 'text.tertiary' })}
     datetime={$query.page.content.updatedAt}
   >
     {dayjs($query.page.content.updatedAt).formatAsDateTime()}

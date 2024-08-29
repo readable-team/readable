@@ -44,7 +44,7 @@
         gap: '10px',
         borderRadius: '4px',
         paddingX: '12px',
-        paddingY: '6px',
+        paddingY: '8px',
         textStyle: '14m',
         textAlign: 'left',
         color: 'text.secondary',

@@ -87,7 +87,7 @@
         lg: {
           borderRadius: '10px',
           textStyle: '16m',
-          height: '48px',
+          height: '43px',
           paddingX: '16px',
         },
       },

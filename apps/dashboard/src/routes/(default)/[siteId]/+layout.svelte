@@ -227,7 +227,7 @@
           size={48}
         />
       {/if}
-      <h1 class={css({ textStyle: '14m' })}>
+      <h1 class={css({ textStyle: '14sb' })}>
         {$query.site.name}
       </h1>
     </div>
@@ -279,7 +279,7 @@
         backgroundColor: 'surface.secondary',
         minWidth: '240px',
         width: '[18.75%]',
-        maxWidth: '340px',
+        maxWidth: '380px',
         borderRightWidth: '1px',
         borderColor: 'border.primary',
         overflowY: 'auto',

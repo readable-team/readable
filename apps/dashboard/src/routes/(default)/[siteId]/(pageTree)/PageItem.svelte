@@ -91,7 +91,7 @@
       flex({
         'alignItems': 'center',
         'borderRadius': '6px',
-        'height': '32px',
+        'height': '36px',
         'paddingX': '4px',
         'gap': '2px',
         '_hover': {
@@ -112,7 +112,7 @@
       {#if depth < maxDepth}
         <button
           class={css({
-            color: 'neutral.50',
+            color: 'neutral.60',
             borderRadius: '2px',
             padding: '4px',
             _hover: {
@@ -172,7 +172,7 @@
           class={css({
             truncate: true,
             flex: '1',
-            textStyle: '14m',
+            textStyle: '15m',
           })}
         >
           {item.content.title}
@@ -188,7 +188,7 @@
                 },
                 borderRadius: '2px',
                 padding: '4px',
-                color: 'neutral.50',
+                color: 'neutral.60',
                 _hover: {
                   backgroundColor: 'neutral.30',
                 },
@@ -224,7 +224,7 @@
         class={flex({
           paddingX: '8px',
           paddingY: '4px',
-          textStyle: '13b',
+          textStyle: '14b',
           color: 'text.secondary',
           truncate: true,
           flex: '1',
@@ -252,7 +252,7 @@
               },
               borderRadius: '2px',
               padding: '4px',
-              color: 'neutral.50',
+              color: 'neutral.60',
               _hover: {
                 backgroundColor: 'neutral.30',
               },

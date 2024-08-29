@@ -102,10 +102,10 @@
     gap: '10px',
     borderRadius: '4px',
     paddingX: '12px',
-    paddingY: '6px',
-    textStyle: '14m',
+    textStyle: '15m',
     color: 'text.secondary',
     width: 'full',
+    height: '36px',
     _hover: { backgroundColor: 'neutral.20' },
     _selected: { backgroundColor: 'neutral.20', color: 'text.primary' },
   });
@@ -175,7 +175,6 @@
     <div
       class={flex({
         position: 'relative',
-        width: '1064px',
         height: 'full',
         marginX: 'auto',
         display: 'flex',
@@ -184,12 +183,24 @@
       <div
         class={flex({
           flexDirection: 'column',
-          width: '220px',
+          flex: 'none',
+          minWidth: '240px',
+          width: '[30%]',
+          maxWidth: '280px',
           paddingX: '20px',
           paddingY: '60px',
         })}
       >
-        <div class={flex({ align: 'center', gap: '6px', paddingX: '10px', paddingY: '5px', alignItems: 'center' })}>
+        <div
+          class={flex({
+            align: 'center',
+            gap: '6px',
+            marginBottom: '2px',
+            paddingX: '10px',
+            paddingY: '5px',
+            alignItems: 'center',
+          })}
+        >
           <Img
             style={css.raw({
               flex: 'none',
@@ -206,20 +217,29 @@
           <p class={css({ textStyle: '13b', truncate: true, color: 'text.secondary' })}>{$site.team.name}</p>
         </div>
 
-        <dl class={flex({ direction: 'column', gap: '1px', paddingTop: '1px' })}>
+        <dl class={flex({ direction: 'column', gap: '2px', paddingTop: '1px' })}>
           {#each teamSettings as setting (setting.text)}
             <dd>
               <a class={tabItemStyle} aria-selected={selectedTab === setting.tab} href={setting.tab} role="tab">
-                <Icon icon={setting.icon} />
+                <Icon icon={setting.icon} size={18} />
                 <span>{setting.text}</span>
               </a>
             </dd>
           {/each}
         </dl>
 
-        <HorizontalDivider style={css.raw({ marginY: '16px' })} />
+        <HorizontalDivider style={css.raw({ marginY: '20px' })} />
 
-        <div class={flex({ align: 'center', gap: '6px', paddingX: '10px', paddingY: '5px', alignItems: 'center' })}>
+        <div
+          class={flex({
+            align: 'center',
+            gap: '6px',
+            marginBottom: '2px',
+            paddingX: '10px',
+            paddingY: '5px',
+            alignItems: 'center',
+          })}
+        >
           <Img
             style={css.raw({
               flex: 'none',
@@ -236,11 +256,11 @@
           <p class={css({ textStyle: '13b', truncate: true, color: 'text.secondary' })}>{$user.name}</p>
         </div>
 
-        <dl class={flex({ direction: 'column', gap: '4px', paddingTop: '1px' })}>
+        <dl class={flex({ direction: 'column', gap: '2px', paddingTop: '1px' })}>
           {#each personalSettings as setting (setting.text)}
             <dd>
               <a class={tabItemStyle} aria-selected={selectedTab === setting.tab} href={setting.tab} role="tab">
-                <Icon icon={setting.icon} />
+                <Icon icon={setting.icon} size={18} />
                 <span>{setting.text}</span>
               </a>
             </dd>
@@ -250,7 +270,7 @@
 
       <div
         class={flex({
-          width: '720px',
+          width: '784px',
           flexDirection: 'column',
           backgroundColor: 'surface.primary',
           paddingY: '60px',

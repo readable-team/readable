@@ -97,7 +97,7 @@
         flexDirection: 'column',
         gap: '1px',
         borderWidth: '1px',
-        borderColor: 'border.secondary',
+        borderColor: 'border.primary',
         borderRadius: '6px',
         padding: '3px',
         backgroundColor: 'surface.primary',

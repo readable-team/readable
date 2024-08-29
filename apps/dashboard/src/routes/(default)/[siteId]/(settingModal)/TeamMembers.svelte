@@ -124,13 +124,14 @@
 
 <HorizontalDivider style={css.raw({ marginTop: '20px' })} />
 
-<div class={flex({ flexDirection: 'column', paddingY: '40px', gap: '8px' })}>
-  <div class={css({ textStyle: '14sb', color: 'neutral.70' })}>
+<div class={flex({ flexDirection: 'column', paddingY: '40px', gap: '16px' })}>
+  <div class={css({ textStyle: '16m', color: 'text.tertiary' })}>
     {$team.members.length}명의 멤버
   </div>
-  <ul>
+
+  <ul class={flex({ flexDirection: 'column', gap: '12px' })}>
     {#each $team.members as member (member.id)}
-      <li class={flex({ alignItems: 'center', gap: '16px', borderBottomWidth: '1px', borderColor: 'border.primary' })}>
+      <li class={flex({ alignItems: 'center', gap: '16px' })}>
         <div class={flex({ flex: '1', alignItems: 'center', gap: '8px', truncate: true })}>
           <Img
             style={css.raw({
@@ -144,8 +145,8 @@
             size={32}
           />
           <div class={flex({ flexDirection: 'column', truncate: true })}>
-            <p class={css({ textStyle: '14sb', color: 'text.secondary', truncate: true })}>{member.user.name}</p>
-            <p class={css({ textStyle: '12m', color: 'text.tertiary', truncate: true })}>{member.user.email}</p>
+            <p class={css({ textStyle: '16sb', color: 'text.secondary', truncate: true })}>{member.user.name}</p>
+            <p class={css({ textStyle: '16m', color: 'text.tertiary', truncate: true })}>{member.user.email}</p>
           </div>
         </div>
 
@@ -169,7 +170,7 @@
                 })}
               >
                 <span>{member.role === 'ADMIN' ? '관리자' : '멤버'}</span>
-                <Icon icon={ChevronDownIcon} size={20} />
+                <Icon style={css.raw({ color: 'neutral.60' })} icon={ChevronDownIcon} size={16} />
               </div>
 
               <button
