@@ -3,6 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Button, FormField, HorizontalDivider, Icon, Modal, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
+  import dayjs from 'dayjs';
   import { z } from 'zod';
   import CheckIcon from '~icons/lucide/check';
   // import CreditCardIcon from '~icons/lucide/credit-card';
@@ -143,6 +144,92 @@
 </div>
 
 <HorizontalDivider style={css.raw({ marginTop: '20px', marginBottom: '40px' })} />
+
+<h2 class={css({ textStyle: '18sb', color: 'text.primary', marginBottom: '16px' })}>플랜별 기능 비교</h2>
+
+<div class={css({ overflowX: 'auto' })}>
+  <table class={css({ width: 'full', borderCollapse: 'separate', borderSpacing: '0' })}>
+    <thead>
+      <tr>
+        <th
+          class={css({
+            textAlign: 'left',
+            padding: '12px',
+            backgroundColor: 'surface.secondary',
+            borderTopLeftRadius: '8px',
+          })}
+        >
+          기능
+        </th>
+        <th class={css({ textAlign: 'center', padding: '12px', backgroundColor: 'surface.secondary' })}>무료</th>
+        <th class={css({ textAlign: 'center', padding: '12px', backgroundColor: 'surface.secondary' })}>프로</th>
+        <th
+          class={css({
+            textAlign: 'center',
+            padding: '12px',
+            backgroundColor: 'surface.secondary',
+            borderTopRightRadius: '8px',
+          })}
+        >
+          엔터프라이즈
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {#each [{ feature: '월간 페이지뷰', free: '5,000', pro: '무제한', enterprise: '무제한' }, { feature: '사용자 수', free: '1인', pro: '무제한', enterprise: '무제한' }, { feature: '사이트 수', free: '무제한', pro: '무제한', enterprise: '무제한' }, { feature: '블럭 수', free: '무제한', pro: '무제한', enterprise: '무제한' }, { feature: 'AI 검색', free: '✗', pro: '✓', enterprise: '✓' }, { feature: '커스텀 도메인', free: '✗', pro: '✓', enterprise: '✓' }, { feature: '데이터 셀프 호스팅', free: '✗', pro: '✗', enterprise: '✓' }, { feature: '전용 고객 지원', free: '✗', pro: '✗', enterprise: '✓' }, { feature: '맞춤형 기능', free: '✗', pro: '✗', enterprise: '✓' }, { feature: '가격', free: '무료', pro: '₩33,000/월', enterprise: '맞춤형' }] as row (row.feature)}
+        <tr>
+          <td
+            class={css({
+              padding: '12px',
+              borderBottom: '1px solid',
+              borderBottomColor: 'border.primary',
+              textStyle: '14r',
+              color: 'text.primary',
+            })}
+          >
+            {row.feature}
+          </td>
+          <td
+            class={css({
+              padding: '12px',
+              borderBottom: '1px solid',
+              borderBottomColor: 'border.primary',
+              textAlign: 'center',
+              textStyle: '14r',
+              color: 'text.secondary',
+            })}
+          >
+            {row.free}
+          </td>
+          <td
+            class={css({
+              padding: '12px',
+              borderBottom: '1px solid',
+              borderBottomColor: 'border.primary',
+              textAlign: 'center',
+              textStyle: '14r',
+              color: 'text.secondary',
+            })}
+          >
+            {row.pro}
+          </td>
+          <td
+            class={css({
+              padding: '12px',
+              borderBottom: '1px solid',
+              borderBottomColor: 'border.primary',
+              textAlign: 'center',
+              textStyle: '14r',
+              color: 'text.secondary',
+            })}
+          >
+            {row.enterprise}
+          </td>
+        </tr>
+      {/each}
+    </tbody>
+  </table>
+</div>
 
 <!-- <div
   class={flex({
@@ -297,6 +384,30 @@
           </FormField>
         </div>
 
+        <div
+          class={flex({
+            padding: '16px',
+            backgroundColor: 'surface.secondary',
+            borderRadius: '12px',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderWidth: '1px',
+            borderColor: 'border.primary',
+            marginBottom: '20px',
+          })}
+        >
+          <div class={flex({ flexDirection: 'column', gap: '4px' })}>
+            <span class={css({ textStyle: '14r', color: 'text.secondary' })}>다음 결제일</span>
+            <span class={css({ textStyle: '16sb', color: 'text.primary' })}>
+              {dayjs.kst().format('YYYY년 MM월 DD일')}
+            </span>
+          </div>
+          <div class={flex({ flexDirection: 'column', alignItems: 'flex-end', gap: '4px' })}>
+            <span class={css({ textStyle: '14r', color: 'text.secondary' })}>결제 금액</span>
+            <span class={css({ textStyle: '18eb', color: 'text.primary' })}>₩33,000</span>
+          </div>
+        </div>
+
         <div class={flex({ flexDirection: 'column', gap: '12px' })}>
           <label class={flex({ alignItems: 'center', gap: '8px' })}>
             <input checked={allChecked} type="checkbox" on:change={handleAllCheck} />
@@ -364,6 +475,30 @@
           </FormField>
         </div>
 
+        <div
+          class={flex({
+            padding: '16px',
+            backgroundColor: 'surface.secondary',
+            borderRadius: '12px',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderWidth: '1px',
+            borderColor: 'border.primary',
+            marginBottom: '20px',
+          })}
+        >
+          <div class={flex({ flexDirection: 'column', gap: '4px' })}>
+            <span class={css({ textStyle: '14r', color: 'text.secondary' })}>다음 결제일</span>
+            <span class={css({ textStyle: '16sb', color: 'text.primary' })}>
+              {dayjs.kst().format('YYYY년 MM월 DD일')}
+            </span>
+          </div>
+          <div class={flex({ flexDirection: 'column', alignItems: 'flex-end', gap: '4px' })}>
+            <span class={css({ textStyle: '14r', color: 'text.secondary' })}>결제 금액</span>
+            <span class={css({ textStyle: '18eb', color: 'text.primary' })}>₩33,000</span>
+          </div>
+        </div>
+
         <div class={flex({ flexDirection: 'column', gap: '12px' })}>
           <label class={flex({ alignItems: 'center', gap: '8px' })}>
             <input checked={allChecked} type="checkbox" on:change={handleAllCheck} />
@@ -390,7 +525,7 @@
           </div>
         </div>
 
-        <Button disabled={!allChecked || !$personalFormIsValid} type="submit">카드 추가하기</Button>
+        <Button disabled={!allChecked || !$personalFormIsValid} type="submit">등록하기</Button>
       </form>
     {/if}
   </div>
