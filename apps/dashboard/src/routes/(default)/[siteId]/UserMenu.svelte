@@ -19,7 +19,11 @@
   export { _query as $query };
 
   let openUserSettingModal = false;
-  $: openUserSettingModal = $page.url.hash === '#/settings/personal' || $page.url.hash.startsWith('#/settings/team');
+
+  $: {
+    const tab = $page.url.searchParams.get('tab');
+    openUserSettingModal = !!tab && (tab === 'settings/personal' || tab.startsWith('settings/team'));
+  }
 
   $: query = fragment(
     _query,
@@ -100,11 +104,11 @@
     </div>
   </div>
 
-  <MenuItem external={false} href="#/settings/team" type="link">
+  <MenuItem external={false} href="?tab=settings/team" type="link">
     <Icon icon={Building2Icon} size={14} />
     <span>팀 설정</span>
   </MenuItem>
-  <MenuItem external={false} href="#/settings/personal" type="link">
+  <MenuItem external={false} href="?tab=settings/personal" type="link">
     <Icon icon={CircleUserRoundIcon} size={14} />
     <span>개인 설정</span>
   </MenuItem>

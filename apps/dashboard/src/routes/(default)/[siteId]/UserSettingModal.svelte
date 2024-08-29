@@ -1,6 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import { scrollLock } from '@readable/ui/actions';
   import { HorizontalDivider, Icon } from '@readable/ui/components';
   import Building2Icon from '~icons/lucide/building-2';
   import CircleUserIcon from '~icons/lucide/circle-user';
@@ -23,7 +24,7 @@
 
   export let open = false;
 
-  $: selectedTab = $page.url.hash;
+  $: selectedTab = $page.url.searchParams.get('tab');
 
   $: user = fragment(
     _user,
@@ -75,7 +76,7 @@
     {
       icon: CircleUserIcon,
       text: '개인 설정',
-      tab: '#/settings/personal',
+      tab: 'settings/personal',
     },
   ];
 
@@ -83,17 +84,17 @@
     {
       icon: Building2Icon,
       text: '팀 설정',
-      tab: '#/settings/team',
+      tab: 'settings/team',
     },
     {
       icon: UsersRoundIcon,
       text: '멤버 관리',
-      tab: '#/settings/team/members',
+      tab: 'settings/team/members',
     },
     {
       icon: CreditCardIcon,
       text: '구독 및 결제',
-      tab: '#/settings/team/subscription',
+      tab: 'settings/team/subscription',
     },
   ];
 
@@ -119,6 +120,8 @@
       zIndex: '20',
       width: 'screen',
       height: 'screen',
+      backgroundColor: 'surface.primary',
+      overflow: 'auto',
     })}
   >
     <div
@@ -131,20 +134,10 @@
       })}
       aria-hidden="true"
     />
-    <div
-      class={css({
-        position: 'absolute',
-        right: '0',
-        width: '1/2',
-        height: 'full',
-        backgroundColor: 'surface.primary',
-      })}
-      aria-hidden="true"
-    />
 
     <button
       class={css({
-        position: 'absolute',
+        position: 'fixed',
         top: '24px',
         right: '24px',
         display: 'flex',
@@ -175,10 +168,11 @@
     <div
       class={flex({
         position: 'relative',
-        height: 'full',
         marginX: 'auto',
-        display: 'flex',
+        overflow: 'auto',
+        minWidth: '1064px',
       })}
+      use:scrollLock
     >
       <div
         class={flex({
@@ -189,6 +183,7 @@
           maxWidth: '280px',
           paddingX: '20px',
           paddingY: '60px',
+          overflow: 'auto',
         })}
       >
         <div
@@ -220,7 +215,12 @@
         <dl class={flex({ direction: 'column', gap: '2px', paddingTop: '1px' })}>
           {#each teamSettings as setting (setting.text)}
             <dd>
-              <a class={tabItemStyle} aria-selected={selectedTab === setting.tab} href={setting.tab} role="tab">
+              <a
+                class={tabItemStyle}
+                aria-selected={selectedTab === setting.tab}
+                href={`?tab=${setting.tab}`}
+                role="tab"
+              >
                 <Icon icon={setting.icon} size={18} />
                 <span>{setting.text}</span>
               </a>
@@ -259,7 +259,12 @@
         <dl class={flex({ direction: 'column', gap: '2px', paddingTop: '1px' })}>
           {#each personalSettings as setting (setting.text)}
             <dd>
-              <a class={tabItemStyle} aria-selected={selectedTab === setting.tab} href={setting.tab} role="tab">
+              <a
+                class={tabItemStyle}
+                aria-selected={selectedTab === setting.tab}
+                href={`?tab=${setting.tab}`}
+                role="tab"
+              >
                 <Icon icon={setting.icon} size={18} />
                 <span>{setting.text}</span>
               </a>
@@ -271,19 +276,21 @@
       <div
         class={flex({
           width: '784px',
+          height: 'full',
           flexDirection: 'column',
           backgroundColor: 'surface.primary',
           paddingY: '60px',
           paddingX: '32px',
+          overflow: 'auto',
         })}
       >
-        {#if selectedTab === '#/settings/team'}
+        {#if selectedTab === 'settings/team'}
           <TeamSetting $team={$site.team} />
-        {:else if selectedTab === '#/settings/team/members'}
+        {:else if selectedTab === 'settings/team/members'}
           <TeamMembers $team={$site.team} />
-        {:else if selectedTab === '#/settings/team/subscription'}
+        {:else if selectedTab === 'settings/team/subscription'}
           <Subscription />
-        {:else if selectedTab === '#/settings/personal'}
+        {:else if selectedTab === 'settings/personal'}
           <UserSetting {$user} />
         {/if}
       </div>

@@ -147,89 +147,87 @@
 
 <h2 class={css({ textStyle: '18sb', color: 'text.primary', marginBottom: '16px' })}>플랜별 기능 비교</h2>
 
-<div class={css({ overflowX: 'auto' })}>
-  <table class={css({ width: 'full', borderCollapse: 'separate', borderSpacing: '0' })}>
-    <thead>
+<table class={css({ width: 'full', borderCollapse: 'separate', borderSpacing: '0' })}>
+  <thead>
+    <tr>
+      <th
+        class={css({
+          textAlign: 'left',
+          padding: '12px',
+          backgroundColor: 'surface.secondary',
+          borderTopLeftRadius: '8px',
+        })}
+      >
+        기능
+      </th>
+      <th class={css({ textAlign: 'center', padding: '12px', backgroundColor: 'surface.secondary' })}>무료</th>
+      <th class={css({ textAlign: 'center', padding: '12px', backgroundColor: 'surface.secondary' })}>프로</th>
+      <th
+        class={css({
+          textAlign: 'center',
+          padding: '12px',
+          backgroundColor: 'surface.secondary',
+          borderTopRightRadius: '8px',
+        })}
+      >
+        엔터프라이즈
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {#each [{ feature: '월간 페이지뷰', free: '5,000', pro: '무제한', enterprise: '무제한' }, { feature: '사용자 수', free: '1인', pro: '무제한', enterprise: '무제한' }, { feature: '사이트 수', free: '무제한', pro: '무제한', enterprise: '무제한' }, { feature: '블럭 수', free: '무제한', pro: '무제한', enterprise: '무제한' }, { feature: 'AI 검색', free: '✗', pro: '✓', enterprise: '✓' }, { feature: '커스텀 도메인', free: '✗', pro: '✓', enterprise: '✓' }, { feature: '데이터 셀프 호스팅', free: '✗', pro: '✗', enterprise: '✓' }, { feature: '전용 고객 지원', free: '✗', pro: '✗', enterprise: '✓' }, { feature: '맞춤형 기능', free: '✗', pro: '✗', enterprise: '✓' }, { feature: '가격', free: '무료', pro: '₩33,000/월', enterprise: '맞춤형' }] as row (row.feature)}
       <tr>
-        <th
+        <td
           class={css({
-            textAlign: 'left',
             padding: '12px',
-            backgroundColor: 'surface.secondary',
-            borderTopLeftRadius: '8px',
+            borderBottom: '1px solid',
+            borderBottomColor: 'border.primary',
+            textStyle: '14r',
+            color: 'text.primary',
           })}
         >
-          기능
-        </th>
-        <th class={css({ textAlign: 'center', padding: '12px', backgroundColor: 'surface.secondary' })}>무료</th>
-        <th class={css({ textAlign: 'center', padding: '12px', backgroundColor: 'surface.secondary' })}>프로</th>
-        <th
+          {row.feature}
+        </td>
+        <td
           class={css({
+            padding: '12px',
+            borderBottom: '1px solid',
+            borderBottomColor: 'border.primary',
             textAlign: 'center',
-            padding: '12px',
-            backgroundColor: 'surface.secondary',
-            borderTopRightRadius: '8px',
+            textStyle: '14r',
+            color: 'text.secondary',
           })}
         >
-          엔터프라이즈
-        </th>
+          {row.free}
+        </td>
+        <td
+          class={css({
+            padding: '12px',
+            borderBottom: '1px solid',
+            borderBottomColor: 'border.primary',
+            textAlign: 'center',
+            textStyle: '14r',
+            color: 'text.secondary',
+          })}
+        >
+          {row.pro}
+        </td>
+        <td
+          class={css({
+            padding: '12px',
+            borderBottom: '1px solid',
+            borderBottomColor: 'border.primary',
+            textAlign: 'center',
+            textStyle: '14r',
+            color: 'text.secondary',
+          })}
+        >
+          {row.enterprise}
+        </td>
       </tr>
-    </thead>
-    <tbody>
-      {#each [{ feature: '월간 페이지뷰', free: '5,000', pro: '무제한', enterprise: '무제한' }, { feature: '사용자 수', free: '1인', pro: '무제한', enterprise: '무제한' }, { feature: '사이트 수', free: '무제한', pro: '무제한', enterprise: '무제한' }, { feature: '블럭 수', free: '무제한', pro: '무제한', enterprise: '무제한' }, { feature: 'AI 검색', free: '✗', pro: '✓', enterprise: '✓' }, { feature: '커스텀 도메인', free: '✗', pro: '✓', enterprise: '✓' }, { feature: '데이터 셀프 호스팅', free: '✗', pro: '✗', enterprise: '✓' }, { feature: '전용 고객 지원', free: '✗', pro: '✗', enterprise: '✓' }, { feature: '맞춤형 기능', free: '✗', pro: '✗', enterprise: '✓' }, { feature: '가격', free: '무료', pro: '₩33,000/월', enterprise: '맞춤형' }] as row (row.feature)}
-        <tr>
-          <td
-            class={css({
-              padding: '12px',
-              borderBottom: '1px solid',
-              borderBottomColor: 'border.primary',
-              textStyle: '14r',
-              color: 'text.primary',
-            })}
-          >
-            {row.feature}
-          </td>
-          <td
-            class={css({
-              padding: '12px',
-              borderBottom: '1px solid',
-              borderBottomColor: 'border.primary',
-              textAlign: 'center',
-              textStyle: '14r',
-              color: 'text.secondary',
-            })}
-          >
-            {row.free}
-          </td>
-          <td
-            class={css({
-              padding: '12px',
-              borderBottom: '1px solid',
-              borderBottomColor: 'border.primary',
-              textAlign: 'center',
-              textStyle: '14r',
-              color: 'text.secondary',
-            })}
-          >
-            {row.pro}
-          </td>
-          <td
-            class={css({
-              padding: '12px',
-              borderBottom: '1px solid',
-              borderBottomColor: 'border.primary',
-              textAlign: 'center',
-              textStyle: '14r',
-              color: 'text.secondary',
-            })}
-          >
-            {row.enterprise}
-          </td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
-</div>
+    {/each}
+  </tbody>
+</table>
 
 <!-- <div
   class={flex({
