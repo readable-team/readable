@@ -69,7 +69,8 @@ Category.implement({
               .from(Pages)
               .where(
                 and(inArray(Pages.categoryId, categoryIds), ne(Pages.state, PageState.DELETED), isNull(Pages.parentId)),
-              );
+              )
+              .orderBy(asc(Pages.order));
           },
           key: (row) => row.categoryId,
         });
@@ -99,7 +100,8 @@ PublicCategory.implement({
                   eq(Pages.state, PageState.PUBLISHED),
                   isNull(Pages.parentId),
                 ),
-              );
+              )
+              .orderBy(asc(Pages.order));
           },
           key: (row) => row.categoryId,
         });
