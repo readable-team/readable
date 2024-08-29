@@ -1,7 +1,16 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, HorizontalDivider, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
+  import {
+    Button,
+    FormField,
+    HorizontalDivider,
+    Icon,
+    Menu,
+    MenuItem,
+    Modal,
+    TextInput,
+  } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
@@ -9,6 +18,7 @@
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import UserRoundMinusIcon from '~icons/lucide/user-round-minus';
+  import XIcon from '~icons/lucide/x';
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
@@ -25,6 +35,10 @@
       fragment TeamMembers_team on Team {
         id
         name
+        avatar {
+          id
+          ...Img_image
+        }
         meAsMember {
           id
           role
@@ -50,7 +64,7 @@
     `),
   );
 
-  const { form } = createMutationForm({
+  const { form, reset, setErrors } = createMutationForm({
     mutation: graphql(`
       mutation UserSettingModal_InviteTeamMember_Mutation($input: InviteTeamMemberInput!) {
         inviteTeamMember(input: $input) {
@@ -71,7 +85,15 @@
       email: dataSchemas.email,
     }),
     onSuccess: () => {
-      console.log('success');
+      reset();
+    },
+    onError: (e: unknown) => {
+      if (e instanceof Error) {
+        setErrors({ email: '알 수 없는 오류가 발생했습니다.' });
+      } else {
+        // GraphQL 에러
+        setErrors({ email: (e as { message: string }).message });
+      }
     },
   });
 
@@ -91,20 +113,16 @@
       }
     }
   `);
+
+  let isInviteModalOpen = false;
 </script>
 
-<h1 class={css({ textStyle: '28eb' })}>멤버 관리</h1>
+<div class={flex({ justifyContent: 'space-between', alignItems: 'center' })}>
+  <h1 class={css({ textStyle: '28eb' })}>멤버 관리</h1>
+  <Button size="sm" type="button" on:click={() => (isInviteModalOpen = true)}>멤버 초대</Button>
+</div>
 
 <HorizontalDivider style={css.raw({ marginTop: '20px' })} />
-
-<form class={flex({ align: 'center', gap: '10px' })} use:form>
-  <input name="teamId" type="hidden" value={$team.id} />
-  <FormField name="email">
-    <TextInput placeholder="이메일" />
-  </FormField>
-
-  <Button size="lg" type="submit">멤버 초대</Button>
-</form>
 
 <div class={flex({ flexDirection: 'column', paddingY: '40px', gap: '8px' })}>
   <div class={css({ textStyle: '14sb', color: 'neutral.70' })}>
@@ -320,3 +338,43 @@
     {/each}
   </ul>
 </div>
+
+<Modal style={css.raw({ width: '600px' })} close={() => (isInviteModalOpen = false)} bind:open={isInviteModalOpen}>
+  <div
+    class={flex({
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingX: '32px',
+      paddingY: '20px',
+      borderBottomWidth: '1px',
+      borderColor: 'border.secondary',
+    })}
+  >
+    <div class={flex({ alignItems: 'center', gap: '8px' })}>
+      <Img
+        style={css.raw({
+          borderWidth: '1px',
+          borderColor: 'border.image',
+          borderRadius: 'full',
+          size: '20px',
+        })}
+        $image={$team.avatar}
+        alt={`${$team.name}의 아바타`}
+        size={24}
+      />
+      <h2 class={css({ textStyle: '16sb' })}>멤버 초대</h2>
+    </div>
+    <button type="button" on:click={() => (isInviteModalOpen = false)}>
+      <Icon icon={XIcon} size={20} />
+    </button>
+  </div>
+  <form class={flex({ flexDirection: 'column', gap: '16px', paddingX: '32px', paddingY: '24px' })} use:form>
+    <input name="teamId" type="hidden" value={$team.id} />
+    <FormField name="email" label="이메일">
+      <TextInput placeholder="초대할 이메일을 입력해주세요 (email@example.com...)" />
+    </FormField>
+    <div class={flex({ justifyContent: 'flex-end' })}>
+      <Button size="md" type="submit">초대하기</Button>
+    </div>
+  </form>
+</Modal>
