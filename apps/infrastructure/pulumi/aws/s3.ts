@@ -58,7 +58,7 @@ const uploads = new aws.s3.Bucket('uploads', {
     {
       allowedHeaders: ['*'],
       allowedMethods: ['POST'],
-      allowedOrigins: ['https://dashboard.rdbl.io', 'https://dashboard.rdbl.ninja', 'http://localhost:4100'],
+      allowedOrigins: ['https://app.rdbl.io', 'https://app.rdbl.ninja', 'http://localhost:4100'],
     },
   ],
 

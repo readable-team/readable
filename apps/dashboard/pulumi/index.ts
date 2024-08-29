@@ -14,8 +14,8 @@ const site = new readable.Site('dashboard', {
   },
 
   domain: {
-    production: 'dashboard.rdbl.io',
-    dev: 'dashboard.rdbl.ninja',
+    production: 'app.rdbl.io',
+    dev: 'app.rdbl.ninja',
   },
 
   cloudfront: {
