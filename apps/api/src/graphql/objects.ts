@@ -54,6 +54,7 @@ export const SiteCustomDomain = createObjectRef('SiteCustomDomain', T.SiteCustom
 export const Team = createObjectRef('Team', T.Teams);
 export const TeamMember = createObjectRef('TeamMember', T.TeamMembers);
 export const TeamMemberInvitation = createObjectRef('TeamMemberInvitation', T.TeamMemberInvitations);
+export const TeamPaymentMethod = createObjectRef('TeamPaymentMethod', T.TeamPaymentMethods);
 export const User = createObjectRef('User', T.Users);
 
 export const PublicCategory = createObjectRef('PublicCategory', T.Categories);

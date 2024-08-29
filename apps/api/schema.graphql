@@ -166,7 +166,7 @@ type Mutation {
   persistBlobAsFile(input: PersistBlobAsFileInput!): File!
   persistBlobAsImage(input: PersistBlobAsImageInput!): Image!
   publishPage(input: PublishPageInput!): Page!
-  registerCard(input: RegisterCardInput!): Boolean!
+  registerCard(input: RegisterCardInput!): TeamPaymentMethod!
   removeTeamMember(input: RemoveTeamMemberInput!): TeamMember!
   resendInvitationEmail(input: ResendInvitationEmailInput!): TeamMemberInvitation!
   revokeInvitation(input: RevokeInvitationInput!): TeamMemberInvitation!
@@ -442,6 +442,18 @@ type TeamMemberInvitation {
 enum TeamMemberRole {
   ADMIN
   MEMBER
+}
+
+type TeamPaymentMethod {
+  cardName: String!
+  createdAt: DateTime!
+  id: ID!
+  lastCardNumber: String!
+}
+
+enum TeamPaymentMethodState {
+  ACTIVE
+  DELETED
 }
 
 enum TeamState {

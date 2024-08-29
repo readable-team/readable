@@ -20,6 +20,7 @@ type IssueBillingKeyResult = {
     issuer: string;
     publisher: string;
     brand: string;
+    number: string;
   };
 };
 export const issueBillingKey = async (params: IssueBillingKeyParams): Promise<IssueBillingKeyResult> => {
@@ -63,6 +64,7 @@ export const issueBillingKey = async (params: IssueBillingKeyParams): Promise<Is
       issuer: card.issuer ?? '',
       publisher: card.publisher ?? '',
       brand: card.brand ?? '',
+      number: card.number ?? '',
     },
   };
 };

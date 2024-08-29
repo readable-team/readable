@@ -52,6 +52,12 @@ export const TeamMemberRole = {
   MEMBER: 'MEMBER',
 } as const;
 
+export type TeamPaymentMethodState = keyof typeof TeamPaymentMethodState;
+export const TeamPaymentMethodState = {
+  ACTIVE: 'ACTIVE',
+  DELETED: 'DELETED',
+} as const;
+
 export type TeamState = keyof typeof TeamState;
 export const TeamState = {
   ACTIVE: 'ACTIVE',

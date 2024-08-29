@@ -381,6 +381,30 @@ export const TeamMemberInvitations = pgTable(
   }),
 );
 
+export const TeamPaymentMethods = pgTable(
+  'team_payment_methods',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId('TPYM')),
+    teamId: text('team_id')
+      .notNull()
+      .references(() => Teams.id),
+    state: E._TeamPaymentMethodState('state').notNull().default('ACTIVE'),
+    billingKey: text('billing_key').notNull(),
+    cardName: text('card_name').notNull(),
+    lastCardNumber: text('last_card_number').notNull(),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    teamIdUniqIdx: uniqueIndex()
+      .on(t.teamId)
+      .where(sql`${t.state} = 'ACTIVE'`),
+  }),
+);
+
 export const Users = pgTable(
   'users',
   {
