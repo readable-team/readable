@@ -51,7 +51,7 @@
         color: { base: 'gray.600', _dark: 'darkgray.400' },
       },
       '_hover': {
-        borderColor: { base: 'gray.400', _dark: 'darkgray.600' },
+        borderColor: { base: 'brand.400', _dark: 'brand.300' },
       },
       '_hasFocusedInput': {
         borderColor: { base: 'brand.600', _dark: 'brand.500' },
