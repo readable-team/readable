@@ -1,11 +1,10 @@
 <script lang="ts">
   import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon, Menu, MenuItem } from '@readable/ui/components';
+  import { Icon, Menu, MenuItem, VerticalDivider } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import CopyIcon from '~icons/lucide/copy';
-  import DotIcon from '~icons/lucide/dot';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import Trash2Icon from '~icons/lucide/trash-2';
   import { page } from '$app/stores';
@@ -91,9 +90,10 @@
       flex({
         'alignItems': 'center',
         'borderRadius': '6px',
-        'height': '36px',
-        'paddingX': '4px',
+        'height': '38px',
         'gap': '2px',
+        'paddingLeft': depth === 2 ? '14px' : '4px',
+        'paddingRight': '4px',
         '_hover': {
           backgroundColor: 'neutral.20',
         },
@@ -104,10 +104,19 @@
           backgroundColor: 'neutral.20',
           color: 'text.primary',
         },
-        'paddingLeft': depth === 2 ? '20px' : '4px',
       }),
     )}
   >
+    {#if item.__typename === 'Page' && depth === maxDepth}
+      <VerticalDivider
+        style={css.raw({
+          backgroundColor: 'neutral.30',
+          marginX: '14px',
+          _groupHover: { backgroundColor: 'neutral.60' },
+        })}
+      />
+    {/if}
+
     {#if item.__typename !== 'Category'}
       {#if depth < maxDepth}
         <button
@@ -127,10 +136,6 @@
         >
           <Icon icon={openState[item.id] ? ChevronDownIcon : ChevronRightIcon} size={14} />
         </button>
-      {:else}
-        <div class={css({ color: 'neutral.50', padding: '4px' })}>
-          <Icon icon={DotIcon} size={14} />
-        </div>
       {/if}
     {/if}
 

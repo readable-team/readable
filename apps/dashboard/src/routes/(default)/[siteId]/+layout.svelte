@@ -290,6 +290,7 @@
           class={css({
             flex: '1',
             padding: '20px',
+            paddingBottom: '120px',
             overflow: 'auto',
           })}
           role="tree"

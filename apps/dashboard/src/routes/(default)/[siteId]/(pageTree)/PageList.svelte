@@ -468,8 +468,6 @@
         display: 'flex',
         flexDirection: 'column',
         userSelect: 'none',
-        paddingTop: '1px',
-        gap: '2px',
       },
       parent === null ? { gap: '20px' } : {},
     ),
@@ -538,7 +536,7 @@
         paddingX: '4px',
         textStyle: '14m',
         color: 'text.tertiary',
-        height: '34px',
+        height: '38px',
         paddingLeft: depth === 2 ? '20px' : '4px',
         _hover: {
           backgroundColor: 'neutral.20',
@@ -549,7 +547,7 @@
       type="button"
       on:click={() => onCreate(parent)}
     >
-      <div class={css({ padding: '4px', color: 'neutral.50' })}>
+      <div class={css({ padding: '4px', color: 'neutral.60' })}>
         <Icon icon={PlusIcon} size={14} />
       </div>
       <span>페이지 추가</span>
