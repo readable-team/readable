@@ -50,6 +50,11 @@ new k8s.apiextensions.CustomResource('datadog', {
       clusterChecks: {
         useClusterChecksRunners: true,
       },
+
+      logCollection: {
+        enabled: true,
+        containerCollectAll: true,
+      },
     },
   },
 });
