@@ -97,7 +97,7 @@
         '_hover': {
           backgroundColor: 'neutral.20',
         },
-        '&:has(button[aria-expanded=true])': {
+        '&:has(button.menu-button[aria-expanded=true])': {
           backgroundColor: 'neutral.20',
         },
         '&:has(a[aria-selected=true])': {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { css } from '@readable/styled-system/css';
+  import { css, cx } from '@readable/styled-system/css';
   import { setContext } from 'svelte';
   import { afterNavigate } from '$app/navigation';
   import { createFloatingActions } from '../actions/index';
@@ -78,7 +78,7 @@
 
 <button
   bind:this={buttonEl}
-  class={css(style)}
+  class={cx(css(style), 'menu-button')}
   aria-expanded={open}
   type="button"
   on:click|preventDefault={() => (open = !open)}
