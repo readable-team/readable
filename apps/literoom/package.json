@@ -17,7 +17,7 @@
     "@pulumi/pulumi": "^3.130.0",
     "@readable/tsconfig": "workspace:*",
     "tsup": "^8.2.4",
-    "tsx": "^4.17.0",
+    "tsx": "^4.19.0",
     "typescript": "^5.5.4"
   }
 }

@@ -25,8 +25,8 @@
     "husky": "^9.1.5",
     "lint-staged": "^15.2.9",
     "prettier": "^3.3.3",
-    "syncpack": "^12.4.0",
-    "turbo": "^2.0.14",
+    "syncpack": "^13.0.0",
+    "turbo": "^2.1.0",
     "typescript": "^5.5.4"
   },
   "packageManager": "bun@1.0.0"
