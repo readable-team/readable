@@ -4,6 +4,7 @@
   import { Alert, Button, Helmet, Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
   import { redirect } from '@sveltejs/kit';
   import dayjs from 'dayjs';
+  import { onMount } from 'svelte';
   import { PageState } from '@/enums';
   import CopyIcon from '~icons/lucide/copy';
   import EllipsisIcon from '~icons/lucide/ellipsis';
@@ -15,6 +16,7 @@
   import { Img } from '$lib/components';
   import { lastVisitedPage } from '$lib/stores';
   import { pageUrl } from '$lib/utils/url';
+  import LeftSideBar from '../LeftSideBar.svelte';
   import Breadcrumb from './Breadcrumb.svelte';
   import Editor from './Editor.svelte';
 
@@ -22,7 +24,12 @@
   let unpublishPageOpen = false;
 
   $: query = graphql(`
-    query PagePage_Query($pageId: ID!) {
+    query PagePage_Query($siteId: ID!, $pageId: ID!) {
+      site(siteId: $siteId) {
+        id
+        ...LeftSideBar_site
+      }
+
       page(pageId: $pageId) {
         id
         state
@@ -104,6 +111,45 @@
     }
   `);
 
+  const siteUpdateStream = graphql(`
+    subscription PagePage_SiteUpdateStream_Subscription($siteId: ID!) {
+      siteUpdateStream(siteId: $siteId) {
+        __typename
+
+        ... on Site {
+          id
+        }
+
+        ... on Page {
+          id
+          state
+          hasUnpublishedChanges
+
+          content {
+            id
+            title
+          }
+        }
+      }
+    }
+  `);
+
+  siteUpdateStream.on('data', (data) => {
+    if (data.siteUpdateStream.__typename === 'Site') {
+      query.refetch();
+    }
+  });
+
+  onMount(() => {
+    const unsubscribe = siteUpdateStream.subscribe({
+      siteId: $query.site.id,
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  });
+
   afterNavigate(() => {
     if ($query.page.state === 'DELETED') {
       $lastVisitedPage = null;
@@ -115,6 +161,8 @@
 </script>
 
 <Helmet title={$query.page.content.title} trailing={$query.page.site.name} />
+
+<LeftSideBar $site={$query.site} />
 
 <div
   class={flex({
@@ -182,7 +230,7 @@
           class={css({
             borderRadius: '2px',
             padding: '4px',
-            color: 'text.secondary',
+            color: 'text.disabled',
           })}
         >
           <Icon icon={ExternalLinkIcon} size={14} />

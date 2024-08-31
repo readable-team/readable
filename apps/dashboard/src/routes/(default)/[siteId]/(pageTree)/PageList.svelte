@@ -507,7 +507,7 @@
         gap: '6px',
         borderRadius: '6px',
         borderWidth: '1px',
-        borderColor: 'border.secondary',
+        borderColor: 'border.primary',
         paddingX: '4px',
         textStyle: '14b',
         color: 'text.tertiary',

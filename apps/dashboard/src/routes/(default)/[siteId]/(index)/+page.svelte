@@ -1,11 +1,13 @@
 <script lang="ts">
   import { graphql } from '$graphql';
+  import LeftSideBar from '../LeftSideBar.svelte';
 
   $: query = graphql(`
     query SitePage_Query($siteId: ID!) {
       site(siteId: $siteId) {
         id
         hasPage
+        ...LeftSideBar_site
 
         categories {
           id
@@ -18,6 +20,8 @@
     }
   `);
 </script>
+
+<LeftSideBar $site={$query.site} />
 
 {#if $query.site.categories.length === 0}
   카테고리를 추가해주세요
