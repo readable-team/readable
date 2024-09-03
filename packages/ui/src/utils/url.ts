@@ -20,3 +20,7 @@ export const isValidLinkStructure = (maybeLink: string): boolean => {
 
   return false;
 };
+
+export const createAnchorId = (title: string): string => {
+  return encodeURIComponent(title.trim().toLowerCase().replaceAll(' ', '-'));
+};

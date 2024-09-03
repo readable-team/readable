@@ -9,5 +9,6 @@ export const conditions = {
     hasFocusedInput: '&:has(input:focus)',
     hasInvalidInput: '&:has(input[aria-invalid])',
     hasFilledInput: '&:has(input:not(:placeholder-shown)), &:has(input[aria-live="polite"])',
+    currentLocation: '&[aria-current="location"]',
   },
 };

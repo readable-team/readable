@@ -67,10 +67,16 @@
 
 <header
   class={flex({
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    right: '0',
+    zIndex: '100',
     alignItems: 'center',
     height: '64px',
     borderBottomWidth: '1px',
     borderBottomColor: 'border.primary',
+    backgroundColor: 'surface.primary',
   })}
 >
   <div class={css({ flex: '1', maxWidth: '1280px', marginX: 'auto', paddingX: '20px' })}>
@@ -90,8 +96,8 @@
   </div>
 </header>
 
-<main class={flex({ maxWidth: '1280px', marginX: 'auto' })}>
-  <aside class={css({ width: '240px', flexShrink: 0, padding: '20px' })}>
+<main class={flex({ marginTop: '65px', maxWidth: '1280px', marginX: 'auto', alignItems: 'flex-start' })}>
+  <aside class={css({ position: 'sticky', top: '65px', width: '240px', flexShrink: 0, padding: '20px' })}>
     <nav class={flex({ direction: 'column', gap: '24px' })}>
       {#each $query.publicSite.categories as category (category.id)}
         <div>
@@ -208,7 +214,5 @@
     </nav>
   </aside>
 
-  <div class={css({ flex: '1', paddingX: '50px', paddingTop: '20px', paddingBottom: '120px' })}>
-    <slot />
-  </div>
+  <slot />
 </main>

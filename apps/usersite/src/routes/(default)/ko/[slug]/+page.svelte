@@ -3,6 +3,7 @@
   import { TiptapRenderer } from '@readable/ui/tiptap';
   import { graphql } from '$graphql';
   import Breadcrumb from './Breadcrumb.svelte';
+  import Toc from './Toc.svelte';
 
   $: query = graphql(`
     query PagePage_Query($slug: String!) {
@@ -22,7 +23,19 @@
   `);
 </script>
 
-<Breadcrumb _query={$query} />
-<h1 class={css({ textStyle: '34eb' })}>{$query.publicPage.content.title}</h1>
+<div
+  class={css({
+    flex: '1',
+    maxWidth: '820px',
+    paddingX: '50px',
+    paddingTop: '20px',
+    paddingBottom: '120px',
+  })}
+>
+  <Breadcrumb _query={$query} />
+  <h1 class={css({ textStyle: '34eb' })}>{$query.publicPage.content.title}</h1>
 
-<TiptapRenderer content={$query.publicPage.content.content} />
+  <TiptapRenderer content={$query.publicPage.content.content} />
+</div>
+
+<Toc />

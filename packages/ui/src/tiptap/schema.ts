@@ -1,5 +1,6 @@
 import { css } from '@readable/styled-system/css';
 import { token } from '@readable/styled-system/tokens';
+import { createAnchorId } from '@readable/ui/utils';
 import { getSchema } from '@tiptap/core';
 import { Blockquote } from '@tiptap/extension-blockquote';
 import { Bold } from '@tiptap/extension-bold';
@@ -52,12 +53,14 @@ export const extensions = [
   }),
   Heading.configure({
     levels: [1, 2, 3],
-    HTMLAttributes: {
-      class: css({
-        '&:is(h1)': { textStyle: '28b' },
-        '&:is(h2)': { textStyle: '24b' },
-        '&:is(h3)': { textStyle: '20b' },
-      }),
+  }).extend({
+    renderHTML({ node, HTMLAttributes }) {
+      const hasLevel = node.attrs.level;
+      const level = hasLevel ? node.attrs.level : 1;
+      const id = createAnchorId(node.textContent);
+      const textStyle = node.attrs.level === 1 ? '28b' : node.attrs.level === 2 ? '24b' : '20b';
+
+      return [`h${level}`, { ...HTMLAttributes, id, class: css({ textStyle }) }, 0];
     },
   }),
   HardBreak,

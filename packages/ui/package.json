@@ -13,7 +13,8 @@
     },
     "./notification": "./src/notification/index.ts",
     "./styles.css": "./styles/index.css",
-    "./tiptap": "./src/tiptap/index.ts"
+    "./tiptap": "./src/tiptap/index.ts",
+    "./utils": "./src/utils/index.ts"
   },
   "scripts": {
     "codegen": "svelte-kit sync",
