@@ -1,1 +1,5 @@
 @layer reset, base, tokens, recipes, utilities;
+
+html {
+  scroll-margin-top: 113px; /* 헤더 높이 + 48px */
+}

@@ -21,6 +21,8 @@
       ...PagePage_Breadcrumb_query
     }
   `);
+
+  let headings: { level: number; text: string; scrollTop: number }[] = [];
 </script>
 
 <div
@@ -35,7 +37,7 @@
   <Breadcrumb _query={$query} />
   <h1 class={css({ textStyle: '34eb' })}>{$query.publicPage.content.title}</h1>
 
-  <TiptapRenderer content={$query.publicPage.content.content} />
+  <TiptapRenderer content={$query.publicPage.content.content} on:tocUpdate={(e) => (headings = e.detail.headings)} />
 </div>
 
-<Toc />
+<Toc {headings} />

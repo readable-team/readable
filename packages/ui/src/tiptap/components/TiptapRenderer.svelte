@@ -2,7 +2,8 @@
   import { css, cx } from '@readable/styled-system/css';
   import { Editor } from '@tiptap/core';
   import { generateHTML } from '@tiptap/html';
-  import { onMount } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
+  import { TableOfContents } from '../extensions/table-of-contents';
   import { Embed } from '../node-views/embed';
   import { File } from '../node-views/file';
   import { Image } from '../node-views/image';
@@ -17,6 +18,10 @@
   let element: HTMLElement;
   let loaded = false;
 
+  const dispatch = createEventDispatcher<{
+    tocUpdate: { headings: { level: number; text: string; scrollTop: number }[] };
+  }>();
+
   $: html = generateHTML(content, [...extensions, Embed, Image, File]);
   $: editor?.commands.setContent(content);
 
@@ -25,7 +30,17 @@
       element,
       editable: false,
       content,
-      extensions: [...extensions, Embed, Image, File],
+      extensions: [
+        ...extensions,
+        Embed,
+        Image,
+        File,
+        TableOfContents.configure({
+          onUpdate: (headings) => {
+            dispatch('tocUpdate', { headings });
+          },
+        }),
+      ],
       injectCSS: false,
 
       editorProps: {
