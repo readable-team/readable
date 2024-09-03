@@ -1,8 +1,6 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon } from '@readable/ui/components';
-  import ChevronRightIcon from '~icons/lucide/chevron-right';
   import { fragment, graphql } from '$graphql';
   import type { PagePage_Breadcrumb_query } from '$graphql';
 
@@ -62,30 +60,25 @@
   <ol
     class={flex({
       'align': 'center',
-      'gap': '4px',
+      'gap': '6px',
       'truncate': true,
       '& > li': {
         textStyle: '14m',
         color: 'text.tertiary',
-        paddingY: '4px',
       },
       '& > li > a': {
         display: 'block',
         borderRadius: '4px',
-        paddingX: '6px',
-        paddingY: '4px',
         truncate: true,
-        _hover: { backgroundColor: 'neutral.20' },
+        _hover: { color: 'var(--usersite-theme-color)' },
       },
     })}
   >
-    <li class={css({ paddingX: '6px', paddingY: '8px', truncate: true })}>
+    <li class={css({ truncate: true })}>
       <span>{$query.page.category.name}</span>
     </li>
-    <li aria-hidden="true">
-      <Icon icon={ChevronRightIcon} />
-    </li>
     {#each breadcrumbs as page, i (page.id)}
+      <li aria-hidden="true">/</li>
       {@const current = i === breadcrumbs.length - 1}
       <li class={css({ truncate: true })}>
         <a
@@ -96,11 +89,6 @@
           {page.content.title}
         </a>
       </li>
-      {#if i < breadcrumbs.length - 1}
-        <li aria-hidden="true">
-          <Icon icon={ChevronRightIcon} />
-        </li>
-      {/if}
     {/each}
   </ol>
 </nav>

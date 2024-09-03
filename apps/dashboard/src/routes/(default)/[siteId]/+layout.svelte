@@ -21,6 +21,7 @@
         id
         name
         url
+        themeColor
 
         logo {
           id
@@ -31,7 +32,7 @@
   `);
 </script>
 
-<div class={flex({ flexDirection: 'column', height: 'screen' })}>
+<div style:--usersite-theme-color={$query.site.themeColor} class={flex({ flexDirection: 'column', height: 'screen' })}>
   <header
     class={flex({
       justifyContent: 'space-between',

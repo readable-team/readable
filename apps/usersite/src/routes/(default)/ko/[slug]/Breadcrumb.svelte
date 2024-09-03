@@ -37,28 +37,24 @@
   <ol
     class={flex({
       'align': 'center',
+      'gap': '6px',
       'truncate': true,
       '& > li': {
         textStyle: '14m',
         color: 'text.secondary',
-        paddingY: '4px',
       },
       '& > li > span': {
         display: 'block',
-        paddingX: '6px',
-        paddingY: '4px',
         truncate: true,
       },
       '& > li > a': {
         display: 'block',
-        paddingX: '6px',
-        paddingY: '4px',
         truncate: true,
         _hover: { color: 'var(--usersite-theme-color)' },
       },
     })}
   >
-    <li class={css({ paddingX: '6px', paddingY: '8px', truncate: true })}>
+    <li class={css({ truncate: true })}>
       <span>{$query.publicPage.category.name}</span>
     </li>
     {#if $query.publicPage.parent}
