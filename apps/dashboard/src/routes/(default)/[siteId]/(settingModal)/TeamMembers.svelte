@@ -1,6 +1,6 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
+  import { center, flex } from '@readable/styled-system/patterns';
   import {
     Button,
     FormField,
@@ -12,12 +12,15 @@
     TextInput,
   } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
+  import { toast } from '@readable/ui/notification';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import CheckIcon from '~icons/lucide/check';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import EllipsisIcon from '~icons/lucide/ellipsis';
+  import MailOpenIcon from '~icons/lucide/mail-open';
   import UserRoundMinusIcon from '~icons/lucide/user-round-minus';
+  import UserXIcon from '~icons/lucide/user-x';
   import XIcon from '~icons/lucide/x';
   import { goto, invalidateAll } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
@@ -25,8 +28,9 @@
   import { invokeAlert } from '$lib/components/invoke-alert';
   import type { TeamMembers_team } from '$graphql';
 
-  let _team: TeamMembers_team;
+  let isInviteModalOpen = false;
 
+  let _team: TeamMembers_team;
   export { _team as $team };
 
   $: team = fragment(
@@ -35,6 +39,7 @@
       fragment TeamMembers_team on Team {
         id
         name
+
         avatar {
           id
           ...Img_image
@@ -60,13 +65,18 @@
             }
           }
         }
+
+        invitations {
+          id
+          email
+        }
       }
     `),
   );
 
   const { form, reset, setErrors } = createMutationForm({
     mutation: graphql(`
-      mutation UserSettingModal_InviteTeamMember_Mutation($input: InviteTeamMemberInput!) {
+      mutation TeamMembers_InviteTeamMember_Mutation($input: InviteTeamMemberInput!) {
         inviteTeamMember(input: $input) {
           ... on TeamMember {
             id
@@ -85,6 +95,7 @@
       email: dataSchemas.email,
     }),
     onSuccess: () => {
+      toast('초대 이메일이 발송되었습니다');
       reset();
     },
     onError: (e: unknown) => {
@@ -97,8 +108,24 @@
     },
   });
 
+  const resendInvitationEmail = graphql(`
+    mutation TeamMembers_ResendInvitationEmail_Mutation($input: ResendInvitationEmailInput!) {
+      resendInvitationEmail(input: $input) {
+        id
+      }
+    }
+  `);
+
+  const revokeInvitation = graphql(`
+    mutation TeamMembers_RevokeInvitation_Mutation($input: RevokeInvitationInput!) {
+      revokeInvitation(input: $input) {
+        id
+      }
+    }
+  `);
+
   const updateTeamMemberRole = graphql(`
-    mutation UserSettingModal_UpdateTeamMemberRole_Mutation($input: UpdateTeamMemberRoleInput!) {
+    mutation TeamMembers_UpdateTeamMemberRole_Mutation($input: UpdateTeamMemberRoleInput!) {
       updateTeamMemberRole(input: $input) {
         id
         role
@@ -107,14 +134,12 @@
   `);
 
   const removeTeamMember = graphql(`
-    mutation UserSettingModal_RemoveTeamMember_Mutation($input: RemoveTeamMemberInput!) {
+    mutation TeamMembers_RemoveTeamMember_Mutation($input: RemoveTeamMemberInput!) {
       removeTeamMember(input: $input) {
         id
       }
     }
   `);
-
-  let isInviteModalOpen = false;
 </script>
 
 <div class={flex({ justifyContent: 'space-between', alignItems: 'center' })}>
@@ -130,6 +155,79 @@
   </div>
 
   <ul class={flex({ flexDirection: 'column', gap: '12px' })}>
+    {#each $team.invitations as invitation (invitation.id)}
+      <li class={flex({ alignItems: 'center', gap: '16px' })}>
+        <div class={flex({ align: 'center', gap: '8px', grow: 1 })}>
+          <div
+            class={center({
+              borderWidth: '1px',
+              borderColor: 'border.image',
+              borderRadius: 'full',
+              borderStyle: 'dashed',
+              textStyle: '16b',
+              color: 'neutral.40',
+              size: '32px',
+            })}
+          >
+            {invitation.email[0].toUpperCase()}
+          </div>
+
+          <p class={css({ textStyle: '12m', color: 'text.tertiary' })}>{invitation.email}</p>
+        </div>
+
+        <div class={css({ padding: '16px' })}>
+          <p
+            class={css({
+              paddingX: '8px',
+              paddingY: '4px',
+              textStyle: '14sb',
+              color: 'text.secondary',
+              width: '86px',
+            })}
+          >
+            <span>초대중</span>
+          </p>
+        </div>
+
+        <div class={flex({ width: '60px', justifyContent: 'center', alignItems: 'center' })}>
+          <Menu listStyle={css.raw({ gap: '1px' })} offset={2} placement="bottom-start">
+            <div
+              slot="button"
+              class={css({
+                borderRadius: '2px',
+                padding: '4px',
+                color: 'text.secondary',
+                _hover: {
+                  backgroundColor: 'neutral.20',
+                },
+              })}
+            >
+              <Icon icon={EllipsisIcon} size={20} />
+            </div>
+
+            <MenuItem
+              on:click={async () => {
+                await resendInvitationEmail({ invitationId: invitation.id });
+                toast('초대 이메일이 재발송되었습니다');
+              }}
+            >
+              <Icon icon={MailOpenIcon} size={14} />
+              <span>재발송</span>
+            </MenuItem>
+            <MenuItem
+              variant="danger"
+              on:click={async () => {
+                await revokeInvitation({ invitationId: invitation.id });
+              }}
+            >
+              <Icon icon={UserXIcon} size={14} />
+              <span>초대 취소</span>
+            </MenuItem>
+          </Menu>
+        </div>
+      </li>
+    {/each}
+
     {#each $team.members as member (member.id)}
       <li class={flex({ alignItems: 'center', gap: '16px' })}>
         <div class={flex({ flex: '1', alignItems: 'center', gap: '8px', truncate: true })}>
@@ -271,6 +369,7 @@
               <div
                 slot="button"
                 class={flex({
+                  borderRadius: '2px',
                   padding: '4px',
                   color: 'text.secondary',
                   _hover: {
@@ -278,7 +377,7 @@
                   },
                 })}
               >
-                <Icon icon={EllipsisIcon} size={14} />
+                <Icon icon={EllipsisIcon} size={20} />
               </div>
               <MenuItem
                 variant="danger"
@@ -307,6 +406,7 @@
               <div
                 slot="button"
                 class={flex({
+                  borderRadius: '2px',
                   padding: '4px',
                   color: 'text.secondary',
                   _hover: {
@@ -314,7 +414,7 @@
                   },
                 })}
               >
-                <Icon icon={EllipsisIcon} size={14} />
+                <Icon icon={EllipsisIcon} size={20} />
               </div>
               <MenuItem
                 variant="danger"
@@ -370,13 +470,14 @@
       <Icon icon={XIcon} size={20} />
     </button>
   </div>
+
   <form class={flex({ flexDirection: 'column', gap: '16px', paddingX: '32px', paddingY: '24px' })} use:form>
     <input name="teamId" type="hidden" value={$team.id} />
+
     <FormField name="email" label="이메일">
       <TextInput placeholder="초대할 이메일을 입력해주세요 (email@example.com...)" />
     </FormField>
-    <div class={flex({ justifyContent: 'flex-end' })}>
-      <Button size="md" type="submit">초대하기</Button>
-    </div>
+
+    <Button style={css.raw({ marginLeft: 'auto' })} size="md" type="submit">초대하기</Button>
   </form>
 </Modal>
