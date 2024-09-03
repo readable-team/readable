@@ -47,7 +47,7 @@ export const extensions = [
   Paragraph.configure({
     HTMLAttributes: {
       class: css({
-        textStyle: '16m',
+        textStyle: '16r',
       }),
     },
   }),
@@ -58,7 +58,7 @@ export const extensions = [
       const hasLevel = node.attrs.level;
       const level = hasLevel ? node.attrs.level : 1;
       const id = createAnchorId(node.textContent);
-      const textStyle = node.attrs.level === 1 ? '28b' : node.attrs.level === 2 ? '24b' : '20b';
+      const textStyle = node.attrs.level === 1 ? '26b' : node.attrs.level === 2 ? '22b' : '18b';
 
       return [`h${level}`, { ...HTMLAttributes, id, class: css({ textStyle }) }, 0];
     },
