@@ -40,6 +40,7 @@ import {
   Site,
   User,
 } from './objects';
+import type { JSONContent } from '@tiptap/core';
 
 /**
  * * Types
@@ -634,6 +635,28 @@ builder.mutationFields((t) => ({
       const node = yXmlFragmentToProseMirrorRootNode(content, schema);
       const text = node.content.textBetween(0, node.content.size, '\n');
 
+      const jsonContent: JSONContent = node.toJSON();
+      // 그니까 이건 Array.forEach 아니라니까 ESLint는 바보야 앨랠래
+      // eslint-disable-next-line unicorn/no-array-for-each
+      jsonContent.content?.forEach((child) => {
+        if (child.type === 'heading' && !child.attrs?.anchorId) {
+          const anchorId = encodeURIComponent(
+            child.content
+              ?.find((child) => child.type === 'text')
+              ?.text?.trim()
+              .toLowerCase()
+              .replaceAll(' ', '-') ?? '',
+          );
+
+          if (anchorId.length > 0) {
+            child.attrs = {
+              ...child.attrs,
+              anchorId,
+            };
+          }
+        }
+      });
+
       const page = await db.transaction(async (tx) => {
         const page = await tx
           .update(Pages)
@@ -648,7 +671,7 @@ builder.mutationFields((t) => ({
             pageId: page.id,
             title: title.length > 0 ? title : null,
             subtitle: subtitle.length > 0 ? subtitle : null,
-            content: node.toJSON(),
+            content: jsonContent,
             text,
           })
           .onConflictDoUpdate({
@@ -656,7 +679,7 @@ builder.mutationFields((t) => ({
             set: {
               title: title.length > 0 ? title : null,
               subtitle: subtitle.length > 0 ? subtitle : null,
-              content: node.toJSON(),
+              content: jsonContent,
               text,
               updatedAt: dayjs(),
             },
