@@ -11,6 +11,7 @@
     TextInput,
   } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
+  import { onMount } from 'svelte';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import InfoIcon from '~icons/lucide/info';
@@ -43,7 +44,9 @@
     }
   `);
 
-  $: logo = $query.site.logo;
+  onMount(() => {
+    logo = $query.site.logo;
+  });
 
   const updateSite = graphql(`
     mutation SiteSettingsIndexPage_UpdateSite_Mutation($input: UpdateSiteInput!) {
