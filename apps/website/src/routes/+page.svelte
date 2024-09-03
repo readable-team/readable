@@ -157,14 +157,14 @@
       marginX: 'auto',
       maxWidth: '1200px',
       paddingX: '48px',
-      smDown: { flexDirection: 'column', paddingX: '24px' },
+      mdDown: { flexDirection: 'column', paddingX: '24px' },
     })}
   >
     <div class={css({ flex: 'none' })}>
       <FullLogo class={css({ height: '24px', marginBottom: '104px' })} />
 
       <div
-        class={css({ fontSize: '[60px]', fontWeight: '[900]', marginBottom: '64px', smDown: { fontSize: '[36px]' } })}
+        class={css({ fontSize: '[60px]', fontWeight: '[900]', marginBottom: '64px', mdDown: { fontSize: '[36px]' } })}
       >
         <div>이용자들이 사랑할</div>
         <div class={css({ position: 'relative' })}>
@@ -224,7 +224,7 @@
     marginX: 'auto',
     paddingX: '80px',
     maxWidth: '1200px',
-    smDown: { paddingX: '24px' },
+    mdDown: { paddingX: '24px' },
   })}
 >
   <div
@@ -247,7 +247,7 @@
       align: 'center',
       paddingY: '40px',
       color: 'neutral.50',
-      smDown: { gap: '48px', overflowX: 'auto' },
+      mdDown: { gap: '48px', overflowX: 'auto' },
     })}
   >
     <GlyphLogo class={css({ flex: 'none', height: '24px' })} />
@@ -279,10 +279,10 @@
     marginTop: '160px',
     paddingX: '48px',
     maxWidth: '1200px',
-    smDown: { paddingX: '24px', wordBreak: 'keep-all' },
+    mdDown: { paddingX: '24px', wordBreak: 'keep-all' },
   })}
 >
-  <section class={grid({ columns: 2, gap: '40px', smDown: { gridTemplateColumns: '1' } })}>
+  <section class={grid({ columns: 2, gap: '40px', mdDown: { gridTemplateColumns: '1' } })}>
     <div
       class={css({
         borderRadius: '16px',
@@ -290,7 +290,7 @@
         background:
           '[linear-gradient(160deg, rgba(236, 219, 249, 0.60) 0%, rgba(181, 209, 253, 0.60) 70.43%, rgba(183, 189, 255, 0.60) 100%)]',
         height: '860px',
-        smDown: { height: 'auto', padding: '32px', order: '2' },
+        mdDown: { height: 'auto', padding: '32px', order: '2' },
       })}
     >
       <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
@@ -316,13 +316,13 @@
       </div>
     </div>
 
-    <div class={flex({ direction: 'column', smDown: { display: 'contents' } })}>
+    <div class={flex({ direction: 'column', mdDown: { display: 'contents' } })}>
       <div
         class={flex({
           flexDirection: 'column',
           justifyContent: 'center',
           flexGrow: '1',
-          smDown: { order: '1' },
+          mdDown: { order: '1' },
         })}
       >
         <h2 class={css({ fontSize: '[46px]', fontWeight: '[900]' })}>
@@ -363,7 +363,7 @@
           background:
             '[linear-gradient(127deg, rgba(236, 254, 187, 0.60) 0%, rgba(160, 218, 139, 0.54) 84.75%, rgba(169, 221, 137, 0.60) 100%)]',
           height: '465px',
-          smDown: { height: 'auto', padding: '32px', order: '2' },
+          mdDown: { height: 'auto', padding: '32px', order: '2' },
         })}
       >
         <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
@@ -393,7 +393,7 @@
         class={flex({
           align: 'center',
           gap: '10px',
-          smDown: { flexDirection: 'column', alignItems: 'start', gap: '0' },
+          mdDown: { flexDirection: 'column', alignItems: 'start', gap: '0' },
         })}
       >
         <span>실제로</span>
@@ -424,13 +424,13 @@
   <section class={grid({ columns: 5, rowGap: '28px', columnGap: '28px' })}>
     <div
       class={gridItem({
-        colSpan: { base: 3, smDown: 5 },
+        colSpan: { base: 3, mdDown: 5 },
         rowSpan: 1,
         borderRadius: '16px',
         padding: '60px',
         backgroundColor: '[#DBEAFE/50]',
         height: '480px',
-        smDown: { height: 'auto', padding: '32px' },
+        mdDown: { height: 'auto', padding: '32px' },
       })}
     >
       <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
@@ -472,14 +472,14 @@
 
     <div
       class={gridItem({
-        colSpan: { base: 2, smDown: 5 },
+        colSpan: { base: 2, mdDown: 5 },
         rowSpan: 1,
         borderRadius: '16px',
         padding: '60px',
         paddingBottom: '40px',
         backgroundColor: '[#FFEDD5/50]',
         height: '480px',
-        smDown: { height: 'auto', padding: '32px' },
+        mdDown: { height: 'auto', padding: '32px' },
       })}
     >
       <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
@@ -522,13 +522,13 @@
 
     <div
       class={gridItem({
-        colSpan: { base: 2, smDown: 5 },
+        colSpan: { base: 2, mdDown: 5 },
         rowSpan: 1,
         borderRadius: '16px',
         padding: '60px',
         backgroundColor: '[#E0E7FF/50]',
         height: '480px',
-        smDown: { height: 'auto', padding: '32px' },
+        mdDown: { height: 'auto', padding: '32px' },
       })}
     >
       <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
@@ -569,14 +569,14 @@
 
     <div
       class={gridItem({
-        colSpan: { base: 3, smDown: 5 },
+        colSpan: { base: 3, mdDown: 5 },
         rowSpan: 1,
         borderRadius: '16px',
         padding: '60px',
         paddingBottom: '50px',
         backgroundColor: '[#ECFCCB]',
         height: '480px',
-        smDown: { height: 'auto', padding: '32px' },
+        mdDown: { height: 'auto', padding: '32px' },
       })}
     >
       <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
@@ -651,7 +651,7 @@
     </p>
 
     <div class={css({ marginTop: '72px', width: 'full', overflowX: 'auto' })}>
-      <table class={css({ width: 'full', borderSpacing: '0', tableLayout: 'fixed', smDown: { width: '800px' } })}>
+      <table class={css({ width: 'full', borderSpacing: '0', tableLayout: 'fixed', mdDown: { width: '800px' } })}>
         <thead>
           <tr>
             <th class={css({ borderBottomWidth: '1px', borderColor: 'neutral.70', width: '200px' })} />
@@ -757,7 +757,7 @@
           color: 'neutral.70',
           lineHeight: '[1.6]',
           textAlign: 'right',
-          smDown: { width: '800px' },
+          mdDown: { width: '800px' },
         })}
       >
         * 도움센터 제작을 지원하는 가장 저렴한 플랜 기준
@@ -776,7 +776,7 @@
     background:
       '[linear-gradient(110deg, rgba(251, 96, 189, 0.00) -5.83%, rgba(251, 96, 189, 0.10) -0.54%, rgba(251, 96, 189, 0.03) 31.21%, rgba(251, 96, 189, 0.00) 47.09%, rgba(249, 106, 25, 0.02) 61.91%, rgba(249, 106, 25, 0.10) 83.08%)]',
     scrollMarginTop: '56px',
-    smDown: { paddingX: '24px' },
+    mdDown: { paddingX: '24px' },
   })}
 >
   <div class={css({ position: 'absolute', inset: '0' })}>
