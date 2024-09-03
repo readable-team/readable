@@ -14,6 +14,7 @@
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import InfoIcon from '~icons/lucide/info';
+  import UploadIcon from '~icons/lucide/upload';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
@@ -141,25 +142,45 @@
       사이트 로고
     </p>
 
-    <button
-      type="button"
-      on:click={() => {
-        inputEl.click();
-      }}
-    >
-      {#if logo}
-        <Img
-          style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '4px' })}
-          $image={logo}
-          alt="사이트 로고"
-          size={64}
-        />
-      {:else}
-        <LogoPlaceholder
-          style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '4px' })}
-        />
-      {/if}
-    </button>
+    <div class={css({ position: 'relative', width: 'fit', _hover: { '& > div': { display: 'flex' } } })}>
+      <button
+        type="button"
+        on:click={() => {
+          inputEl.click();
+        }}
+      >
+        {#if logo}
+          <Img
+            style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '4px' })}
+            $image={logo}
+            alt="사이트 로고"
+            size={64}
+          />
+        {:else}
+          <LogoPlaceholder
+            style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '4px' })}
+          />
+        {/if}
+      </button>
+
+      <div
+        class={css({
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          display: 'none',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '4px',
+          color: 'neutral.0',
+          backgroundColor: 'neutral.100/16',
+          size: '64px',
+          pointerEvents: 'none',
+        })}
+      >
+        <Icon icon={UploadIcon} size={28} />
+      </div>
+    </div>
 
     <input
       bind:this={inputEl}
