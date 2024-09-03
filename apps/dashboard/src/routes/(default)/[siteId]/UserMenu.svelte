@@ -92,7 +92,13 @@
     })}
   >
     <Img
-      style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '32px' })}
+      style={css.raw({
+        flex: 'none',
+        borderWidth: '1px',
+        borderColor: 'border.image',
+        borderRadius: 'full',
+        size: '32px',
+      })}
       $image={$query.me.avatar}
       alt={`${$query.me.name}의 아바타`}
       size={32}
