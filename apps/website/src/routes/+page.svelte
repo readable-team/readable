@@ -296,7 +296,7 @@
       <div class={flex({ direction: 'column', height: 'full', lineHeight: '[1.6]' })}>
         <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#3730A3]' })}>
           쉴 새 없이 변화하는 제품에
-          <br class={css({ hideBelow: 'sm' })} />
+          <br class={css({ hideBelow: 'md' })} />
           정적인 가이드 문서를 맞추는 것, 어렵습니다.
         </h3>
 
@@ -307,7 +307,7 @@
         </p>
 
         <img
-          class={css({ marginTop: { base: '40px', sm: 'auto' }, size: '120px' })}
+          class={css({ marginTop: { base: '40px', md: 'auto' }, size: '120px' })}
           alt="무한대"
           height="120px"
           src="/images/infinity.webp"
@@ -351,7 +351,7 @@
           })}
         >
           제품과 문서를 손쉽게 동기화하는 확실한 방법,
-          <br class={css({ hideBelow: 'sm' })} />
+          <br class={css({ hideBelow: 'md' })} />
           리더블이 낡은 문서 고민을 끝내 드려요.
         </p>
       </div>
@@ -376,7 +376,7 @@
           </p>
 
           <img
-            class={css({ marginTop: { base: '40px', sm: 'auto' }, size: '120px' })}
+            class={css({ marginTop: { base: '40px', md: 'auto' }, size: '120px' })}
             alt="흔드는 손"
             height="120px"
             src="/images/waving-hand.webp"
@@ -416,7 +416,7 @@
       마음에 드는 쓸만한 도움센터가 없어 고민하시나요?
       <br />
       도움센터가 고객에게 실제로 도움이 되기 위해 마땅히
-      <br class={css({ hideBelow: 'sm' })} />
+      <br class={css({ hideBelow: 'md' })} />
       갖춰야 할 덕목들, 빠짐없이 갖췄어요
     </p>
   </div>
@@ -461,7 +461,7 @@
         </p>
 
         <img
-          class={css({ marginTop: { base: '20px', sm: 'auto' }, size: '100px' })}
+          class={css({ marginTop: { base: '20px', md: 'auto' }, size: '100px' })}
           alt="반짝임"
           height="100px"
           src="/images/sparkles.webp"
@@ -506,12 +506,12 @@
         <h3 class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#9A3412]' })}>찾을 수 있는 도움센터</h3>
         <p class={css({ fontSize: '24px', fontWeight: '[800]', color: '[#FBBF24]', marginTop: '4px' })}>
           고객이 필요한 바로 그 내용,
-          <br class={css({ hideBelow: 'sm' })} />
+          <br class={css({ hideBelow: 'md' })} />
           웹 검색 결과에서 한 번에 발견될 수 있도록 SEO를 충분히 고려했어요.
         </p>
 
         <img
-          class={css({ marginTop: { base: '20px', sm: 'auto' }, size: '100px' })}
+          class={css({ marginTop: { base: '20px', md: 'auto' }, size: '100px' })}
           alt="테크놀로지스트"
           height="100px"
           src="/images/technologist.webp"
@@ -558,7 +558,7 @@
         </p>
 
         <img
-          class={css({ marginTop: { base: '20px', sm: 'auto' }, size: '100px' })}
+          class={css({ marginTop: { base: '20px', md: 'auto' }, size: '100px' })}
           alt="돋보기"
           height="100px"
           src="/images/minifying-glass.webp"
@@ -607,7 +607,7 @@
         </p>
 
         <img
-          class={css({ marginTop: { base: '20px', sm: 'auto' }, width: '195px', height: '110px' })}
+          class={css({ marginTop: { base: '20px', md: 'auto' }, width: '195px', height: '110px' })}
           alt="커플"
           height="110px"
           src="/images/couple.webp"
@@ -796,7 +796,7 @@
     })}
   >
     출시 알림을 받을 이메일을 입력해 주세요.
-    <br class={css({ hideFrom: 'sm' })} />
+    <br class={css({ hideFrom: 'md' })} />
     가장 빠르게 알려드릴게요!
   </div>
 
@@ -855,21 +855,21 @@
     maxWidth: '1200px',
     direction: 'column',
     gap: '40px',
-    paddingX: { base: '24px', sm: '48px' },
+    paddingX: { base: '24px', md: '48px' },
     paddingY: '48px',
     backgroundColor: 'neutral.0',
   })}
 >
   <div class={flex({ align: 'center', justify: 'space-between' })}>
-    <FullLogo class={css({ height: { base: '20px', sm: '24px' } })} />
+    <FullLogo class={css({ height: { base: '20px', md: '24px' } })} />
 
     <a aria-label="GitHub" href="https://github.com/readable-team" rel="noopener noreferrer" target="_blank">
-      <Icon style={css.raw({ color: '[#181717]', hideFrom: 'sm' })} icon={IconGithub} size={20} />
-      <Icon style={css.raw({ color: '[#181717]', hideBelow: 'sm' })} icon={IconGithub} size={24} />
+      <Icon style={css.raw({ color: '[#181717]', hideFrom: 'md' })} icon={IconGithub} size={20} />
+      <Icon style={css.raw({ color: '[#181717]', hideBelow: 'md' })} icon={IconGithub} size={24} />
     </a>
   </div>
 
-  <div class={flex({ textStyle: { base: '12m', sm: '14m' }, color: 'neutral.70', direction: 'column', gap: '4px' })}>
+  <div class={flex({ textStyle: { base: '12m', md: '14m' }, color: 'neutral.70', direction: 'column', gap: '4px' })}>
     <p>주식회사 펜슬컴퍼니 | 대표 배준현 | 서울특별시 강남구 강남대로100길 14, 6층</p>
 
     <p>
