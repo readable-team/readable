@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { TiptapRenderer } from '@readable/ui/tiptap';
   import { graphql } from '$graphql';
+  import Breadcrumb from './Breadcrumb.svelte';
 
   $: query = graphql(`
     query PagePage_Query($slug: String!) {
@@ -12,17 +13,16 @@
         content {
           id
           title
-          subtitle
           content
         }
       }
+
+      ...PagePage_Breadcrumb_query
     }
   `);
 </script>
 
-<h1 class={css({ textStyle: '24b' })}>{$query.publicPage.content.title}</h1>
-{#if $query.publicPage.content.subtitle}
-  <h2 class={css({ textStyle: '18b' })}>{$query.publicPage.content.subtitle}</h2>
-{/if}
+<Breadcrumb _query={$query} />
+<h1 class={css({ textStyle: '34eb' })}>{$query.publicPage.content.title}</h1>
 
 <TiptapRenderer content={$query.publicPage.content.content} />

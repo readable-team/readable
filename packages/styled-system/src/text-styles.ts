@@ -58,5 +58,6 @@ export const textStyles = defineTextStyles({
   '23eb': { value: { fontWeight: 800, fontSize: 23 } },
   '24eb': { value: { fontWeight: 800, fontSize: 24 } },
   '28eb': { value: { fontWeight: 800, fontSize: 28 } },
+  '34eb': { value: { fontWeight: 800, fontSize: 34 } },
   '42eb': { value: { fontWeight: 800, fontSize: 42 } },
 });
