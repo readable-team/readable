@@ -8,14 +8,10 @@
   class={flex({
     direction: 'column',
     gap: '8px',
-    align: 'center',
     position: 'fixed',
     zIndex: '100',
-    bottom: '60px',
-    left: '1/2',
-    translate: 'auto',
-    translateX: '-1/2',
-    paddingLeft: '[300px]',
+    bottom: '20px',
+    paddingLeft: '20px',
     width: 'screen',
     pointerEvents: 'none',
   })}
