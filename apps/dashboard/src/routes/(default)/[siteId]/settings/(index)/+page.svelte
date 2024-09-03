@@ -1,19 +1,33 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { Alert, Button, FormField, TextInput } from '@readable/ui/components';
+  import { flex } from '@readable/styled-system/patterns';
+  import {
+    Alert,
+    Button,
+    FormField,
+    FormValidationMessage,
+    Icon,
+    LogoPlaceholder,
+    TextInput,
+  } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
+  import InfoIcon from '~icons/lucide/info';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
   import { lastVisitedPage } from '$lib/stores';
   import { uploadBlobAsImage } from '$lib/utils/blob.svelte';
+  import type { Img_image } from '$graphql';
 
   let deleteSiteOpen = false;
 
+  let logo: Img_image | null | undefined;
+  let inputEl: HTMLInputElement;
+
   $: query = graphql(`
-    query SiteSetting_Query($siteId: ID!) {
+    query SiteSettingsIndexPage_Query($siteId: ID!) {
       site(siteId: $siteId) {
         id
         name
@@ -28,8 +42,10 @@
     }
   `);
 
+  $: logo = $query.site.logo;
+
   const updateSite = graphql(`
-    mutation SiteSettingModal_UpdateSite_Mutation($input: UpdateSiteInput!) {
+    mutation SiteSettingsIndexPage_UpdateSite_Mutation($input: UpdateSiteInput!) {
       updateSite(input: $input) {
         id
         slug
@@ -43,14 +59,14 @@
   `);
 
   const deleteSite = graphql(`
-    mutation SiteSettingModal_DeleteSite_Mutation($input: DeleteSiteInput!) {
+    mutation SiteSettingsIndexPage_DeleteSite_Mutation($input: DeleteSiteInput!) {
       deleteSite(input: $input) {
         id
       }
     }
   `);
 
-  const { form } = createMutationForm({
+  const { form, data, setInitialValues } = createMutationForm({
     schema: z.object({
       siteId: z.string(),
       name: dataSchemas.site.name,
@@ -58,15 +74,50 @@
       themeColor: dataSchemas.site.themeColor,
       logoId: z.string(),
     }),
-    mutation: async ({ name }) => {
+    mutation: async ({ name, logoId }) => {
       await updateSite({
         siteId: $query.site.id,
         name,
         slug: $query.site.slug,
         themeColor: $query.site.themeColor,
-        logoId: null, // TODO
+        logoId,
       });
     },
+  });
+
+  const { form: slugForm, setInitialValues: setSlugInitialValues } = createMutationForm({
+    schema: z.object({
+      siteId: z.string(),
+      name: dataSchemas.site.name,
+      slug: dataSchemas.site.slug,
+      themeColor: dataSchemas.site.themeColor,
+      logoId: z.string(),
+    }),
+    mutation: async ({ slug }) => {
+      await updateSite({
+        siteId: $query.site.id,
+        name: $query.site.name,
+        slug,
+        themeColor: $query.site.themeColor,
+        logoId: $query.site.logo?.id ?? '',
+      });
+    },
+  });
+
+  $: setInitialValues({
+    siteId: $query.site.id,
+    name: $query.site.name,
+    slug: $query.site.slug,
+    themeColor: $query.site.themeColor,
+    logoId: $query.site.logo?.id ?? '',
+  });
+
+  $: setSlugInitialValues({
+    siteId: $query.site.id,
+    name: $query.site.name,
+    slug: $query.site.slug,
+    themeColor: $query.site.themeColor,
+    logoId: $query.site.logo?.id ?? '',
   });
 </script>
 
@@ -90,18 +141,29 @@
       사이트 로고
     </p>
 
-    {#if $query.site.logo}
-      <Img
-        style={css.raw({ size: '63px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '4px' })}
-        $image={$query.site.logo}
-        alt="사이트 로고"
-        size={64}
-      />
-    {:else}
-      없음
-    {/if}
+    <button
+      type="button"
+      on:click={() => {
+        inputEl.click();
+      }}
+    >
+      {#if logo}
+        <Img
+          style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '4px' })}
+          $image={logo}
+          alt="사이트 로고"
+          size={64}
+        />
+      {:else}
+        <LogoPlaceholder
+          style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '4px' })}
+        />
+      {/if}
+    </button>
 
     <input
+      bind:this={inputEl}
+      class={css({ display: 'none' })}
       type="file"
       on:change={async (event) => {
         const file = event.currentTarget.files?.[0];
@@ -115,14 +177,8 @@
           format: 'png',
         });
 
-        await updateSite({
-          siteId: $query.site.id,
-          name: $query.site.name,
-          slug: $query.site.slug,
-          themeColor: $query.site.themeColor,
-          logoId: resp.id,
-        });
-        // TODO: 변경버튼 눌렀을 때 일괄 변경
+        logo = resp;
+        $data.logoId = resp.id;
       }}
     />
 
@@ -143,9 +199,65 @@
       maxWidth: '720px',
       backgroundColor: 'surface.primary',
     })}
+    use:slugForm
   >
-    <label for="slug">URL</label>
-    <TextInput name="slug" />
+    <label
+      class={css({
+        display: 'block',
+        marginBottom: '8px',
+        textStyle: '14sb',
+        color: { base: 'gray.700', _dark: 'gray.300' },
+      })}
+      for="slug"
+    >
+      URL
+    </label>
+
+    <div class={flex({ align: 'center' })}>
+      <TextInput
+        name="slug"
+        style={css.raw({ borderTopRightRadius: '0', borderBottomRightRadius: '0', width: 'full' })}
+        placeholder="URL을 입력해주세요"
+      />
+
+      <div
+        class={css({
+          borderWidth: '1px',
+          borderLeftWidth: '0',
+          borderColor: 'border.secondary',
+          borderTopRightRadius: '10px',
+          borderBottomRightRadius: '10px',
+          paddingX: '20px',
+          paddingY: '10px',
+          textStyle: '16m',
+          color: 'text.tertiary',
+          width: '100px',
+          height: '43px',
+          backgroundColor: 'surface.secondary',
+        })}
+      >
+        /rdbl.io
+      </div>
+    </div>
+
+    <div
+      class={flex({
+        align: 'center',
+        justify: 'space-between',
+        gap: '4px',
+        height: '17px',
+        textStyle: '12r',
+        marginTop: '4px',
+        color: { base: 'red.600', _dark: 'red.500' },
+      })}
+    >
+      <div class={flex({ align: 'center', gap: '4px' })}>
+        <FormValidationMessage for="slug" let:message>
+          <Icon icon={InfoIcon} size={12} />
+          {message}
+        </FormValidationMessage>
+      </div>
+    </div>
 
     <Button style={css.raw({ marginTop: '8px', marginLeft: 'auto' })} size="lg" type="submit">변경</Button>
   </form>

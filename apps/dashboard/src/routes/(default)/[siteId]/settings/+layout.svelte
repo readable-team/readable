@@ -1,34 +1,50 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon } from '@readable/ui/components';
   import IconLink2 from '~icons/lucide/link-2';
   import IconPaintbrushVertical from '~icons/lucide/paintbrush-vertical';
   import IconSettings from '~icons/lucide/settings';
+  import { page } from '$app/stores';
+  import SettingTabItem from '../SettingTabItem.svelte';
 
-  const settings = [
+  export let data;
+
+  $: settings = [
     {
       name: '일반',
-      href: '/settings',
+      href: `/${data.props.siteId}/settings`,
       icon: IconSettings,
+      selected: $page.url.pathname === `/${data.props.siteId}/settings/`,
     },
     {
       name: '테마 색상',
-      href: '/settings/theme',
+      href: `/${data.props.siteId}/settings/theme`,
       icon: IconPaintbrushVertical,
+      selected: $page.url.pathname === `/${data.props.siteId}/settings/theme/`,
     },
     {
       name: '커스텀 도메인',
-      href: '/settings/domain',
+      href: `/${data.props.siteId}/settings/domain/`,
       icon: IconLink2,
+      selected: $page.url.pathname === `/${data.props.siteId}/settings/domain/`,
     },
   ];
 </script>
 
-<div class={css({ backgroundColor: 'surface.secondary', width: 'full' })}>
-  <div class={flex({ width: 'full', maxWidth: '1105px', marginX: 'auto' })}>
+<div
+  class={flex({
+    direction: 'column',
+    backgroundColor: 'surface.secondary',
+    width: 'full',
+    minHeight: 'full',
+    height: 'fit',
+  })}
+>
+  <div class={flex({ grow: '1', width: 'full', maxWidth: '1105px', marginX: 'auto', height: 'full' })}>
     <aside
       class={css({
+        borderRightWidth: '1px',
+        borderRightColor: 'border.primary',
         paddingTop: '40px',
         paddingRight: '34px',
         paddingBottom: '20px',
@@ -37,22 +53,8 @@
       })}
     >
       <nav class={flex({ direction: 'column', gap: '1px' })}>
-        <!-- TODO: 현재 메뉴 하이라이트, span 컬러 지정 -->
         {#each settings as setting (setting.href)}
-          <a
-            class={flex({
-              alignItems: 'center',
-              gap: '2px',
-              borderRadius: '6px',
-              paddingX: '4px',
-              paddingY: '5px',
-              textStyle: '14m',
-            })}
-            href={setting.href}
-          >
-            <Icon style={css.raw({ margin: '4px', color: 'neutral.50' })} icon={setting.icon} size={14} />
-            <span>{setting.name}</span>
-          </a>
+          <SettingTabItem {setting} />
         {/each}
       </nav>
     </aside>

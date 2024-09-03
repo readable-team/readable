@@ -102,6 +102,12 @@
     </div>
   {/if}
 
+  {#if 'left-item' in $$slots}
+    <div class={css({ marginRight: '8px' })}>
+      <slot name="left-item" />
+    </div>
+  {/if}
+
   <input
     bind:this={inputEl}
     id={name}

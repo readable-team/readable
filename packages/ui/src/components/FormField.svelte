@@ -22,7 +22,13 @@
 <fieldset class={css({ display: 'flex', flexDirection: 'column' }, style)}>
   {#if label}
     <label
-      class={flex({ marginBottom: '8px', textStyle: '14b', color: 'neutral.70', alignItems: 'center', gap: '4px' })}
+      class={flex({
+        align: 'center',
+        gap: '4px',
+        marginBottom: '8px',
+        textStyle: '14sb',
+        color: { base: 'gray.700', _dark: 'gray.300' },
+      })}
       for={name}
     >
       <span>

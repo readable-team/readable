@@ -89,7 +89,7 @@
         {
           title: '사이트 설정',
           path: `/${$query.site.id}/settings`,
-          selected: `/${$query.site.id}/settings/` === $page.url.pathname,
+          selected: $page.url.pathname.startsWith(`/${$query.site.id}/settings`),
         },
       ]}
     />

@@ -1,5 +1,5 @@
-import type { SiteSetting_Query_Variables } from './$graphql';
+import type { SiteSettingsIndexPage_Query_Variables } from './$graphql';
 
-export const _SiteSetting_Query_Variables: SiteSetting_Query_Variables = ({ params }) => ({
+export const _SiteSettingsIndexPage_Query_Variables: SiteSettingsIndexPage_Query_Variables = ({ params }) => ({
   siteId: params.siteId,
 });
