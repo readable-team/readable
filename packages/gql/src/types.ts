@@ -79,6 +79,7 @@ export type FieldSelection = {
   name: string;
   alias?: string;
   arguments: Argument[];
+  implicit?: boolean;
 };
 
 export type TypenameFieldSelection = FieldSelection & {
@@ -110,7 +111,7 @@ export type FragmentSpreadSelection = {
 
 export type InlineFragmentSelection = {
   kind: 'InlineFragment';
-  type: string;
+  type: CompositeType;
   children: Selection[];
 };
 
@@ -173,7 +174,14 @@ export type Variable = ScalarFieldVariable | EnumFieldVariable | InputObjectFiel
 
 export type StoreKind = ArtifactKind;
 
-export type $StoreSchema<Kind extends StoreKind = StoreKind, Input = unknown, Output = unknown> = {
+export type Data = Record<string, unknown>;
+export type Variables = Record<string, unknown>;
+
+export type $StoreSchema<
+  Kind extends StoreKind = StoreKind,
+  Input extends Variables = Variables,
+  Output extends Data = Data,
+> = {
   $name: string;
   $kind: Kind;
   $input: Input;

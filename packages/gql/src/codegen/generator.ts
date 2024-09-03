@@ -1,5 +1,6 @@
 import * as recast from 'recast';
 import * as R from 'remeda';
+import { match } from 'ts-pattern';
 import * as AST from '../ast';
 import { scalarTSTypes } from '../const';
 import type { Artifact, CompositeType, Selection, Variable } from '../types';
@@ -39,6 +40,16 @@ export const buildSelectionsTSType = (
   while (selectionsQueue.length > 0) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const selection = selectionsQueue.shift()!;
+
+    if (
+      (selection.kind === 'TypenameField' ||
+        selection.kind === 'ScalarField' ||
+        selection.kind === 'EnumField' ||
+        selection.kind === 'ObjectField') &&
+      selection.implicit === true
+    ) {
+      continue;
+    }
 
     // eslint-disable-next-line unicorn/prefer-switch
     if (selection.kind === 'TypenameField') {
@@ -93,7 +104,13 @@ export const buildSelectionsTSType = (
         }),
       );
     } else if (selection.kind === 'InlineFragment') {
-      if (parentType && selection.type === parentType.name) {
+      const types = match(selection.type)
+        .with({ kind: 'Object' }, (t) => [t.name])
+        .with({ kind: 'Interface' }, (t) => [t.name, ...t.implementations])
+        .with({ kind: 'Union' }, (t) => [t.name, ...t.members])
+        .exhaustive();
+
+      if (parentType && types.includes(parentType.name)) {
         selectionsQueue.push(...selection.children);
       }
     } else if (selection.kind === 'FragmentSpread') {

@@ -117,13 +117,45 @@ export const buildSelections = (
       if (graphql.isCompositeType(type)) {
         selections.push({
           kind: 'InlineFragment',
-          type: selection.typeCondition.name.value,
+          type: {
+            ...match(type)
+              .when(graphql.isObjectType, (t) => ({
+                kind: 'Object' as const,
+                name: t.name,
+              }))
+              .when(graphql.isInterfaceType, (t) => ({
+                kind: 'Interface' as const,
+                name: t.name,
+                implementations: schema.getPossibleTypes(t).map((v) => v.name),
+              }))
+              .when(graphql.isUnionType, (t) => ({
+                kind: 'Union' as const,
+                name: t.name,
+                members: t.getTypes().map((v) => v.name),
+              }))
+              .exhaustive(),
+            isList: false,
+            isNonNull: true,
+          },
           children: buildSelections(schema, type, selection.selectionSet),
         });
       } else {
         throw new Error(`Expected object or interface type, got: ${type.name}`);
       }
     }
+  }
+
+  const rootTypes = [schema.getQueryType(), schema.getMutationType(), schema.getSubscriptionType()];
+  if (!selections.some((v) => v.kind === 'TypenameField') && !rootTypes.some((v) => v?.name === parentType.name)) {
+    selections.push({
+      kind: 'TypenameField',
+      name: '__typename',
+      arguments: [],
+      type: {
+        kind: '__typename',
+      },
+      implicit: true,
+    });
   }
 
   return selections;

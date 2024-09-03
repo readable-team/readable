@@ -1,1 +1,2 @@
-export const linkKey: unique symbol = Symbol('linkKey');
+export const rootFieldKey = '@ROOT';
+export const entityLinkKey = '@link';

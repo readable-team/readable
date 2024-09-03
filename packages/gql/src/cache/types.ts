@@ -1,27 +1,24 @@
-import type { linkKey } from './const';
+import type { entityLinkKey, rootFieldKey } from './const';
 
-export type Typename = string;
-export type ID = string;
+export type Typename = string & { __brand: 'Typename' };
+export type ID = string & { __brand: 'ID' };
 
 export type QueryKey = string;
-export type Key = `${Typename}:${ID}`;
+export type EntityKey = `${Typename}:${ID}`;
 
-export type Keyable = {
+export type KeyableEntity = {
   [key: string]: unknown;
   __typename: Typename;
   id: ID;
 };
 
-export type Link = {
-  [linkKey]: Key;
+export type EntityLink = {
+  [entityLinkKey]: EntityKey;
 };
 
-export type NormalizedResult = [normalized: unknown, dependencies: Record<Key, Keyable>, selections: Set<string>];
-export type DenormalizedResult = [denormalized: unknown];
+export type FieldKey = string | `${string}@${string}` | typeof rootFieldKey;
 
-export type VisitParams = {
-  key: string | number | symbol | null;
-  value: unknown;
-  parent: unknown | null;
-  path: (string | number)[];
-};
+export type Data = Readonly<Record<string, unknown>>;
+export type Variables = Readonly<Record<string, unknown>>;
+
+export type Storage = Record<FieldKey, unknown>;

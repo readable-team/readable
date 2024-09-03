@@ -1,0 +1,109 @@
+scalar Date
+scalar ISBN
+
+enum BookCategory {
+  FICTION
+  NON_FICTION
+  SCIENCE
+  HISTORY
+  BIOGRAPHY
+}
+
+interface Node {
+  id: ID!
+}
+
+interface Searchable {
+  searchTerms: [String!]!
+}
+
+union SearchResult = Book | Author | Publisher
+
+input BookInput {
+  title: String!
+  authorId: ID!
+  publisherId: ID!
+  publishDate: Date!
+  isbn: ISBN!
+  category: BookCategory!
+  price: Float!
+}
+
+input BookFilters {
+  minPrice: Float
+  maxPrice: Float
+  categories: [BookCategory!]
+}
+
+type Book implements Node & Searchable {
+  id: ID!
+  title: String!
+  author: Author!
+  publisher: Publisher!
+  publishDate: Date!
+  isbn: ISBN!
+  category: BookCategory!
+  price: Float!
+  searchTerms: [String!]!
+  reviews: [Review!]!
+  dimensions: Dimensions
+}
+
+type Author implements Node & Searchable {
+  id: ID!
+  name: String!
+  books(filters: BookFilters): [Book!]!
+  optionalBooks: [Book]
+  searchTerms: [String!]!
+}
+
+type Publisher implements Node & Searchable {
+  id: ID!
+  name: String!
+  books: [Book!]!
+  searchTerms: [String!]!
+  address: Address
+}
+
+type Review {
+  id: ID!
+  book: Book!
+  reviewer: String!
+  rating: Int!
+  comment: String
+}
+
+type Dimensions {
+  width: Float!
+  height: Float!
+  depth: Float!
+}
+
+type Address {
+  street: String!
+  city: String!
+  country: String!
+}
+
+type Query {
+  node(id: ID!): Node
+  book(id: ID!): Book
+  author(id: ID!): Author
+  publisher(id: ID!): Publisher
+  searchBooks(query: String!, category: BookCategory): [Book!]!
+  search(query: String!): [SearchResult!]!
+  topRatedBooks(limit: Int = 10): [Book!]!
+  getAuthorsWithOptionalBooks: [Author]
+}
+
+type Mutation {
+  createBook(input: BookInput!): Book!
+  updateBookPrice(id: ID!, newPrice: Float!): Book!
+  addReview(bookId: ID!, reviewer: String!, rating: Int!, comment: String): Review!
+  deleteBook(id: ID!): Boolean!
+}
+
+type Subscription {
+  newBookAdded: Book!
+  bookPriceChanged(bookId: ID!): Book!
+}

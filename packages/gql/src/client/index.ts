@@ -1,59 +1,106 @@
-import { Client, subscriptionExchange } from '@urql/core';
-import { cacheExchange } from '@urql/exchange-graphcache';
-import { createClient as createSSEClient } from 'graphql-sse';
-import { fetchExchange } from './exchanges/fetch';
-import type { Exchange } from '@urql/core';
-import type { CacheExchangeOpts } from '@urql/exchange-graphcache';
-import type { RequestParams } from 'graphql-sse';
+import { nanoid } from 'nanoid';
+import { connectable, filter, finalize, Observable, share, Subject } from 'rxjs';
+import { cacheExchange } from '../exchange/cache';
+import { composeExchanges } from '../exchange/compose';
+import { fetchExchange } from '../exchange/fetch';
+import { sseExchange } from '../exchange/sse';
+import type { Connectable } from 'rxjs';
+import type { Exchange, ExchangeIO, Operation, OperationResult } from '../exchange/types';
+import type { $StoreSchema, StoreSchema } from '../types';
 
-export type GqlClient<E = Error> = {
+export type GqlClient = {
   client: Client;
-  transformError: (error: unknown) => E;
-  onMutationError: (error: E) => void;
 };
 
-type CreateClientParams<E> = {
-  url: string;
-  headers?: () => Record<string, string>;
-  cache: CacheExchangeOpts;
-  transformError: (error: unknown) => E;
-  onMutationError: (error: E) => void;
-};
-
-export const createClient = <E>({ url, cache, headers, ...rest }: CreateClientParams<E>) => {
-  return (): GqlClient<E> => {
-    const sseClient = createSSEClient({
-      url,
-      headers,
-      credentials: 'include',
-      retry: () => new Promise((resolve) => setTimeout(resolve, 500)),
-      retryAttempts: Number.POSITIVE_INFINITY,
-    });
-
-    const exchanges: Exchange[] = [];
-
-    exchanges.push(
-      cacheExchange(cache),
-      fetchExchange,
-      subscriptionExchange({
-        forwardSubscription: (operation) => {
-          return {
-            subscribe: (sink) => {
-              const unsubscribe = sseClient.subscribe(operation as RequestParams, sink);
-              return { unsubscribe };
-            },
-          };
-        },
-      }),
-    );
+export const createClient = ({ url, headers, exchanges }: CreateClientParams) => {
+  return (): GqlClient => {
+    const client = new Client({ url, headers, exchanges });
 
     return {
-      client: new Client({
-        url,
-        exchanges,
-        fetchOptions: () => ({ headers: headers?.() }),
-      }),
-      ...rest,
+      client,
     };
   };
 };
+
+type CreateClientParams = {
+  url: string;
+  headers?: () => Record<string, string>;
+  exchanges?: Exchange[];
+};
+
+type CreateOperationParams<T extends $StoreSchema> = {
+  schema: StoreSchema<T>;
+  variables: T['$input'];
+  context?: {
+    fetch?: typeof globalThis.fetch;
+    requestPolicy?: 'cache-only' | 'network-only';
+  };
+};
+
+class Client {
+  private url: string;
+  private headers?: () => Record<string, string>;
+
+  private forward: ExchangeIO;
+  private operation$: Subject<Operation>;
+  private result$: Connectable<OperationResult>;
+
+  constructor({ url, headers, exchanges }: CreateClientParams) {
+    this.url = url;
+    this.headers = headers;
+
+    const composedExchange = composeExchanges([
+      ...(exchanges ?? []),
+      cacheExchange,
+      fetchExchange,
+      sseExchange(url, headers),
+    ]);
+
+    this.forward = composedExchange({
+      forward: (ops$) => {
+        return ops$.pipe(
+          filter((operation) => operation.type !== 'teardown'),
+          filter((_): _ is never => false),
+        );
+      },
+    });
+
+    this.operation$ = new Subject();
+    this.result$ = connectable(this.forward(this.operation$));
+    this.result$.connect();
+  }
+
+  createOperation<T extends $StoreSchema>({ schema, variables, context }: CreateOperationParams<T>): Operation<T> {
+    return {
+      key: nanoid(),
+      type: schema.kind as 'query' | 'mutation' | 'subscription',
+      schema,
+      variables,
+      context: {
+        url: this.url,
+        requestPolicy: context?.requestPolicy ?? 'network-only',
+        fetch: context?.fetch,
+        fetchOpts: {
+          headers: this.headers?.(),
+        },
+      },
+    };
+  }
+
+  executeOperation<T extends $StoreSchema>(operation: Operation<T>): Observable<OperationResult<T>> {
+    const result$ = this.result$.pipe(
+      filter((result) => result.operation.key === operation.key),
+      finalize(() => {
+        this.operation$.next({
+          ...operation,
+          type: 'teardown',
+        });
+      }),
+      share(),
+    );
+
+    this.operation$.next(operation);
+
+    return result$ as Observable<OperationResult<T>>;
+  }
+}

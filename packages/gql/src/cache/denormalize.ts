@@ -1,59 +1,107 @@
-import { isArray, isLink, isObject, resolveLink } from './utils';
-import type { DenormalizedResult, Key, Keyable } from './types';
+import stringify from 'fast-json-stable-stringify';
+import { match } from 'ts-pattern';
+import { entityLinkKey, rootFieldKey } from './const';
+import {
+  deepMerge,
+  isArray,
+  isEntityLink,
+  isObject,
+  makeFieldKey,
+  resolveEntityLink,
+  transformArguments,
+} from './utils';
+import type { Selection, StoreSchema } from '../types';
+import type { Storage, Variables } from './types';
 
-type StackItem =
-  | { value: unknown; path: string; key: string | number; parent: Record<string | number, unknown> }
-  | { value: unknown; path: string; key: number; parent: unknown[] };
+export const denormalize = (storeSchema: Pick<StoreSchema, 'selections'>, variables: Variables, storage: Storage) => {
+  const {
+    selections: { operation, fragments },
+  } = storeSchema;
 
-export const denormalize = (
-  data: unknown,
-  dependencies: Record<Key, Keyable>,
-  selections: Set<string>,
-): DenormalizedResult => {
-  const denormalized = { data };
+  const paths: string[][] = [];
+  let partial = false;
 
-  const stack: StackItem[] = [{ key: 'data', value: data, parent: denormalized, path: '' }];
-  while (stack.length > 0) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const item = stack.pop()!;
+  const denormalizeObject = (value: Storage, selections: Selection[], path: string[]) => {
+    const current: Record<string, unknown> = {};
 
-    if (item.path !== '' && !selections.has(item.path)) {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete item.parent[item.key as never];
-      continue;
+    if (isEntityLink(value)) {
+      const entityKey = resolveEntityLink(value);
+      value = storage[entityKey] as Storage;
+      paths.push([...path, entityLinkKey]);
+      path = [entityKey];
     }
 
-    if (isArray(item.value)) {
-      const value = [...item.value];
-      item.parent[item.key as never] = value;
-      for (let i = 0; i < value.length; i++) {
-        stack.push({ key: i, value: value[i], parent: value, path: item.path });
-      }
-    } else if (isObject(item.value)) {
-      if (isLink(item.value)) {
-        const k = resolveLink(item.value);
-        const value = { ...dependencies[k] };
-
-        item.parent[item.key as never] = value;
-
-        for (const key in value) {
-          stack.push({
-            key,
-            value: value[key],
-            parent: value,
-            path: item.path === '' ? key : `${item.path}.${key}`,
-          });
+    for (const selection of selections) {
+      // eslint-disable-next-line unicorn/prefer-switch
+      if (selection.kind === 'TypenameField') {
+        const key = makeFieldKey(selection.name, {});
+        current[selection.alias ?? selection.name] = value[key];
+        paths.push([...path, key]);
+        if (value[key] === undefined) {
+          partial = true;
         }
-      } else {
-        const value = { ...item.value };
-        item.parent[item.key as never] = value;
+      } else if (selection.kind === 'ScalarField' || selection.kind === 'EnumField') {
+        const key = makeFieldKey(selection.name, transformArguments(selection.arguments, variables));
+        current[selection.alias ?? selection.name] = value[key];
+        paths.push([...path, key]);
+        if (value[key] === undefined) {
+          partial = true;
+        }
+      } else if (selection.kind === 'ObjectField') {
+        const key = makeFieldKey(selection.name, transformArguments(selection.arguments, variables));
+        const v = value[key];
 
-        for (const key in value) {
-          stack.push({ key, value: value[key], parent: value, path: item.path === '' ? key : `${item.path}.${key}` });
+        if (v === null || v === undefined) {
+          current[selection.alias ?? selection.name] = v;
+          paths.push([...path, key]);
+          if (v === undefined) {
+            partial = true;
+          }
+        } else if (isObject(v)) {
+          current[selection.alias ?? selection.name] ??= {};
+          deepMerge(
+            current[selection.alias ?? selection.name] as Record<string, unknown>,
+            denormalizeObject(v, selection.children, [...path, key]),
+          );
+        } else if (isArray(v)) {
+          current[selection.alias ?? selection.name] ??= [];
+          for (const [i, element] of v.entries()) {
+            if (element === null) {
+              (current[selection.alias ?? selection.name] as unknown[])[i] = element;
+            } else if (isObject((current[selection.alias ?? selection.name] as unknown[])[i])) {
+              deepMerge(
+                (current[selection.alias ?? selection.name] as unknown[])[i] as Record<string, unknown>,
+                denormalizeObject(element as Storage, selection.children, [...path, key]),
+              );
+            } else {
+              (current[selection.alias ?? selection.name] as unknown[])[i] = denormalizeObject(
+                element as Storage,
+                selection.children,
+                [...path, key],
+              );
+            }
+          }
+        }
+      } else if (selection.kind === 'FragmentSpread') {
+        deepMerge(current, denormalizeObject(value, fragments[selection.name], [...path]));
+      } else if (selection.kind === 'InlineFragment') {
+        const types = match(selection.type)
+          .with({ kind: 'Object' }, (t) => [t.name])
+          .with({ kind: 'Interface' }, (t) => [t.name, ...t.implementations])
+          .with({ kind: 'Union' }, (t) => [t.name, ...t.members])
+          .exhaustive();
+
+        if (types.includes(value.__typename as string)) {
+          deepMerge(current, denormalizeObject(value, selection.children, [...path]));
         }
       }
     }
-  }
 
-  return [denormalized.data];
+    return current;
+  };
+
+  const data = denormalizeObject(storage[rootFieldKey] as Storage, operation, [rootFieldKey]);
+  const uniquePaths: string[][] = [...new Set(paths.map((v) => stringify(v)))].map((v) => JSON.parse(v));
+
+  return { data, partial, paths: uniquePaths };
 };

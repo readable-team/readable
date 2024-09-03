@@ -106,6 +106,14 @@ export const collectArtifacts = async (root: string) => {
     }),
   );
 
+  return buildArtifacts(schema, operations, fragments);
+};
+
+export const buildArtifacts = (
+  schema: graphql.GraphQLSchema,
+  operations: Omit<OperationArtifact, 'selections' | 'variables'>[],
+  fragments: Omit<FragmentArtifact, 'selections'>[],
+) => {
   const operationMap = new Map<string, OperationArtifact>();
   const fragmentMap = new Map<string, FragmentArtifact>();
 

@@ -1,56 +1,85 @@
-import { deepMerge, isArray, isKeyable, isObject, makeKey, makeLink } from './utils';
-import type { Key, Keyable, NormalizedResult } from './types';
+import { match } from 'ts-pattern';
+import { entityLinkKey, rootFieldKey } from './const';
+import {
+  deepMerge,
+  isArray,
+  isEntityKeyable,
+  isEntityLink,
+  isObject,
+  makeEntityKey,
+  makeEntityLink,
+  makeFieldKey,
+  resolveEntityLink,
+  transformArguments,
+} from './utils';
+import type { Selection, StoreSchema } from '../types';
+import type { Data, Storage, Variables } from './types';
 
-type StackItem =
-  | { value: unknown; path: string; key: string | number; parent: Record<string | number, unknown> }
-  | { value: unknown; path: string; key: number; parent: unknown[] };
+export const normalize = (storeSchema: StoreSchema, variables: Variables, data: Data) => {
+  const {
+    selections: { operation, fragments },
+  } = storeSchema;
 
-export const normalize = (data: unknown): NormalizedResult => {
-  const normalized = { data };
-  const dependencies: Record<Key, Keyable> = {};
+  const storage: Storage = {};
 
-  const selections = new Set<string>();
+  const normalizeObject = (value: Data, selections: Selection[]) => {
+    let current: Storage = {};
 
-  const stack: StackItem[] = [{ key: 'data', value: data, parent: normalized, path: '' }];
-  while (stack.length > 0) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const item = stack.pop()!;
+    for (const selection of selections) {
+      // eslint-disable-next-line unicorn/prefer-switch
+      if (selection.kind === 'TypenameField') {
+        const key = makeFieldKey(selection.name, {});
+        current[key] = value[selection.alias ?? selection.name];
+      } else if (selection.kind === 'ScalarField' || selection.kind === 'EnumField') {
+        const key = makeFieldKey(selection.name, transformArguments(selection.arguments, variables));
+        current[key] = value[selection.alias ?? selection.name];
+      } else if (selection.kind === 'ObjectField') {
+        const key = makeFieldKey(selection.name, transformArguments(selection.arguments, variables));
+        const v = value[selection.alias ?? selection.name];
 
-    if (isArray(item.value)) {
-      const value = [...item.value];
-      item.parent[item.key as never] = value;
-      for (let i = 0; i < value.length; i++) {
-        stack.push({ key: i, value: value[i], parent: value, path: item.path });
-      }
-    } else if (isObject(item.value)) {
-      const value = { ...item.value };
-
-      if (isKeyable(value)) {
-        const k = makeKey(value);
-        item.parent[item.key as never] = makeLink(k);
-
-        dependencies[k] = dependencies[k] ? deepMerge(dependencies[k], value) : value;
-        for (const key in value) {
-          stack.push({
-            key,
-            value: value[key],
-            parent: dependencies[k],
-            path: item.path === '' ? key : `${item.path}.${key}`,
-          });
+        if (v === null) {
+          current[key] = null;
+        } else if (isArray(v)) {
+          current[key] = v.map((element) =>
+            element === null ? null : normalizeObject(element as Data, selection.children),
+          );
+        } else if (isObject(v)) {
+          current[key] = normalizeObject(v, selection.children);
         }
-      } else {
-        item.parent[item.key as never] = value;
+      } else if (selection.kind === 'FragmentSpread') {
+        current = { ...current, ...normalizeObject(value, fragments[selection.name]) };
+      } else if (selection.kind === 'InlineFragment') {
+        const types = match(selection.type)
+          .with({ kind: 'Object' }, (t) => [t.name])
+          .with({ kind: 'Interface' }, (t) => [t.name, ...t.implementations])
+          .with({ kind: 'Union' }, (t) => [t.name, ...t.members])
+          .exhaustive();
 
-        for (const key in value) {
-          stack.push({ key, value: value[key], parent: value, path: item.path === '' ? key : `${item.path}.${key}` });
+        if (types.includes(value.__typename as string)) {
+          current = { ...current, ...normalizeObject(value, selection.children) };
         }
       }
     }
 
-    if (item.path !== '') {
-      selections.add(item.path);
+    if (isEntityLink(current)) {
+      const entityKey = resolveEntityLink(current);
+      storage[entityKey] ??= {};
+      deepMerge(
+        storage[entityKey] as Storage,
+        Object.fromEntries(Object.entries(current).filter(([key]) => key !== entityLinkKey)),
+      );
+      current = makeEntityLink(entityKey);
+    } else if (isEntityKeyable(current)) {
+      const entityKey = makeEntityKey(current);
+      storage[entityKey] ??= {};
+      deepMerge(storage[entityKey] as Storage, current);
+      current = makeEntityLink(entityKey);
     }
-  }
 
-  return [normalized.data, dependencies, selections];
+    return current;
+  };
+
+  storage[rootFieldKey] = normalizeObject(data, operation);
+
+  return storage;
 };

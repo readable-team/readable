@@ -15,9 +15,4 @@ export default createClient({
       ...(token ? { Authorization: `Bearer ${token}` } : undefined),
     };
   },
-  cache: {},
-  transformError: (error) => error,
-  onMutationError: () => {
-    // ignore
-  },
 });

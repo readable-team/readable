@@ -12,3 +12,9 @@ export const logging: Handle = async ({ event, resolve }) => {
 
   return await resolve(event);
 };
+
+export const headers: Handle = async ({ event, resolve }) => {
+  return await resolve(event, {
+    filterSerializedResponseHeaders: (name) => name === 'content-type',
+  });
+};

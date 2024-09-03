@@ -1,85 +1,68 @@
-import { readable } from 'svelte/store';
+import stringify from 'fast-json-stable-stringify';
+import { BehaviorSubject, concat, Observable, of, Subject } from 'rxjs';
+import { buffer, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
+import { rootFieldKey } from './const';
 import { denormalize } from './denormalize';
 import { normalize } from './normalize';
-import { deepMerge, makeQueryKey } from './utils';
-import type { Readable } from 'svelte/store';
-import type { Key, Keyable } from './types';
+import { isObject } from './utils';
+import type { $StoreSchema, StoreSchema } from '../types';
+import type { Data, Storage, Variables } from './types';
 
 export class Cache {
-  #queryStorage = new Map<string, [normalized: unknown, dependencyKeys: Key[], selections: Set<string>]>();
-  #keyableStorage = new Map<Key, Keyable>();
-  #dependencySubscriptions = new Map<Key, Set<() => void>>();
+  private storage: Storage = { [rootFieldKey]: {} };
+  private pathSubject = new Subject<string[]>();
+  private bufferSubject = new BehaviorSubject(null);
 
-  readQuery<T>(queryName: string, variables: Record<string, unknown>): Readable<T> {
-    const query = this.#queryStorage.get(makeQueryKey(queryName, variables));
-    if (!query) {
-      throw new Error(`Query not found: ${queryName}`);
-    }
-
-    const [normalized, dependencyKeys, selections] = query;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const dependencies = Object.fromEntries(dependencyKeys.map((key) => [key, this.#keyableStorage.get(key)!]));
-    const [denormalized] = denormalize(normalized, dependencies, selections);
-
-    return readable(denormalized as T, (set) => {
-      const refresh = () => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const dependencies = Object.fromEntries(dependencyKeys.map((key) => [key, this.#keyableStorage.get(key)!]));
-        const [denormalized] = denormalize(normalized, dependencies, selections);
-        set(denormalized as T);
-      };
-
-      for (const key of dependencyKeys) {
-        let subscriptions = this.#dependencySubscriptions.get(key);
-        if (!subscriptions) {
-          subscriptions = new Set();
-          this.#dependencySubscriptions.set(key, subscriptions);
-        }
-        subscriptions.add(refresh);
-      }
-
-      return () => {
-        for (const key of dependencyKeys) {
-          const subscriptions = this.#dependencySubscriptions.get(key);
-          if (subscriptions) {
-            subscriptions.delete(refresh);
-            if (subscriptions.size === 0) {
-              this.#dependencySubscriptions.delete(key);
-            }
-          }
-        }
-      };
-    });
+  read<T extends $StoreSchema>(storeSchema: StoreSchema<T>, variables: T['$input']): T['$output'] | null {
+    const denormalized = denormalize(storeSchema, (variables ?? {}) as Variables, this.storage);
+    return denormalized.partial ? null : (denormalized.data as T['$output']);
   }
 
-  writeQuery<T>(queryName: string, variables: Record<string, unknown>, data: T) {
-    const [normalized, dependencies, selections] = normalize(data);
-
-    this.#queryStorage.set(makeQueryKey(queryName, variables), [
-      normalized,
-      Object.keys(dependencies) as Key[],
-      selections,
-    ]);
-
-    for (const [key, keyable] of Object.entries(dependencies)) {
-      const v = this.#keyableStorage.get(key as Key);
-      this.#keyableStorage.set(key as Key, v ? deepMerge(v, keyable) : keyable);
-      for (const subscription of this.#dependencySubscriptions.get(key as Key) || []) {
-        subscription();
-      }
-    }
+  write<T extends $StoreSchema>(storeSchema: StoreSchema<T>, variables: T['$input'], data: T['$output']) {
+    const normalized = normalize(storeSchema, (variables ?? {}) as Variables, data as Data);
+    this.writeInternal(this.storage, normalized);
+    this.bufferSubject.next(null);
   }
 
-  writeMutation<T>(data: T) {
-    const [, dependencies] = normalize(data);
-    for (const [key, keyable] of Object.entries(dependencies)) {
-      const v = this.#keyableStorage.get(key as Key);
-      this.#keyableStorage.set(key as Key, v ? deepMerge(v, keyable) : keyable);
-      for (const subscription of this.#dependencySubscriptions.get(key as Key) || []) {
-        subscription();
+  observe<T extends $StoreSchema>(
+    storeSchema: StoreSchema<T>,
+    variables: T['$input'],
+  ): Observable<{
+    data: T['$output'];
+    partial: boolean;
+  }> {
+    const denormalized = denormalize(storeSchema, (variables ?? {}) as Variables, this.storage);
+    const pathsSubject = new BehaviorSubject<string[][]>(denormalized.paths);
+
+    const source$ = concat(of(denormalized.paths), this.pathSubject.pipe(buffer(this.bufferSubject)));
+
+    return source$.pipe(
+      switchMap((paths) =>
+        pathsSubject.pipe(filter((paths2) => paths2.some((a) => paths.some((b) => b.every((c, i) => c === a[i]))))),
+      ),
+      map(() => denormalize(storeSchema, (variables ?? {}) as Variables, this.storage)),
+      tap((denormalized) => {
+        if (stringify(denormalized.paths) !== stringify(pathsSubject.getValue())) {
+          pathsSubject.next(denormalized.paths);
+        }
+      }),
+      distinctUntilChanged((a, b) => stringify(a) === stringify(b)),
+    );
+  }
+
+  private writeInternal(source: Storage, data: Storage, path: string[] = []) {
+    for (const key in data) {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        const sourceValue = source[key];
+        const dataValue = data[key];
+
+        if (isObject(sourceValue) && isObject(dataValue)) {
+          this.writeInternal(sourceValue, dataValue, [...path, key]);
+        } else {
+          source[key] = dataValue;
+          this.pathSubject.next([...path, key]);
+        }
       }
     }
   }
 }
-
-export const cache = new Cache();
