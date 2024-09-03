@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { DefaultLayout_Query_AfterLoad, DefaultLayout_Query_Variables } from './$graphql';
+import type { LayoutLoad } from './$types';
 
 export const _DefaultLayout_Query_Variables: DefaultLayout_Query_Variables = ({ url, data }) => ({
   hostname: data.hostnameOverride ?? url.hostname,
@@ -17,3 +18,7 @@ export const _DefaultLayout_Query_AfterLoad: DefaultLayout_Query_AfterLoad = (qu
     );
   }
 };
+
+export const load: LayoutLoad = async ({ url, data }) => ({
+  hostname: data.hostnameOverride ?? url.hostname,
+});
