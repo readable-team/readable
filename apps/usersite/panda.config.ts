@@ -13,4 +13,14 @@ export default defineConfig({
   separator: '-',
   hash: prod,
   minify: prod,
+
+  theme: {
+    extend: {
+      breakpoints: {
+        sm: '0px',
+        md: '768px',
+        lg: '1280px',
+      },
+    },
+  },
 });

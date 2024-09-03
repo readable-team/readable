@@ -29,6 +29,8 @@
 
 <div
   class={flex({
+    hideBelow: 'lg',
+    flexShrink: 0,
     position: 'sticky',
     top: '65px',
     flexDirection: 'column',
