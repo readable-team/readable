@@ -1,4 +1,3 @@
-import { map } from 'rxjs';
 import { getClient } from '../../client/internal';
 import type { $StoreSchema, StoreSchema } from '../../types';
 
@@ -21,11 +20,15 @@ export const createSubscriptionStore = <T extends $StoreSchema<Kind>>(schema: St
       },
     });
 
-    const observable = client.executeOperation(operation).pipe(map((result) => result.data as T['$output']));
+    const observable = client.executeOperation(operation);
 
     const subscription = observable.subscribe({
       next: (data) => {
-        for (const handler of handlers) handler(data);
+        if (data.type === 'error') {
+          throw data.errors[0];
+        }
+
+        for (const handler of handlers) handler(data.data);
       },
     });
 

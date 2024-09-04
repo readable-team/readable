@@ -1,10 +1,12 @@
-import { filter, from, map, merge, mergeMap, takeUntil } from 'rxjs';
+import { GraphQLError } from 'graphql';
+import { filter, from, merge, mergeMap, takeUntil } from 'rxjs';
 import type { $StoreSchema } from '../types';
 import type { Exchange, Operation } from './types';
 
-type GraphQLResponse<T> = {
-  data: T | null;
-  errors?: unknown[];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const toGraphQLError = (error: any) => {
+  const { message, path, extensions } = error;
+  return new GraphQLError(message ?? '', { path, extensions });
 };
 
 async function* request<T extends $StoreSchema>(op: Operation<T>) {
@@ -27,9 +29,26 @@ async function* request<T extends $StoreSchema>(op: Operation<T>) {
     }),
   });
 
-  const body = await response.json();
+  const body = (await response.json()) as {
+    data: T['$output'] | null;
+    errors?: unknown[];
+  };
 
-  yield body as GraphQLResponse<T['$output']>;
+  if (body.errors) {
+    yield {
+      type: 'error' as const,
+      operation: op,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      errors: body.errors.map((v: any) => toGraphQLError(v)),
+    };
+  } else {
+    yield {
+      type: 'data' as const,
+      operation: op,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      data: body.data!,
+    };
+  }
 }
 
 export const fetchExchange: Exchange = ({ forward }) => {
@@ -39,14 +58,7 @@ export const fetchExchange: Exchange = ({ forward }) => {
       mergeMap((operation) => {
         const teardown$ = ops$.pipe(filter((op) => op.type === 'teardown' && op.key === operation.key));
 
-        return from(request(operation)).pipe(
-          map((resp) => ({
-            operation,
-            data: resp.data,
-            errors: resp.errors,
-          })),
-          takeUntil(teardown$),
-        );
+        return from(request(operation)).pipe(takeUntil(teardown$));
       }),
     );
 

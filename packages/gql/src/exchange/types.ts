@@ -1,3 +1,4 @@
+import type { GraphQLError } from 'graphql';
 import type { Observable } from 'rxjs';
 import type { $StoreSchema, StoreSchema } from '../types';
 
@@ -18,9 +19,16 @@ export type Operation<T extends $StoreSchema = $StoreSchema> = {
 
 export type OperationResult<T extends $StoreSchema = $StoreSchema> = {
   operation: Operation<T>;
-  data: T['$output'] | null;
-  errors?: unknown[];
-};
+} & (
+  | {
+      type: 'data';
+      data: T['$output'];
+    }
+  | {
+      type: 'error';
+      errors: readonly GraphQLError[];
+    }
+);
 
 export type ExchangeInput = {
   forward: ExchangeIO;

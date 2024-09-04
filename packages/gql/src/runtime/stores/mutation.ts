@@ -1,4 +1,4 @@
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { readable } from 'svelte/store';
 import { getClient } from '../../client/internal';
 import type { Readable } from 'svelte/store';
@@ -23,10 +23,16 @@ export const createMutationStore = <T extends $StoreSchema<Kind>>(schema: StoreS
       },
     });
 
-    const result$ = client.executeOperation(operation).pipe(map((result) => result.data as T['$output']));
-    const data = await firstValueFrom(result$);
+    const result$ = client.executeOperation(operation);
+    const result = await firstValueFrom(result$);
 
-    return data[Object.keys(data as never)[0] as keyof typeof data] as T['$output'][keyof T['$output']];
+    if (result.type === 'error') {
+      throw result.errors[0];
+    }
+
+    return result.data[
+      Object.keys(result.data as never)[0] as keyof typeof result.data
+    ] as T['$output'][keyof T['$output']];
   };
 
   return Object.assign(mutate, store);

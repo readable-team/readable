@@ -1,4 +1,4 @@
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { readable } from 'svelte/store';
 import { browser } from '$app/environment';
 import { getClient } from '../../client/internal';
@@ -38,14 +38,18 @@ export const createQueryStore = <T extends $StoreSchema<Kind>>(schema: StoreSche
           },
         });
 
-        const result$ = client.executeOperation(operation).pipe(map((result) => result.data as T['$output']));
-        const data = await firstValueFrom(result$);
+        const result$ = client.executeOperation(operation);
+        const result = await firstValueFrom(result$);
 
-        for (const set of setters) {
-          set(data);
+        if (result.type === 'error') {
+          throw result.errors[0];
         }
 
-        return data;
+        for (const set of setters) {
+          set(result.data);
+        }
+
+        return result.data;
       },
     });
   } else {
@@ -59,8 +63,12 @@ export const createQueryStore = <T extends $StoreSchema<Kind>>(schema: StoreSche
         },
       });
 
-      const result$ = client.executeOperation(operation).pipe(map((result) => result.data as T['$output']));
-      const data = await firstValueFrom(result$);
+      const result$ = client.executeOperation(operation);
+      const result = await firstValueFrom(result$);
+
+      if (result.type === 'error') {
+        throw result.errors[0];
+      }
 
       let store;
       if (browser) {
@@ -73,11 +81,15 @@ export const createQueryStore = <T extends $StoreSchema<Kind>>(schema: StoreSche
           },
         });
 
-        const result$ = client.executeOperation(operation).pipe(map((result) => result.data as T['$output']));
+        const result$ = client.executeOperation(operation);
 
-        store = readable<StoreOutput<T>>(data, (set) => {
-          const subscription = result$.subscribe((data) => {
-            set(data);
+        store = readable<StoreOutput<T>>(result.data, (set) => {
+          const subscription = result$.subscribe((result) => {
+            if (result.type === 'error') {
+              throw result.errors[0];
+            }
+
+            set(result.data);
           });
 
           return () => {
@@ -85,7 +97,7 @@ export const createQueryStore = <T extends $StoreSchema<Kind>>(schema: StoreSche
           };
         });
       } else {
-        store = readable<StoreOutput<T>>(data);
+        store = readable<StoreOutput<T>>(result.data);
       }
 
       return Object.assign(store, {
@@ -95,10 +107,14 @@ export const createQueryStore = <T extends $StoreSchema<Kind>>(schema: StoreSche
             variables: newVariables ?? variables ?? {},
           });
 
-          const result$ = client.executeOperation(operation).pipe(map((result) => result.data as T['$output']));
-          const data = await firstValueFrom(result$);
+          const result$ = client.executeOperation(operation);
+          const result = await firstValueFrom(result$);
 
-          return data;
+          if (result.type === 'error') {
+            throw result.errors[0];
+          }
+
+          return result.data;
         },
       });
     };

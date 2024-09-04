@@ -18,7 +18,15 @@ export const cacheExchange: Exchange = ({ forward }) => {
       filter((operation) => operation.type !== 'query' || operation.context.requestPolicy === 'network-only'),
     );
 
-    const cacheHit$ = cache$.pipe(filter((data) => !data.partial));
+    const cacheHit$ = cache$.pipe(
+      filter((data) => !data.partial),
+      map((data) => ({
+        type: 'data' as const,
+        operation: data.operation,
+        data: data.data,
+      })),
+    );
+
     const cacheMiss$ = cache$.pipe(
       filter((data) => data.partial),
       map((data) => data.operation),
@@ -27,7 +35,7 @@ export const cacheExchange: Exchange = ({ forward }) => {
     const forward$ = merge(nonCache$, cacheMiss$).pipe(
       forward,
       tap((result) => {
-        if (result.data) {
+        if (result.type === 'data') {
           cache.write(result.operation.schema, result.operation.variables, result.data);
         }
       }),

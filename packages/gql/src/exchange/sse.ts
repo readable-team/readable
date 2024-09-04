@@ -29,10 +29,22 @@ export const sseExchange = (url: string, headers?: () => Record<string, string>)
           );
 
           return subject.pipe(
-            map((result) => ({
-              operation,
-              data: result.data ?? null,
-            })),
+            map((result) => {
+              if (result.errors?.length) {
+                return {
+                  type: 'error' as const,
+                  operation,
+                  errors: result.errors,
+                };
+              } else {
+                return {
+                  type: 'data' as const,
+                  operation,
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  data: result.data!,
+                };
+              }
+            }),
             takeUntil(teardown$),
           );
         }),
