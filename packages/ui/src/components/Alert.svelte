@@ -94,12 +94,12 @@
             actionStyle,
           )}
         >
-          <Button style={css.raw({ minWidth: '86px' })} size="md" variant="secondary" on:click={() => (open = false)}>
+          <Button style={css.raw({ minWidth: '86px' })} size="lg" variant="secondary" on:click={() => (open = false)}>
             <slot name="cancel" />
           </Button>
           <Button
             style={css.raw({ minWidth: '86px' })}
-            size="md"
+            size="lg"
             variant="danger-fill"
             on:click={() => {
               onAction();
