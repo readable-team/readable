@@ -45,7 +45,7 @@
       class={css({
         borderRightWidth: '1px',
         borderRightColor: 'border.primary',
-        paddingTop: '40px',
+        paddingTop: '46px',
         paddingRight: '34px',
         paddingBottom: '20px',
         paddingLeft: '20px',

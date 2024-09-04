@@ -16,7 +16,7 @@
 {#if open}
   <div class={css({ position: 'fixed', inset: '0', zIndex: '50' })} use:portal>
     <div
-      class={css({ position: 'absolute', inset: '0', backgroundColor: 'gray.1000/40' })}
+      class={css({ position: 'absolute', inset: '0', backgroundColor: 'gray.1000/24' })}
       role="button"
       tabindex="-1"
       on:click={() => (open = false)}
@@ -42,9 +42,11 @@
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
-            borderRadius: '8px',
+            borderWidth: '1px',
+            borderColor: 'border.primary',
+            borderRadius: '16px',
             padding: '32px',
-            backgroundColor: 'white',
+            backgroundColor: 'background.overlay',
             pointerEvents: 'auto',
             userSelect: 'text',
             width: 'auto',

@@ -25,7 +25,7 @@
     paddingY: '12px',
     color: { base: 'white', _dark: 'darkgray.1000' },
     width: 'fit',
-    minWidth: '320px',
+    minWidth: '280px',
     maxWidth: '420px',
     backgroundColor: { base: 'gray.800', _dark: 'darkgray.200' },
     overflow: 'hidden',

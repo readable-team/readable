@@ -46,7 +46,7 @@
         class={flex({
           align: 'center',
           justify: 'center',
-          borderRadius: '4px',
+          borderRadius: '6px',
           paddingX: '16px',
           textStyle: '14sb',
           height: '34px',

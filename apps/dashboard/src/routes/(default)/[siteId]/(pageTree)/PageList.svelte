@@ -2,7 +2,7 @@
   import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { token } from '@readable/styled-system/tokens';
-  import { Icon } from '@readable/ui/components';
+  import { Icon, VerticalDivider } from '@readable/ui/components';
   import FolderPlusIcon from '~icons/lucide/folder-plus';
   import PlusIcon from '~icons/lucide/plus';
   import { maxDepth } from './const';
@@ -469,7 +469,7 @@
         flexDirection: 'column',
         userSelect: 'none',
       },
-      parent === null ? { gap: '20px' } : {},
+      parent === null ? { gap: '16px' } : {},
     ),
   )}
   role="group"
@@ -505,6 +505,7 @@
       class={flex({
         align: 'center',
         gap: '6px',
+        marginTop: '8px',
         borderRadius: '6px',
         borderWidth: '1px',
         borderColor: 'border.primary',
@@ -512,7 +513,6 @@
         textStyle: '14b',
         color: 'text.tertiary',
         height: '34px',
-        paddingLeft: depth === 2 ? '20px' : '4px',
         _hover: {
           backgroundColor: 'neutral.20',
         },
@@ -529,25 +529,41 @@
     </button>
   {:else}
     <button
-      class={flex({
-        align: 'center',
-        gap: '6px',
-        borderRadius: '6px',
-        paddingX: '4px',
-        textStyle: '14m',
-        color: 'text.tertiary',
-        height: '38px',
-        paddingLeft: depth === 2 ? '20px' : '4px',
-        _hover: {
-          backgroundColor: 'neutral.20',
+      class={css(
+        {
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          borderRadius: '6px',
+          paddingRight: '4px',
+          textStyle: '14m',
+          color: 'text.tertiary',
+          height: '34px',
+          _hover: {
+            'backgroundColor': 'neutral.20',
+            '& > hr': {
+              backgroundColor: 'neutral.60',
+            },
+          },
         },
-      })}
+        depth === maxDepth
+          ? { borderTopLeftRadius: '0', borderBottomLeftRadius: '0', marginLeft: '14px' }
+          : { marginTop: '1px', paddingLeft: '4px' },
+      )}
       aria-selected="false"
       role="treeitem"
       type="button"
       on:click={() => onCreate(parent)}
     >
-      <div class={css({ padding: '4px', color: 'neutral.60' })}>
+      {#if depth === maxDepth}
+        <VerticalDivider
+          style={css.raw({
+            backgroundColor: 'neutral.30',
+            marginRight: '6px',
+          })}
+        />
+      {/if}
+      <div class={css({ padding: '3px', color: 'neutral.60' })}>
         <Icon icon={PlusIcon} size={14} />
       </div>
       <span>페이지 추가</span>

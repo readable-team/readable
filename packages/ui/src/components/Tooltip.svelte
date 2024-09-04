@@ -7,6 +7,7 @@
   import type { SystemStyleObject } from '@readable/styled-system/types';
 
   export let style: SystemStyleObject | undefined = undefined;
+  export let tooltipStyle: SystemStyleObject | undefined = undefined;
   export let offset: number | undefined = undefined;
 
   export let enabled = true;
@@ -29,18 +30,21 @@
 
 {#if enabled && ($hovered || keepShowing)}
   <div
-    class={css({
-      borderRadius: '4px',
-      paddingX: '12px',
-      paddingY: '8px',
-      textStyle: '12m',
-      backgroundColor: { base: 'gray.800', _dark: 'darkgray.500' },
-      color: 'white',
-      zIndex: '100',
-      maxWidth: '220px',
-      whiteSpace: 'pre-wrap',
-      wordBreak: 'keep-all',
-    })}
+    class={css(
+      {
+        borderRadius: '6px',
+        paddingX: '12px',
+        paddingY: '8px',
+        textStyle: '12m',
+        backgroundColor: { base: 'gray.800', _dark: 'darkgray.500' },
+        color: 'white',
+        zIndex: '100',
+        maxWidth: '220px',
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'keep-all',
+      },
+      tooltipStyle,
+    )}
     role="tooltip"
     use:floating
     transition:scale={{ start: 0.9, duration: 200 }}

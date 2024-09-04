@@ -87,31 +87,36 @@
     class={cx(
       'dnd-item-body',
       'group',
-      flex({
-        'alignItems': 'center',
-        'borderRadius': '6px',
-        'height': '38px',
-        'gap': '2px',
-        'paddingLeft': depth === 2 ? '14px' : '4px',
-        'paddingRight': '4px',
-        '_hover': {
-          backgroundColor: 'neutral.20',
+      css(
+        {
+          'display': 'flex',
+          'alignItems': 'center',
+          'borderRadius': '6px',
+          'gap': '2px',
+          'paddingRight': '4px',
+          '_hover': {
+            backgroundColor: 'neutral.20',
+          },
+          '&:has(button.menu-button[aria-expanded=true])': {
+            backgroundColor: 'neutral.20',
+          },
+          '&:has(a[aria-selected=true])': {
+            backgroundColor: 'neutral.20',
+            color: 'text.primary',
+          },
         },
-        '&:has(button.menu-button[aria-expanded=true])': {
-          backgroundColor: 'neutral.20',
-        },
-        '&:has(a[aria-selected=true])': {
-          backgroundColor: 'neutral.20',
-          color: 'text.primary',
-        },
-      }),
+        item.__typename === 'Page' ? { height: '34px' } : { height: '30px' },
+        depth === maxDepth
+          ? { borderTopLeftRadius: '0', borderBottomLeftRadius: '0', marginLeft: '14px' }
+          : { paddingLeft: '4px' },
+      ),
     )}
   >
     {#if item.__typename === 'Page' && depth === maxDepth}
       <VerticalDivider
         style={css.raw({
           backgroundColor: 'neutral.30',
-          marginX: '14px',
+          marginRight: '14px',
           _groupHover: { backgroundColor: 'neutral.60' },
         })}
       />
@@ -122,8 +127,8 @@
         <button
           class={css({
             color: 'neutral.60',
-            borderRadius: '2px',
-            padding: '4px',
+            borderRadius: '4px',
+            padding: '3px',
             _hover: {
               backgroundColor: 'neutral.30',
             },
@@ -162,12 +167,12 @@
             class={flex({
               alignItems: 'center',
               justifyContent: 'center',
+              borderRadius: '4px',
               paddingX: '4px',
               paddingY: '2px',
-              backgroundColor: 'neutral.30',
               color: 'text.secondary',
               textStyle: '11b',
-              borderRadius: '3px',
+              backgroundColor: 'neutral.30',
             })}
           >
             미발행
@@ -191,8 +196,8 @@
                 _groupHover: {
                   display: 'block',
                 },
-                borderRadius: '2px',
-                padding: '4px',
+                borderRadius: '4px',
+                padding: '3px',
                 color: 'neutral.60',
                 _hover: {
                   backgroundColor: 'neutral.30',
@@ -255,8 +260,8 @@
               _groupHover: {
                 display: 'block',
               },
-              borderRadius: '2px',
-              padding: '4px',
+              borderRadius: '4px',
+              padding: '3px',
               color: 'neutral.60',
               _hover: {
                 backgroundColor: 'neutral.30',

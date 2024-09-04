@@ -132,7 +132,7 @@
     class={css({
       marginBottom: '8px',
       borderWidth: '1px',
-      borderColor: 'border.secondary',
+      borderColor: 'border.primary',
       borderRadius: '10px',
       padding: '32px',
       width: 'full',
@@ -216,7 +216,7 @@
   <form
     class={css({
       borderWidth: '1px',
-      borderColor: 'border.secondary',
+      borderColor: 'border.primary',
       borderRadius: '10px',
       padding: '32px',
       width: 'full',

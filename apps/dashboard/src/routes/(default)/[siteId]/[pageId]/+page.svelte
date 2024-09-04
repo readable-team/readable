@@ -203,8 +203,8 @@
       </div>
     {/if}
 
-    <div class={css({ paddingTop: '42px', paddingX: '80px' })}>
-      <Breadcrumb _query={$query} />
+    <div class={css({ paddingX: '80px', paddingTop: '46px' })}>
+      <Breadcrumb style={css.raw({ marginX: 'auto', width: '720px' })} _query={$query} />
     </div>
 
     <Editor _query={$query} />
@@ -309,9 +309,15 @@
   <div class={flex({ align: 'center', wrap: 'wrap', paddingLeft: '4px', marginBottom: '16px' })}>
     {#each $query.page.contentContributor as contributor (contributor.id)}
       <Tooltip
-        style={css.raw({ borderRadius: 'full', marginLeft: '-4px', size: '28px', marginBottom: '4px' })}
+        style={css.raw({
+          borderRadius: 'full',
+          marginLeft: '-4px',
+          marginBottom: '4px',
+          size: '28px',
+        })}
         message={contributor.user.name}
         offset={8}
+        tooltipStyle={css.raw({ maxWidth: '100px', truncate: true })}
       >
         <Img
           style={css.raw({

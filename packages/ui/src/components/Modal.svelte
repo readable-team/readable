@@ -21,7 +21,7 @@
 {#if open}
   <div class={css({ position: 'fixed', inset: '0', zIndex: '50' })} use:portal>
     <div
-      class={css({ position: 'absolute', inset: '0', backgroundColor: 'gray.1000/60' })}
+      class={css({ position: 'absolute', inset: '0', backgroundColor: 'gray.1000/24' })}
       role="button"
       tabindex="-1"
       on:click={() => {
@@ -51,12 +51,15 @@
           display: 'flex',
           flexDirection: 'column',
           flexGrow: '1',
-          borderRadius: '16px',
-          backgroundColor: 'surface.primary',
+          borderWidth: '1px',
+          borderColor: 'border.primary',
+          borderRadius: '[20px]',
+          backgroundColor: 'background.overlay',
           pointerEvents: 'auto',
           size: '[fit-content]',
           maxWidth: '946px',
           maxHeight: '705px',
+          boxShadow: 'strong',
         })}
         use:scrollLock
         in:fly={{ y: 10 }}

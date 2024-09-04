@@ -2,9 +2,11 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { fragment, graphql } from '$graphql';
+  import type { SystemStyleObject } from '@readable/styled-system/types';
   import type { PagePage_Breadcrumb_query } from '$graphql';
 
   export let _query: PagePage_Breadcrumb_query;
+  export let style: SystemStyleObject | undefined = undefined;
 
   $: query = fragment(
     _query,
@@ -31,15 +33,6 @@
               id
               title
             }
-
-            parent {
-              id
-
-              content {
-                id
-                title
-              }
-            }
           }
 
           site {
@@ -51,20 +44,17 @@
   );
 
   // NOTE: maxDepth = 2
-  $: breadcrumbs = [$query.page.parent?.parent, $query.page.parent, $query.page].filter(Boolean) as NonNullable<
-    typeof $query.page
-  >[];
+  $: breadcrumbs = [$query.page.parent, $query.page].filter(Boolean) as NonNullable<typeof $query.page>[];
 </script>
 
-<nav class={css({ truncate: true })} aria-label="Breadcrumb">
+<nav class={css({ truncate: true }, style)} aria-label="Breadcrumb">
   <ol
     class={flex({
       'align': 'center',
       'gap': '6px',
       'truncate': true,
       '& > li': {
-        textStyle: '14m',
-        color: 'text.tertiary',
+        textStyle: '15m',
       },
       '& > li > a': {
         display: 'block',
@@ -74,18 +64,14 @@
       },
     })}
   >
-    <li class={css({ truncate: true })}>
+    <li class={css({ color: 'text.secondary', truncate: true })}>
       <span>{$query.page.category.name}</span>
     </li>
     {#each breadcrumbs as page, i (page.id)}
-      <li aria-hidden="true">/</li>
+      <li class={css({ color: 'neutral.50' })} aria-hidden="true">/</li>
       {@const current = i === breadcrumbs.length - 1}
-      <li class={css({ truncate: true })}>
-        <a
-          class={css(current && { color: 'text.primary' })}
-          aria-current={current ? 'page' : undefined}
-          href={`/${$query.page.site.id}/${page.id}`}
-        >
+      <li class={css({ color: 'text.secondary', truncate: true })}>
+        <a aria-current={current ? 'page' : undefined} href={`/${$query.page.site.id}/${page.id}`}>
           {page.content.title}
         </a>
       </li>

@@ -90,7 +90,7 @@
 {#if open}
   <ul
     bind:this={menuEl}
-    style:width={setFullWidth ? `${buttonEl?.getBoundingClientRect().width}px` : 'auto'}
+    style:width={setFullWidth ? `${buttonEl?.getBoundingClientRect().width}px` : undefined}
     class={css(
       {
         display: 'flex',
@@ -98,10 +98,10 @@
         gap: '1px',
         borderWidth: '1px',
         borderColor: 'border.primary',
-        borderRadius: '6px',
-        padding: '3px',
-        backgroundColor: 'surface.primary',
-        minWidth: '140px',
+        borderRadius: '12px',
+        paddingY: '6px',
+        backgroundColor: 'background.overlay',
+        minWidth: '120px',
         boxShadow: 'normal',
         overflowY: 'auto',
         zIndex: '50',

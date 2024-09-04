@@ -12,6 +12,12 @@
       fragment PagePage_Breadcrumb_query on Query {
         publicPage(slug: $slug) {
           id
+          slug
+
+          content {
+            id
+            title
+          }
 
           category {
             id
@@ -40,8 +46,7 @@
       'gap': '6px',
       'truncate': true,
       '& > li': {
-        textStyle: '14m',
-        color: 'text.secondary',
+        textStyle: '15m',
       },
       '& > li > span': {
         display: 'block',
@@ -54,16 +59,22 @@
       },
     })}
   >
-    <li class={css({ truncate: true })}>
+    <li class={css({ color: 'text.secondary', truncate: true })}>
       <span>{$query.publicPage.category.name}</span>
     </li>
     {#if $query.publicPage.parent}
-      <li aria-hidden="true">/</li>
-      <li class={css({ truncate: true })}>
+      <li class={css({ color: 'neutral.50' })} aria-hidden="true">/</li>
+      <li class={css({ color: 'text.secondary', truncate: true })}>
         <a href={`/ko/${$query.publicPage.parent.slug}`}>
           {$query.publicPage.parent.content.title}
         </a>
       </li>
     {/if}
+    <li class={css({ color: 'neutral.50' })} aria-hidden="true">/</li>
+    <li class={css({ color: 'text.secondary', truncate: true })}>
+      <a href={`/ko/${$query.publicPage.slug}`}>
+        {$query.publicPage.content.title}
+      </a>
+    </li>
   </ol>
 </nav>

@@ -37,46 +37,7 @@
 
 <svelte:element
   this={element}
-  class={cx(
-    cva({
-      base: flex.raw({
-        alignItems: 'center',
-        gap: '10px',
-        borderRadius: '4px',
-        paddingX: '12px',
-        paddingY: '8px',
-        textStyle: '14m',
-        textAlign: 'left',
-        color: 'text.secondary',
-        width: 'full',
-        _hover: {
-          backgroundColor: 'neutral.20',
-        },
-        _focus: {
-          backgroundColor: 'neutral.20',
-        },
-        _active: {
-          color: 'text.primary',
-          backgroundColor: 'neutral.20',
-        },
-        _selected: {
-          color: 'text.primary',
-          backgroundColor: 'neutral.20',
-        },
-      }),
-      variants: {
-        variant: {
-          default: {
-            color: 'text.secondary',
-          },
-          danger: {
-            color: 'text.danger',
-          },
-        },
-      },
-    })({ variant }),
-    css(style),
-  )}
+  class={css({ paddingX: '6px' })}
   role="menuitem"
   tabindex="0"
   on:click
@@ -88,6 +49,49 @@
   {...props}
   {...$$restProps}
 >
-  <slot name="prefix" />
-  <slot />
+  <div
+    class={cx(
+      cva({
+        base: flex.raw({
+          alignItems: 'center',
+          gap: '10px',
+          borderRadius: '6px',
+          paddingX: '12px',
+          paddingY: '7px',
+          textStyle: '14m',
+          textAlign: 'left',
+          color: 'text.secondary',
+          width: 'full',
+          _hover: {
+            backgroundColor: 'neutral.20',
+          },
+          _focus: {
+            backgroundColor: 'neutral.30',
+          },
+          _active: {
+            color: 'text.primary',
+            backgroundColor: 'neutral.20',
+          },
+          _selected: {
+            color: 'text.primary',
+            backgroundColor: 'neutral.20',
+          },
+        }),
+        variants: {
+          variant: {
+            default: {
+              color: 'text.secondary',
+            },
+            danger: {
+              color: 'text.danger',
+            },
+          },
+        },
+      })({ variant }),
+      css(style),
+    )}
+  >
+    <slot name="prefix" />
+    <slot />
+  </div>
 </svelte:element>
