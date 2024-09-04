@@ -33,7 +33,7 @@
   );
 </script>
 
-<nav class={css({ truncate: true, marginBottom: '24px' })} aria-label="Breadcrumb">
+<nav class={css({ truncate: true })} aria-label="Breadcrumb">
   <ol
     class={flex({
       'align': 'center',

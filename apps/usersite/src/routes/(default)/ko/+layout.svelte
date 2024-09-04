@@ -2,11 +2,13 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
-  import ChevronDownIcon from '~icons/lucide/chevron-down';
-  import ChevronRightIcon from '~icons/lucide/chevron-right';
-  import { page } from '$app/stores';
+  import CloseIcon from '~icons/lucide/x';
+  import ReadableIcon from '~icons/rdbl/readable';
+  import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
+  import { mobileNavOpen } from '$lib/stores/ui';
+  import Navigation from './Navigation.svelte';
 
   $: query = graphql(`
     query KoLayout_Query($hostname: String!) {
@@ -19,64 +21,27 @@
           ...Img_image
         }
 
-        # NOTE: maxDepth = 2
-        categories {
-          id
-          name
-          order
-
-          pages {
-            id
-            state
-            order
-            slug
-
-            content {
-              id
-              title
-            }
-
-            parent {
-              id
-            }
-
-            children {
-              id
-              state
-              order
-              slug
-
-              content {
-                id
-                title
-              }
-
-              parent {
-                id
-              }
-            }
-          }
-        }
+        ...Navigation_publicSite
       }
     }
   `);
-
-  let treeOpenState: Record<string, boolean> = {};
-  $: currentSlug = $page.params.slug.split('-', 2)[0];
 </script>
 
 <header
-  class={flex({
+  class={css({
+    display: 'flex',
     position: 'fixed',
     top: '0',
     left: '0',
     right: '0',
-    zIndex: '100',
+    zIndex: '50',
     alignItems: 'center',
     height: '64px',
-    borderBottomWidth: '1px',
-    borderBottomColor: 'border.primary',
     backgroundColor: 'surface.primary',
+    borderBottomColor: 'border.primary',
+    borderBottomWidth: {
+      mdToLg: '1px',
+    },
   })}
 >
   <div class={css({ flex: '1', maxWidth: '1280px', marginX: 'auto', paddingX: '20px' })}>
@@ -97,122 +62,98 @@
 </header>
 
 <main class={flex({ marginTop: '65px', maxWidth: '1280px', marginX: 'auto', alignItems: 'flex-start' })}>
-  <aside class={css({ position: 'sticky', top: '65px', width: '240px', flexShrink: 0, padding: '20px' })}>
-    <nav class={flex({ direction: 'column', gap: '24px' })}>
-      {#each $query.publicSite.categories as category (category.id)}
-        <div>
-          <h2
-            class={css({
-              color: 'text.secondary',
-              textStyle: '14b',
-              paddingX: '12px',
-              paddingY: '5px',
-              borderRadius: '4px',
-            })}
-          >
-            {category.name}
-          </h2>
-          <ul class={flex({ direction: 'column', listStyle: 'none' })}>
-            {#each category.pages.filter((p) => !p.parent) as p (p.id)}
-              <li
-                class={flex({
-                  position: 'relative',
-                  alignItems: 'center',
-                  textStyle: '15m',
-                  color: 'text.secondary',
-                })}
-                aria-current={p.slug === currentSlug ? 'page' : undefined}
-              >
-                <a
-                  class={css({
-                    paddingX: '12px',
-                    paddingY: '8px',
-                    borderRadius: '6px',
-                    paddingRight: '36px',
-                    flex: '1',
-                    _hover: {
-                      backgroundColor: 'var(--usersite-theme-color)/4',
-                    },
-                    _currentPage: {
-                      'color': 'var(--usersite-theme-color)',
-                      'textStyle': '15b',
-                      'backgroundColor': 'var(--usersite-theme-color)/4',
-                      '& + button': {
-                        color: 'var(--usersite-theme-color)/46',
-                      },
-                    },
-                  })}
-                  aria-current={p.slug === currentSlug ? 'page' : undefined}
-                  href={`/ko/${p.slug}`}
-                  on:click={() => {
-                    treeOpenState[p.id] = true;
-                  }}
-                >
-                  {p.content.title}
-                </a>
-                {#if p.children.length > 0}
-                  <button
-                    class={css({
-                      position: 'absolute',
-                      right: '8px',
-                      top: '8px',
-                      width: '22px',
-                      height: '22px',
-                      padding: '3px',
-                      borderRadius: '2px',
-                      color: 'neutral.70',
-                      _hover: {
-                        backgroundColor: 'var(--usersite-theme-color)/24',
-                        color: 'var(--usersite-theme-color)/46',
-                      },
-                    })}
-                    aria-expanded={treeOpenState[p.id] ? 'true' : 'false'}
-                    type="button"
-                    on:click={() => {
-                      treeOpenState[p.id] = !treeOpenState[p.id];
-                    }}
-                  >
-                    <Icon icon={treeOpenState[p.id] ? ChevronDownIcon : ChevronRightIcon} size={16} />
-                  </button>
-                {/if}
-              </li>
-              {#if p.children.length > 0 && treeOpenState[p.id]}
-                <ul class={flex({ direction: 'column', listStyle: 'none', paddingLeft: '14px' })}>
-                  {#each p.children as childPage (childPage.id)}
-                    <li class={css({ display: 'contents' })}>
-                      <a
-                        class={css({
-                          paddingX: '12px',
-                          paddingY: '8px',
-                          borderLeftWidth: '1px',
-                          borderLeftColor: 'neutral.30',
-                          textStyle: '15m',
-                          color: 'text.secondary',
-                          _hover: {
-                            backgroundColor: 'var(--usersite-theme-color)/4',
-                          },
-                          _currentPage: {
-                            borderLeftColor: 'var(--usersite-theme-color)',
-                            color: 'var(--usersite-theme-color)',
-                            textStyle: '15b',
-                            backgroundColor: 'var(--usersite-theme-color)/4',
-                          },
-                        })}
-                        aria-current={childPage.slug === currentSlug ? 'page' : undefined}
-                        href={`/ko/${childPage.slug}`}
-                      >
-                        {childPage.content.title}
-                      </a>
-                    </li>
-                  {/each}
-                </ul>
-              {/if}
-            {/each}
-          </ul>
-        </div>
-      {/each}
-    </nav>
+  <aside
+    class={css({
+      hideBelow: 'md',
+      position: 'sticky',
+      top: '65px',
+      width: '240px',
+      flexShrink: 0,
+      padding: '20px',
+    })}
+  >
+    <Navigation $publicSite={$query.publicSite} />
   </aside>
+
+  <!-- FIXME: 모바일 사이드바 컴포넌트 분리 -->
+  <div
+    class={css({
+      hideFrom: 'md',
+    })}
+    hidden={!$mobileNavOpen}
+  >
+    <div
+      class={css({
+        position: 'fixed',
+        inset: '0',
+        backgroundColor: 'gray.1000/24',
+        zIndex: '100',
+      })}
+      role="button"
+      tabindex="-1"
+      on:click={() => mobileNavOpen.set(false)}
+      on:keypress={null}
+    />
+    <aside
+      class={flex({
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: '[90%]',
+        height: 'screen',
+        backgroundColor: 'surface.secondary',
+        zIndex: '[200]',
+        paddingX: '20px',
+        paddingY: '18px',
+        flexDirection: 'column',
+        gap: '32px',
+      })}
+    >
+      <div
+        class={css({
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingX: '12px',
+          paddingBottom: '10px',
+          borderBottomWidth: '1px',
+          borderBottomColor: 'border.primary',
+        })}
+      >
+        <h2 class={css({ textStyle: '16b' })}>페이지 목록</h2>
+        <button class={css({ padding: '3px' })} type="button" on:click={() => mobileNavOpen.set(false)}>
+          <Icon icon={CloseIcon} size={16} />
+        </button>
+      </div>
+      <Navigation $publicSite={$query.publicSite} />
+      <div
+        class={css({
+          position: 'absolute',
+          bottom: '0',
+          left: '0',
+          width: 'full',
+          padding: '20px',
+        })}
+      >
+        <a
+          class={flex({
+            alignItems: 'center',
+            gap: '8px',
+            textStyle: '13eb',
+            color: 'text.tertiary',
+          })}
+          href={env.PUBLIC_WEBSITE_URL}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <div class={css({ padding: '4px', backgroundColor: 'neutral.60', borderRadius: '6px' })}>
+            <Icon style={css.raw({ '& path': { fill: 'neutral.0' } })} icon={ReadableIcon} size={18} />
+          </div>
+          <span>Powered by Readable</span>
+        </a>
+      </div>
+    </aside>
+  </div>
 
   <slot />
 </main>
