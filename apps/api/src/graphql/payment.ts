@@ -52,6 +52,10 @@ builder.mutationFields((t) => ({
         customerId: input.teamId,
       });
 
+      if (result.status === 'failed') {
+        throw new Error('Failed to issue billing key');
+      }
+
       return await db.transaction(async (tx) => {
         await tx
           .update(TeamPaymentMethods)
@@ -64,7 +68,7 @@ builder.mutationFields((t) => ({
             teamId: input.teamId,
             billingKey: result.billingKey,
             cardName: result.card.name,
-            lastCardNumber: result.card.number.slice(-4),
+            lastCardNumber: input.cardNumber.slice(-4),
           })
           .returning()
           .then(firstOrThrow);

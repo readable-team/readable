@@ -1,83 +1,82 @@
 import { Errors, PortOneApi } from '@portone/server-sdk';
+import { match, P } from 'ts-pattern';
 import { env } from '@/env';
 
-const client = PortOneApi(env.PORTONE_API_KEY);
+export const client = PortOneApi(env.PORTONE_API_KEY);
+
+type PortOneSuccessResult<T> = { status: 'succeeded' } & T;
+type PortOneFailureResult = { status: 'failed'; code: string; message: string };
+
+type PortOneResult<T> = PortOneSuccessResult<T> | PortOneFailureResult;
 
 type IssueBillingKeyParams = {
+  customerId: string;
   cardNumber: string;
   expiryYear: string;
   expiryMonth: string;
   birthOrBusinessRegistrationNumber: string;
   passwordTwoDigits: string;
-  customerId: string;
 };
-type IssueBillingKeyResult = {
+type IssueBillingKeyResult = PortOneResult<{
   billingKey: string;
   card: {
     name: string;
-    type: string;
-    ownerType: string;
-    issuer: string;
-    publisher: string;
-    brand: string;
-    number: string;
   };
-};
+}>;
 export const issueBillingKey = async (params: IssueBillingKeyParams): Promise<IssueBillingKeyResult> => {
-  const {
-    billingKeyInfo: { billingKey },
-  } = await client.issueBillingKey(
-    {
-      card: {
-        credential: {
-          number: params.cardNumber,
-          expiryYear: params.expiryYear,
-          expiryMonth: params.expiryMonth,
-          birthOrBusinessRegistrationNumber: params.birthOrBusinessRegistrationNumber,
-          passwordTwoDigits: params.passwordTwoDigits,
+  try {
+    const {
+      billingKeyInfo: { billingKey },
+    } = await client.issueBillingKey(
+      {
+        card: {
+          credential: {
+            number: params.cardNumber,
+            expiryYear: params.expiryYear,
+            expiryMonth: params.expiryMonth,
+            birthOrBusinessRegistrationNumber: params.birthOrBusinessRegistrationNumber,
+            passwordTwoDigits: params.passwordTwoDigits,
+          },
         },
       },
-    },
-    {
-      channelKey: env.PORTONE_CHANNEL_KEY,
-      customer: {
-        id: params.customerId,
+      {
+        channelKey: env.PORTONE_CHANNEL_KEY,
+        customer: {
+          id: params.customerId,
+        },
       },
-    },
-  );
+    );
 
-  const resp = await client.getBillingKey(billingKey);
+    const resp = await client.getBillingKey(billingKey);
 
-  if (!resp || resp.status !== 'ISSUED' || resp.methods?.[0].type !== 'BillingKeyPaymentMethodCard') {
-    throw new Error('Failed to issue billing key');
+    if (!resp || resp.status !== 'ISSUED' || resp.methods?.[0].type !== 'BillingKeyPaymentMethodCard') {
+      throw new Error('Failed to issue billing key');
+    }
+
+    /* eslint-disable @typescript-eslint/no-non-null-assertion */
+    const card = resp.methods[0].card!;
+
+    return makeSuccessResult({
+      billingKey,
+      card: {
+        name: card.name!,
+      },
+    });
+    /* eslint-enable @typescript-eslint/no-non-null-assertion */
+  } catch (err) {
+    return makeFailureResult(err);
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const card = resp.methods[0].card!;
-
-  return {
-    billingKey,
-    card: {
-      name: card.name ?? '',
-      type: card.type ?? '',
-      ownerType: card.ownerType ?? '',
-      issuer: card.issuer ?? '',
-      publisher: card.publisher ?? '',
-      brand: card.brand ?? '',
-      number: card.number ?? '',
-    },
-  };
 };
 
 type MakePaymentParams = {
   paymentId: string;
   billingKey: string;
+  customerName: string;
+  customerEmail: string;
   orderName: string;
   amount: number;
 };
-type MakePaymentResult =
-  | { status: 'succeeded'; approvalNumber: string; receiptUrl: string }
-  | { status: 'failed'; reason: string };
+type MakePaymentResult = PortOneResult<{ approvalNumber: string; receiptUrl: string }>;
 export const makePayment = async (params: MakePaymentParams): Promise<MakePaymentResult> => {
   try {
     await client.payWithBillingKey(params.paymentId, {
@@ -85,35 +84,67 @@ export const makePayment = async (params: MakePaymentParams): Promise<MakePaymen
       orderName: params.orderName,
       amount: { total: params.amount },
       currency: 'KRW',
+      customer: {
+        name: { full: params.customerName },
+        email: params.customerEmail,
+      },
     });
-  } catch (err) {
-    if (err instanceof Errors.PgProviderError) {
-      return {
-        status: 'failed',
-        reason: err.pgMessage,
-      } as const;
-    } else if (err instanceof Error) {
-      return {
-        status: 'failed',
-        reason: err.message,
-      } as const;
-    } else {
-      return {
-        status: 'failed',
-        reason: String(err),
-      } as const;
+
+    const resp = await client.getPayment(params.paymentId);
+
+    if (!resp || resp.status !== 'PAID' || resp.method?.type !== 'PaymentMethodCard') {
+      throw new Error('Failed to make payment');
     }
+
+    /* eslint-disable @typescript-eslint/no-non-null-assertion */
+    return makeSuccessResult({
+      approvalNumber: resp.method.approvalNumber!,
+      receiptUrl: resp.receiptUrl!,
+    });
+    /* eslint-enable @typescript-eslint/no-non-null-assertion */
+  } catch (err) {
+    return makeFailureResult(err);
   }
+};
 
-  const payment = await client.getPayment(params.paymentId);
+type CancelPaymentParams = {
+  paymentId: string;
+  reason: string;
+  amount: number;
+};
+type CancelPaymentResult = PortOneResult<{ receiptUrl: string }>;
+export const cancelPayment = async (params: CancelPaymentParams): Promise<CancelPaymentResult> => {
+  try {
+    const resp = await client.cancelPayment(params.paymentId, {
+      reason: params.reason,
+      amount: params.amount,
+    });
 
-  if (!payment || payment.status !== 'PAID' || payment.method?.type !== 'PaymentMethodCard') {
-    throw new Error('Failed to make payment');
+    if (resp.status !== 'SUCCEEDED') {
+      throw new Error('Failed to refund payment');
+    }
+
+    /* eslint-disable @typescript-eslint/no-non-null-assertion */
+    return makeSuccessResult({
+      receiptUrl: resp.receiptUrl!,
+    });
+    /* eslint-enable @typescript-eslint/no-non-null-assertion */
+  } catch (err) {
+    return makeFailureResult(err);
   }
+};
 
+const makeSuccessResult = <T>(data: T): PortOneSuccessResult<T> => {
+  return { status: 'succeeded', ...data };
+};
+
+const makeFailureResult = (error: unknown): PortOneFailureResult => {
   return {
-    status: 'succeeded',
-    approvalNumber: payment.method.approvalNumber ?? '',
-    receiptUrl: payment.receiptUrl ?? '',
-  } as const;
+    status: 'failed',
+    ...match(error)
+      .with(P.instanceOf(Errors.PgProviderError), (e) => ({ code: e.pgCode, message: e.pgMessage }))
+      .with(P.instanceOf(Errors.PortOneError), (e) => ({ code: e.name, message: e.message }))
+      .with(P.instanceOf(Error), (e) => ({ code: e.message, message: e.message }))
+      .otherwise((e) => ({ code: 'unknown', message: String(e) })),
+  };
 };
