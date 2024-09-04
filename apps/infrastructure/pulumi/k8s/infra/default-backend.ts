@@ -7,24 +7,21 @@ const cm = new k8s.core.v1.ConfigMap('default-backend@infra', {
     namespace: namespace.metadata.name,
   },
   data: {
-    'nginx.conf': `
-      events {}
-      http {
-        server {
-          listen 80 default;
+    Caddyfile: `
+{
+  admin off
+  persist_config off
+}
 
-          location / {
-            return 404;
-          }
-
-          location /healthz {
-            return 200;
-          }
-        }
-      }
+http:// {
+  respond /healthz 200
+  respond 404
+}
     `,
   },
 });
+
+const labels = { app: 'default-backend' };
 
 new k8s.apps.v1.Deployment('default-backend@infra', {
   metadata: {
@@ -33,33 +30,25 @@ new k8s.apps.v1.Deployment('default-backend@infra', {
   },
   spec: {
     replicas: 1,
-    selector: { matchLabels: { app: 'default-backend' } },
+    selector: { matchLabels: labels },
     template: {
-      metadata: { labels: { app: 'default-backend' } },
+      metadata: { labels },
       spec: {
         containers: [
           {
-            name: 'nginx',
-            image: 'nginx:latest',
+            name: 'caddy',
+            image: 'caddy:2',
             resources: {
               requests: { cpu: '100m' },
               limits: { memory: '100Mi' },
             },
-            volumeMounts: [
-              {
-                name: 'conf',
-                mountPath: '/etc/nginx/nginx.conf',
-                subPath: 'nginx.conf',
-              },
-            ],
+            readinessProbe: {
+              httpGet: { path: '/healthz', port: 80 },
+            },
+            volumeMounts: [{ name: 'cm', mountPath: '/etc/caddy' }],
           },
         ],
-        volumes: [
-          {
-            name: 'conf',
-            configMap: { name: cm.metadata.name },
-          },
-        ],
+        volumes: [{ name: 'cm', configMap: { name: cm.metadata.name } }],
       },
     },
   },
@@ -72,7 +61,7 @@ export const defaultBackendService = new k8s.core.v1.Service('default-backend@in
   },
   spec: {
     type: 'NodePort',
-    selector: { app: 'default-backend' },
+    selector: labels,
     ports: [{ port: 80 }],
   },
 });
