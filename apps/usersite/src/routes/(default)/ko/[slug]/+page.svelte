@@ -54,8 +54,8 @@
       flex: '1',
       maxWidth: '820px',
       paddingX: {
-        sm: '20px',
-        mdToLg: '50px',
+        base: '50px',
+        smOnly: '20px',
       },
       paddingTop: '20px',
       paddingBottom: '120px',
