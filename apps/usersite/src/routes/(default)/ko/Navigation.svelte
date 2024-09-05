@@ -6,6 +6,7 @@
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
+  import { treeOpenState } from '$lib/stores/ui';
   import type { Navigation_publicSite } from '$graphql';
 
   let _publicSite: Navigation_publicSite;
@@ -57,8 +58,11 @@
     `),
   );
 
-  let treeOpenState: Record<string, boolean> = {};
   $: currentSlug = $page.params.slug.split('-', 2)[0];
+
+  $: if (currentSlug) {
+    $treeOpenState[currentSlug] = true;
+  }
 </script>
 
 <nav class={flex({ direction: 'column', gap: '24px' })}>
@@ -108,7 +112,7 @@
               aria-current={p.slug === currentSlug ? 'page' : undefined}
               href={`/ko/${p.slug}`}
               on:click={() => {
-                treeOpenState[p.id] = true;
+                $treeOpenState[p.slug] = true;
               }}
             >
               {p.content.title}
@@ -129,17 +133,17 @@
                     color: 'var(--usersite-theme-color)/46',
                   },
                 })}
-                aria-expanded={treeOpenState[p.id] ? 'true' : 'false'}
+                aria-expanded={$treeOpenState[p.slug] ? 'true' : 'false'}
                 type="button"
                 on:click={() => {
-                  treeOpenState[p.id] = !treeOpenState[p.id];
+                  $treeOpenState[p.slug] = !$treeOpenState[p.slug];
                 }}
               >
-                <Icon icon={treeOpenState[p.id] ? ChevronDownIcon : ChevronRightIcon} size={16} />
+                <Icon icon={$treeOpenState[p.slug] ? ChevronDownIcon : ChevronRightIcon} size={16} />
               </button>
             {/if}
           </li>
-          {#if p.children.length > 0 && treeOpenState[p.id]}
+          {#if p.children.length > 0 && $treeOpenState[p.slug]}
             <ul class={flex({ direction: 'column', listStyle: 'none', paddingLeft: '14px' })}>
               {#each p.children as childPage (childPage.id)}
                 <li class={css({ display: 'contents' })}>
