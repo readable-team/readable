@@ -29,7 +29,7 @@
           ...Img_image
         }
 
-        customDomain(state: ACTIVE) {
+        customDomain {
           id
           domain
           state
