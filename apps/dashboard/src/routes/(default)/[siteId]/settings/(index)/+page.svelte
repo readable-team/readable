@@ -19,6 +19,7 @@
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
+  import { invokeAlert } from '$lib/components/invoke-alert';
   import { lastVisitedPage } from '$lib/stores';
   import { uploadBlobAsImage } from '$lib/utils/blob.svelte';
   import type { Img_image } from '$graphql';
@@ -98,12 +99,20 @@
       logoId: z.string(),
     }),
     mutation: async ({ slug }) => {
-      await updateSite({
-        siteId: $query.site.id,
-        name: $query.site.name,
-        slug,
-        themeColor: $query.site.themeColor,
-        logoId: $query.site.logo?.id ?? '',
+      invokeAlert({
+        title: 'URL 주소를 변경하시겠어요?',
+        content: 'URL 변경 시 기존에 이용하던 공유 링크, 페이지 연결이 끊어집니다.',
+        actionText: '변경',
+        action: async () =>
+          // TODO: 사이트 바로가기 버튼 url 업데이트
+          await updateSite({
+            siteId: $query.site.id,
+            name: $query.site.name,
+            slug,
+            themeColor: $query.site.themeColor,
+            logoId: $query.site.logo?.id ?? '',
+          }),
+        variant: 'primary',
       });
     },
   });
