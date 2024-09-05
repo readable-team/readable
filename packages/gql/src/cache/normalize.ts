@@ -79,7 +79,12 @@ export const normalize = (storeSchema: StoreSchema, variables: Variables, data: 
     return current;
   };
 
-  storage[rootFieldKey] = normalizeObject(data, operation);
+  const root = normalizeObject(data, operation);
+  if (storeSchema.kind === 'query') {
+    storage[rootFieldKey] = root;
+  }
 
-  return storage;
+  const dependencies = new Set<string>(Object.keys(storage));
+
+  return { data: storage, dependencies };
 };

@@ -35,48 +35,16 @@ test('기본 필드 역정규화', () => {
   };
 
   const normalized = normalize(schema, variables, data);
-  const denormalized = denormalize(schema, variables, normalized);
+  const denormalized = denormalize(schema, variables, normalized.data);
 
   expect(denormalized.data).toStrictEqual(data);
   expect(denormalized.partial).toBe(false);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "book@{"id":"book1"}",
-        "@link",
-      ],
-      [
-        "Book:book1",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "id",
-      ],
-      [
-        "Book:book1",
-        "title",
-      ],
-      [
-        "Book:book1",
-        "author",
-        "@link",
-      ],
-      [
-        "Author:author1",
-        "__typename",
-      ],
-      [
-        "Author:author1",
-        "id",
-      ],
-      [
-        "Author:author1",
-        "name",
-      ],
-    ]
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`
+    Set {
+      "Book:book1",
+      "Author:author1",
+    }
   `);
 });
 
@@ -129,118 +97,20 @@ test('중첩 객체와 리스트 필드 역정규화', () => {
   };
 
   const normalized = normalize(schema, variables, data);
-  const denormalized = denormalize(schema, variables, normalized);
+  const denormalized = denormalize(schema, variables, normalized.data);
 
   expect(denormalized.data).toStrictEqual(data);
   expect(denormalized.partial).toBe(false);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "author@{"id":"author1"}",
-        "@link",
-      ],
-      [
-        "Author:author1",
-        "__typename",
-      ],
-      [
-        "Author:author1",
-        "id",
-      ],
-      [
-        "Author:author1",
-        "name",
-      ],
-      [
-        "Author:author1",
-        "books",
-        "@link",
-      ],
-      [
-        "Book:book1",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "id",
-      ],
-      [
-        "Book:book1",
-        "title",
-      ],
-      [
-        "Book:book1",
-        "reviews",
-        "@link",
-      ],
-      [
-        "Review:review1",
-        "__typename",
-      ],
-      [
-        "Review:review1",
-        "id",
-      ],
-      [
-        "Review:review1",
-        "comment",
-      ],
-      [
-        "Review:review1",
-        "rating",
-      ],
-      [
-        "Review:review2",
-        "__typename",
-      ],
-      [
-        "Review:review2",
-        "id",
-      ],
-      [
-        "Review:review2",
-        "comment",
-      ],
-      [
-        "Review:review2",
-        "rating",
-      ],
-      [
-        "Book:book2",
-        "__typename",
-      ],
-      [
-        "Book:book2",
-        "id",
-      ],
-      [
-        "Book:book2",
-        "title",
-      ],
-      [
-        "Book:book2",
-        "reviews",
-        "@link",
-      ],
-      [
-        "Review:review3",
-        "__typename",
-      ],
-      [
-        "Review:review3",
-        "id",
-      ],
-      [
-        "Review:review3",
-        "comment",
-      ],
-      [
-        "Review:review3",
-        "rating",
-      ],
-    ]
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`
+    Set {
+      "Author:author1",
+      "Book:book1",
+      "Review:review1",
+      "Review:review2",
+      "Book:book2",
+      "Review:review3",
+    }
   `);
 });
 
@@ -288,55 +158,16 @@ test('프래그먼트와 인라인 프래그먼트 역정규화', () => {
   };
 
   const normalized = normalize(schema, variables, data);
-  const denormalized = denormalize(schema, variables, normalized);
+  const denormalized = denormalize(schema, variables, normalized.data);
 
   expect(denormalized.data).toStrictEqual(data);
   expect(denormalized.partial).toBe(false);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "search@{"query":"GraphQL"}",
-        "@link",
-      ],
-      [
-        "Book:book1",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "id",
-      ],
-      [
-        "Book:book1",
-        "title",
-      ],
-      [
-        "Book:book1",
-        "isbn",
-      ],
-      [
-        "Book:book1",
-        "publishDate",
-      ],
-      [
-        "Author:author1",
-        "__typename",
-      ],
-      [
-        "Author:author1",
-        "id",
-      ],
-      [
-        "Author:author1",
-        "name",
-      ],
-      [
-        "Author:author1",
-        "searchTerms",
-      ],
-    ]
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`
+    Set {
+      "Book:book1",
+      "Author:author1",
+    }
   `);
 });
 
@@ -383,53 +214,16 @@ test('순환 참조 데이터 구조 역정규화', () => {
   };
 
   const normalized = normalize(schema, variables, data);
-  const denormalized = denormalize(schema, variables, normalized);
+  const denormalized = denormalize(schema, variables, normalized.data);
 
   expect(denormalized.data).toStrictEqual(data);
   expect(denormalized.partial).toBe(false);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "author@{"id":"author1"}",
-        "@link",
-      ],
-      [
-        "Author:author1",
-        "__typename",
-      ],
-      [
-        "Author:author1",
-        "id",
-      ],
-      [
-        "Author:author1",
-        "name",
-      ],
-      [
-        "Author:author1",
-        "books",
-        "@link",
-      ],
-      [
-        "Book:book1",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "id",
-      ],
-      [
-        "Book:book1",
-        "title",
-      ],
-      [
-        "Book:book1",
-        "author",
-        "@link",
-      ],
-    ]
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`
+    Set {
+      "Author:author1",
+      "Book:book1",
+    }
   `);
 });
 
@@ -482,81 +276,18 @@ test('nullable 필드와 빈 리스트 역정규화', () => {
   };
 
   const normalized = normalize(schema, variables, data);
-  const denormalized = denormalize(schema, variables, normalized);
+  const denormalized = denormalize(schema, variables, normalized.data);
 
   expect(denormalized.data).toStrictEqual(data);
   expect(denormalized.partial).toBe(false);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "author@{"id":"author1"}",
-        "@link",
-      ],
-      [
-        "Author:author1",
-        "__typename",
-      ],
-      [
-        "Author:author1",
-        "id",
-      ],
-      [
-        "Author:author1",
-        "name",
-      ],
-      [
-        "Author:author1",
-        "books",
-        "@link",
-      ],
-      [
-        "Book:book1",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "id",
-      ],
-      [
-        "Book:book1",
-        "title",
-      ],
-      [
-        "Book:book1",
-        "publisher",
-      ],
-      [
-        "Book:book2",
-        "__typename",
-      ],
-      [
-        "Book:book2",
-        "id",
-      ],
-      [
-        "Book:book2",
-        "title",
-      ],
-      [
-        "Book:book2",
-        "publisher",
-        "@link",
-      ],
-      [
-        "Publisher:publisher1",
-        "__typename",
-      ],
-      [
-        "Publisher:publisher1",
-        "id",
-      ],
-      [
-        "Publisher:publisher1",
-        "name",
-      ],
-    ]
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`
+    Set {
+      "Author:author1",
+      "Book:book1",
+      "Book:book2",
+      "Publisher:publisher1",
+    }
   `);
 });
 
@@ -590,60 +321,17 @@ test('인자가 있는 필드 역정규화', () => {
   };
 
   const normalized = normalize(schema, variables, data);
-  const denormalized = denormalize(schema, variables, normalized);
+  const denormalized = denormalize(schema, variables, normalized.data);
 
   expect(denormalized.data).toStrictEqual(data);
   expect(denormalized.partial).toBe(false);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "author@{"id":"author1"}",
-        "@link",
-      ],
-      [
-        "Author:author1",
-        "__typename",
-      ],
-      [
-        "Author:author1",
-        "id",
-      ],
-      [
-        "Author:author1",
-        "name",
-      ],
-      [
-        "Author:author1",
-        "books@{"limit":2}",
-        "@link",
-      ],
-      [
-        "Book:book1",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "id",
-      ],
-      [
-        "Book:book1",
-        "title",
-      ],
-      [
-        "Book:book2",
-        "__typename",
-      ],
-      [
-        "Book:book2",
-        "id",
-      ],
-      [
-        "Book:book2",
-        "title",
-      ],
-    ]
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`
+    Set {
+      "Author:author1",
+      "Book:book1",
+      "Book:book2",
+    }
   `);
 });
 
@@ -687,76 +375,17 @@ test('복잡한 인자와 변수를 사용한 역정규화', () => {
   };
 
   const normalized = normalize(schema, variables, data);
-  const denormalized = denormalize(schema, variables, normalized);
+  const denormalized = denormalize(schema, variables, normalized.data);
 
   expect(denormalized.data).toStrictEqual(data);
   expect(denormalized.partial).toBe(false);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "author@{"id":"author1"}",
-        "@link",
-      ],
-      [
-        "Author:author1",
-        "__typename",
-      ],
-      [
-        "Author:author1",
-        "id",
-      ],
-      [
-        "Author:author1",
-        "name",
-      ],
-      [
-        "Author:author1",
-        "books@{"filters":{"categories":["FICTION","SCIENCE"],"maxPrice":50,"minPrice":10}}",
-        "@link",
-      ],
-      [
-        "Book:book1",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "id",
-      ],
-      [
-        "Book:book1",
-        "title",
-      ],
-      [
-        "Book:book1",
-        "price",
-      ],
-      [
-        "Book:book1",
-        "category",
-      ],
-      [
-        "Book:book2",
-        "__typename",
-      ],
-      [
-        "Book:book2",
-        "id",
-      ],
-      [
-        "Book:book2",
-        "title",
-      ],
-      [
-        "Book:book2",
-        "price",
-      ],
-      [
-        "Book:book2",
-        "category",
-      ],
-    ]
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`
+    Set {
+      "Author:author1",
+      "Book:book1",
+      "Book:book2",
+    }
   `);
 });
 
@@ -812,10 +441,10 @@ test('부분적으로 누락된 데이터 역정규화', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const normalized: any = normalize(schema, variables, data);
 
-  delete normalized['Book:book2'].title;
-  delete normalized['Publisher:publisher1'].name;
+  delete normalized.data['Book:book2'].title;
+  delete normalized.data['Publisher:publisher1'].name;
 
-  const denormalized = denormalize(schema, variables, normalized);
+  const denormalized = denormalize(schema, variables, normalized.data);
 
   const expected = {
     book: {
@@ -842,77 +471,13 @@ test('부분적으로 누락된 데이터 역정규화', () => {
   expect(denormalized.data).toStrictEqual(expected);
   expect(denormalized.partial).toBe(true);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "book@{"id":"book1"}",
-        "@link",
-      ],
-      [
-        "Book:book1",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "id",
-      ],
-      [
-        "Book:book1",
-        "title",
-      ],
-      [
-        "Book:book1",
-        "author",
-        "@link",
-      ],
-      [
-        "Author:author1",
-        "__typename",
-      ],
-      [
-        "Author:author1",
-        "id",
-      ],
-      [
-        "Author:author1",
-        "name",
-      ],
-      [
-        "Author:author1",
-        "books",
-        "@link",
-      ],
-      [
-        "Book:book2",
-        "__typename",
-      ],
-      [
-        "Book:book2",
-        "id",
-      ],
-      [
-        "Book:book2",
-        "title",
-      ],
-      [
-        "Book:book1",
-        "publisher",
-        "@link",
-      ],
-      [
-        "Publisher:publisher1",
-        "__typename",
-      ],
-      [
-        "Publisher:publisher1",
-        "id",
-      ],
-      [
-        "Publisher:publisher1",
-        "name",
-      ],
-    ]
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`
+    Set {
+      "Book:book1",
+      "Author:author1",
+      "Book:book2",
+      "Publisher:publisher1",
+    }
   `);
 });
 
@@ -951,48 +516,16 @@ test('별칭을 사용한 필드 역정규화', () => {
   };
 
   const normalized = normalize(schema, variables, data);
-  const denormalized = denormalize(schema, variables, normalized);
+  const denormalized = denormalize(schema, variables, normalized.data);
 
   expect(denormalized.data).toStrictEqual(data);
   expect(denormalized.partial).toBe(false);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "book@{"id":"book1"}",
-        "@link",
-      ],
-      [
-        "Book:book1",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "id",
-      ],
-      [
-        "Book:book1",
-        "title",
-      ],
-      [
-        "Book:book1",
-        "author",
-        "@link",
-      ],
-      [
-        "Author:author1",
-        "__typename",
-      ],
-      [
-        "Author:author1",
-        "id",
-      ],
-      [
-        "Author:author1",
-        "name",
-      ],
-    ]
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`
+    Set {
+      "Book:book1",
+      "Author:author1",
+    }
   `);
 });
 
@@ -1037,48 +570,16 @@ test('인터페이스 타입 필드 역정규화', () => {
   };
 
   const normalized = normalize(schema, variables, data);
-  const denormalized = denormalize(schema, variables, normalized);
+  const denormalized = denormalize(schema, variables, normalized.data);
 
   expect(denormalized.data).toStrictEqual(data);
   expect(denormalized.partial).toBe(false);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "node@{"id":"book1"}",
-        "@link",
-      ],
-      [
-        "Book:book1",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "id",
-      ],
-      [
-        "Book:book1",
-        "title",
-      ],
-      [
-        "Book:book1",
-        "author",
-        "@link",
-      ],
-      [
-        "Author:author1",
-        "__typename",
-      ],
-      [
-        "Author:author1",
-        "id",
-      ],
-      [
-        "Author:author1",
-        "name",
-      ],
-    ]
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`
+    Set {
+      "Book:book1",
+      "Author:author1",
+    }
   `);
 });
 
@@ -1123,65 +624,17 @@ test('변수와 지시어를 사용한 쿼리 역정규화', () => {
   };
 
   const normalized = normalize(schema, variables, data);
-  const denormalized = denormalize(schema, variables, normalized);
+  const denormalized = denormalize(schema, variables, normalized.data);
 
   expect(denormalized.data).toStrictEqual(data);
   expect(denormalized.partial).toBe(false);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "book@{"id":"book1"}",
-        "@link",
-      ],
-      [
-        "Book:book1",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "id",
-      ],
-      [
-        "Book:book1",
-        "title",
-      ],
-      [
-        "Book:book1",
-        "author",
-        "@link",
-      ],
-      [
-        "Author:author1",
-        "__typename",
-      ],
-      [
-        "Author:author1",
-        "id",
-      ],
-      [
-        "Author:author1",
-        "name",
-      ],
-      [
-        "Book:book1",
-        "publisher",
-        "@link",
-      ],
-      [
-        "Publisher:publisher1",
-        "__typename",
-      ],
-      [
-        "Publisher:publisher1",
-        "id",
-      ],
-      [
-        "Publisher:publisher1",
-        "name",
-      ],
-    ]
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`
+    Set {
+      "Book:book1",
+      "Author:author1",
+      "Publisher:publisher1",
+    }
   `);
 });
 
@@ -1219,43 +672,16 @@ test('유니언 타입 필드 역정규화', () => {
   };
 
   const normalized = normalize(schema, variables, data);
-  const denormalized = denormalize(schema, variables, normalized);
+  const denormalized = denormalize(schema, variables, normalized.data);
 
   expect(denormalized.data).toStrictEqual(data);
   expect(denormalized.partial).toBe(false);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "search@{"query":"GraphQL"}",
-        "@link",
-      ],
-      [
-        "Book:book1",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "id",
-      ],
-      [
-        "Book:book1",
-        "title",
-      ],
-      [
-        "Author:author1",
-        "__typename",
-      ],
-      [
-        "Author:author1",
-        "id",
-      ],
-      [
-        "Author:author1",
-        "name",
-      ],
-    ]
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`
+    Set {
+      "Book:book1",
+      "Author:author1",
+    }
   `);
 });
 
@@ -1292,51 +718,15 @@ test('임베디드 타입 역정규화', () => {
   };
 
   const normalized = normalize(schema, variables, data);
-  const denormalized = denormalize(schema, variables, normalized);
+  const denormalized = denormalize(schema, variables, normalized.data);
 
   expect(denormalized.data).toStrictEqual(data);
   expect(denormalized.partial).toBe(false);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "book@{"id":"book1"}",
-        "@link",
-      ],
-      [
-        "Book:book1",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "id",
-      ],
-      [
-        "Book:book1",
-        "title",
-      ],
-      [
-        "Book:book1",
-        "dimensions",
-        "__typename",
-      ],
-      [
-        "Book:book1",
-        "dimensions",
-        "width",
-      ],
-      [
-        "Book:book1",
-        "dimensions",
-        "height",
-      ],
-      [
-        "Book:book1",
-        "dimensions",
-        "depth",
-      ],
-    ]
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`
+    Set {
+      "Book:book1",
+    }
   `);
 });
 
@@ -1366,12 +756,5 @@ test('루트 필드 누락 시 역정규화', () => {
   expect(denormalized.data).toStrictEqual({ book: undefined });
   expect(denormalized.partial).toBe(true);
 
-  expect(denormalized.paths).toMatchInlineSnapshot(`
-    [
-      [
-        "@ROOT",
-        "book@{"id":"book1"}",
-      ],
-    ]
-  `);
+  expect(denormalized.dependencies).toMatchInlineSnapshot(`Set {}`);
 });

@@ -50,7 +50,7 @@ test('nullable 필드 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "author@{"id":"author1"}": {
@@ -122,7 +122,7 @@ test('빈 리스트 필드 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "author@{"id":"author1"}": {
@@ -197,7 +197,7 @@ test('nullable 필드와 빈 리스트가 포함된 복잡한 쿼리 정규화',
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "author@{"id":"author1"}": {
@@ -275,7 +275,7 @@ test('인자가 있는 필드 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "book@{"id":"book1"}": {
@@ -331,7 +331,7 @@ test('복잡한 인자를 가진 필드 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "searchBooks@{"category":"SCIENCE","query":"GraphQL"}": [
@@ -409,7 +409,7 @@ test('유니온 타입 필드 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "search@{"query":"test"}": [
@@ -522,7 +522,7 @@ test('복잡한 유니온 타입 필드 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "search@{"query":"test"}": [
@@ -619,7 +619,7 @@ test('인터페이스 타입 필드 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "node@{"id":"book1"}": {
@@ -680,7 +680,7 @@ test('순환 참조가 있는 데이터 구조 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "author@{"id":"author1"}": {
@@ -758,7 +758,7 @@ test('여러 개의 최상위 필드를 가진 쿼리 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "author@{"id":"author1"}": {
@@ -861,7 +861,7 @@ test('중첩된 인라인 프래그먼트를 포함한 쿼리 정규화', () => 
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "node@{"id":"book1"}": {
@@ -994,7 +994,7 @@ test('여러 개의 인라인 프래그먼트와 프래그먼트 스프레드를
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "search@{"query":"GraphQL"}": [
@@ -1113,13 +1113,8 @@ test('뮤테이션 결과 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
-      "@ROOT": {
-        "createBook@{"input":{"authorId":"author1","category":"SCIENCE","isbn":"978-1-23456-789-0","price":29.99,"publishDate":"2023-05-25","publisherId":"publisher1","title":"New GraphQL Book"}}": {
-          "@link": "Book:book4",
-        },
-      },
       "Author:author1": {
         "__typename": "Author",
         "id": "author1",
@@ -1201,7 +1196,7 @@ test('복잡한 인자를 가진 쿼리 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "author@{"id":"author1"}": {
@@ -1281,7 +1276,7 @@ test('필드 별칭을 사용한 쿼리 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "book@{"id":"book1"}": {
@@ -1347,7 +1342,7 @@ test('변수와 지시어를 사용한 쿼리 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "book@{"id":"book1"}": {
@@ -1433,7 +1428,7 @@ test('중첩된 필드 별칭과 인라인 프래그먼트를 사용한 쿼리 �
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "author@{"id":"author1"}": {
@@ -1577,7 +1572,7 @@ test('복잡한 인터페이스와 유니온 타입을 사용한 쿼리 정규�
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "node@{"id":"book1"}": {
@@ -1719,7 +1714,7 @@ test('임베드된 타입 정규화', () => {
 
   const normalized = normalize(schema, variables, data);
 
-  expect(normalized).toMatchInlineSnapshot(`
+  expect(normalized.data).toMatchInlineSnapshot(`
     {
       "@ROOT": {
         "book@{"id":"book1"}": {

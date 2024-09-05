@@ -1,4 +1,4 @@
-import { filter, map, merge, mergeMap, share, tap } from 'rxjs';
+import { filter, map, merge, mergeMap, share, takeUntil, tap } from 'rxjs';
 import { Cache } from '../cache/cache';
 import type { Exchange } from './types';
 
@@ -8,9 +8,12 @@ export const cacheExchange: Exchange = ({ forward }) => {
   return (ops$) => {
     const cache$ = ops$.pipe(
       filter((operation) => operation.type === 'query' && operation.context.requestPolicy !== 'network-only'),
-      mergeMap((operation) =>
-        cache.observe(operation.schema, operation.variables).pipe(map((v) => ({ operation, ...v }))),
-      ),
+      mergeMap((operation) => {
+        const teardown$ = ops$.pipe(filter((op) => op.type === 'teardown' && op.key === operation.key));
+
+        const observable = cache.observe(operation.schema, operation.variables).pipe(map((v) => ({ operation, ...v })));
+        return observable.pipe(takeUntil(teardown$));
+      }),
       share(),
     );
 
