@@ -16,7 +16,6 @@
   import { Img } from '$lib/components';
   import { lastVisitedPage } from '$lib/stores';
   import { pageUrl } from '$lib/utils/url';
-  import LeftSideBar from '../LeftSideBar.svelte';
   import Breadcrumb from './Breadcrumb.svelte';
   import Editor from './Editor.svelte';
 
@@ -27,7 +26,6 @@
     query PagePage_Query($siteId: ID!, $pageId: ID!) {
       site(siteId: $siteId) {
         id
-        ...LeftSideBar_site
       }
 
       page(pageId: $pageId) {
@@ -161,8 +159,6 @@
 </script>
 
 <Helmet title={$query.page.content.title} trailing={$query.page.site.name} />
-
-<LeftSideBar $site={$query.site} />
 
 <div
   class={flex({
