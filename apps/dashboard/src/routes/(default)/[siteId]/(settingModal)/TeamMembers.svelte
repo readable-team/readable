@@ -162,7 +162,10 @@
 
 <div class={flex({ justifyContent: 'space-between', alignItems: 'center' })}>
   <h1 class={css({ textStyle: '28eb' })}>멤버 관리</h1>
-  <Button size="sm" type="button" on:click={() => (isInviteModalOpen = true)}>멤버 초대</Button>
+
+  {#if $team.meAsMember?.role === 'ADMIN'}
+    <Button size="sm" type="button" on:click={() => (isInviteModalOpen = true)}>멤버 초대</Button>
+  {/if}
 </div>
 
 <HorizontalDivider style={css.raw({ marginTop: '20px' })} />
