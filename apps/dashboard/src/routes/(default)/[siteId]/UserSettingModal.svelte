@@ -16,6 +16,7 @@
   import TeamMembers from './(settingModal)/TeamMembers.svelte';
   import TeamSetting from './(settingModal)/TeamSetting.svelte';
   import UserSetting from './(settingModal)/UserSetting.svelte';
+  import SettingTabItem from './SettingTabItem.svelte';
   import type { UserSettingModal_site, UserSettingModal_user } from '$graphql';
 
   let _user: UserSettingModal_user;
@@ -72,44 +73,35 @@
     `),
   );
 
-  const personalSettings = [
+  $: personalSettings = [
     {
       icon: CircleUserIcon,
-      text: '개인 설정',
-      tab: 'settings/personal',
+      name: '개인 설정',
+      href: '?tab=settings/personal',
+      selected: selectedTab === 'settings/personal',
     },
   ];
 
-  const teamSettings = [
+  $: teamSettings = [
     {
       icon: Building2Icon,
-      text: '팀 설정',
-      tab: 'settings/team',
+      name: '팀 설정',
+      href: '?tab=settings/team',
+      selected: selectedTab === 'settings/team',
     },
     {
       icon: UsersRoundIcon,
-      text: '멤버 관리',
-      tab: 'settings/team/members',
+      name: '멤버 관리',
+      href: '?tab=settings/team/members',
+      selected: selectedTab === 'settings/team/members',
     },
     {
       icon: CreditCardIcon,
-      text: '구독 및 결제',
-      tab: 'settings/team/subscription',
+      name: '구독 및 결제',
+      href: '?tab=settings/team/subscription',
+      selected: selectedTab === 'settings/team/subscription',
     },
   ];
-
-  const tabItemStyle = flex({
-    align: 'center',
-    gap: '10px',
-    borderRadius: '4px',
-    paddingX: '12px',
-    textStyle: '15m',
-    color: 'text.secondary',
-    width: 'full',
-    height: '36px',
-    _hover: { backgroundColor: 'neutral.20' },
-    _selected: { backgroundColor: 'neutral.20', color: 'text.primary' },
-  });
 </script>
 
 {#if open}
@@ -209,26 +201,18 @@
             size={24}
           />
 
-          <p class={css({ textStyle: '13b', truncate: true, color: 'text.secondary' })}>{$site.team.name}</p>
+          <p class={css({ textStyle: '13m', truncate: true, color: 'text.secondary' })}>{$site.team.name}</p>
         </div>
 
         <dl class={flex({ direction: 'column', gap: '2px', paddingTop: '1px' })}>
-          {#each teamSettings as setting (setting.text)}
+          {#each teamSettings as setting (setting.name)}
             <dd>
-              <a
-                class={tabItemStyle}
-                aria-selected={selectedTab === setting.tab}
-                href={`?tab=${setting.tab}`}
-                role="tab"
-              >
-                <Icon icon={setting.icon} size={18} />
-                <span>{setting.text}</span>
-              </a>
+              <SettingTabItem {setting} />
             </dd>
           {/each}
         </dl>
 
-        <HorizontalDivider style={css.raw({ marginY: '20px' })} />
+        <HorizontalDivider style={css.raw({ marginY: '16px' })} />
 
         <div
           class={flex({
@@ -257,17 +241,9 @@
         </div>
 
         <dl class={flex({ direction: 'column', gap: '2px', paddingTop: '1px' })}>
-          {#each personalSettings as setting (setting.text)}
+          {#each personalSettings as setting (setting.name)}
             <dd>
-              <a
-                class={tabItemStyle}
-                aria-selected={selectedTab === setting.tab}
-                href={`?tab=${setting.tab}`}
-                role="tab"
-              >
-                <Icon icon={setting.icon} size={18} />
-                <span>{setting.text}</span>
-              </a>
+              <SettingTabItem {setting} />
             </dd>
           {/each}
         </dl>

@@ -15,17 +15,16 @@
   class={flex({
     align: 'center',
     gap: '10px',
-    borderRadius: '4px',
+    borderRadius: '6px',
     paddingX: '12px',
     textStyle: '15m',
-    color: 'text.secondary',
+    color: 'text.tertiary',
     width: 'full',
     height: '36px',
     _hover: { backgroundColor: 'neutral.20' },
     _selected: {
-      'backgroundColor': 'neutral.20',
-      'color': 'text.primary',
-      '& svg': { color: 'text.secondary' },
+      color: 'text.secondary',
+      backgroundColor: 'neutral.20',
     },
   })}
   aria-selected={setting.selected}

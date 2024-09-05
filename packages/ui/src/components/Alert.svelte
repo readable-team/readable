@@ -51,8 +51,8 @@
             pointerEvents: 'auto',
             userSelect: 'text',
             width: 'auto',
-            minWidth: '430px',
-            maxWidth: '480px',
+            minWidth: '480px',
+            maxWidth: '600px',
             boxShadow: 'strong',
           },
           containerStyle,
@@ -64,7 +64,7 @@
         <header>
           <h3
             class={css({
-              textStyle: '16sb',
+              textStyle: '18b',
               wordBreak: 'keep-all',
               overflowWrap: 'break-word',
             })}
@@ -89,17 +89,17 @@
             {
               display: 'flex',
               gap: '8px',
-              marginTop: '24px',
+              marginTop: '32px',
               justifyContent: 'flex-end',
             },
             actionStyle,
           )}
         >
-          <Button style={css.raw({ minWidth: '86px' })} size="lg" variant="secondary" on:click={() => (open = false)}>
+          <Button style={css.raw({ minWidth: '95px' })} size="lg" variant="secondary" on:click={() => (open = false)}>
             <slot name="cancel" />
           </Button>
           <Button
-            style={css.raw({ minWidth: '86px' })}
+            style={css.raw({ minWidth: '95px' })}
             size="lg"
             variant={variant === 'primary' ? 'primary' : 'danger-fill'}
             on:click={() => {

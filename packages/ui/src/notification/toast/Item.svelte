@@ -20,7 +20,7 @@
   class={css({
     display: 'flex',
     alignItems: 'center',
-    borderRadius: '8px',
+    borderRadius: '6px',
     paddingX: '18px',
     paddingY: '12px',
     color: { base: 'white', _dark: 'darkgray.1000' },
