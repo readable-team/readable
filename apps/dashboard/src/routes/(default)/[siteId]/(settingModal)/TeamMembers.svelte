@@ -171,7 +171,7 @@
 <HorizontalDivider style={css.raw({ marginTop: '20px' })} />
 
 <div class={flex({ flexDirection: 'column', paddingY: '40px', gap: '16px' })}>
-  <div class={css({ textStyle: '14sb', color: 'neutral.70' })}>
+  <div class={css({ textStyle: '14sb', color: 'text.secondary' })}>
     {$team.members.length}명의 멤버
   </div>
 
@@ -238,7 +238,15 @@
             <MenuItem
               variant="danger"
               on:click={async () => {
-                await revokeInvitation({ invitationId: invitation.id });
+                invokeAlert({
+                  title: '초대를 취소하시겠어요?',
+                  content: '이미 발송된 초대 이메일은 회수할 수 없지만, 초대 링크는 더이상 작동하지 않습니다',
+                  actionText: '발송 취소',
+                  action: async () => {
+                    // TODO: cache invalidate
+                    await revokeInvitation({ invitationId: invitation.id });
+                  },
+                });
               }}
             >
               <Icon icon={UserXIcon} size={14} />
