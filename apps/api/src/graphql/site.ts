@@ -62,13 +62,8 @@ Site.implement({
     customDomain: t.field({
       type: SiteCustomDomain,
       nullable: true,
-      args: { state: t.arg({ type: SiteCustomDomainState }) },
-      resolve: async (site, args) => {
-        return await db
-          .select()
-          .from(SiteCustomDomains)
-          .where(and(eq(SiteCustomDomains.siteId, site.id), eq(SiteCustomDomains.state, args.state)))
-          .then(first);
+      resolve: async (site) => {
+        return await db.select().from(SiteCustomDomains).where(eq(SiteCustomDomains.siteId, site.id)).then(first);
       },
     }),
 
