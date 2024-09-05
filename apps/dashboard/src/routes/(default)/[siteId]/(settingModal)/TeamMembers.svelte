@@ -13,6 +13,7 @@
   } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
+  import { GraphQLError } from 'graphql';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import CheckIcon from '~icons/lucide/check';
@@ -99,11 +100,10 @@
       reset();
     },
     onError: (e: unknown) => {
-      if (e instanceof Error) {
-        setErrors({ email: '알 수 없는 오류가 발생했습니다.' });
+      if (e instanceof GraphQLError) {
+        setErrors({ email: e.message });
       } else {
-        // GraphQL 에러
-        setErrors({ email: (e as { message: string }).message });
+        setErrors({ email: '알 수 없는 오류가 발생했습니다.' });
       }
     },
   });
