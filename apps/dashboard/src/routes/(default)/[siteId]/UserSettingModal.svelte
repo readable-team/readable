@@ -1,6 +1,6 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
+  import { center, flex } from '@readable/styled-system/patterns';
   import { scrollLock } from '@readable/ui/actions';
   import { HorizontalDivider, Icon } from '@readable/ui/components';
   import Building2Icon from '~icons/lucide/building-2';
@@ -102,7 +102,20 @@
       selected: selectedTab === 'settings/team/subscription',
     },
   ];
+
+  const closeModal = () => {
+    const currentPath = $page.url.pathname;
+    goto(currentPath, { replaceState: true });
+  };
 </script>
+
+<svelte:window
+  on:keydown={(event) => {
+    if (event.key === 'Escape') {
+      closeModal();
+    }
+  }}
+/>
 
 {#if open}
   <div
@@ -126,36 +139,6 @@
       })}
       aria-hidden="true"
     />
-
-    <button
-      class={css({
-        position: 'fixed',
-        top: '24px',
-        right: '24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '40px',
-        height: '40px',
-        borderRadius: 'full',
-        backgroundColor: 'surface.primary',
-        color: 'text.secondary',
-        transition: '[background-color 0.2s]',
-        _hover: {
-          backgroundColor: 'neutral.20',
-          color: 'text.primary',
-        },
-        zIndex: '30',
-      })}
-      aria-label="닫기"
-      type="button"
-      on:click={() => {
-        const currentPath = $page.url.pathname;
-        goto(currentPath, { replaceState: true });
-      }}
-    >
-      <Icon icon={XIcon} size={24} />
-    </button>
 
     <div
       class={flex({
@@ -269,6 +252,34 @@
         {:else if selectedTab === 'settings/personal'}
           <UserSetting {$user} />
         {/if}
+      </div>
+
+      <div class={css({ paddingTop: '58px', paddingLeft: '20px' })}>
+        <button
+          class={center({
+            borderWidth: '[1.5px]',
+            borderColor: 'neutral.30',
+            borderRadius: 'full',
+            marginBottom: '4px',
+            color: 'neutral.50',
+            size: '40px',
+            backgroundColor: 'surface.primary',
+            boxShadow: 'normal',
+            zIndex: '30',
+            _hover: {
+              borderColor: 'neutral.50',
+              color: 'neutral.70',
+            },
+          })}
+          aria-label="닫기"
+          type="button"
+          on:click={closeModal}
+        >
+          <Icon icon={XIcon} />
+        </button>
+        <span class={css({ display: 'block', textStyle: '13sb', color: 'text.tertiary', textAlign: 'center' })}>
+          ESC
+        </span>
       </div>
     </div>
   </div>
