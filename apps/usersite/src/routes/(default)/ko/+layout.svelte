@@ -30,7 +30,7 @@
 <header
   class={css({
     display: 'flex',
-    position: 'fixed',
+    position: 'sticky',
     top: '0',
     left: '0',
     right: '0',
@@ -40,7 +40,8 @@
     backgroundColor: 'surface.primary',
     borderBottomColor: 'border.primary',
     borderBottomWidth: {
-      mdToLg: '1px',
+      md: '1px',
+      lg: '1px',
     },
   })}
 >
@@ -61,7 +62,7 @@
   </div>
 </header>
 
-<main class={flex({ marginTop: '65px', maxWidth: '1280px', marginX: 'auto', alignItems: 'flex-start' })}>
+<main class={flex({ maxWidth: '1280px', marginX: 'auto', alignItems: 'flex-start' })}>
   <aside
     class={css({
       hideBelow: 'md',

@@ -32,11 +32,14 @@
 <div class={flex({ flex: '1', direction: 'column' })}>
   <div
     class={flex({
+      position: 'sticky',
+      top: '64px',
       hideFrom: 'md',
       alignItems: 'center',
       gap: '4px',
       paddingX: '20px',
       paddingBottom: '12px',
+      backgroundColor: 'surface.primary',
       borderBottomWidth: '1px',
       borderBottomColor: 'border.primary',
     })}
