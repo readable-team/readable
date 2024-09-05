@@ -18,7 +18,7 @@ import { PageState } from '@/enums';
 import * as openai from '@/external/openai';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
-import { ms } from '@/search';
+import { searchIndex } from '@/search';
 import { enqueueJob } from './index';
 import { defineJob } from './types';
 
@@ -111,7 +111,7 @@ export const PageContentStateUpdateJob = defineJob('page:content:state-update', 
 });
 
 export const PageSearchIndexUpdateJob = defineJob('page:search:index-update', async (pageId: string) => {
-  const index = ms.index('pages');
+  const index = searchIndex('pages');
 
   const { state } = await db.select({ state: Pages.state }).from(Pages).where(eq(Pages.id, pageId)).then(firstOrThrow);
 
