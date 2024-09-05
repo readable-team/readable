@@ -5,8 +5,10 @@
   import SearchIcon from '~icons/lucide/search';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
+  import { searchBarOpen } from '$lib/stores/ui';
   import MobileSidebar from './MobileSidebar.svelte';
   import Navigation from './Navigation.svelte';
+  import SearchBar from './SearchBar.svelte';
 
   $: query = graphql(`
     query KoLayout_Query($hostname: String!) {
@@ -23,6 +25,10 @@
       }
     }
   `);
+
+  function openSearchBar() {
+    searchBarOpen.set(true);
+  }
 </script>
 
 <header
@@ -100,16 +106,19 @@
           textStyle: '16m',
         })}
         type="button"
+        on:click={openSearchBar}
       >
         <Icon icon={SearchIcon} size={20} />
         <span>검색어를 입력해주세요</span>
       </button>
     </div>
-    <button class={flex({ hideFrom: 'md', marginLeft: 'auto' })} type="button">
+    <button class={flex({ hideFrom: 'md', marginLeft: 'auto' })} type="button" on:click={openSearchBar}>
       <Icon icon={SearchIcon} size={24} />
     </button>
   </div>
 </header>
+
+<SearchBar siteId={$query.publicSite.id} />
 
 <main class={flex({ maxWidth: '1280px', marginX: 'auto', alignItems: 'flex-start' })}>
   <aside
