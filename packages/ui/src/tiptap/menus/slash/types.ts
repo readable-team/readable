@@ -11,7 +11,6 @@ export type MenuItem = {
   name: string;
   group: MenuItemGroup;
   keywords: string[];
-  description: string;
   icon: ComponentType;
   command: (params: CommandParams) => void;
 };
