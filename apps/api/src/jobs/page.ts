@@ -1,5 +1,6 @@
+import { Node } from '@tiptap/pm/model';
 import dayjs from 'dayjs';
-import { and, asc, eq, gt, lte } from 'drizzle-orm';
+import { and, asc, eq, gt, inArray, lte, notInArray } from 'drizzle-orm';
 import * as R from 'remeda';
 import { yXmlFragmentToProseMirrorRootNode } from 'y-prosemirror';
 import * as Y from 'yjs';
@@ -7,6 +8,7 @@ import {
   db,
   first,
   firstOrThrow,
+  PageContentChunks,
   PageContentContributors,
   PageContents,
   PageContentSnapshots,
@@ -157,6 +159,7 @@ export const PageSummarizeJob = defineJob('page:summarize', async (pageId: strin
   const page = await db
     .select({
       contentId: PageContents.id,
+      content: PageContents.content,
       title: PageContents.title,
       subtitle: PageContents.subtitle,
       text: PageContents.text,
@@ -166,29 +169,81 @@ export const PageSummarizeJob = defineJob('page:summarize', async (pageId: strin
     .where(and(eq(Pages.id, pageId), eq(Pages.state, PageState.PUBLISHED)))
     .then(first);
 
-  if (!page) {
+  // 별다른 이유는 없지만 5글자도 안 되는 문서를 검색할 필요가 없지 않을까요...? 아님말구
+  if (!page || page.text.length < 5) {
     return;
   }
 
-  const result = await openai.client.chat.completions.create({
-    model: 'gpt-4o-mini',
-    temperature: 0,
-    max_tokens: 256,
-    frequency_penalty: 2,
+  const content = Node.fromJSON(schema, page.content);
 
-    messages: [
-      {
-        role: 'system',
-        content: `You are an assistant that summarizes end-user help center articles to make them more searchable in LLM. Summarize the content of the articles with keywords to make them easier to search and index. In particular, summarize the documentation by focusing on what methods it mainly presents. The output should only be a summary string in plain text. It doesn't need to be a natural sentence because we'll be using it as input to LLM, but it does need to be summarized enough for LLM to find the document. Do not output anything other than the summary. If there is nothing meaningful in the document, you don't need to output anything. The output language must match the language of the document.`,
-      },
-      { role: 'user', content: JSON.stringify({ title: page.title, subtitle: page.subtitle, text: page.text }) },
-    ],
+  const PREFER_CHUNK_SIZE = 1;
+
+  const chunks: { str: string; hash: string }[] = [];
+  let currentChunkSize = 0;
+  let chunkIndex = 0;
+
+  if (page.title) {
+    chunks.push({ str: page.title, hash: Bun.hash(page.title).toString() });
+  }
+
+  if (page.subtitle) {
+    chunks.push({ str: page.subtitle, hash: Bun.hash(page.subtitle).toString() });
+  }
+
+  // 이건 Array의 forEach가 아니라구 ESLint 너가 몰알아???
+  // eslint-disable-next-line unicorn/no-array-for-each
+  content.forEach((node, _, i) => {
+    currentChunkSize += node.textContent.length;
+    if (currentChunkSize >= PREFER_CHUNK_SIZE || i === content.childCount - 1) {
+      const chunk = node.textBetween(chunkIndex, i + 1, '\n');
+      chunks.push({ str: chunk, hash: Bun.hash(chunk).toString() });
+      currentChunkSize = 0;
+      chunkIndex = i + 1;
+    }
   });
 
-  const summary = result.choices[0].message.content;
+  await db.transaction(async (tx) => {
+    await tx.delete(PageContentChunks).where(
+      and(
+        eq(PageContentChunks.pageId, pageId),
+        notInArray(
+          PageContentChunks.hash,
+          chunks.map((chunk) => chunk.hash),
+        ),
+      ),
+    );
 
-  await db
-    .update(PageContents)
-    .set({ summary: (summary?.length ?? 0) > 0 ? summary : null })
-    .where(eq(PageContents.id, page.contentId));
+    const rows = await tx
+      .select()
+      .from(PageContentChunks)
+      .where(
+        inArray(
+          PageContentChunks.hash,
+          chunks.map((chunk) => chunk.hash),
+        ),
+      );
+    const values = R.groupBy(rows, (row) => row.hash);
+
+    await Promise.all(
+      chunks
+        .filter((chunk) => (values[chunk.hash]?.length ?? 0) === 0)
+        .map(async (chunk) => {
+          const vector = await openai.client.embeddings
+            .create({
+              input: chunk.str,
+              model: 'text-embedding-3-small',
+            })
+            .then((response) => response.data[0].embedding);
+
+          await tx
+            .insert(PageContentChunks)
+            .values({
+              pageId,
+              hash: chunk.hash,
+              vector,
+            })
+            .onConflictDoNothing();
+        }),
+    );
+  });
 });

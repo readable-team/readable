@@ -78,6 +78,11 @@ type File implements Blob {
   url: String!
 }
 
+enum FixSeverity {
+  ERROR
+  WARNING
+}
+
 input GenerateSingleSignOnAuthorizationUrlInput {
   email: String
   provider: SingleSignOnProvider!
@@ -319,7 +324,7 @@ type Query {
   publicPage(slug: String!): PublicPage!
   publicSite(hostname: String!): PublicSite!
   searchPage(query: String!, siteId: String!): SearchPageResult!
-  searchPageByChanges(query: String!, siteId: String!): [SearchByPageChangesHit!]!
+  searchPageByChange(query: String!, siteId: String!): [SearchPageByChangeHit!]!
   searchPublicPage(query: String!, siteId: String!): SearchPublicPageResult!
   site(siteId: ID!): Site!
   team(teamId: ID!): Team!
@@ -338,21 +343,16 @@ input RevokeInvitationInput {
   invitationId: String!
 }
 
-type SearchByPageChangesHit {
-  fixes: [SearchByPageChangesHitFix!]!
-  page: Page!
-}
-
-type SearchByPageChangesHitFix {
+type SearchPageByChangeFix {
   completion: String!
   reason: String!
-  severity: SearchByPageChangesHitFixSeverity!
+  severity: FixSeverity!
   text: String!
 }
 
-enum SearchByPageChangesHitFixSeverity {
-  ERROR
-  WARNING
+type SearchPageByChangeHit {
+  fixes: [SearchPageByChangeFix!]!
+  page: Page!
 }
 
 type SearchPageResult {

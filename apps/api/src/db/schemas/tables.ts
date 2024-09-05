@@ -1,7 +1,7 @@
 // spell-checker:ignoreRegExp /createDbId\('[A-Z]{1,4}'/g
 
 import { sql } from 'drizzle-orm';
-import { bigint, index, integer, pgTable, text, unique, uniqueIndex } from 'drizzle-orm/pg-core';
+import { bigint, index, integer, pgTable, text, unique, uniqueIndex, vector } from 'drizzle-orm/pg-core';
 import * as E from './enums';
 import { createDbId } from './id';
 import { bytea, datetime, jsonb } from './types';
@@ -150,6 +150,26 @@ export const PageContents = pgTable(
   },
   (t) => ({
     pageIdCreatedAtIdx: index().on(t.pageId, t.createdAt),
+  }),
+);
+
+export const PageContentChunks = pgTable(
+  'page_content_chunks',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId('PCCH')),
+    pageId: text('page_id')
+      .notNull()
+      .references(() => Pages.id),
+    hash: text('hash').notNull(),
+    vector: vector('vector', { dimensions: 1536 }).notNull(),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    vectorCosineSimilarityIdx: index('vector_cosine_similarity_idx').using('hnsw', t.vector.op('vector_cosine_ops')),
   }),
 );
 

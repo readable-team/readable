@@ -1,10 +1,11 @@
-import { and, eq, inArray, isNotNull } from 'drizzle-orm';
+import { and, cosineDistance, desc, eq, gt, sql } from 'drizzle-orm';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
 import { builder } from '@/builder';
-import { db, PageContents, Pages } from '@/db';
+import { db, PageContentChunks, PageContents, Pages } from '@/db';
 import { PageState } from '@/enums';
 import * as openai from '@/external/openai';
+import { fixByChangePrompt } from '@/prompt/fix-by-change';
 import { searchIndex } from '@/search';
 import { assertSitePermission } from '@/utils/permissions';
 import { Page, PublicPage } from './objects';
@@ -53,40 +54,6 @@ PublicPageSearchHit.implement({
   }),
 });
 
-type SearchByPageChangesHitFix = {
-  severity: 'WARNING' | 'ERROR';
-  text: string;
-  reason: string;
-  completion: string;
-};
-
-type SearchByPageChangesHit = {
-  pageId: string;
-  fixes: SearchByPageChangesHitFix[];
-};
-
-const SearchByPageChangesHitFixSeverity = builder.enumType('SearchByPageChangesHitFixSeverity', {
-  values: ['WARNING', 'ERROR'] as const,
-});
-
-const SearchByPageChangesHitFix = builder.objectRef<SearchByPageChangesHitFix>('SearchByPageChangesHitFix');
-SearchByPageChangesHitFix.implement({
-  fields: (t) => ({
-    text: t.exposeString('text'),
-    reason: t.exposeString('reason'),
-    completion: t.exposeString('completion'),
-    severity: t.expose('severity', { type: SearchByPageChangesHitFixSeverity }),
-  }),
-});
-
-const SearchByPageChangesHit = builder.objectRef<SearchByPageChangesHit>('SearchByPageChangesHit');
-SearchByPageChangesHit.implement({
-  fields: (t) => ({
-    page: t.field({ type: Page, resolve: (page) => page.pageId }),
-    fixes: t.field({ type: [SearchByPageChangesHitFix], resolve: (page) => page.fixes }),
-  }),
-});
-
 type CountableSearchResult<T> = {
   estimatedTotalHits: number;
   hits: T[];
@@ -105,6 +72,40 @@ SearchPublicPageResult.implement({
   fields: (t) => ({
     estimatedTotalHits: t.exposeInt('estimatedTotalHits'),
     hits: t.field({ type: [PublicPageSearchHit], resolve: (searchResult) => searchResult.hits }),
+  }),
+});
+
+type SearchPageByChangeHit = {
+  pageId: string;
+  fixes: {
+    text: string;
+    severity: 'WARNING' | 'ERROR';
+    reason: string;
+    completion: string;
+  }[];
+};
+
+const FixSeverity = builder.enumType('FixSeverity', {
+  values: ['WARNING', 'ERROR'],
+});
+
+const SearchPageByChangeHit = builder.objectRef<SearchPageByChangeHit>('SearchPageByChangeHit');
+SearchPageByChangeHit.implement({
+  fields: (t) => ({
+    page: t.field({ type: Page, resolve: (hit) => hit.pageId }),
+    fixes: t.field({
+      type: [
+        builder.simpleObject('SearchPageByChangeFix', {
+          fields: (t) => ({
+            text: t.string(),
+            severity: t.field({ type: FixSeverity }),
+            reason: t.string(),
+            completion: t.string(),
+          }),
+        }),
+      ],
+      resolve: (hit) => hit.fixes,
+    }),
   }),
 });
 
@@ -131,8 +132,8 @@ builder.queryFields((t) => ({
     },
   }),
 
-  searchPageByChanges: t.withAuth({ session: true }).field({
-    type: [SearchByPageChangesHit],
+  searchPageByChange: t.withAuth({ session: true }).field({
+    type: [SearchPageByChangeHit],
     args: {
       siteId: t.arg.string(),
       query: t.arg.string(),
@@ -143,47 +144,37 @@ builder.queryFields((t) => ({
         userId: ctx.session.userId,
       });
 
-      const documents = await db
-        .select({ id: Pages.id, summary: PageContents.summary })
-        .from(Pages)
-        .innerJoin(PageContents, and(eq(Pages.id, PageContents.pageId), isNotNull(PageContents.summary)))
-        .where(and(eq(Pages.siteId, args.siteId), eq(Pages.state, PageState.PUBLISHED)));
-
-      const relatedPageIds = await openai.client.beta.chat.completions
-        .parse({
-          model: 'gpt-4o-mini',
-          temperature: 0.5,
-          max_tokens: 256,
-          response_format: zodResponseFormat(z.object({ result: z.array(z.string()) }), 'result'),
-          messages: [
-            {
-              role: 'system',
-              content: `You are an assistant that receives changes to a service and finds documents that might be affected by them based on their summaries. A document's summary consists of an array of ids and summaries. You need to create a JSON array of the ids of documents whose content might be changed by the change and output them in the form {"result": [<array>]}. If a change is not likely to change the content of a document, even if it is relevant to the document, it should be left out of the result. If the change is likely to change the content of the document, even if it's not directly mentioned in the summary, it should appear in the results. If there are no relevant documents, you should output an empty array. If there are multiple documents that might be relevant, you should output multiple IDs as an array. The order of the array should be more relevant first.`,
-            },
-            { role: 'user', content: JSON.stringify({ documents, change: args.query }) },
-          ],
+      const queryVector = await openai.client.embeddings
+        .create({
+          model: 'text-embedding-3-small',
+          input: args.query,
         })
-        .then((response) => response.choices[0].message.parsed?.result ?? []);
+        .then((response) => response.data[0].embedding);
 
-      if (relatedPageIds.length === 0) {
-        return [];
-      }
+      const similarity = sql<number>`1 - (${cosineDistance(PageContentChunks.vector, queryVector)})`;
 
-      const pages = await db
-        .select({ id: Pages.id, title: PageContents.title, subtitle: PageContents.subtitle, text: PageContents.text })
-        .from(Pages)
-        .innerJoin(PageContents, eq(Pages.id, PageContents.pageId))
-        .where(
-          and(eq(Pages.siteId, args.siteId), eq(Pages.state, PageState.PUBLISHED), inArray(Pages.id, relatedPageIds)),
-        );
+      const result = await db
+        .select({
+          pageId: PageContentChunks.pageId,
+          similarity,
+          title: PageContents.title,
+          subtitle: PageContents.subtitle,
+          text: PageContents.text,
+        })
+        .from(PageContentChunks)
+        .innerJoin(Pages, eq(Pages.id, PageContentChunks.pageId))
+        .innerJoin(PageContents, eq(PageContents.pageId, PageContentChunks.pageId))
+        .where(and(eq(Pages.siteId, args.siteId), eq(Pages.state, PageState.PUBLISHED), gt(similarity, 0.35)))
+        .orderBy(desc(similarity))
+        .limit(10);
 
       return await Promise.all(
-        pages.map(async (page) => {
-          const result = await openai.client.beta.chat.completions
+        result.map(async (page) => {
+          const llmResult = await openai.client.beta.chat.completions
             .parse({
               model: 'gpt-4o-2024-08-06',
               temperature: 0.5,
-              max_tokens: 1024,
+              max_tokens: 4096,
               response_format: zodResponseFormat(
                 z.object({
                   fixes: z.array(
@@ -200,7 +191,7 @@ builder.queryFields((t) => ({
               messages: [
                 {
                   role: 'system',
-                  content: `You are an assistant that receives changes from the service and fixes inconsistencies in the documentation. You need to create a JSON array of objective inconsistencies in the documentation due to changes in the service and output it in the form {"fixes":[{"severity":"","text":"","reason":"","completion":""}]}. "severity" is the classification of the fix ("WARNING" if it's likely to be an error but not 100%, "ERROR" if it's 100% error), "text" is the text of the inconsistency in the document, "reason" is the reason for the inconsistency, and "completion" is an example of the fix. Subjective discrepancies must not be corrected. Only objective inconsistencies, such as technical errors or misinformation, could be corrected. Something isn't mentioned in the documentation is not a reason to edit. If something in the documentation is no longer needed, output an empty string for "completion". If the change is not related to the content of the document, it is *NOT* an error. If there are no error, you should output an empty array. "reason" always respond in 한국어.`,
+                  content: fixByChangePrompt,
                 },
                 {
                   role: 'user',
@@ -216,11 +207,11 @@ builder.queryFields((t) => ({
             .then((response) => response.choices[0].message.parsed?.fixes ?? []);
 
           return {
-            pageId: page.id,
-            fixes: result,
+            pageId: page.pageId,
+            fixes: llmResult,
           };
         }),
-      ).then((result) => result.filter((page) => page.fixes.length > 0));
+      ).then((pageFixes) => pageFixes.filter((page) => page.fixes.length > 0));
     },
   }),
 
