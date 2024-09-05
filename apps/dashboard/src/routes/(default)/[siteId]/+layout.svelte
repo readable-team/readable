@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Button, Icon } from '@readable/ui/components';
+  import { onMount } from 'svelte';
   import ReadableIcon from '~icons/rdbl/readable';
   import SlashDividerIcon from '~icons/rdbl/slash-divider';
   import { page } from '$app/stores';
@@ -30,6 +31,38 @@
       }
     }
   `);
+
+  const siteUpdateStream = graphql(`
+    subscription SiteLayout_SiteUpdateStream_Subscription($siteId: ID!) {
+      siteUpdateStream(siteId: $siteId) {
+        ... on Site {
+          id
+          ...LeftSideBar_site
+        }
+
+        ... on Page {
+          id
+          state
+          hasUnpublishedChanges
+
+          content {
+            id
+            title
+          }
+        }
+      }
+    }
+  `);
+
+  onMount(() => {
+    const unsubscribe = siteUpdateStream.subscribe({
+      siteId: $query.site.id,
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  });
 </script>
 
 <div style:--usersite-theme-color={$query.site.themeColor} class={flex({ flexDirection: 'column', height: 'screen' })}>

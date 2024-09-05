@@ -4,7 +4,6 @@
   import { Alert, Button, Helmet, Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
   import { redirect } from '@sveltejs/kit';
   import dayjs from 'dayjs';
-  import { onMount } from 'svelte';
   import { PageState } from '@/enums';
   import CopyIcon from '~icons/lucide/copy';
   import EllipsisIcon from '~icons/lucide/ellipsis';
@@ -108,45 +107,6 @@
       }
     }
   `);
-
-  const siteUpdateStream = graphql(`
-    subscription PagePage_SiteUpdateStream_Subscription($siteId: ID!) {
-      siteUpdateStream(siteId: $siteId) {
-        __typename
-
-        ... on Site {
-          id
-        }
-
-        ... on Page {
-          id
-          state
-          hasUnpublishedChanges
-
-          content {
-            id
-            title
-          }
-        }
-      }
-    }
-  `);
-
-  siteUpdateStream.on('data', (data) => {
-    if (data.siteUpdateStream.__typename === 'Site') {
-      query.refetch();
-    }
-  });
-
-  onMount(() => {
-    const unsubscribe = siteUpdateStream.subscribe({
-      siteId: $query.site.id,
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  });
 
   afterNavigate(() => {
     if ($query.page.state === 'DELETED') {
