@@ -1,13 +1,9 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon } from '@readable/ui/components';
-  import CloseIcon from '~icons/lucide/x';
-  import ReadableIcon from '~icons/rdbl/readable';
-  import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
-  import { mobileNavOpen } from '$lib/stores/ui';
+  import MobileSidebar from './MobileSidebar.svelte';
   import Navigation from './Navigation.svelte';
 
   $: query = graphql(`
@@ -76,85 +72,8 @@
     <Navigation $publicSite={$query.publicSite} />
   </aside>
 
-  <!-- FIXME: 모바일 사이드바 컴포넌트 분리 -->
-  <div
-    class={css({
-      hideFrom: 'md',
-    })}
-    hidden={!$mobileNavOpen}
-  >
-    <div
-      class={css({
-        position: 'fixed',
-        inset: '0',
-        backgroundColor: 'gray.1000/24',
-        zIndex: '100',
-      })}
-      role="button"
-      tabindex="-1"
-      on:click={() => mobileNavOpen.set(false)}
-      on:keypress={null}
-    />
-    <aside
-      class={flex({
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        width: '[90%]',
-        height: 'screen',
-        backgroundColor: 'surface.secondary',
-        zIndex: '[200]',
-        paddingX: '20px',
-        paddingY: '18px',
-        flexDirection: 'column',
-        gap: '32px',
-      })}
-    >
-      <div
-        class={css({
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingX: '12px',
-          paddingBottom: '10px',
-          borderBottomWidth: '1px',
-          borderBottomColor: 'border.primary',
-        })}
-      >
-        <h2 class={css({ textStyle: '16b' })}>페이지 목록</h2>
-        <button class={css({ padding: '3px' })} type="button" on:click={() => mobileNavOpen.set(false)}>
-          <Icon icon={CloseIcon} size={16} />
-        </button>
-      </div>
-      <Navigation $publicSite={$query.publicSite} />
-      <div
-        class={css({
-          position: 'absolute',
-          bottom: '0',
-          left: '0',
-          width: 'full',
-          padding: '20px',
-        })}
-      >
-        <a
-          class={flex({
-            alignItems: 'center',
-            gap: '8px',
-            textStyle: '13eb',
-            color: 'text.tertiary',
-          })}
-          href={env.PUBLIC_WEBSITE_URL}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          <div class={css({ padding: '4px', backgroundColor: 'neutral.60', borderRadius: '6px' })}>
-            <Icon style={css.raw({ '& path': { fill: 'neutral.0' } })} icon={ReadableIcon} size={18} />
-          </div>
-          <span>Powered by Readable</span>
-        </a>
-      </div>
-    </aside>
-  </div>
-
+  <MobileSidebar>
+    <Navigation slot="navigation" $publicSite={$query.publicSite} />
+  </MobileSidebar>
   <slot />
 </main>
