@@ -64,7 +64,7 @@
         <header>
           <h3
             class={css({
-              textStyle: '18b',
+              textStyle: '20b',
               wordBreak: 'keep-all',
               overflowWrap: 'break-word',
             })}
@@ -76,7 +76,7 @@
         <div
           class={css({
             marginTop: '6px',
-            textStyle: '14r',
+            textStyle: '15r',
             color: 'text.secondary',
             whiteSpace: 'pre-wrap',
           })}
