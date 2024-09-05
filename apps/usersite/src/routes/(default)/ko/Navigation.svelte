@@ -6,7 +6,7 @@
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
-  import { treeOpenState } from '$lib/stores/ui';
+  import { mobileNavOpen, treeOpenState } from '$lib/stores/ui';
   import type { Navigation_publicSite } from '$graphql';
 
   let _publicSite: Navigation_publicSite;
@@ -35,6 +35,7 @@
 
             parent {
               id
+              slug
             }
 
             children {
@@ -50,6 +51,7 @@
 
               parent {
                 id
+                slug
               }
             }
           }
@@ -62,6 +64,24 @@
 
   $: if (currentSlug) {
     $treeOpenState[currentSlug] = true;
+  }
+
+  function findPage(slug: string) {
+    return [
+      ...$publicSite.categories.flatMap((c) => c.pages),
+      ...$publicSite.categories.flatMap((c) => c.pages.flatMap((p) => p.children)),
+    ].find((p) => p.slug === slug);
+  }
+
+  $: if ($mobileNavOpen && currentSlug) {
+    $treeOpenState = {};
+    const p = findPage(currentSlug);
+    if (p) {
+      $treeOpenState[p.slug] = true;
+      if (p.parent) {
+        $treeOpenState[p.parent.slug] = true;
+      }
+    }
   }
 </script>
 
@@ -80,7 +100,7 @@
         {category.name}
       </h2>
       <ul class={flex({ direction: 'column', listStyle: 'none' })}>
-        {#each category.pages.filter((p) => !p.parent) as p (p.id)}
+        {#each category.pages as p (p.id)}
           <li
             class={flex({
               position: 'relative',
