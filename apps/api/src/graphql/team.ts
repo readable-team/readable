@@ -1,18 +1,18 @@
 import dayjs from 'dayjs';
 import { and, asc, count, eq, getTableColumns, ne } from 'drizzle-orm';
 import { builder } from '@/builder';
-import { db, first, firstOrThrow, Sites, TeamMemberInvitations, TeamMembers, Teams, Users } from '@/db';
+import { db, first, firstOrThrow, PaymentMethods, Sites, TeamMemberInvitations, TeamMembers, Teams, Users } from '@/db';
 import { sendEmail } from '@/email';
 import TeamMemberAddedEmail from '@/email/templates/TeamMemberAdded.tsx';
 import TeamMemberInvitedEmail from '@/email/templates/TeamMemberInvited.tsx';
-import { SiteState, TeamMemberRole, TeamState, UserState } from '@/enums';
+import { PaymentMethodState, SiteState, TeamMemberRole, TeamState, UserState } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
 import { dataSchemas } from '@/schemas';
 import { generateRandomAvatar } from '@/utils/image-generation';
 import { assertTeamPermission, throwableToBoolean } from '@/utils/permissions';
 import { persistBlobAsImage } from '@/utils/user-contents';
-import { Image, Site, Team, TeamMember, TeamMemberInvitation, User } from './objects';
+import { Image, PaymentMethod, Site, Team, TeamMember, TeamMemberInvitation, User } from './objects';
 
 /**
  * * Types
@@ -97,6 +97,24 @@ Team.implement({
           .from(Sites)
           .where(and(eq(Sites.teamId, team.id), eq(Sites.state, SiteState.ACTIVE)))
           .orderBy(asc(Sites.name));
+      },
+    }),
+
+    paymentMethod: t.field({
+      type: PaymentMethod,
+      nullable: true,
+      resolve: async (team, _, ctx) => {
+        await assertTeamPermission({
+          teamId: team.id,
+          userId: ctx.session?.userId,
+          role: TeamMemberRole.ADMIN,
+        });
+
+        return await db
+          .select()
+          .from(PaymentMethods)
+          .where(and(eq(PaymentMethods.teamId, team.id), eq(PaymentMethods.state, PaymentMethodState.ACTIVE)))
+          .then(first);
       },
     }),
   }),

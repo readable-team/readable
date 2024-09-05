@@ -426,6 +426,7 @@ type Team {
   meAsMember: TeamMember
   members: [TeamMember!]!
   name: String!
+  paymentMethod: PaymentMethod
   sites: [Site!]!
 }
 
