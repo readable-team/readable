@@ -224,7 +224,7 @@ builder.queryFields((t) => ({
     },
   }),
 
-  searchPublicPage: t.withAuth({ session: true }).field({
+  searchPublicPage: t.field({
     type: SearchPublicPageResult,
     args: {
       siteId: t.arg.string(),
