@@ -1,6 +1,8 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import { Icon } from '@readable/ui/components';
+  import SearchIcon from '~icons/lucide/search';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
   import MobileSidebar from './MobileSidebar.svelte';
@@ -41,8 +43,27 @@
     },
   })}
 >
-  <div class={css({ flex: '1', maxWidth: '1280px', marginX: 'auto', paddingX: '20px' })}>
-    <h1 class={flex({ alignItems: 'center', gap: '6px', maxWidth: '394px', textStyle: '16b' })}>
+  <div
+    class={flex({
+      position: 'relative',
+      alignItems: 'center',
+      flex: '1',
+      width: 'full',
+      maxWidth: '1280px',
+      marginX: 'auto',
+      paddingX: '20px',
+      gap: '16px',
+      justifyContent: 'space-between',
+    })}
+  >
+    <h1
+      class={flex({
+        flex: '1',
+        alignItems: 'center',
+        gap: '6px',
+        truncate: true,
+      })}
+    >
       {#if $query.publicSite.logo}
         <Img
           style={css.raw({
@@ -53,8 +74,40 @@
           size={24}
         />
       {/if}
-      <span>{$query.publicSite.name}</span>
+      <span class={css({ textStyle: '16b', truncate: true })}>{$query.publicSite.name}</span>
     </h1>
+    <div
+      class={css({
+        flexShrink: 0,
+        hideBelow: 'md',
+        width: '1/4',
+        minWidth: '260px',
+        maxWidth: '380px',
+      })}
+    >
+      <button
+        class={flex({
+          width: 'full',
+          alignItems: 'center',
+          gap: '8px',
+          paddingX: '16px',
+          paddingY: '10px',
+          borderRadius: 'full',
+          borderWidth: '1px',
+          borderColor: { base: 'gray.300', _dark: 'darkgray.700' },
+          backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
+          color: { base: 'gray.500', _dark: 'darkgray.400' },
+          textStyle: '16m',
+        })}
+        type="button"
+      >
+        <Icon icon={SearchIcon} size={20} />
+        <span>검색어를 입력해주세요</span>
+      </button>
+    </div>
+    <button class={flex({ hideFrom: 'md', marginLeft: 'auto' })} type="button">
+      <Icon icon={SearchIcon} size={24} />
+    </button>
   </div>
 </header>
 
