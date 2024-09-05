@@ -9,6 +9,7 @@
   export let containerStyle: SystemStyleObject | undefined = undefined;
   export let actionStyle: SystemStyleObject | undefined = undefined;
   export let onAction: () => void;
+  export let variant: 'primary' | 'danger' = 'danger';
 </script>
 
 <svelte:window on:keydown={(e) => e.key === 'Escape' && (open = false)} />
@@ -100,7 +101,7 @@
           <Button
             style={css.raw({ minWidth: '86px' })}
             size="lg"
-            variant="danger-fill"
+            variant={variant === 'primary' ? 'primary' : 'danger-fill'}
             on:click={() => {
               onAction();
               open = false;
