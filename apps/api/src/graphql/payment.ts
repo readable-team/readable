@@ -1,38 +1,31 @@
 import { and, eq } from 'drizzle-orm';
 import { builder } from '@/builder';
-import { db, firstOrThrow, TeamPaymentMethods } from '@/db';
+import { db, firstOrThrow, PaymentMethods } from '@/db';
 import { TeamMemberRole } from '@/enums';
 import { issueBillingKey } from '@/external/portone';
 import { dataSchemas } from '@/schemas';
 import { assertTeamPermission } from '@/utils/permissions';
-import { TeamPaymentMethod } from './objects';
+import { PaymentMethod } from './objects';
 
-TeamPaymentMethod.implement({
+PaymentMethod.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
-    cardName: t.exposeString('cardName'),
-    lastCardNumber: t.exposeString('lastCardNumber'),
+    name: t.exposeString('name'),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
   }),
 });
 
 builder.mutationFields((t) => ({
-  registerCard: t.withAuth({ session: true }).fieldWithInput({
-    type: TeamPaymentMethod,
+  updatePaymentMethod: t.withAuth({ session: true }).fieldWithInput({
+    type: PaymentMethod,
     input: {
       teamId: t.input.string(),
-      cardNumber: t.input.string({
-        validate: { schema: dataSchemas.card.number },
-      }),
-      expiry: t.input.string({
-        validate: { schema: dataSchemas.card.expiry },
-      }),
+      cardNumber: t.input.string({ validate: { schema: dataSchemas.card.number } }),
+      expiry: t.input.string({ validate: { schema: dataSchemas.card.expiry } }),
       birthOrBusinessRegistrationNumber: t.input.string({
         validate: { schema: dataSchemas.card.birthOrBusinessRegistrationNumber },
       }),
-      passwordTwoDigits: t.input.string({
-        validate: { schema: dataSchemas.card.passwordTwoDigits },
-      }),
+      passwordTwoDigits: t.input.string({ validate: { schema: dataSchemas.card.passwordTwoDigits } }),
     },
     resolve: async (_, { input }, ctx) => {
       await assertTeamPermission({
@@ -44,12 +37,12 @@ builder.mutationFields((t) => ({
       const [, expiryMonth, expiryYear] = input.expiry.match(/^(\d{2})(\d{2})$/) || [];
 
       const result = await issueBillingKey({
+        customerId: input.teamId,
         cardNumber: input.cardNumber,
         expiryYear,
         expiryMonth,
         birthOrBusinessRegistrationNumber: input.birthOrBusinessRegistrationNumber,
         passwordTwoDigits: input.passwordTwoDigits,
-        customerId: input.teamId,
       });
 
       if (result.status === 'failed') {
@@ -58,17 +51,16 @@ builder.mutationFields((t) => ({
 
       return await db.transaction(async (tx) => {
         await tx
-          .update(TeamPaymentMethods)
-          .set({ state: 'DELETED' })
-          .where(and(eq(TeamPaymentMethods.teamId, input.teamId), eq(TeamPaymentMethods.state, 'ACTIVE')));
+          .update(PaymentMethods)
+          .set({ state: 'DEACTIVATED' })
+          .where(and(eq(PaymentMethods.teamId, input.teamId), eq(PaymentMethods.state, 'ACTIVE')));
 
         return await tx
-          .insert(TeamPaymentMethods)
+          .insert(PaymentMethods)
           .values({
             teamId: input.teamId,
+            name: `${result.card.name} ${input.cardNumber.slice(-4)}`,
             billingKey: result.billingKey,
-            cardName: result.card.name,
-            lastCardNumber: input.cardNumber.slice(-4),
           })
           .returning()
           .then(firstOrThrow);

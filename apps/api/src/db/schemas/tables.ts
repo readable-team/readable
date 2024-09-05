@@ -381,19 +381,18 @@ export const TeamMemberInvitations = pgTable(
   }),
 );
 
-export const TeamPaymentMethods = pgTable(
-  'team_payment_methods',
+export const PaymentMethods = pgTable(
+  'payment_methods',
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createDbId('TPYM')),
+      .$defaultFn(() => createDbId('PYMT')),
     teamId: text('team_id')
       .notNull()
       .references(() => Teams.id),
-    state: E._TeamPaymentMethodState('state').notNull().default('ACTIVE'),
+    name: text('name').notNull(),
     billingKey: text('billing_key').notNull(),
-    cardName: text('card_name').notNull(),
-    lastCardNumber: text('last_card_number').notNull(),
+    state: E._PaymentMethodState('state').notNull().default('ACTIVE'),
     createdAt: datetime('created_at')
       .notNull()
       .default(sql`now()`),

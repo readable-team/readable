@@ -29,6 +29,12 @@ export const PageState = {
   DELETED: 'DELETED',
 } as const;
 
+export type PaymentMethodState = keyof typeof PaymentMethodState;
+export const PaymentMethodState = {
+  ACTIVE: 'ACTIVE',
+  DEACTIVATED: 'DEACTIVATED',
+} as const;
+
 export type SingleSignOnProvider = keyof typeof SingleSignOnProvider;
 export const SingleSignOnProvider = {
   GOOGLE: 'GOOGLE',
@@ -50,12 +56,6 @@ export type TeamMemberRole = keyof typeof TeamMemberRole;
 export const TeamMemberRole = {
   ADMIN: 'ADMIN',
   MEMBER: 'MEMBER',
-} as const;
-
-export type TeamPaymentMethodState = keyof typeof TeamPaymentMethodState;
-export const TeamPaymentMethodState = {
-  ACTIVE: 'ACTIVE',
-  DELETED: 'DELETED',
 } as const;
 
 export type TeamState = keyof typeof TeamState;

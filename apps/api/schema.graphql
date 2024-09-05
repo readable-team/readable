@@ -166,7 +166,6 @@ type Mutation {
   persistBlobAsFile(input: PersistBlobAsFileInput!): File!
   persistBlobAsImage(input: PersistBlobAsImageInput!): Image!
   publishPage(input: PublishPageInput!): Page!
-  registerCard(input: RegisterCardInput!): TeamPaymentMethod!
   removeTeamMember(input: RemoveTeamMemberInput!): TeamMember!
   resendInvitationEmail(input: ResendInvitationEmailInput!): TeamMemberInvitation!
   revokeInvitation(input: RevokeInvitationInput!): TeamMemberInvitation!
@@ -178,6 +177,7 @@ type Mutation {
   updateCategory(input: UpdateCategoryInput!): Category!
   updateCategoryPosition(input: UpdateCategoryPositionInput!): Category!
   updatePagePosition(input: UpdatePagePositionInput!): Page!
+  updatePaymentMethod(input: UpdatePaymentMethodInput!): PaymentMethod!
   updateSite(input: UpdateSiteInput!): Site!
   updateTeam(input: UpdateTeamInput!): Team!
   updateTeamMemberRole(input: UpdateTeamMemberRoleInput!): TeamMember!
@@ -249,6 +249,17 @@ enum PageState {
   PUBLISHED
 }
 
+type PaymentMethod {
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+}
+
+enum PaymentMethodState {
+  ACTIVE
+  DEACTIVATED
+}
+
 input PersistBlobAsFileInput {
   path: String!
 }
@@ -312,14 +323,6 @@ type Query {
   searchPublicPage(query: String!, siteId: String!): SearchPublicPageResult!
   site(siteId: ID!): Site!
   team(teamId: ID!): Team!
-}
-
-input RegisterCardInput {
-  birthOrBusinessRegistrationNumber: String!
-  cardNumber: String!
-  expiry: String!
-  passwordTwoDigits: String!
-  teamId: String!
 }
 
 input RemoveTeamMemberInput {
@@ -444,18 +447,6 @@ enum TeamMemberRole {
   MEMBER
 }
 
-type TeamPaymentMethod {
-  cardName: String!
-  createdAt: DateTime!
-  id: ID!
-  lastCardNumber: String!
-}
-
-enum TeamPaymentMethodState {
-  ACTIVE
-  DELETED
-}
-
 enum TeamState {
   ACTIVE
   DELETED
@@ -490,6 +481,14 @@ input UpdatePagePositionInput {
   pageId: String!
   parentId: String
   upper: String
+}
+
+input UpdatePaymentMethodInput {
+  birthOrBusinessRegistrationNumber: String!
+  cardNumber: String!
+  expiry: String!
+  passwordTwoDigits: String!
+  teamId: String!
 }
 
 input UpdateSiteInput {
