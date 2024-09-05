@@ -150,12 +150,22 @@ Page.implement({
     parent: t.field({ type: Page, nullable: true, resolve: (page) => page.parentId }),
     children: t.field({
       type: [Page],
-      resolve: async (page) => {
-        return await db
-          .select()
-          .from(Pages)
-          .where(and(eq(Pages.parentId, page.id), ne(Pages.state, PageState.DELETED)))
-          .orderBy(asc(Pages.order));
+      resolve: async (page, _, ctx) => {
+        const loader = ctx.loader({
+          name: 'Pages(parentId).ne(DELETED).many',
+          many: true,
+          load: async (parentIds: string[]) => {
+            return await db
+              .select()
+              .from(Pages)
+              .where(and(inArray(Pages.parentId, parentIds), ne(Pages.state, PageState.DELETED)))
+              .orderBy(asc(Pages.order));
+          },
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          key: (row) => row.parentId!,
+        });
+
+        return await loader.load(page.id);
       },
     }),
 
@@ -277,12 +287,22 @@ PublicPage.implement({
     parent: t.field({ type: PublicPage, nullable: true, resolve: (page) => page.parentId }),
     children: t.field({
       type: [PublicPage],
-      resolve: async (page) => {
-        return await db
-          .select()
-          .from(Pages)
-          .where(and(eq(Pages.parentId, page.id), eq(Pages.state, PageState.PUBLISHED)))
-          .orderBy(asc(Pages.order));
+      resolve: async (page, _, ctx) => {
+        const loader = ctx.loader({
+          name: 'Pages(parentId).eq(PUBLISHED).many',
+          many: true,
+          load: async (parentIds: string[]) => {
+            return await db
+              .select()
+              .from(Pages)
+              .where(and(inArray(Pages.parentId, parentIds), eq(Pages.state, PageState.PUBLISHED)))
+              .orderBy(asc(Pages.order));
+          },
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          key: (row) => row.parentId!,
+        });
+
+        return await loader.load(page.id);
       },
     }),
   }),
