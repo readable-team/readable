@@ -87,11 +87,11 @@
           },
           backgroundColor: {
             _enabled: {
-              base: { base: 'white', _dark: 'darkgray.1000' },
-              _hover: { base: 'gray.100', _dark: 'darkgray.1000' },
-              _focusVisible: { base: 'gray.100', _dark: 'darkgray.1000' },
-              _active: { base: 'gray.300', _dark: 'darkgray.1000' },
-              _pressed: { base: 'gray.300', _dark: 'darkgray.1000' },
+              base: { base: 'white', _dark: 'darkgray.800' },
+              _hover: { base: 'gray.100', _dark: 'darkgray.700' },
+              _focusVisible: { base: 'gray.100', _dark: 'darkgray.700' },
+              _active: { base: 'gray.300', _dark: 'darkgray.900' },
+              _pressed: { base: 'gray.300', _dark: 'darkgray.900' },
             },
             _disabled: { base: 'gray.200', _dark: 'darkgray.900' },
           },
