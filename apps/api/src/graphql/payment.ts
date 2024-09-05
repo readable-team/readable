@@ -2,7 +2,7 @@ import { and, eq } from 'drizzle-orm';
 import { builder } from '@/builder';
 import { db, firstOrThrow, PaymentMethods } from '@/db';
 import { TeamMemberRole } from '@/enums';
-import { issueBillingKey } from '@/external/portone';
+import * as portone from '@/external/portone';
 import { dataSchemas } from '@/schemas';
 import { assertTeamPermission } from '@/utils/permissions';
 import { PaymentMethod } from './objects';
@@ -36,7 +36,7 @@ builder.mutationFields((t) => ({
 
       const [, expiryMonth, expiryYear] = input.expiry.match(/^(\d{2})(\d{2})$/) || [];
 
-      const result = await issueBillingKey({
+      const result = await portone.issueBillingKey({
         customerId: input.teamId,
         cardNumber: input.cardNumber,
         expiryYear,
@@ -50,10 +50,15 @@ builder.mutationFields((t) => ({
       }
 
       return await db.transaction(async (tx) => {
-        await tx
+        const methods = await tx
           .update(PaymentMethods)
           .set({ state: 'DEACTIVATED' })
-          .where(and(eq(PaymentMethods.teamId, input.teamId), eq(PaymentMethods.state, 'ACTIVE')));
+          .where(and(eq(PaymentMethods.teamId, input.teamId), eq(PaymentMethods.state, 'ACTIVE')))
+          .returning({ billingKey: PaymentMethods.billingKey });
+
+        for (const method of methods) {
+          await portone.deleteBillingKey({ billingKey: method.billingKey });
+        }
 
         return await tx
           .insert(PaymentMethods)

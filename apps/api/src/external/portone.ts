@@ -68,6 +68,20 @@ export const issueBillingKey = async (params: IssueBillingKeyParams): Promise<Is
   }
 };
 
+type DeleteBillingKeyParams = {
+  billingKey: string;
+};
+type DeleteBillingKeyResult = PortOneResult<unknown>;
+export const deleteBillingKey = async (params: DeleteBillingKeyParams): Promise<DeleteBillingKeyResult> => {
+  try {
+    await client.deleteBillingKey(params.billingKey);
+
+    return makeSuccessResult({});
+  } catch (err) {
+    return makeFailureResult(err);
+  }
+};
+
 type MakePaymentParams = {
   paymentId: string;
   billingKey: string;
