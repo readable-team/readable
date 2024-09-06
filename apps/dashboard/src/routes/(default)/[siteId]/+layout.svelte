@@ -24,6 +24,10 @@
         url
         themeColor
 
+        team {
+          id
+        }
+
         logo {
           id
           ...Img_image
@@ -54,13 +58,32 @@
     }
   `);
 
+  const teamUpdateStream = graphql(`
+    subscription SiteLayout_TeamUpdateStream_Subscription($teamId: ID!) {
+      teamUpdateStream(teamId: $teamId) {
+        ... on Team {
+          id
+          ...TeamMembers_team
+        }
+
+        ... on TeamMember {
+          id
+        }
+      }
+    }
+  `);
+
   onMount(() => {
     const unsubscribe = siteUpdateStream.subscribe({
       siteId: $query.site.id,
     });
+    const unsubscribe2 = teamUpdateStream.subscribe({
+      teamId: $query.site.team.id,
+    });
 
     return () => {
       unsubscribe();
+      unsubscribe2();
     };
   });
 </script>
