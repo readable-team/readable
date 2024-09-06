@@ -46,10 +46,10 @@
         height: 'screen',
         backgroundColor: 'surface.secondary',
         zIndex: '[200]',
-        paddingX: '20px',
-        paddingY: '18px',
         paddingBottom: '0',
         flexDirection: 'column',
+        borderRightWidth: '1px',
+        borderRightColor: 'border.primary',
       })}
       use:scrollLock
     >
@@ -58,25 +58,24 @@
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          paddingX: '12px',
-          paddingBottom: '10px',
+          paddingX: '20px',
+          paddingY: '18px',
           borderBottomWidth: '1px',
           borderBottomColor: 'border.primary',
         })}
       >
         <h2 class={css({ textStyle: '16b' })}>페이지 목록</h2>
-        <button class={css({ padding: '3px' })} type="button" on:click={() => mobileNavOpen.set(false)}>
-          <Icon icon={CloseIcon} size={16} />
+        <button type="button" on:click={() => mobileNavOpen.set(false)}>
+          <Icon icon={CloseIcon} size={24} />
         </button>
       </div>
       <div
         class={flex({
           flexDirection: 'column',
           justifyContent: 'space-between',
-          paddingTop: '32px',
+          padding: '20px',
           flex: '1',
           overflow: 'auto',
-          paddingBottom: '18px',
         })}
       >
         <slot name="navigation" />

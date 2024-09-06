@@ -155,9 +155,11 @@
       hideBelow: 'md',
       position: 'sticky',
       top: '65px',
-      width: '240px',
+      width: '260px',
       flexShrink: 0,
-      padding: '20px',
+      paddingTop: '32px',
+      paddingX: '20px',
+      paddingBottom: '120px',
     })}
   >
     <Navigation $publicSite={$query.publicSite} />

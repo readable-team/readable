@@ -85,13 +85,13 @@
   }
 </script>
 
-<nav class={flex({ direction: 'column', gap: '24px' })}>
+<nav class={flex({ direction: 'column', gap: '40px' })}>
   {#each $publicSite.categories as category (category.id)}
     <div>
       <h2
         class={css({
-          color: 'text.secondary',
-          textStyle: '14b',
+          color: 'text.primary',
+          textStyle: '15b',
           paddingX: '12px',
           paddingY: '5px',
           borderRadius: '4px',
@@ -99,21 +99,21 @@
       >
         {category.name}
       </h2>
-      <ul class={flex({ direction: 'column', listStyle: 'none' })}>
+      <ul class={flex({ direction: 'column', listStyle: 'none', gap: '2px' })}>
         {#each category.pages as p (p.id)}
           <li
             class={flex({
               position: 'relative',
               alignItems: 'center',
-              textStyle: '15m',
-              color: 'text.secondary',
+              textStyle: '15r',
+              color: 'text.primary',
             })}
             aria-current={p.slug === currentSlug ? 'page' : undefined}
           >
             <a
               class={css({
                 paddingX: '12px',
-                paddingY: '8px',
+                paddingY: '7px',
                 borderRadius: '6px',
                 paddingRight: '36px',
                 flex: '1',
@@ -125,7 +125,7 @@
                   'textStyle': '15b',
                   'backgroundColor': 'var(--usersite-theme-color)/4',
                   '& + button': {
-                    color: 'var(--usersite-theme-color)/46',
+                    color: 'var(--usersite-theme-color)',
                   },
                 },
               })}
@@ -141,16 +141,16 @@
               <button
                 class={css({
                   position: 'absolute',
-                  right: '8px',
-                  top: '8px',
+                  right: '7px',
+                  top: '7px',
                   width: '22px',
                   height: '22px',
                   padding: '3px',
-                  borderRadius: '2px',
+                  borderRadius: '4px',
                   color: 'neutral.70',
                   _hover: {
-                    backgroundColor: 'var(--usersite-theme-color)/24',
-                    color: 'var(--usersite-theme-color)/46',
+                    backgroundColor: 'var(--usersite-theme-color)/8',
+                    color: 'var(--usersite-theme-color)',
                   },
                 })}
                 aria-expanded={$treeOpenState[p.slug] ? 'true' : 'false'}
@@ -164,22 +164,20 @@
             {/if}
           </li>
           {#if p.children.length > 0 && $treeOpenState[p.slug]}
-            <ul class={flex({ direction: 'column', listStyle: 'none', paddingLeft: '14px' })}>
+            <ul class={flex({ direction: 'column', listStyle: 'none', gap: '2px' })}>
               {#each p.children as childPage (childPage.id)}
                 <li class={css({ display: 'contents' })}>
                   <a
                     class={css({
-                      paddingX: '12px',
-                      paddingY: '8px',
-                      borderLeftWidth: '1px',
-                      borderLeftColor: 'neutral.30',
-                      textStyle: '15m',
-                      color: 'text.secondary',
+                      padding: '7px',
+                      paddingLeft: '32px',
+                      textStyle: '15r',
+                      color: 'text.primary',
+                      borderRadius: '6px',
                       _hover: {
                         backgroundColor: 'var(--usersite-theme-color)/4',
                       },
                       _currentPage: {
-                        borderLeftColor: 'var(--usersite-theme-color)',
                         color: 'var(--usersite-theme-color)',
                         textStyle: '15b',
                         backgroundColor: 'var(--usersite-theme-color)/4',

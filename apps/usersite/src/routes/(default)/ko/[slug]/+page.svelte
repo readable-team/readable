@@ -57,7 +57,7 @@
         lg: 'full',
       },
       paddingX: {
-        base: '50px',
+        base: '40px',
         smOnly: '20px',
       },
       paddingRight: {
@@ -67,7 +67,7 @@
         base: 1,
         lg: 2,
       },
-      columnGap: '50px',
+      columnGap: '40px',
       gridTemplateAreas: {
         base: '"breadcrumb" "title" "content"',
         lg: '"breadcrumb toc" "title toc" "content toc"',
