@@ -1,6 +1,6 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { Button, FormField, TextInput } from '@readable/ui/components';
+  import { Button, FormField, Helmet, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
@@ -62,6 +62,8 @@
     logoId: $query.site.logo?.id ?? '',
   });
 </script>
+
+<Helmet title="테마 설정" trailing={$query.site.name} />
 
 <div class={css({ paddingTop: '40px', paddingX: '34px', paddingBottom: '120px', width: 'full' })}>
   <h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>테마 색상</h1>

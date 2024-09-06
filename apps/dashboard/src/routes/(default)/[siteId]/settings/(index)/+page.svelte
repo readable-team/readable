@@ -6,6 +6,7 @@
     Button,
     FormField,
     FormValidationMessage,
+    Helmet,
     Icon,
     LogoPlaceholder,
     TextInput,
@@ -133,6 +134,8 @@
     logoId: $query.site.logo?.id ?? '',
   });
 </script>
+
+<Helmet title="사이트 설정" trailing={$query.site.name} />
 
 <div class={css({ paddingTop: '40px', paddingX: '34px', paddingBottom: '120px', width: 'full' })}>
   <h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>일반</h1>

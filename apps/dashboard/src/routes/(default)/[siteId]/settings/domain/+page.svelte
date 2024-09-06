@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, HorizontalDivider, Icon, Modal, TextInput } from '@readable/ui/components';
+  import { Button, Helmet, HorizontalDivider, Icon, Modal, TextInput } from '@readable/ui/components';
   import { toast } from '@readable/ui/notification';
   import { onMount } from 'svelte';
   import CheckIcon from '~icons/lucide/check';
@@ -62,6 +62,8 @@
     }
   `);
 </script>
+
+<Helmet title="커스텀 도메인 설정" trailing={$query.site.name} />
 
 <div class={css({ paddingTop: '40px', paddingX: '34px', paddingBottom: '120px', width: 'full' })}>
   <h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>커스텀 도메인</h1>
