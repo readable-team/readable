@@ -88,10 +88,10 @@
       <Icon icon={SlashDividerIcon} size={18} />
       {#if $query.site.logo}
         <Img
-          style={css.raw({ borderRadius: 'full', size: '19px', borderWidth: '1px', borderColor: 'border.image' })}
+          style={css.raw({ marginRight: '6px', borderRadius: '4px', size: '20px' })}
           $image={$query.site.logo}
           alt={`${$query.site.name}의 로고`}
-          size={48}
+          size={24}
         />
       {/if}
       <h1 class={css({ textStyle: '14sb' })}>

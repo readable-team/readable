@@ -171,7 +171,7 @@
   class={css({
     flex: 'none',
     borderLeftWidth: '1px',
-    borderColor: 'border.primary',
+    borderColor: 'border.secondary',
     padding: '20px',
     minWidth: '200px',
     width: '[16.75%]',

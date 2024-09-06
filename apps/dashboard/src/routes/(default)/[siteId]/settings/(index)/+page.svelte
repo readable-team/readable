@@ -257,7 +257,7 @@
         class={css({
           borderWidth: '1px',
           borderLeftWidth: '0',
-          borderColor: 'border.secondary',
+          borderColor: 'border.primary',
           borderTopRightRadius: '10px',
           borderBottomRightRadius: '10px',
           paddingX: '20px',
