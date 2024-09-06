@@ -94,8 +94,8 @@
     <FormField name="name" label="이름">
       <TextInput name="name" placeholder="이름" />
     </FormField>
-    <FormField name="email" description="FIXME: 이메일은 변경할 수 없습니다." label="이메일">
-      <TextInput name="email" disabled value={$user.email} />
+    <FormField name="" description="FIXME: 이메일은 변경할 수 없습니다." label="이메일">
+      <TextInput disabled value={$user.email} />
     </FormField>
   </div>
 
