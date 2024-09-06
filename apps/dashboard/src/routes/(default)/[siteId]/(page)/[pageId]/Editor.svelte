@@ -298,7 +298,7 @@
       <textarea
         bind:this={titleEl}
         class={css({
-          textStyle: '42eb',
+          textStyle: '34b',
           height: 'auto',
           overflowY: 'hidden',
           resize: 'none',

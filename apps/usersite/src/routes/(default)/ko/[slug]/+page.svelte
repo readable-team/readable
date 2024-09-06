@@ -81,7 +81,7 @@
     <div class={css({ hideBelow: 'md', paddingTop: '38px', marginBottom: '24px', gridArea: 'breadcrumb' })}>
       <Breadcrumb _query={$query} />
     </div>
-    <h1 class={css({ textStyle: '34eb', marginBottom: '20px', gridArea: 'title' })}>
+    <h1 class={css({ textStyle: '34b', marginBottom: '20px', gridArea: 'title' })}>
       {$query.publicPage.content.title}
     </h1>
 

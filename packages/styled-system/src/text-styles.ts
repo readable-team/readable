@@ -47,6 +47,7 @@ export const textStyles = defineTextStyles({
   '24b': { value: { fontWeight: 700, fontSize: 24 } },
   '26b': { value: { fontWeight: 700, fontSize: 26 } },
   '28b': { value: { fontWeight: 700, fontSize: 28 } },
+  '34b': { value: { fontWeight: 700, fontSize: 34 } },
   '11eb': { value: { fontWeight: 800, fontSize: 11 } },
   '12eb': { value: { fontWeight: 800, fontSize: 12 } },
   '13eb': { value: { fontWeight: 800, fontSize: 13 } },
@@ -56,9 +57,7 @@ export const textStyles = defineTextStyles({
   '18eb': { value: { fontWeight: 800, fontSize: 18 } },
   '20eb': { value: { fontWeight: 800, fontSize: 20 } },
   '22eb': { value: { fontWeight: 800, fontSize: 22 } },
-  '23eb': { value: { fontWeight: 800, fontSize: 23 } },
   '24eb': { value: { fontWeight: 800, fontSize: 24 } },
   '28eb': { value: { fontWeight: 800, fontSize: 28 } },
   '34eb': { value: { fontWeight: 800, fontSize: 34 } },
-  '42eb': { value: { fontWeight: 800, fontSize: 42 } },
 });
