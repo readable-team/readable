@@ -10,6 +10,7 @@
   import * as Y from 'yjs';
   import { PageContentSyncKind } from '@/enums';
   import { fragment, graphql } from '$graphql';
+  import Breadcrumb from './Breadcrumb.svelte';
   import type { Editor } from '@tiptap/core';
   import type { Writable } from 'svelte/store';
   import type { PagePage_Editor_query } from '$graphql';
@@ -28,6 +29,8 @@
         page(pageId: $pageId) {
           id
         }
+
+        ...PagePage_Breadcrumb_query
       }
     `),
   );
@@ -285,6 +288,10 @@
 
 <div class={css({ flex: '1', paddingTop: '34px', paddingX: '80px', overflowY: 'auto' })}>
   <div class={flex({ height: 'full', flexDirection: 'column' })}>
+    <div class={css({ paddingTop: '46px' })}>
+      <Breadcrumb style={css.raw({ marginX: 'auto', width: '720px' })} _query={$query} />
+    </div>
+
     <div
       class={flex({
         flexDirection: 'column',

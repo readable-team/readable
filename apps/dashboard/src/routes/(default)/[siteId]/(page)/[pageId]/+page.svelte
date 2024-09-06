@@ -15,7 +15,6 @@
   import { Img } from '$lib/components';
   import { lastVisitedPage } from '$lib/stores';
   import { pageUrl } from '$lib/utils/url';
-  import Breadcrumb from './Breadcrumb.svelte';
   import Editor from './Editor.svelte';
 
   let deletePageOpen = false;
@@ -66,7 +65,6 @@
         }
       }
 
-      ...PagePage_Breadcrumb_query
       ...PagePage_Editor_query
     }
   `);
@@ -136,32 +134,34 @@
   {#key $query.page.id}
     {#if $query.page.hasUnpublishedChanges || $query.page.state === PageState.DRAFT}
       <div
-        class={css(
-          {
-            position: 'absolute',
-            paddingY: '5px',
-            paddingX: '80px',
-            textStyle: '13m',
-            color: 'text.accent',
-            textAlign: 'center',
-            backgroundColor: 'accent.10/50',
-            width: 'full',
-          },
-          $query.page.state === PageState.DRAFT && {
-            backgroundColor: 'neutral.20',
-            color: 'text.secondary',
-          },
-        )}
+        class={css({
+          position: 'absolute',
+          backgroundColor: 'surface.primary',
+          width: 'full',
+        })}
       >
-        {$query.page.state === PageState.DRAFT
-          ? '아직 발행되지 않은 페이지입니다'
-          : '발행되지 않은 수정 내역이 있습니다'}
+        <div
+          class={css(
+            {
+              paddingY: '5px',
+              paddingX: '80px',
+              textStyle: '13m',
+              color: 'text.accent',
+              textAlign: 'center',
+              backgroundColor: 'accent.10/50',
+            },
+            $query.page.state === PageState.DRAFT && {
+              backgroundColor: 'neutral.20',
+              color: 'text.secondary',
+            },
+          )}
+        >
+          {$query.page.state === PageState.DRAFT
+            ? '아직 발행되지 않은 페이지입니다'
+            : '발행되지 않은 수정 내역이 있습니다'}
+        </div>
       </div>
     {/if}
-
-    <div class={css({ paddingX: '80px', paddingTop: '46px' })}>
-      <Breadcrumb style={css.raw({ marginX: 'auto', width: '720px' })} _query={$query} />
-    </div>
 
     <Editor _query={$query} />
   {/key}
