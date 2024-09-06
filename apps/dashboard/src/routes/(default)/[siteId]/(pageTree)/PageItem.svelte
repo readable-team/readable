@@ -32,6 +32,9 @@
 
   let elem: HTMLElement;
 
+  let editing = false;
+  let inputEl: HTMLInputElement;
+
   $: registerNode(elem, {
     ...item,
     depth,
@@ -49,6 +52,15 @@
       parent: item,
     };
   }
+
+  const updateCategory = graphql(`
+    mutation PageTree_UpdateCategory_Mutation($input: UpdateCategoryInput!) {
+      updateCategory(input: $input) {
+        id
+        name
+      }
+    }
+  `);
 
   const deleteCategory = graphql(`
     mutation PageTree_DeleteCategory_Mutation($input: DeleteCategoryInput!) {
@@ -73,6 +85,18 @@
       }
     }
   `);
+
+  $: if (editing && inputEl) {
+    if (item.__typename !== 'Page') inputEl.value = item.name;
+    inputEl.select();
+  }
+
+  const completeCategoryEdit = async () => {
+    if (inputEl) {
+      await updateCategory({ categoryId: item.id, name: inputEl.value });
+      editing = false;
+    }
+  };
 </script>
 
 <li
@@ -230,18 +254,32 @@
       </a>
     {:else}
       <!-- 섹션 (카테고리) -->
-      <div
-        class={flex({
-          paddingX: '8px',
-          paddingY: '4px',
-          textStyle: '14b',
-          color: 'text.secondary',
-          truncate: true,
-          flex: '1',
-        })}
-      >
-        {item.name}
-      </div>
+      {#if editing}
+        <input
+          bind:this={inputEl}
+          class={css({ paddingX: '8px', paddingY: '4px', textStyle: '14b', color: 'text.secondary' })}
+          type="text"
+          on:blur={completeCategoryEdit}
+          on:keydown={(e) => {
+            if (e.key === 'Enter') {
+              completeCategoryEdit();
+            }
+          }}
+        />
+      {:else}
+        <div
+          class={flex({
+            paddingX: '8px',
+            paddingY: '4px',
+            textStyle: '14b',
+            color: 'text.secondary',
+            truncate: true,
+            flex: '1',
+          })}
+        >
+          {item.name}
+        </div>
+      {/if}
       <div
         class={flex({
           display: 'none',
@@ -271,7 +309,11 @@
           >
             <Icon icon={EllipsisIcon} size={14} />
           </button>
-          <MenuItem on:click={() => alert('TODO')}>
+          <MenuItem
+            on:click={() => {
+              editing = true;
+            }}
+          >
             <span>이름 변경</span>
           </MenuItem>
           <MenuItem
