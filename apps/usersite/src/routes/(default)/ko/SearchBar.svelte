@@ -47,7 +47,7 @@
     },
     {
       timing: 'trailing',
-      waitMs: 300,
+      waitMs: 16,
     },
   );
 
