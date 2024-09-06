@@ -64,7 +64,7 @@
     <div class={css({ hideBelow: 'md', marginBottom: '24px' })}>
       <Breadcrumb _query={$query} />
     </div>
-    <h1 class={css({ textStyle: '34eb' })}>{$query.publicPage.content.title}</h1>
+    <h1 class={css({ textStyle: '34eb', marginBottom: '20px' })}>{$query.publicPage.content.title}</h1>
 
     <TiptapRenderer content={$query.publicPage.content.content} on:tocUpdate={(e) => (headings = e.detail.headings)} />
   </div>
