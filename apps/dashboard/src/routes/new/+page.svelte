@@ -88,7 +88,7 @@
     <span>로그아웃</span>
   </Button>
 
-  <div class={css({ textStyle: '14m' })}>
+  <div class={css({ textStyle: '14r' })}>
     <p class={css({ color: 'neutral.80' })}>계정</p>
     <p>{$query.me.email}</p>
   </div>
@@ -153,7 +153,7 @@
         })}
       >
         <span
-          class={css({ textStyle: '14m' }, purpose === '' && { color: { base: 'gray.500', _dark: 'darkgray.400' } })}
+          class={css({ textStyle: '14r' }, purpose === '' && { color: { base: 'gray.500', _dark: 'darkgray.400' } })}
         >
           {purpose === '' ? '선택' : purpose}
         </span>
@@ -187,7 +187,7 @@
         })}
       >
         <span
-          class={css({ textStyle: '14m' }, jobRole === '' && { color: { base: 'gray.500', _dark: 'darkgray.400' } })}
+          class={css({ textStyle: '14r' }, jobRole === '' && { color: { base: 'gray.500', _dark: 'darkgray.400' } })}
         >
           {jobRole === '' ? '선택' : jobRole}
         </span>

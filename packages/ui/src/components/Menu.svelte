@@ -95,7 +95,7 @@
       {
         display: 'flex',
         flexDirection: 'column',
-        gap: '1px',
+        gap: '2px',
         borderWidth: '1px',
         borderColor: 'border.primary',
         borderRadius: '12px',

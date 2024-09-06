@@ -144,7 +144,7 @@
             textStyle: '13m',
             color: 'text.accent',
             textAlign: 'center',
-            backgroundColor: 'accent.10',
+            backgroundColor: 'accent.10/50',
             width: 'full',
           },
           $query.page.state === PageState.DRAFT && {
@@ -179,7 +179,7 @@
   })}
 >
   <div class={flex({ align: 'center', justify: 'space-between', marginBottom: '10px' })}>
-    <span class={css({ textStyle: '14b', color: 'text.secondary' })}>페이지</span>
+    <span class={css({ textStyle: '14sb', color: 'text.secondary' })}>페이지</span>
     <div class={flex({ align: 'center', gap: '12px' })}>
       {#if $query.page.state === PageState.DRAFT}
         <div
@@ -260,7 +260,7 @@
     </Button>
   </Tooltip>
 
-  <p class={css({ marginBottom: '8px', textStyle: '14b', color: 'text.secondary' })}>편집자</p>
+  <p class={css({ marginBottom: '8px', textStyle: '14sb', color: 'text.secondary' })}>편집자</p>
 
   <div class={flex({ align: 'center', wrap: 'wrap', paddingLeft: '4px', marginBottom: '16px' })}>
     {#each $query.page.contentContributor as contributor (contributor.id)}
@@ -293,20 +293,20 @@
   </div>
 
   {#if $query.page.state === PageState.PUBLISHED}
-    <p class={css({ marginBottom: '4px', textStyle: '14b', color: 'text.secondary' })}>마지막 발행 시간</p>
+    <p class={css({ marginBottom: '4px', textStyle: '14sb', color: 'text.secondary' })}>마지막 발행 시간</p>
 
     <time
-      class={css({ display: 'block', marginBottom: '20px', textStyle: '15m', color: 'text.tertiary' })}
+      class={css({ display: 'block', marginBottom: '20px', textStyle: '14r', color: 'text.tertiary' })}
       datetime={$query.page.lastPublishedAt}
     >
       {dayjs($query.page.lastPublishedAt).formatAsDateTime()}
     </time>
   {/if}
 
-  <p class={css({ marginBottom: '4px', textStyle: '14b', color: 'text.secondary' })}>마지막 편집 시간</p>
+  <p class={css({ marginBottom: '4px', textStyle: '14sb', color: 'text.secondary' })}>마지막 편집 시간</p>
 
   <time
-    class={css({ display: 'block', textStyle: '15m', color: 'text.tertiary' })}
+    class={css({ display: 'block', textStyle: '14r', color: 'text.tertiary' })}
     datetime={$query.page.content.updatedAt}
   >
     {dayjs($query.page.content.updatedAt).formatAsDateTime()}

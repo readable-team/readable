@@ -164,9 +164,10 @@
         <div
           class={flex({
             align: 'center',
-            gap: '6px',
+            gap: '10px',
             marginBottom: '2px',
-            paddingX: '10px',
+            paddingLeft: '12px',
+            paddingRight: '10px',
             paddingY: '5px',
             alignItems: 'center',
           })}
@@ -184,7 +185,7 @@
             size={24}
           />
 
-          <p class={css({ textStyle: '13m', truncate: true, color: 'text.secondary' })}>{$site.team.name}</p>
+          <p class={css({ textStyle: '13sb', truncate: true, color: 'text.secondary' })}>{$site.team.name}</p>
         </div>
 
         <dl class={flex({ direction: 'column', gap: '2px', paddingTop: '1px' })}>
@@ -200,9 +201,10 @@
         <div
           class={flex({
             align: 'center',
-            gap: '6px',
+            gap: '10px',
             marginBottom: '2px',
-            paddingX: '10px',
+            paddingLeft: '12px',
+            paddingRight: '10px',
             paddingY: '5px',
             alignItems: 'center',
           })}
@@ -220,7 +222,7 @@
             size={24}
           />
 
-          <p class={css({ textStyle: '13b', truncate: true, color: 'text.secondary' })}>{$user.name}</p>
+          <p class={css({ textStyle: '13sb', truncate: true, color: 'text.secondary' })}>{$user.name}</p>
         </div>
 
         <dl class={flex({ direction: 'column', gap: '2px', paddingTop: '1px' })}>

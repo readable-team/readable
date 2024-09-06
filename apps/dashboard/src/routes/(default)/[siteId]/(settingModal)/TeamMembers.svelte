@@ -193,7 +193,7 @@
             {invitation.email[0].toUpperCase()}
           </div>
 
-          <p class={css({ textStyle: '12m', color: 'text.tertiary' })}>{invitation.email}</p>
+          <p class={css({ textStyle: '14r', color: 'text.tertiary' })}>{invitation.email}</p>
         </div>
 
         <div class={css({ padding: '16px' })}>
@@ -201,7 +201,7 @@
             class={css({
               paddingX: '8px',
               paddingY: '4px',
-              textStyle: '14sb',
+              textStyle: '16m',
               color: 'text.secondary',
               width: '86px',
             })}
@@ -272,8 +272,8 @@
             size={32}
           />
           <div class={flex({ flexDirection: 'column', truncate: true })}>
-            <p class={css({ textStyle: '16sb', color: 'text.secondary', truncate: true })}>{member.user.name}</p>
-            <p class={css({ textStyle: '16m', color: 'text.tertiary', truncate: true })}>{member.user.email}</p>
+            <p class={css({ textStyle: '16m', color: 'text.secondary', truncate: true })}>{member.user.name}</p>
+            <p class={css({ textStyle: '14r', color: 'text.tertiary', truncate: true })}>{member.user.email}</p>
           </div>
         </div>
 
@@ -288,7 +288,7 @@
                   alignItems: 'center',
                   paddingX: '8px',
                   paddingY: '4px',
-                  textStyle: '14sb',
+                  textStyle: '16m',
                   color: 'text.secondary',
                   borderRadius: '6px',
                   _hover: {
@@ -315,7 +315,7 @@
                 >
                   <div class={flex({ flexDirection: 'column', alignItems: 'start', gap: '2px' })}>
                     <p class={css({ textStyle: '15sb', color: 'text.primary' })}>관리자</p>
-                    <p class={css({ textStyle: '13m', color: 'text.tertiary' })}>사이트 설정 변경, 멤버 초대 및 관리</p>
+                    <p class={css({ textStyle: '13r', color: 'text.tertiary' })}>사이트 설정 변경, 멤버 초대 및 관리</p>
                   </div>
                   {#if member.role === 'ADMIN'}
                     <Icon style={css.raw({ color: 'accent.60' })} icon={CheckIcon} size={16} />

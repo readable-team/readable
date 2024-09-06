@@ -125,9 +125,9 @@
         },
       },
       size: {
-        sm: { borderRadius: '6px', paddingX: '14px', paddingY: '[6.5px]', textStyle: '14b', height: '32px' },
-        md: { borderRadius: '8px', paddingX: '20px', paddingY: '9px', textStyle: '14b', height: '38px' },
-        lg: { borderRadius: '10px', paddingX: '30px', paddingY: '10px', textStyle: '16b', height: '43px' },
+        sm: { borderRadius: '6px', paddingX: '14px', paddingY: '[6.5px]', textStyle: '14sb', height: '32px' },
+        md: { borderRadius: '8px', paddingX: '20px', paddingY: '9px', textStyle: '14sb', height: '38px' },
+        lg: { borderRadius: '10px', paddingX: '30px', paddingY: '10px', textStyle: '16sb', height: '43px' },
       },
     },
   });

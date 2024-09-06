@@ -98,7 +98,7 @@
     </a>
   </div>
 
-  <div class={flex({ textStyle: { base: '12m', md: '14m' }, color: 'neutral.70', direction: 'column', gap: '4px' })}>
+  <div class={flex({ textStyle: { base: '12r', md: '14r' }, color: 'neutral.70', direction: 'column', gap: '4px' })}>
     <p>주식회사 펜슬컴퍼니 | 대표 배준현 | 서울특별시 강남구 강남대로100길 14, 6층</p>
 
     <p>

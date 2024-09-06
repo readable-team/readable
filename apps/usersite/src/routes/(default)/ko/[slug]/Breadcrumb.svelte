@@ -46,7 +46,7 @@
       'gap': '6px',
       'truncate': true,
       '& > li': {
-        textStyle: '15m',
+        textStyle: '15r',
       },
       '& > li > span': {
         display: 'block',
