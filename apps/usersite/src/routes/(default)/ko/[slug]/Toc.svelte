@@ -1,10 +1,8 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon } from '@readable/ui/components';
   import { createAnchorId } from '@readable/ui/utils';
   import { onMount } from 'svelte';
-  import TextIcon from '~icons/lucide/text';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
 
@@ -107,29 +105,40 @@
     flexDirection: 'column',
     gap: '8px',
     width: '220px',
+    paddingTop: '60px',
     paddingX: '20px',
-    paddingY: '24px',
+    paddingBottom: '120px',
   })}
   hidden={headings.length <= 1}
 >
-  <div class={flex({ gap: '6px', alignItems: 'center', color: 'text.tertiary' })}>
-    <Icon icon={TextIcon} size={16} />
-    <span class={css({ textStyle: '13m' })}>ON THIS PAGE</span>
-  </div>
   <nav role="doc-toc">
-    <ul>
+    <ul
+      class={flex({
+        direction: 'column',
+        listStyle: 'none',
+        gap: '6px',
+        borderLeftWidth: '1px',
+        borderColor: 'neutral.40',
+      })}
+    >
       {#each headings as item, index (item.text)}
         <li>
           <a
-            style:padding-left={`${(item.level - 1) * 16}px`}
+            style:padding-left={`${(item.level - 1) * 20 + 12}px`}
             class={css(
               {
-                textStyle: '15b',
-                padding: '3px',
+                marginLeft: '-1px',
+                display: 'block',
+                textStyle: '14r',
                 color: 'text.secondary',
-                _hover: { color: 'var(--usersite-theme-color)/72' },
+                _hover: { textDecoration: 'underline' },
               },
-              activeHeadingIndex === index && { color: 'var(--usersite-theme-color)' },
+              activeHeadingIndex === index && {
+                color: 'text.primary',
+                textStyle: '14b',
+                borderLeftWidth: '1px',
+                borderColor: 'text.primary',
+              },
             )}
             aria-current={$page.url.hash === `#${createAnchorId(item.text)}` ? 'location' : undefined}
             href={`#${createAnchorId(item.text)}`}
