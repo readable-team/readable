@@ -462,7 +462,7 @@
         alt={`${$team.name}의 아바타`}
         size={24}
       />
-      <h2 class={css({ textStyle: '18sb' })}>팀 초대 요청</h2>
+      <h2 class={css({ textStyle: '16b' })}>팀 초대 요청</h2>
     </div>
     <button type="button" on:click={() => (isInviteModalOpen = false)}>
       <Icon icon={XIcon} size={20} />
