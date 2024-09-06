@@ -85,6 +85,13 @@
     });
   }
 
+  function handleInputKeyDown(event: KeyboardEvent) {
+    if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && event.isComposing) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+
   function handleKeyDown(event: KeyboardEvent) {
     if ($searchBarOpen) {
       if (event.key === 'Escape') {
@@ -102,8 +109,7 @@
         event.preventDefault();
         if (selectedResultIndex === null) {
           selectedResultIndex = 0;
-        }
-        if (event.key === 'ArrowDown') {
+        } else if (event.key === 'ArrowDown') {
           selectedResultIndex = (selectedResultIndex + 1) % searchResults.length;
         } else if (event.key === 'ArrowUp') {
           selectedResultIndex = (selectedResultIndex - 1 + searchResults.length) % searchResults.length;
@@ -246,6 +252,7 @@
             placeholder="검색어를 입력하세요"
             type="text"
             bind:value={searchQuery}
+            on:keydown={handleInputKeyDown}
           />
           {#if searchQuery}
             <button
