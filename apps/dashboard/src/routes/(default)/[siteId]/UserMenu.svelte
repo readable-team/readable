@@ -12,6 +12,7 @@
   import { fragment, graphql } from '$graphql';
   import { Img } from '$lib/components';
   import { accessToken } from '$lib/graphql';
+  import { currentTeamId, lastVisitedPage } from '$lib/stores';
   import UserSettingModal from './UserSettingModal.svelte';
   import type { UserMenu_query } from '$graphql';
 
@@ -140,6 +141,11 @@
       await logout();
 
       $accessToken = null;
+
+      // TODO: PagePage_Query_OnError 에서 처리하기
+      $lastVisitedPage = null;
+      $currentTeamId = null;
+
       mixpanel.reset();
 
       location.href = '/';
