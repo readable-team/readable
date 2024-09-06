@@ -3,3 +3,14 @@
 html {
   scroll-margin-top: 113px; /* 헤더 높이 + 48px */
 }
+
+/* for accessibility */
+[role='button']:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input[type='checkbox']:focus-visible,
+input[type='radio']:focus-visible {
+  outline: revert;
+  outline-offset: -2px;
+  box-shadow: none;
+}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
+  import { flex, visuallyHidden } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
   import SearchIcon from '~icons/lucide/search';
   import { graphql } from '$graphql';
@@ -30,6 +30,29 @@
     searchBarOpen.set(true);
   }
 </script>
+
+<a
+  class={visuallyHidden({
+    zIndex: '100',
+    padding: '16px',
+    color: 'neutral.0',
+    backgroundColor: '[#005FCC]',
+    borderBottomColor: 'border.primary',
+    borderBottomWidth: '1px',
+    textStyle: '16sb',
+    _focus: {
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      width: 'auto',
+      height: 'auto',
+      clip: 'auto',
+    },
+  })}
+  href="#main-content"
+>
+  메인 콘텐츠로 이동
+</a>
 
 <header
   class={css({
@@ -126,7 +149,7 @@
 
 <SearchBar siteId={$query.publicSite.id} />
 
-<main class={flex({ maxWidth: '1280px', marginX: 'auto', alignItems: 'flex-start' })}>
+<main id="main-content" class={flex({ maxWidth: '1280px', marginX: 'auto', alignItems: 'flex-start' })}>
   <div
     class={css({
       hideBelow: 'md',
