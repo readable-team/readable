@@ -536,7 +536,7 @@
           gap: '6px',
           borderRadius: '6px',
           paddingRight: '4px',
-          textStyle: '14m',
+          textStyle: '15m',
           color: 'text.tertiary',
           height: '34px',
           _hover: {
@@ -563,7 +563,7 @@
           })}
         />
       {/if}
-      <div class={css({ padding: '3px', color: 'neutral.60' })}>
+      <div class={css({ padding: '3px' })}>
         <Icon icon={PlusIcon} size={14} />
       </div>
       <span>페이지 추가</span>
