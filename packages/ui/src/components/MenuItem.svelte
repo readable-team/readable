@@ -63,18 +63,18 @@
           color: 'text.secondary',
           width: 'full',
           _hover: {
-            backgroundColor: 'neutral.20',
+            backgroundColor: 'neutral.10',
           },
           _focus: {
-            backgroundColor: 'neutral.30',
+            backgroundColor: 'neutral.20',
           },
           _active: {
             color: 'text.primary',
-            backgroundColor: 'neutral.20',
+            backgroundColor: 'neutral.10',
           },
           _selected: {
             color: 'text.primary',
-            backgroundColor: 'neutral.20',
+            backgroundColor: 'neutral.10',
           },
         }),
         variants: {

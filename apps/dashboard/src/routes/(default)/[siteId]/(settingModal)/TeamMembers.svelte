@@ -150,7 +150,7 @@
     paddingY: '10px',
     width: '260px',
     _enabled: {
-      backgroundColor: { _hover: 'neutral.20', _checked: 'neutral.20' },
+      backgroundColor: { _hover: 'neutral.10', _checked: 'neutral.10' },
     },
     _disabled: {
       '& p': {
