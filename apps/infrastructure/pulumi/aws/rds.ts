@@ -113,7 +113,7 @@ const devCluster = new aws.rds.Cluster('readable-dev', {
   applyImmediately: true,
 });
 
-new aws.rds.ClusterInstance('readable-dev-1', {
+const devInstance = new aws.rds.ClusterInstance('readable-dev-1', {
   clusterIdentifier: devCluster.id,
   identifier: 'readable-dev-1',
 
@@ -152,6 +152,10 @@ new aws.route53.Record('dev.db.rdbl.app', {
 export const db = {
   cluster,
   instance,
+  dev: {
+    cluster: devCluster,
+    instance: devInstance,
+  },
 };
 
 export const outputs = {
