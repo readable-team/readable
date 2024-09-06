@@ -18,6 +18,7 @@
   import InfoIcon from '~icons/lucide/info';
   import UploadIcon from '~icons/lucide/upload';
   import { goto } from '$app/navigation';
+  import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
   import { invokeAlert } from '$lib/components/invoke-alert';
@@ -267,12 +268,11 @@
           paddingY: '10px',
           textStyle: '16m',
           color: 'text.tertiary',
-          width: '100px',
           height: '43px',
           backgroundColor: 'surface.secondary',
         })}
       >
-        /rdbl.io
+        .{env.PUBLIC_USERSITE_DEFAULT_HOST}
       </div>
     </div>
 
