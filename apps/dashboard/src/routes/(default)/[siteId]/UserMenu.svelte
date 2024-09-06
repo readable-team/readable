@@ -81,34 +81,36 @@
     />
   </div>
 
-  <div
-    class={flex({
-      align: 'center',
-      gap: '6px',
-      borderRadius: '4px',
-      paddingX: '12px',
-      paddingY: '7px',
-      backgroundColor: 'neutral.10',
-    })}
-  >
-    <Img
-      style={css.raw({
-        flex: 'none',
-        borderWidth: '1px',
-        borderColor: 'border.image',
-        borderRadius: 'full',
-        size: '32px',
+  <li class={css({ paddingX: '6px' })}>
+    <div
+      class={flex({
+        align: 'center',
+        gap: '6px',
+        borderRadius: '6px',
+        paddingX: '12px',
+        paddingY: '7px',
+        backgroundColor: 'neutral.10',
       })}
-      $image={$query.me.avatar}
-      alt={`${$query.me.name}의 아바타`}
-      size={32}
-    />
+    >
+      <Img
+        style={css.raw({
+          flex: 'none',
+          borderWidth: '1px',
+          borderColor: 'border.image',
+          borderRadius: 'full',
+          size: '32px',
+        })}
+        $image={$query.me.avatar}
+        alt={`${$query.me.name}의 아바타`}
+        size={32}
+      />
 
-    <div class={css({ truncate: true })}>
-      <p class={css({ textStyle: '14sb', color: 'text.secondary', truncate: true })}>{$query.me.name}</p>
-      <p class={css({ textStyle: '12m', color: 'text.tertiary', truncate: true })}>{$query.me.email}</p>
+      <div class={css({ truncate: true })}>
+        <p class={css({ textStyle: '14sb', color: 'text.secondary', truncate: true })}>{$query.me.name}</p>
+        <p class={css({ textStyle: '12m', color: 'text.tertiary', truncate: true })}>{$query.me.email}</p>
+      </div>
     </div>
-  </div>
+  </li>
 
   <MenuItem external={false} href="?tab=settings/team" type="link">
     <Icon icon={Building2Icon} size={14} />
