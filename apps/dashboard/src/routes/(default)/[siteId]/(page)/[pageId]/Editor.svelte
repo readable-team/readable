@@ -237,7 +237,6 @@
   };
 
   const title = createStore(yDoc, 'title');
-  const subtitle = createStore(yDoc, 'subtitle');
 
   onMount(() => {
     const unsubscribe = pageContentSyncStream.subscribe({ pageId: $query.page.id });
@@ -253,7 +252,6 @@
   });
 
   let titleEl: HTMLElement;
-  let subtitleEl: HTMLElement;
 
   const adjustTextareaHeight = (el: HTMLElement) => {
     el.style.height = 'auto';
@@ -266,14 +264,6 @@
     }, 0);
 
     [$title];
-  }
-
-  $: {
-    setTimeout(() => {
-      if (subtitleEl) adjustTextareaHeight(subtitleEl);
-    }, 0);
-
-    [$subtitle];
   }
 
   const uploadBlob = async (file: File) => {
@@ -316,19 +306,6 @@
         placeholder="제목을 입력하세요"
         rows="1"
         bind:value={$title}
-      />
-
-      <textarea
-        bind:this={subtitleEl}
-        class={css({
-          textStyle: '23eb',
-          height: 'auto',
-          overflowY: 'hidden',
-          resize: 'none',
-        })}
-        placeholder="부제목을 입력하세요"
-        rows="1"
-        bind:value={$subtitle}
       />
     </div>
 
