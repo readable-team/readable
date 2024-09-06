@@ -212,7 +212,7 @@ builder.mutationFields((t) => ({
           teamId: input.teamId,
           name: input.name,
           slug,
-          themeColor: '#41c6b5',
+          themeColor: '#ff7b2e',
         })
         .returning()
         .then(firstOrThrow);
