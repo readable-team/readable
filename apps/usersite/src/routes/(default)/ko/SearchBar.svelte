@@ -183,13 +183,13 @@
             height: '64px',
             paddingX: '20px',
             borderBottomWidth: '1px',
-            borderColor: 'border.primary',
+            borderColor: 'border.secondary',
           },
         })}
       >
         <button
           class={flex({
-            color: 'text.primary',
+            color: 'neutral.50',
             hideFrom: 'md',
           })}
           aria-label="검색 모드 닫기"
@@ -244,9 +244,8 @@
             bind:this={inputEl}
             class={css({
               width: 'full',
-              paddingX: '18px',
-              paddingY: '13px',
-              paddingRight: '40px',
+              paddingX: '12px',
+              paddingY: '8px',
             })}
             aria-live={searchQuery ? 'polite' : 'off'}
             placeholder="검색어를 입력하세요"

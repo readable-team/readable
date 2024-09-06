@@ -58,15 +58,16 @@
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          paddingX: '20px',
+          paddingLeft: '32px',
+          paddingRight: '28px',
           paddingY: '18px',
           borderBottomWidth: '1px',
           borderBottomColor: 'border.primary',
         })}
       >
-        <h2 class={css({ textStyle: '16b' })}>페이지 목록</h2>
+        <h2 class={css({ textStyle: '18b' })}>페이지 목록</h2>
         <button type="button" on:click={() => mobileNavOpen.set(false)}>
-          <Icon icon={CloseIcon} size={24} />
+          <Icon style={css.raw({ color: 'neutral.60' })} icon={CloseIcon} size={24} />
         </button>
       </div>
       <div
@@ -89,15 +90,15 @@
           <a
             class={flex({
               alignItems: 'center',
-              gap: '8px',
-              textStyle: '13eb',
+              gap: '10px',
+              textStyle: '13b',
               color: 'text.tertiary',
             })}
             href={env.PUBLIC_WEBSITE_URL}
             rel="noopener noreferrer"
             target="_blank"
           >
-            <div class={css({ padding: '4px', backgroundColor: 'neutral.60', borderRadius: '6px' })}>
+            <div class={css({ padding: '4px', backgroundColor: 'text.tertiary', borderRadius: '6px' })}>
               <Icon style={css.raw({ '& path': { fill: 'neutral.0' } })} icon={ReadableIcon} size={18} />
             </div>
             <span>Powered by Readable</span>

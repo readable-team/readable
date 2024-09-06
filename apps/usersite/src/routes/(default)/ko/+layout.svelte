@@ -65,7 +65,7 @@
     alignItems: 'center',
     height: '64px',
     backgroundColor: 'surface.primary',
-    borderBottomColor: 'border.primary',
+    borderBottomColor: 'border.secondary',
     borderBottomWidth: {
       md: '1px',
       lg: '1px',
@@ -89,21 +89,22 @@
       class={flex({
         flex: '1',
         alignItems: 'center',
-        gap: '6px',
+        gap: '12px',
         truncate: true,
       })}
     >
       {#if $query.publicSite.logo}
         <Img
           style={css.raw({
-            size: '24px',
+            borderRadius: '6px',
+            size: '28px',
           })}
           $image={$query.publicSite.logo}
           alt=""
-          size={24}
+          size={32}
         />
       {/if}
-      <span class={css({ textStyle: '16b', truncate: true })}>{$query.publicSite.name}</span>
+      <span class={css({ textStyle: '18b', truncate: true })}>{$query.publicSite.name}</span>
     </h1>
     <div
       class={css({
@@ -120,24 +121,24 @@
           alignItems: 'center',
           gap: '8px',
           paddingX: '14px',
-          height: '41px',
+          height: '38px',
           borderRadius: 'full',
           borderWidth: '1px',
-          borderColor: { base: 'gray.300', _dark: 'darkgray.700' },
+          borderColor: 'border.secondary',
           backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
           color: { base: 'gray.500', _dark: 'darkgray.400' },
-          textStyle: '16m',
+          textStyle: '14r',
         })}
         aria-label="검색"
         type="button"
         on:click={openSearchBar}
       >
-        <Icon icon={SearchIcon} size={18} />
+        <Icon icon={SearchIcon} size={16} />
         <span>검색어를 입력해주세요</span>
       </button>
     </div>
     <button
-      class={flex({ hideFrom: 'md', marginLeft: 'auto' })}
+      class={flex({ hideFrom: 'md', marginLeft: 'auto', color: 'neutral.60' })}
       aria-label="검색"
       type="button"
       on:click={openSearchBar}

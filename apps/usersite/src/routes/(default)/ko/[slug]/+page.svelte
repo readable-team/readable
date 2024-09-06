@@ -36,12 +36,12 @@
       top: '64px',
       hideFrom: 'md',
       alignItems: 'center',
-      gap: '4px',
+      gap: '8px',
       paddingX: '20px',
       paddingBottom: '12px',
       backgroundColor: 'surface.primary',
       borderBottomWidth: '1px',
-      borderBottomColor: 'border.primary',
+      borderBottomColor: 'border.secondary',
     })}
   >
     <button type="button" on:click={() => mobileNavOpen.set(true)}>
@@ -81,7 +81,7 @@
     <div class={css({ hideBelow: 'md', paddingTop: '38px', marginBottom: '24px', gridArea: 'breadcrumb' })}>
       <Breadcrumb _query={$query} />
     </div>
-    <h1 class={css({ textStyle: '34b', marginBottom: '20px', gridArea: 'title' })}>
+    <h1 class={css({ marginTop: '16px', textStyle: '34b', marginBottom: '20px', gridArea: 'title' })}>
       {$query.publicPage.content.title}
     </h1>
 
