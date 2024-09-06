@@ -73,6 +73,7 @@ export const createEventTarget = async <T extends CustomEvent>(): Promise<TypedE
 export const pubsub = createPubSub<{
   'page:content:sync': [pageId: string, { pageId: string; kind: PageContentSyncKind; data: string }];
   'site:update': [siteId: string, { scope: 'page'; pageId: string } | { scope: 'site' }];
+  'team:update': [teamId: string, { scope: 'member'; userId: string } | { scope: 'team' }];
 }>({
   eventTarget: await createEventTarget(),
 });

@@ -410,6 +410,7 @@ type Subscription {
   pageContentSyncStream(pageId: ID!): PageContentSyncOperation!
   siteCustomDomainValidationStream(siteCustomDomainId: ID!): SiteCustomDomain!
   siteUpdateStream(siteId: ID!): SiteUpdateStreamPayload!
+  teamUpdateStream(teamId: ID!): TeamUpdateStreamPayload!
 }
 
 input SyncPageContentInput {
@@ -452,6 +453,8 @@ enum TeamState {
   ACTIVE
   DELETED
 }
+
+union TeamUpdateStreamPayload = Team | TeamMember
 
 input UnfurlEmbedInput {
   url: String!

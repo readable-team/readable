@@ -1,13 +1,26 @@
 import dayjs from 'dayjs';
 import { and, asc, count, eq, getTableColumns, ne } from 'drizzle-orm';
+import { match } from 'ts-pattern';
 import { builder } from '@/builder';
-import { db, first, firstOrThrow, PaymentMethods, Sites, TeamMemberInvitations, TeamMembers, Teams, Users } from '@/db';
+import {
+  db,
+  extractTableCode,
+  first,
+  firstOrThrow,
+  PaymentMethods,
+  Sites,
+  TeamMemberInvitations,
+  TeamMembers,
+  Teams,
+  Users,
+} from '@/db';
 import { sendEmail } from '@/email';
 import TeamMemberAddedEmail from '@/email/templates/TeamMemberAdded.tsx';
 import TeamMemberInvitedEmail from '@/email/templates/TeamMemberInvited.tsx';
 import { PaymentMethodState, SiteState, TeamMemberRole, TeamState, UserState } from '@/enums';
 import { env } from '@/env';
 import { ApiError } from '@/errors';
+import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { generateRandomAvatar } from '@/utils/image-generation';
 import { assertTeamPermission, throwableToBoolean } from '@/utils/permissions';
@@ -211,7 +224,7 @@ builder.mutationFields((t) => ({
         role: 'ADMIN',
       });
 
-      return await db
+      const team = await db
         .update(Teams)
         .set({
           name: input.name,
@@ -220,6 +233,10 @@ builder.mutationFields((t) => ({
         .where(eq(Teams.id, input.teamId))
         .returning()
         .then(firstOrThrow);
+
+      pubsub.publish('team:update', input.teamId, { scope: 'team' });
+
+      return team;
     },
   }),
 
@@ -311,6 +328,8 @@ builder.mutationFields((t) => ({
           }),
         });
 
+        pubsub.publish('team:update', input.teamId, { scope: 'team' });
+
         return member;
       } else {
         const invitation = await db
@@ -332,6 +351,8 @@ builder.mutationFields((t) => ({
             email: input.email,
           }),
         });
+
+        pubsub.publish('team:update', input.teamId, { scope: 'team' });
 
         return invitation;
       }
@@ -403,6 +424,8 @@ builder.mutationFields((t) => ({
         role: TeamMemberRole.ADMIN,
       });
 
+      pubsub.publish('team:update', invitation.teamId, { scope: 'team' });
+
       return await db
         .delete(TeamMemberInvitations)
         .where(eq(TeamMemberInvitations.id, input.invitationId))
@@ -437,6 +460,8 @@ builder.mutationFields((t) => ({
         if (adminCount?.count === 0) {
           throw new ApiError({ code: 'team_needs_admin' });
         }
+
+        pubsub.publish('team:update', input.teamId, { scope: 'team' });
 
         return member;
       });
@@ -475,8 +500,52 @@ builder.mutationFields((t) => ({
           throw new ApiError({ code: 'team_needs_admin' });
         }
 
+        pubsub.publish('team:update', input.teamId, { scope: 'member', userId: input.userId });
+
         return member;
       });
+    },
+  }),
+}));
+
+/**
+ * * Subscriptions
+ */
+
+builder.subscriptionFields((t) => ({
+  teamUpdateStream: t.withAuth({ session: true }).field({
+    type: t.builder.unionType('TeamUpdateStreamPayload', {
+      types: [Team, TeamMember],
+      resolveType: (parent) => {
+        const code = extractTableCode(parent.id);
+        return match(code)
+          .with('T', () => 'Team')
+          .with('TM', () => 'TeamMember')
+          .run();
+      },
+    }),
+    args: { teamId: t.arg.id() },
+    subscribe: async (_, args, ctx) => {
+      await assertTeamPermission({
+        teamId: args.teamId,
+        userId: ctx.session.userId,
+      });
+
+      const repeater = pubsub.subscribe('team:update', args.teamId);
+
+      ctx.req.signal.addEventListener('abort', () => {
+        repeater.return();
+      });
+
+      return repeater;
+    },
+    resolve: async (payload, args) => {
+      // eslint-disable-next-line unicorn/prefer-ternary
+      if (payload.scope === 'team') {
+        return await db.select().from(Teams).where(eq(Teams.id, args.teamId)).then(firstOrThrow);
+      } else {
+        return await db.select().from(TeamMembers).where(eq(TeamMembers.userId, payload.userId)).then(firstOrThrow);
+      }
     },
   }),
 }));
