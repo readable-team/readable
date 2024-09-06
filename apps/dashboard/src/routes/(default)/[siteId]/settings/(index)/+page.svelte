@@ -78,7 +78,7 @@
       name: dataSchemas.site.name,
       slug: dataSchemas.site.slug,
       themeColor: dataSchemas.site.themeColor,
-      logoId: z.string(),
+      logoId: z.string().optional(),
     }),
     mutation: async ({ name, logoId }) => {
       await updateSite({
@@ -97,7 +97,7 @@
       name: dataSchemas.site.name,
       slug: dataSchemas.site.slug,
       themeColor: dataSchemas.site.themeColor,
-      logoId: z.string(),
+      logoId: z.string().optional(),
     }),
     mutation: async ({ slug }) => {
       invokeAlert({
@@ -111,7 +111,7 @@
             name: $query.site.name,
             slug,
             themeColor: $query.site.themeColor,
-            logoId: $query.site.logo?.id ?? '',
+            logoId: $query.site.logo?.id,
           }),
         variant: 'primary',
       });
@@ -123,7 +123,7 @@
     name: $query.site.name,
     slug: $query.site.slug,
     themeColor: $query.site.themeColor,
-    logoId: $query.site.logo?.id ?? '',
+    logoId: $query.site.logo?.id,
   });
 
   $: setSlugInitialValues({
@@ -131,7 +131,7 @@
     name: $query.site.name,
     slug: $query.site.slug,
     themeColor: $query.site.themeColor,
-    logoId: $query.site.logo?.id ?? '',
+    logoId: $query.site.logo?.id,
   });
 </script>
 

@@ -41,7 +41,7 @@
       name: dataSchemas.site.name,
       slug: dataSchemas.site.slug,
       themeColor: dataSchemas.site.themeColor,
-      logoId: z.string(),
+      logoId: z.string().optional(),
     }),
     mutation: async ({ themeColor }) => {
       await updateSite({
@@ -49,7 +49,7 @@
         name: $query.site.name,
         slug: $query.site.slug,
         themeColor,
-        logoId: $query.site.logo?.id ?? '',
+        logoId: $query.site.logo?.id,
       });
     },
   });
@@ -59,7 +59,7 @@
     name: $query.site.name,
     slug: $query.site.slug,
     themeColor: $query.site.themeColor,
-    logoId: $query.site.logo?.id ?? '',
+    logoId: $query.site.logo?.id,
   });
 </script>
 
