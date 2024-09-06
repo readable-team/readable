@@ -109,7 +109,7 @@
       class={css({
         flexShrink: 0,
         hideBelow: 'md',
-        width: '1/4',
+        width: '[30%]',
         minWidth: '260px',
         maxWidth: '380px',
       })}
@@ -119,8 +119,8 @@
           width: 'full',
           alignItems: 'center',
           gap: '8px',
-          paddingX: '16px',
-          paddingY: '10px',
+          paddingX: '14px',
+          height: '41px',
           borderRadius: 'full',
           borderWidth: '1px',
           borderColor: { base: 'gray.300', _dark: 'darkgray.700' },
@@ -132,7 +132,7 @@
         type="button"
         on:click={openSearchBar}
       >
-        <Icon icon={SearchIcon} size={20} />
+        <Icon icon={SearchIcon} size={18} />
         <span>검색어를 입력해주세요</span>
       </button>
     </div>

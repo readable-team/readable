@@ -118,12 +118,12 @@
                 paddingRight: '36px',
                 flex: '1',
                 _hover: {
-                  backgroundColor: 'var(--usersite-theme-color)/4',
+                  backgroundColor: 'var(--usersite-theme-color)/3',
                 },
                 _currentPage: {
                   'color': 'var(--usersite-theme-color)',
                   'textStyle': '15b',
-                  'backgroundColor': 'var(--usersite-theme-color)/4',
+                  'backgroundColor': 'var(--usersite-theme-color)/3',
                   '& + button': {
                     color: 'var(--usersite-theme-color)',
                   },
@@ -175,12 +175,12 @@
                       color: 'text.primary',
                       borderRadius: '6px',
                       _hover: {
-                        backgroundColor: 'var(--usersite-theme-color)/4',
+                        backgroundColor: 'var(--usersite-theme-color)/3',
                       },
                       _currentPage: {
                         color: 'var(--usersite-theme-color)',
                         textStyle: '15b',
-                        backgroundColor: 'var(--usersite-theme-color)/4',
+                        backgroundColor: 'var(--usersite-theme-color)/3',
                       },
                     })}
                     aria-current={childPage.slug === currentSlug ? 'page' : undefined}
