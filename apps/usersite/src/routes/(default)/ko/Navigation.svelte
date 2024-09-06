@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { css } from '@readable/styled-system/css';
+  import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
@@ -102,12 +102,15 @@
       <ul class={flex({ direction: 'column', listStyle: 'none', gap: '2px' })}>
         {#each category.pages as p (p.id)}
           <li
-            class={flex({
-              position: 'relative',
-              alignItems: 'center',
-              textStyle: '15r',
-              color: 'text.primary',
-            })}
+            class={cx(
+              flex({
+                position: 'relative',
+                alignItems: 'center',
+                textStyle: '15r',
+                color: 'text.primary',
+              }),
+              'group',
+            )}
             aria-current={p.slug === currentSlug ? 'page' : undefined}
           >
             <a
@@ -117,7 +120,7 @@
                 borderRadius: '6px',
                 paddingRight: '36px',
                 flex: '1',
-                _hover: {
+                _groupHover: {
                   backgroundColor: 'var(--usersite-theme-color)/3',
                 },
                 _currentPage: {
@@ -149,7 +152,7 @@
                   borderRadius: '4px',
                   color: 'neutral.70',
                   _hover: {
-                    backgroundColor: 'var(--usersite-theme-color)/8',
+                    backgroundColor: 'var(--usersite-theme-color)/10',
                     color: 'var(--usersite-theme-color)',
                   },
                 })}
