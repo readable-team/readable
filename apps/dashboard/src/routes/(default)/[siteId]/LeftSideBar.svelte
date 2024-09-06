@@ -153,7 +153,7 @@
     width: '[18.75%]',
     maxWidth: '360px',
     borderRightWidth: '1px',
-    borderColor: 'border.primary',
+    borderColor: 'border.secondary',
     overflowY: 'auto',
   })}
 >

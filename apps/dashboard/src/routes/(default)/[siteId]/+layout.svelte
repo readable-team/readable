@@ -105,7 +105,7 @@
       align: 'center',
       justify: 'space-between',
       borderBottomWidth: '1px',
-      borderColor: 'border.primary',
+      borderColor: 'border.secondary',
       paddingX: '20px',
       height: '46px',
     })}
