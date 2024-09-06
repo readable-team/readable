@@ -105,6 +105,7 @@
           color: { base: 'gray.500', _dark: 'darkgray.400' },
           textStyle: '16m',
         })}
+        aria-label="검색"
         type="button"
         on:click={openSearchBar}
       >
@@ -112,7 +113,12 @@
         <span>검색어를 입력해주세요</span>
       </button>
     </div>
-    <button class={flex({ hideFrom: 'md', marginLeft: 'auto' })} type="button" on:click={openSearchBar}>
+    <button
+      class={flex({ hideFrom: 'md', marginLeft: 'auto' })}
+      aria-label="검색"
+      type="button"
+      on:click={openSearchBar}
+    >
       <Icon icon={SearchIcon} size={24} />
     </button>
   </div>
@@ -121,7 +127,7 @@
 <SearchBar siteId={$query.publicSite.id} />
 
 <main class={flex({ maxWidth: '1280px', marginX: 'auto', alignItems: 'flex-start' })}>
-  <aside
+  <div
     class={css({
       hideBelow: 'md',
       position: 'sticky',
@@ -132,7 +138,7 @@
     })}
   >
     <Navigation $publicSite={$query.publicSite} />
-  </aside>
+  </div>
 
   <MobileSidebar>
     <Navigation slot="navigation" $publicSite={$query.publicSite} />

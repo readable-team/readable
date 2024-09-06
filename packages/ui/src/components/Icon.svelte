@@ -8,6 +8,7 @@
   export let icon: ComponentType;
   export let style: SystemStyleObject | undefined = undefined;
   export let size: Variants['size'] = 16;
+  export let ariaHidden = false;
 
   const recipe = cva({
     base: {
@@ -34,4 +35,4 @@
   $: baseStyle = recipe.raw({ size });
 </script>
 
-<svelte:component this={icon} class={css(baseStyle, style)} />
+<svelte:component this={icon} class={css(baseStyle, style)} aria-hidden={ariaHidden ? 'true' : undefined} />

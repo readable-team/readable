@@ -274,13 +274,9 @@
         </div>
       </div>
       {#if searchResults.length > 0}
-        <ul
-          bind:this={listEl}
-          class={css({ paddingY: '12px', overflowY: 'auto', smOnly: { paddingX: '20px' } })}
-          role="listbox"
-        >
+        <ul bind:this={listEl} class={css({ paddingY: '12px', overflowY: 'auto', smOnly: { paddingX: '20px' } })}>
           {#each searchResults as result, index (result.page.id)}
-            <li
+            <a
               class={flex({
                 flexDirection: 'column',
                 gap: '2px',
@@ -299,15 +295,9 @@
                 },
               })}
               aria-selected={selectedResultIndex === index}
+              href={`/ko/${result.page.slug}`}
               role="option"
               tabindex="0"
-              on:click={() => handleSelect(result.page.slug)}
-              on:keydown={(event) => {
-                if (event.key === 'Enter') {
-                  event.stopPropagation();
-                  handleSelect(result.page.slug);
-                }
-              }}
               on:focus={() => {
                 selectedResultIndex = index;
               }}
@@ -320,6 +310,7 @@
                     color: 'var(--usersite-theme-color)',
                   },
                 })}
+                aria-label={result.page.content.title}
               >
                 {@html result.highlight?.title || result.page.content.title}
               </h3>
@@ -332,11 +323,12 @@
                       color: 'var(--usersite-theme-color)',
                     },
                   })}
+                  aria-label={result.highlight.text}
                 >
                   {@html result.highlight.text}
                 </p>
               {/if}
-            </li>
+            </a>
           {/each}
         </ul>
       {:else if searchQuery.length > 0}

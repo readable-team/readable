@@ -159,7 +159,7 @@
                   $treeOpenState[p.slug] = !$treeOpenState[p.slug];
                 }}
               >
-                <Icon icon={$treeOpenState[p.slug] ? ChevronDownIcon : ChevronRightIcon} size={16} />
+                <Icon ariaHidden={true} icon={$treeOpenState[p.slug] ? ChevronDownIcon : ChevronRightIcon} size={16} />
               </button>
             {/if}
           </li>

@@ -72,7 +72,7 @@
     {/if}
     <li class={css({ color: 'neutral.50' })} aria-hidden="true">/</li>
     <li class={css({ color: 'text.secondary', truncate: true })}>
-      <a href={`/ko/${$query.publicPage.slug}`}>
+      <a aria-current="page" href={`/ko/${$query.publicPage.slug}`}>
         {$query.publicPage.content.title}
       </a>
     </li>
