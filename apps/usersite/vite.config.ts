@@ -1,4 +1,5 @@
 import { gql } from '@readable/gql/vite';
+import { svg } from '@readable/lib/vite';
 import { readableIcons } from '@readable/ui/icons';
 import { sveltekit } from '@sveltejs/kit/vite';
 import icons from 'unplugin-icons/vite';
@@ -14,6 +15,7 @@ export default defineConfig({
       },
     }),
     gql(),
+    svg(),
     sveltekit(),
   ],
   server: {
