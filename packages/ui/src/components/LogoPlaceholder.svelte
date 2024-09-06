@@ -1,6 +1,6 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import placeholderSvg from '../../assets/logo-placeholder.svg';
+  import placeholderSvg from '../assets/logo-placeholder.svg';
   import type { SystemStyleObject } from '@readable/styled-system/types';
 
   export let style: SystemStyleObject | undefined = undefined;
