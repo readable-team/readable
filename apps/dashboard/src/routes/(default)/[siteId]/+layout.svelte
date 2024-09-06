@@ -78,17 +78,16 @@
   >
     <div
       class={flex({
-        gap: '2px',
         alignItems: 'center',
         paddingX: '8px',
         paddingY: '6px',
       })}
     >
-      <Icon icon={ReadableIcon} size={18} />
-      <Icon icon={SlashDividerIcon} size={18} />
+      <Icon icon={ReadableIcon} size={20} />
+      <Icon style={css.raw({ marginLeft: '2px', marginRight: '4px' })} icon={SlashDividerIcon} size={18} />
       {#if $query.site.logo}
         <Img
-          style={css.raw({ marginRight: '6px', borderRadius: '4px', size: '20px' })}
+          style={css.raw({ marginRight: '6px', borderRadius: '4px', size: '18px' })}
           $image={$query.site.logo}
           alt={`${$query.site.name}의 로고`}
           size={24}

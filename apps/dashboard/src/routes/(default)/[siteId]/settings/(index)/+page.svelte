@@ -163,14 +163,14 @@
       >
         {#if logo}
           <Img
-            style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '4px' })}
+            style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '10px' })}
             $image={logo}
             alt="사이트 로고"
             size={64}
           />
         {:else}
           <LogoPlaceholder
-            style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '4px' })}
+            style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '10px' })}
           />
         {/if}
       </button>
