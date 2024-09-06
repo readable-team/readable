@@ -1,4 +1,5 @@
 import { and, cosineDistance, desc, eq, gt, sql } from 'drizzle-orm';
+import DOMPurify from 'isomorphic-dompurify';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
 import { builder } from '@/builder';
@@ -17,12 +18,20 @@ type PageSearchData = {
   text: string;
 };
 
+const sanitizeHtmlOnlyEm = (dirty: string | undefined) => {
+  return dirty
+    ? DOMPurify.sanitize(dirty, {
+        ALLOWED_TAGS: ['em'],
+      })
+    : undefined;
+};
+
 const PageSearchHighlight = builder.objectRef<Partial<PageSearchData>>('PageSearchHighlight');
 PageSearchHighlight.implement({
   fields: (t) => ({
-    title: t.exposeString('title', { nullable: true }),
-    subtitle: t.exposeString('subtitle', { nullable: true }),
-    text: t.exposeString('text', { nullable: true }),
+    title: t.string({ nullable: true, resolve: (highlight) => sanitizeHtmlOnlyEm(highlight.title) }),
+    subtitle: t.string({ nullable: true, resolve: (highlight) => sanitizeHtmlOnlyEm(highlight.subtitle) }),
+    text: t.string({ nullable: true, resolve: (highlight) => sanitizeHtmlOnlyEm(highlight.text) }),
   }),
 });
 

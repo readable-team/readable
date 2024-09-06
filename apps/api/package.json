@@ -43,6 +43,7 @@
     "graphql": "^16.9.0",
     "graphql-scalars": "^1.23.0",
     "graphql-yoga": "^5.7.0",
+    "isomorphic-dompurify": "^2.15.0",
     "jose": "^5.8.0",
     "js-base64": "^3.7.7",
     "ky": "^1.7.1",
