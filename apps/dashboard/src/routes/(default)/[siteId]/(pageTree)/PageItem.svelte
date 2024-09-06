@@ -6,6 +6,7 @@
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import CopyIcon from '~icons/lucide/copy';
   import EllipsisIcon from '~icons/lucide/ellipsis';
+  import PencilIcon from '~icons/lucide/pencil';
   import Trash2Icon from '~icons/lucide/trash-2';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
@@ -314,6 +315,7 @@
               editing = true;
             }}
           >
+            <Icon icon={PencilIcon} size={14} />
             <span>이름 변경</span>
           </MenuItem>
           <MenuItem
@@ -326,6 +328,7 @@
                 action: () => deleteCategory({ categoryId: item.id }),
               })}
           >
+            <Icon icon={Trash2Icon} size={14} />
             <span>삭제</span>
           </MenuItem>
         </Menu>
