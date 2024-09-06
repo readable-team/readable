@@ -23,7 +23,7 @@
     height: '36px',
     _hover: { backgroundColor: 'neutral.20' },
     _selected: {
-      color: 'text.secondary',
+      color: 'text.primary',
       backgroundColor: 'neutral.20',
     },
   })}
