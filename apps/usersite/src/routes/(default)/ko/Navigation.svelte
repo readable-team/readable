@@ -91,9 +91,9 @@
       <h2
         class={css({
           color: 'text.primary',
-          textStyle: '15b',
+          textStyle: '15eb',
           paddingX: '12px',
-          paddingY: '7px',
+          paddingY: '9px',
           borderRadius: '4px',
         })}
       >
@@ -150,7 +150,7 @@
                   height: '22px',
                   padding: '3px',
                   borderRadius: '4px',
-                  color: 'neutral.70',
+                  color: 'neutral.50',
                   _hover: {
                     backgroundColor: 'var(--usersite-theme-color)/10',
                     color: 'var(--usersite-theme-color)',
