@@ -93,7 +93,7 @@
           color: 'text.primary',
           textStyle: '15b',
           paddingX: '12px',
-          paddingY: '5px',
+          paddingY: '7px',
           borderRadius: '4px',
         })}
       >
@@ -116,7 +116,7 @@
             <a
               class={css({
                 paddingX: '12px',
-                paddingY: '7px',
+                paddingY: '9px',
                 borderRadius: '6px',
                 paddingRight: '36px',
                 flex: '1',

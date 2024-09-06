@@ -75,6 +75,7 @@
           flexDirection: 'column',
           justifyContent: 'space-between',
           padding: '20px',
+          paddingTop: '16px',
           flex: '1',
           overflow: 'auto',
         })}
