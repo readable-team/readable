@@ -1,5 +1,4 @@
 import { css } from '@readable/styled-system/css';
-import { token } from '@readable/styled-system/tokens';
 import { createAnchorId } from '@readable/ui/utils';
 import { getSchema } from '@tiptap/core';
 import { Blockquote } from '@tiptap/extension-blockquote';
@@ -72,7 +71,7 @@ export const extensions = [
           content: '""',
           display: 'block',
           height: '1px',
-          backgroundColor: 'neutral.20',
+          backgroundColor: 'divider.secondary',
         },
       }),
     },
@@ -81,8 +80,8 @@ export const extensions = [
     HTMLAttributes: {
       class: css({
         borderLeftWidth: '3px',
-        borderLeftColor: 'neutral.100',
-        paddingLeft: '24px',
+        borderLeftColor: 'neutral.30',
+        paddingLeft: '25px',
         color: 'text.primary',
       }),
     },
@@ -90,24 +89,30 @@ export const extensions = [
   BulletList.configure({
     HTMLAttributes: {
       class: css({
-        '&:not(ul ul)': { marginLeft: '10px' }, // ul 루트 노드
-        'marginLeft': '-6px',
-        'paddingLeft': '16px',
+        '&:not(ul ul)': { marginLeft: '9px' }, // ul 루트 노드
+        'marginLeft': '3px',
+        'paddingLeft': '15px',
         'listStylePosition': 'outside',
         'listStyleType': 'disc',
         'ul ul&': { listStyleType: 'circle' },
-        'ul ul ul&': { listStyleType: 'disc' },
-        'ul ul ul ul&': { listStyleType: 'circle' },
-        'ul ul ul ul ul&': { listStyleType: 'disc' }, // FIXME: 이게 맞나
+        '& li + li': {
+          marginTop: '4px',
+        },
+        '& p + ul': {
+          marginTop: '4px',
+        },
+        '& p': { paddingLeft: '4px' },
       }),
     },
   }),
   OrderedList.configure({
     HTMLAttributes: {
       class: css({
+        '&:not(ol ol)': { paddingLeft: '24px' }, // ul 루트 노드
         'paddingLeft': '33px',
         'listStylePosition': 'outside',
         'listStyleType': 'decimal',
+        'ol ol&': { listStyleType: 'lower-alpha' },
         '& li': {
           textIndent: '12px',
         },
@@ -124,16 +129,26 @@ export const extensions = [
   Strike.configure({ HTMLAttributes: { class: css({ textDecorationLine: 'line-through' }) } }),
   Underline.configure({ HTMLAttributes: { class: css({ textDecorationLine: 'underline' }) } }),
   Color,
-  Code.configure({ HTMLAttributes: { class: css({ fontFamily: 'mono' }) } }),
+  Code.configure({
+    HTMLAttributes: {
+      class: css({
+        borderRadius: '4px',
+        paddingX: '4px',
+        paddingY: '2px',
+        textStyle: '14sb',
+        backgroundColor: 'surface.tertiary',
+      }),
+    },
+  }),
   Link.configure({
     openOnClick: true,
     HTMLAttributes: {
-      class: css({ color: 'text.secondary', textDecorationLine: 'underline', cursor: 'pointer' }),
+      class: css({ color: 'var(--usersite-theme-color)', textDecorationLine: 'underline', cursor: 'pointer' }),
     },
   }),
 
   // extensions
-  Dropcursor.configure({ width: 4, color: token('colors.accent.30') }),
+  Dropcursor.configure({ width: 4, class: css({ color: 'accent.60/40' }) }),
   ListKeymap,
   Placeholder,
   TextAlign,

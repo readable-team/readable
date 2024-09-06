@@ -4,9 +4,10 @@
   import { createFloatingActions } from '@readable/ui/actions';
   import { NodeView } from '@readable/ui/tiptap';
   import { onMount } from 'svelte';
-  import ExternalLinkIcon from '~icons/lucide/external-link';
+  import EllipsisIcon from '~icons/lucide/ellipsis';
+  import FileUpIcon from '~icons/lucide/file-up';
   import Trash2Icon from '~icons/lucide/trash-2';
-  import { Button, Icon, RingSpinner, TextInput } from '../../../components';
+  import { Button, Icon, Menu, MenuItem, RingSpinner, TextInput } from '../../../components';
   import type { NodeViewProps } from '@readable/ui/tiptap';
 
   type $$Props = NodeViewProps;
@@ -30,8 +31,8 @@
   }
 
   const { anchor, floating } = createFloatingActions({
-    placement: 'bottom-start',
-    offset: 12,
+    placement: 'bottom',
+    offset: 4,
     onClickOutside: () => {
       pickerOpened = false;
     },
@@ -63,7 +64,12 @@
 </script>
 
 <NodeView>
-  <div class={css({ position: 'relative', _hover: { '& > button': { display: 'flex' } } })}>
+  <div
+    class={css({
+      position: 'relative',
+      _hover: { '& > button': { display: 'flex' }, '& > button > div': { display: 'flex' } },
+    })}
+  >
     {#if node.attrs.id}
       {#if node.attrs.html}
         <div class={css({ display: 'contents', pointerEvents: 'none' })}>
@@ -94,55 +100,79 @@
           {/if}
         </div>
       {/if}
+
+      <button
+        class={css(
+          {
+            position: 'absolute',
+            top: '8px',
+            right: '8px',
+            display: 'none',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '4px',
+            color: 'neutral.50',
+            backgroundColor: 'neutral.10',
+            size: '24px',
+            _hover: { backgroundColor: 'neutral.20' },
+          },
+          !node.attrs.id && { top: '1/2', translate: 'auto', translateY: '-1/2' },
+        )}
+        type="button"
+        on:click={() => deleteNode()}
+      >
+        <Icon icon={Trash2Icon} size={12} />
+      </button>
     {:else}
       <div
         class={flex({
           align: 'center',
           gap: '7px',
+          borderWidth: '1px',
+          borderColor: 'border.primary',
           borderRadius: '10px',
-          padding: '17px',
-          textStyle: '16m',
-          color: 'text.secondary',
-          backgroundColor: {
-            base: 'neutral.10',
-            _hover: 'neutral.20',
-          },
+          paddingX: '14px',
+          paddingY: '12px',
+          textStyle: '14r',
+          color: 'text.tertiary',
+          backgroundColor: 'neutral.20',
           width: 'full',
         })}
         use:anchor
       >
         {#if inflight}
-          <RingSpinner style={css.raw({ size: '28px', color: 'neutral.60' })} />
+          <RingSpinner style={css.raw({ size: '20px', color: 'neutral.40' })} />
           <p>임베드 중...</p>
         {:else}
-          <Icon icon={ExternalLinkIcon} size={16} />
-          <p>무엇이든 임베드해보세요</p>
+          <Icon icon={FileUpIcon} size={20} />
+          <p>임베드할 링크를 입력해주세요</p>
         {/if}
       </div>
-    {/if}
 
-    <button
-      class={css(
-        {
-          position: 'absolute',
-          top: '8px',
-          right: '8px',
-          display: 'none',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: '4px',
-          color: 'neutral.50',
-          backgroundColor: 'neutral.10',
-          size: '24px',
-          _hover: { backgroundColor: 'neutral.20' },
-        },
-        !node.attrs.id && { top: '1/2', translate: 'auto', translateY: '-1/2' },
-      )}
-      type="button"
-      on:click={() => deleteNode()}
-    >
-      <Icon icon={Trash2Icon} size={12} />
-    </button>
+      <Menu style={css.raw({ position: 'absolute', top: '12px', right: '12px' })}>
+        <div
+          slot="button"
+          class={css(
+            {
+              display: 'none',
+              borderRadius: '4px',
+              padding: '2px',
+              color: 'text.tertiary',
+              _hover: { backgroundColor: 'neutral.40' },
+            },
+            open && { display: 'flex' },
+          )}
+          let:open
+        >
+          <Icon icon={EllipsisIcon} size={20} />
+        </div>
+
+        <MenuItem variant="danger" on:click={() => deleteNode()}>
+          <Icon icon={Trash2Icon} size={12} />
+          <span>삭제</span>
+        </MenuItem>
+      </Menu>
+    {/if}
   </div>
 </NodeView>
 
@@ -151,18 +181,22 @@
     class={flex({
       direction: 'column',
       align: 'center',
-      gap: '14px',
-      borderRadius: '10px',
-      padding: '20px',
+      borderWidth: '1px',
+      borderColor: 'border.primary',
+      borderRadius: '12px',
+      padding: '12px',
       backgroundColor: 'surface.primary',
-      width: '460px',
-      boxShadow: 'heavy',
+      width: '340px',
+      boxShadow: 'strong',
     })}
     on:submit|preventDefault={handleInsert}
     use:floating
   >
+    <p class={css({ marginBottom: '2px', textStyle: '14b' })}>URL을 입력해주세요</p>
+    <span class={css({ marginBottom: '12px', textStyle: '13r', color: 'text.tertiary' })}>
+      PDF, Google Drive 등의 링크와 호환됩니다
+    </span>
     <TextInput style={css.raw({ width: 'full' })} bind:value={url} bind:inputEl />
-    <Button style={css.raw({ width: 'full' })} size="lg" type="submit">링크 임베드</Button>
-    <span class={css({ textStyle: '13m', color: 'text.tertiary' })}>PDF, Google Drive 등의 링크와 호환됩니다</span>
+    <Button style={css.raw({ marginTop: '27px', width: 'full' })} size="lg" type="submit">확인</Button>
   </form>
 {/if}

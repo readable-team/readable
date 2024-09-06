@@ -3,9 +3,10 @@
   import { flex } from '@readable/styled-system/patterns';
   import { createFloatingActions } from '@readable/ui/actions';
   import { NodeView } from '@readable/ui/tiptap';
+  import EllipsisIcon from '~icons/lucide/ellipsis';
   import ImageIcon from '~icons/lucide/image';
   import Trash2Icon from '~icons/lucide/trash-2';
-  import { Button, Icon, Img, RingSpinner } from '../../../components';
+  import { Button, Icon, Img, Menu, MenuItem, RingSpinner } from '../../../components';
   import type { NodeViewProps } from '@readable/ui/tiptap';
 
   type $$Props = NodeViewProps;
@@ -22,8 +23,8 @@
   $: pickerOpened = selected;
 
   const { anchor, floating } = createFloatingActions({
-    placement: 'bottom-start',
-    offset: 12,
+    placement: 'bottom',
+    offset: 4,
     onClickOutside: () => {
       pickerOpened = false;
     },
@@ -97,36 +98,55 @@
           justifyContent: 'space-between',
           gap: '7px',
           borderRadius: '10px',
-          padding: '17px',
-          backgroundColor: { base: 'neutral.10', _hover: 'neutral.20' },
+          backgroundColor: 'neutral.20',
+          _hover: { '& > button > div': { display: 'flex' } },
         },
         pickerOpened && { backgroundColor: 'neutral.30' },
       )}
       use:anchor
     >
-      <div class={flex({ align: 'center', gap: '7px' })}>
-        {#if inflight}
-          <RingSpinner style={css.raw({ color: 'neutral.60', size: '28px' })} />
-        {:else}
-          <Icon style={css.raw({ color: 'neutral.60' })} icon={ImageIcon} size={18} />
-        {/if}
-        <span class={css({ textStyle: '16m', color: 'text.secondary' })}>이미지 업로드</span>
-      </div>
-
-      <button
+      <div
         class={flex({
           align: 'center',
-          justify: 'center',
-          borderRadius: '4px',
-          color: 'neutral.50',
-          size: '24px',
-          _hover: { backgroundColor: 'neutral.30' },
+          gap: '12px',
+          paddingX: '14px',
+          paddingY: '12px',
+          textStyle: '14r',
+          color: 'text.tertiary',
         })}
-        type="button"
-        on:click={() => deleteNode()}
       >
-        <Icon icon={Trash2Icon} size={12} />
-      </button>
+        {#if inflight}
+          <RingSpinner style={css.raw({ color: 'neutral.40', size: '20px' })} />
+        {:else}
+          <Icon style={css.raw({ color: 'text.tertiary' })} icon={ImageIcon} size={20} />
+        {/if}
+        이미지를 업로드해주세요
+      </div>
+
+      <Menu>
+        <div
+          slot="button"
+          class={css(
+            {
+              display: 'none',
+              marginRight: '12px',
+              borderRadius: '4px',
+              padding: '2px',
+              color: 'text.tertiary',
+              _hover: { backgroundColor: 'neutral.40' },
+            },
+            open && { display: 'flex' },
+          )}
+          let:open
+        >
+          <Icon icon={EllipsisIcon} size={20} />
+        </div>
+
+        <MenuItem variant="danger" on:click={() => deleteNode()}>
+          <Icon icon={Trash2Icon} size={12} />
+          <span>삭제</span>
+        </MenuItem>
+      </Menu>
     </div>
   {/if}
 </NodeView>
@@ -136,16 +156,20 @@
     class={flex({
       direction: 'column',
       align: 'center',
-      gap: '14px',
+      borderWidth: '1px',
+      borderColor: 'border.primary',
       borderRadius: '10px',
-      padding: '20px',
+      padding: '12px',
       backgroundColor: 'surface.primary',
-      width: '460px',
-      boxShadow: 'heavy',
+      width: '340px',
+      boxShadow: 'strong',
     })}
     use:floating
   >
-    <Button style={css.raw({ width: 'full' })} size="lg" on:click={handleUpload}>이미지 업로드</Button>
-    <span class={css({ textStyle: '13m', color: 'text.tertiary' })}>파일당 최대 크기는 5MB입니다</span>
+    <p class={css({ marginBottom: '2px', textStyle: '14b' })}>이미지 업로드</p>
+    <span class={css({ textStyle: '13r', color: 'text.tertiary' })}>
+      이미지를 드래그하거나 버튼을 클릭하여 업로드하세요
+    </span>
+    <Button style={css.raw({ marginTop: '12px', width: 'full' })} size="sm" on:click={handleUpload}>업로드</Button>
   </div>
 {/if}

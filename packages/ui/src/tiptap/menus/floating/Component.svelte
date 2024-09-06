@@ -88,12 +88,22 @@
   };
 </script>
 
-<div class={flex({ align: 'center', gap: '2px' })}>
-  <button type="button" on:click={handlePlusClick}>
-    <Icon style={css.raw({ color: 'gray.500' })} icon={PlusIcon} />
+<div class={flex({ align: 'center', gap: '4px' })}>
+  <button
+    class={css({ borderRadius: '4px', padding: '2px', color: 'neutral.60', _hover: { backgroundColor: 'neutral.20' } })}
+    type="button"
+    on:click={handlePlusClick}
+  >
+    <Icon icon={PlusIcon} />
   </button>
 
-  <button draggable="true" type="button" on:click={handleGripClick} on:dragstart={handleDragStart}>
-    <Icon style={css.raw({ color: 'gray.500' })} icon={GripVerticalIcon} />
+  <button
+    class={css({ borderRadius: '4px', padding: '2px', color: 'neutral.60', _hover: { backgroundColor: 'neutral.20' } })}
+    draggable="true"
+    type="button"
+    on:click={handleGripClick}
+    on:dragstart={handleDragStart}
+  >
+    <Icon icon={GripVerticalIcon} />
   </button>
 </div>
