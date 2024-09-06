@@ -93,9 +93,10 @@
   }
 
   const completeCategoryEdit = async () => {
-    if (inputEl) {
-      await updateCategory({ categoryId: item.id, name: inputEl.value });
+    if (inputEl && editing) {
       editing = false;
+      await updateCategory({ categoryId: item.id, name: inputEl.value });
+      // FIXME: 에러 핸들링?
     }
   };
 </script>
@@ -263,7 +264,7 @@
           on:blur={completeCategoryEdit}
           on:keydown={(e) => {
             if (e.key === 'Enter') {
-              completeCategoryEdit();
+              inputEl.blur();
             }
           }}
         />
