@@ -140,6 +140,7 @@ export const PageContents = pgTable(
     subtitle: text('subtitle'),
     content: jsonb('content').notNull().$type<JSONContent>(),
     text: text('text').notNull(),
+    hash: text('hash').notNull(),
     summary: text('summary'),
     createdAt: datetime('created_at')
       .notNull()
@@ -232,6 +233,7 @@ export const PageContentStates = pgTable('page_content_states', {
   subtitle: text('subtitle'),
   content: jsonb('content').notNull().$type<JSONContent>(),
   text: text('text').notNull(),
+  hash: text('hash').notNull(),
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),

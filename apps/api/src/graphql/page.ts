@@ -1,5 +1,4 @@
 import { init } from '@paralleldrive/cuid2';
-import { Node } from '@tiptap/pm/model';
 import dayjs from 'dayjs';
 import { and, asc, desc, eq, gt, inArray, isNull, ne, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
@@ -25,6 +24,7 @@ import { CategoryState, PageContentSyncKind, PageState } from '@/enums';
 import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
+import { hashPageContent } from '@/utils/page';
 import { assertCategoryPermission, assertPagePermission, assertSitePermission } from '@/utils/permissions';
 import {
   Category,
@@ -204,15 +204,11 @@ Page.implement({
           stateLoader.load(page.id),
         ]);
 
-        if (
-          !pageContent ||
-          pageContent.title !== pageContentState.title ||
-          pageContent.subtitle !== pageContentState.subtitle
-        ) {
+        if (!pageContent || pageContent.hash !== pageContentState.hash) {
           return true;
         }
 
-        return !Node.fromJSON(schema, pageContent.content).eq(Node.fromJSON(schema, pageContentState.content));
+        return false;
       },
     }),
 
@@ -498,6 +494,8 @@ builder.mutationFields((t) => ({
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const node = schema.topNodeType.createAndFill()!;
+      const content = node.toJSON();
+      const text = node.content.textBetween(0, node.content.size, '\n');
 
       const doc = prosemirrorToYDoc(node, 'content');
       const update = Y.encodeStateAsUpdateV2(doc);
@@ -536,8 +534,9 @@ builder.mutationFields((t) => ({
           pageId: page.id,
           update,
           vector,
-          content: node.toJSON(),
-          text: node.content.textBetween(0, node.content.size, '\n'),
+          content,
+          text,
+          hash: hashPageContent({ title: null, subtitle: null, content }),
           upToSeq: 0n,
         });
 
@@ -660,6 +659,8 @@ builder.mutationFields((t) => ({
       const text = node.content.textBetween(0, node.content.size, '\n');
 
       const jsonContent: JSONContent = node.toJSON();
+      const hash = hashPageContent({ title, subtitle, content: jsonContent });
+
       // 그니까 이건 Array.forEach 아니라니까 ESLint는 바보야 앨랠래
       // eslint-disable-next-line unicorn/no-array-for-each
       jsonContent.content?.forEach((child) => {
@@ -705,6 +706,7 @@ builder.mutationFields((t) => ({
             subtitle: subtitle.length > 0 ? subtitle : null,
             content: jsonContent,
             text,
+            hash,
           })
           .onConflictDoUpdate({
             target: [PageContents.pageId],
@@ -713,6 +715,7 @@ builder.mutationFields((t) => ({
               subtitle: subtitle.length > 0 ? subtitle : null,
               content: jsonContent,
               text,
+              hash,
               updatedAt: dayjs(),
             },
           });
@@ -878,6 +881,7 @@ builder.mutationFields((t) => ({
       Y.applyUpdateV2(doc, update);
 
       const node = yXmlFragmentToProseMirrorRootNode(doc.getXmlFragment('content'), schema);
+      const content = node.toJSON();
       const text = node.content.textBetween(0, node.content.size, '\n');
 
       const title = `(사본) ${doc.getText('title').toString() || '(제목 없음)'}`;
@@ -912,8 +916,9 @@ builder.mutationFields((t) => ({
           vector: newVector,
           title,
           subtitle: subtitle.length > 0 ? subtitle : null,
-          content: node.toJSON(),
+          content,
           text,
+          hash: hashPageContent({ title, subtitle, content }),
           upToSeq: 0n,
         });
 
@@ -978,6 +983,10 @@ builder.subscriptionFields((t) => ({
  * * Utils
  */
 
+const createPageSlug = init({ length: 8 });
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
 const getLatestPageContentState = async (pageId: string) => {
   const state = await db
     .select({ update: PageContentStates.update, vector: PageContentStates.vector, upToSeq: PageContentStates.upToSeq })
@@ -1005,11 +1014,3 @@ const getLatestPageContentState = async (pageId: string) => {
     vector: updatedVector,
   };
 };
-
-/**
- * * Utils
- */
-
-const createPageSlug = init({ length: 8 });
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();

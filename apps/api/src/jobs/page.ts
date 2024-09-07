@@ -21,6 +21,7 @@ import * as openai from '@/external/openai';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { searchIndex } from '@/search';
+import { hashPageContent } from '@/utils/page';
 import { enqueueJob } from './index';
 import { defineJob } from './types';
 
@@ -86,6 +87,8 @@ export const PageContentStateUpdateJob = defineJob('page:content:state-update', 
 
     const content = doc.getXmlFragment('content');
     const node = yXmlFragmentToProseMirrorRootNode(content, schema);
+    const jsonContent = node.toJSON();
+    const text = node.content.textBetween(0, node.content.size, '\n');
 
     await tx
       .update(PageContentStates)
@@ -95,8 +98,9 @@ export const PageContentStateUpdateJob = defineJob('page:content:state-update', 
         upToSeq: updatedUpToSeq,
         title: title.length > 0 ? title : null,
         subtitle: subtitle.length > 0 ? subtitle : null,
-        content: node.toJSON(),
-        text: node.content.textBetween(0, node.content.size, '\n'),
+        content: jsonContent,
+        text,
+        hash: hashPageContent({ title, subtitle, content: jsonContent }),
         updatedAt: dayjs(),
       })
       .where(eq(PageContentStates.pageId, pageId));
