@@ -319,6 +319,7 @@
     if ($query.page.parent?.id) {
       goto(`/${$query.page.site.id}/${$query.page.parent.id}`);
     } else {
+      $lastVisitedPage = null;
       goto(`/${$query.page.site.id}`);
     }
   }}

@@ -8,9 +8,11 @@
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import PencilIcon from '~icons/lucide/pencil';
   import Trash2Icon from '~icons/lucide/trash-2';
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
   import { invokeAlert } from '$lib/components/invoke-alert';
+  import { lastVisitedPage } from '$lib/stores';
   import { maxDepth } from './const';
   import PageList from './PageList.svelte';
   import type { ComponentProps } from 'svelte';
@@ -246,7 +248,18 @@
                 title: '페이지 삭제',
                 content: '페이지를 삭제하시겠습니까?',
                 actionText: '삭제',
-                action: () => deletePage({ pageId: item.id }),
+                action: async () => {
+                  await deletePage({ pageId: item.id });
+
+                  if (item.id === $page.params.pageId) {
+                    if (item.parent?.id) {
+                      await goto(`/${$page.params.siteId}/${item.parent.id}`);
+                    } else {
+                      $lastVisitedPage = null;
+                      await goto(`/${$page.params.siteId}`);
+                    }
+                  }
+                },
               })}
           >
             <Icon icon={Trash2Icon} size={14} />
