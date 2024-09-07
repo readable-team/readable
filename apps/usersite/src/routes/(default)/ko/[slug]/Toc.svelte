@@ -8,7 +8,7 @@
 
   export let headings: { level: number; text: string; scrollTop: number }[] = [];
 
-  let scrollMarginTop = 113; /* 헤더 높이 + 48px */
+  let scrollMarginTop = 102; /* 헤더 높이 + 37px */
   let boundary = scrollMarginTop;
   let boundaryLock = false;
 
@@ -20,7 +20,7 @@
       if (scrollDiff < 0) {
         // 위로 스크롤
         if (!boundaryLock) {
-          boundary += scrollDiff;
+          boundary += scrollDiff * 2;
           boundary = Math.max(boundary, scrollMarginTop);
         }
 
@@ -35,8 +35,8 @@
       } else if (scrollDiff > 0) {
         // 아래로 스크롤
         if (!boundaryLock) {
-          boundary += scrollDiff;
-          boundary = Math.min(boundary, (window.innerHeight - scrollMarginTop) / 2);
+          boundary += scrollDiff * 2;
+          boundary = Math.min(boundary, window.innerHeight / 1.5); // 아래부터 1/3 지점
         }
 
         // boundary 위에 있는 가장 가까운 헤딩 뒤에서부터 찾기
@@ -62,9 +62,22 @@
     boundaryLock = true;
     await scrollToElementTop(item.scrollTop - scrollMarginTop);
     boundaryLock = false;
+
+    if (item.scrollTop > window.scrollY + scrollMarginTop) {
+      // NOTE: boundary가 목표한 heading까지 닿지 않은 경우
+      boundary = item.scrollTop - window.scrollY;
+      activeHeadingIndex = headings.indexOf(item);
+    }
   };
 
   const scrollToElementTop = (top: number) => {
+    const maxScrollY = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight;
+
+    // NOTE: 같은 위치거나 이미 스크롤 끝에 있음
+    if (top === window.scrollY || (top > maxScrollY && window.scrollY === maxScrollY)) {
+      return Promise.resolve();
+    }
+
     setTimeout(() => {
       window.scrollTo({
         top,
@@ -86,6 +99,7 @@
     setTimeout(() => {
       const anchor = headings.find((heading) => `#${createAnchorId(heading.text)}` === $page.url.hash);
       if (anchor) {
+        boundary = anchor.scrollTop - window.scrollY;
         window.scrollTo({
           top: anchor.scrollTop - scrollMarginTop,
           behavior: 'auto',
