@@ -143,7 +143,19 @@ export const basicExtensions = [
   Link.configure({
     openOnClick: true,
     HTMLAttributes: {
-      class: css({ color: 'var(--usersite-theme-color)', textDecorationLine: 'underline', cursor: 'pointer' }),
+      class: css({
+        color: 'var(--usersite-theme-color)',
+        fontWeight: '[500]',
+        textDecorationLine: 'underline',
+        textDecorationColor: 'var(--usersite-theme-color)/40',
+        textUnderlineOffset: '2px',
+        cursor: 'pointer',
+
+        _hover: {
+          textDecorationColor: 'var(--usersite-theme-color)/80',
+          textDecorationThickness: '2px',
+        },
+      }),
     },
   }),
 
