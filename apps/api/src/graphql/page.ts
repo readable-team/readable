@@ -5,7 +5,7 @@ import { and, asc, desc, eq, gt, inArray, isNull, ne, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { Repeater } from 'graphql-yoga';
-import { fromUint8Array, toUint8Array } from 'js-base64';
+import { base64 } from 'rfc4648';
 import { prosemirrorToYDoc, yXmlFragmentToProseMirrorRootNode } from 'y-prosemirror';
 import * as Y from 'yjs';
 import { builder } from '@/builder';
@@ -785,7 +785,7 @@ builder.mutationFields((t) => ({
           await tx.insert(PageContentUpdates).values({
             pageId: input.pageId,
             userId: ctx.session.userId,
-            update: toUint8Array(input.data),
+            update: base64.parse(input.data),
           });
 
           await enqueueJob(tx, 'page:content:state-update', input.pageId);
@@ -793,7 +793,7 @@ builder.mutationFields((t) => ({
       } else if (input.kind === 'SYNCHRONIZE_1') {
         const state = await getLatestPageContentState(input.pageId);
 
-        const clientStateVector = toUint8Array(input.data);
+        const clientStateVector = base64.parse(input.data);
         const clientMissingUpdate = Y.diffUpdateV2(state.update, clientStateVector);
         const serverStateVector = state.vector;
 
@@ -801,12 +801,12 @@ builder.mutationFields((t) => ({
           {
             pageId: input.pageId,
             kind: 'SYNCHRONIZE_2',
-            data: fromUint8Array(clientMissingUpdate),
+            data: base64.stringify(clientMissingUpdate),
           },
           {
             pageId: input.pageId,
             kind: 'SYNCHRONIZE_1',
-            data: fromUint8Array(serverStateVector),
+            data: base64.stringify(serverStateVector),
           },
         ] as const;
       } else if (input.kind == 'SYNCHRONIZE_2') {
@@ -816,7 +816,7 @@ builder.mutationFields((t) => ({
           data: input.data,
         });
 
-        const serverMissingUpdate = toUint8Array(input.data);
+        const serverMissingUpdate = base64.parse(input.data);
 
         await db.transaction(async (tx) => {
           await tx.insert(PageContentUpdates).values({

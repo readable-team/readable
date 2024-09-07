@@ -2,9 +2,9 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { TiptapEditor } from '@readable/ui/tiptap';
-  import { fromUint8Array, toUint8Array } from 'js-base64';
   import ky from 'ky';
   import { nanoid } from 'nanoid';
+  import { base64 } from 'rfc4648';
   import { onMount } from 'svelte';
   import * as YAwareness from 'y-protocols/awareness';
   import * as Y from 'yjs';
@@ -117,12 +117,12 @@
         pageId: $query.page.id,
         clientId,
         kind: PageContentSyncKind.AWARENESS,
-        data: fromUint8Array(YAwareness.encodeAwarenessUpdate(yAwareness, [yDoc.clientID])),
+        data: base64.stringify(YAwareness.encodeAwarenessUpdate(yAwareness, [yDoc.clientID])),
       });
     } else if (operation.kind === PageContentSyncKind.UPDATE) {
-      Y.applyUpdateV2(yDoc, toUint8Array(operation.data), 'NETWORK');
+      Y.applyUpdateV2(yDoc, base64.parse(operation.data), 'NETWORK');
     } else if (operation.kind === PageContentSyncKind.AWARENESS) {
-      YAwareness.applyAwarenessUpdate(yAwareness, toUint8Array(operation.data), 'NETWORK');
+      YAwareness.applyAwarenessUpdate(yAwareness, base64.parse(operation.data), 'NETWORK');
     }
   });
 
@@ -139,7 +139,7 @@
         pageId: $query.page.id,
         clientId,
         kind: PageContentSyncKind.UPDATE,
-        data: fromUint8Array(update),
+        data: base64.stringify(update),
       });
     }
   });
@@ -161,7 +161,7 @@
         pageId: $query.page.id,
         clientId,
         kind: PageContentSyncKind.AWARENESS,
-        data: fromUint8Array(update),
+        data: base64.stringify(update),
       });
     },
   );
@@ -180,26 +180,26 @@
       pageId: $query.page.id,
       clientId,
       kind: PageContentSyncKind.SYNCHRONIZE_1,
-      data: fromUint8Array(clientStateVector),
+      data: base64.stringify(clientStateVector),
     });
 
     if (!results) {
       return;
     }
 
-    for (const { kind, data: data_ } of results) {
+    for (const { kind, data } of results) {
       if (kind === PageContentSyncKind.SYNCHRONIZE_1) {
-        const serverStateVector = toUint8Array(data_);
+        const serverStateVector = base64.parse(data);
         const serverMissingUpdate = Y.encodeStateAsUpdateV2(yDoc, serverStateVector);
 
         await syncPageContent({
           pageId: $query.page.id,
           clientId,
           kind: PageContentSyncKind.SYNCHRONIZE_2,
-          data: fromUint8Array(serverMissingUpdate),
+          data: base64.stringify(serverMissingUpdate),
         });
       } else if (kind === PageContentSyncKind.SYNCHRONIZE_2) {
-        const clientMissingUpdate = toUint8Array(data_);
+        const clientMissingUpdate = base64.parse(data);
 
         Y.applyUpdateV2(yDoc, clientMissingUpdate, 'NETWORK');
       }

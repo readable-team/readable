@@ -15,11 +15,11 @@
     "@readable/styled-system": "workspace:*",
     "@readable/ui": "workspace:*",
     "dayjs": "^1.11.13",
-    "js-base64": "^3.7.7",
     "ky": "^1.7.2",
     "mixpanel-browser": "^2.55.1",
     "nanoid": "^5.0.7",
     "query-string": "^9.1.0",
+    "rfc4648": "^1.5.3",
     "y-protocols": "^1.0.6",
     "yjs": "^13.6.18",
     "zod": "^3.23.8"

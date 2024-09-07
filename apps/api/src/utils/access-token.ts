@@ -1,7 +1,8 @@
 import * as jose from 'jose';
+import { base64 } from 'rfc4648';
 import { env } from '@/env';
 
-const jwk = JSON.parse(Buffer.from(env.ACCESS_TOKEN_JWK, 'base64').toString()) as jose.JWK;
+const jwk = JSON.parse(new TextDecoder().decode(base64.parse(env.ACCESS_TOKEN_JWK))) as jose.JWK;
 
 const publicKey = await jose.importJWK({ ...jwk, d: undefined }, jwk.alg);
 const privateKey = await jose.importJWK(jwk, jwk.alg);

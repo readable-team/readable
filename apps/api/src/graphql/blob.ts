@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { CopyObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
+import { base64 } from 'rfc4648';
 import sharp from 'sharp';
 import { rgbaToThumbHash } from 'thumbhash';
 import { builder } from '@/builder';
@@ -174,7 +175,7 @@ builder.mutationFields((t) => ({
             width: res.info.width,
             height: res.info.height,
             path: input.path,
-            placeholder: Buffer.from(placeholder).toString('base64'),
+            placeholder: base64.stringify(placeholder),
           })
           .returning()
           .then(firstOrThrow);

@@ -1,8 +1,8 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { center } from '@readable/styled-system/patterns';
-  import { toUint8Array } from 'js-base64';
   import qs from 'query-string';
+  import { base64 } from 'rfc4648';
   import { onMount, tick } from 'svelte';
   import { fade } from 'svelte/transition';
   import { thumbHashToDataURL } from 'thumbhash';
@@ -32,7 +32,7 @@
   $: sizes = size === 'full' ? undefined : `${size}px`;
   $: srcset = size === 'full' ? undefined : `${src} ${size}w, ${src2x} ${size * 2}w, ${src3x} ${size * 3}w`;
 
-  $: placeholderUrl = progressive && placeholder ? thumbHashToDataURL(toUint8Array(placeholder)) : undefined;
+  $: placeholderUrl = progressive && placeholder ? thumbHashToDataURL(base64.parse(placeholder)) : undefined;
 
   const load = async () => {
     const imgEl = new Image();
