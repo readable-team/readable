@@ -20,6 +20,8 @@
     "mixpanel-browser": "^2.55.1",
     "nanoid": "^5.0.7",
     "query-string": "^9.1.0",
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.18",
     "zod": "^3.23.8"
   },
   "devDependencies": {

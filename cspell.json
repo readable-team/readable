@@ -43,9 +43,7 @@
     "tsup",
     "unplugin",
     "unpublish",
-    "urql",
     "vcpu",
-    "wonka",
     "xcaddy"
   ]
 }
