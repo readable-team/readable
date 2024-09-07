@@ -274,13 +274,14 @@
         />
       {:else}
         <div
-          class={flex({
+          class={css({
+            display: 'inline-block',
             paddingX: '8px',
             paddingY: '4px',
             textStyle: '14b',
             color: 'text.secondary',
+            width: 'full',
             truncate: true,
-            flex: '1',
           })}
         >
           {item.name}
