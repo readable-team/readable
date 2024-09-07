@@ -71,7 +71,7 @@ export const basicExtensions = [
           content: '""',
           display: 'block',
           height: '1px',
-          backgroundColor: 'divider.secondary',
+          backgroundColor: 'neutral.40',
         },
       }),
     },
