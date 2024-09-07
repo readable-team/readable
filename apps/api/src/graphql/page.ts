@@ -681,6 +681,14 @@ builder.mutationFields((t) => ({
         }
       });
 
+      jsonContent.content = jsonContent.content?.filter((child) => {
+        if (['image', 'file', 'embed'].includes(child.type ?? '') && !child.attrs?.id) {
+          return false;
+        }
+
+        return true;
+      });
+
       const page = await db.transaction(async (tx) => {
         const page = await tx
           .update(Pages)
