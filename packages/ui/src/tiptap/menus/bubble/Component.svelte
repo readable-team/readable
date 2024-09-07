@@ -4,9 +4,14 @@
   import { Icon } from '@readable/ui/components';
   import { onMount } from 'svelte';
   import BoldIcon from '~icons/lucide/bold';
+  import CheckIcon from '~icons/lucide/check';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import CodeXmlIcon from '~icons/lucide/code-xml';
+  import Heading1Icon from '~icons/lucide/heading-1';
+  import Heading2Icon from '~icons/lucide/heading-2';
+  import Heading3Icon from '~icons/lucide/heading-3';
   import ItalicIcon from '~icons/lucide/italic';
+  import LetterTextIcon from '~icons/lucide/letter-text';
   import LinkIcon from '~icons/lucide/link';
   import StrikethroughIcon from '~icons/lucide/strikethrough';
   import UnderlineIcon from '~icons/lucide/underline';
@@ -39,10 +44,10 @@
   });
 
   const topLevelNodeTypes = [
-    { id: 'heading-1', label: '제목1' },
-    { id: 'heading-2', label: '제목2' },
-    { id: 'heading-3', label: '제목3' },
-    { id: 'paragraph', label: '텍스트' },
+    { id: 'heading-1', label: '제목1', icon: Heading1Icon },
+    { id: 'heading-2', label: '제목2', icon: Heading2Icon },
+    { id: 'heading-3', label: '제목3', icon: Heading3Icon },
+    { id: 'paragraph', label: '텍스트', icon: LetterTextIcon },
   ];
 
   const marks = [
@@ -71,17 +76,17 @@
   let activeNodeTypeId: string | null | undefined = null;
 
   const bubbleMenuButtonStyle = flex({
-    width: '30px',
-    height: '30px',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: '4px',
+    width: '30px',
+    height: '30px',
     _hover: {
-      backgroundColor: 'neutral.10',
+      backgroundColor: 'neutral.20',
     },
     _pressed: {
       // theme=selected
-      backgroundColor: 'neutral.20',
+      color: 'text.accent',
     },
     _active: {
       // theme=pressed
@@ -124,20 +129,22 @@
 
 <div
   class={flex({
-    height: '40px',
     alignItems: 'center',
-    paddingX: '8px',
-    gap: '2px',
-    backgroundColor: 'surface.tertiary',
-    boxShadow: 'heavy',
-    borderRadius: '6px',
+    gap: '4px',
+    borderWidth: '1px',
+    borderColor: 'border.primary',
+    borderRadius: '10px',
+    padding: '6px',
+    backgroundColor: 'background.overlay',
+    height: '42px',
+    boxShadow: 'normal',
   })}
 >
   {#if selectedBlocks.length === 1}
     <button
       class={flex({
-        paddingLeft: '6px',
-        paddingRight: '5px',
+        paddingLeft: '7px',
+        paddingRight: '6px',
         height: '30px',
         alignItems: 'center',
         gap: '14px',
@@ -147,7 +154,7 @@
         },
         _pressed: {
           // theme=selected
-          backgroundColor: 'neutral.20',
+          color: 'text.accent',
         },
         _active: {
           // theme=pressed
@@ -173,28 +180,34 @@
     {#if topLevelNodeTypePickerOpened}
       <div
         class={flex({
-          width: '163px',
           flexDirection: 'column',
-          backgroundColor: 'surface.tertiary',
-          borderRadius: '6px',
-          boxShadow: 'heavy',
-          gap: '4px',
-          padding: '5px',
+          gap: '8px',
+          borderWidth: '1px',
+          borderColor: 'border.primary',
+          borderRadius: '14px',
+          padding: '6px',
+          backgroundColor: 'background.overlay',
+          width: '164px',
+          boxShadow: 'emphasize',
         })}
         use:floating
       >
         {#each topLevelNodeTypes as nodeType (nodeType.id)}
           <button
             class={flex({
-              paddingX: '10px',
-              paddingY: '8px',
-              borderRadius: '6px',
-              textStyle: '14sb',
+              align: 'center',
+              gap: '8px',
+              paddingLeft: '4px',
+              paddingRight: '6px',
+              paddingY: '4px',
+              borderRadius: '8px',
+              textStyle: '14m',
               _hover: {
-                backgroundColor: 'neutral.10',
-              },
-              _pressed: {
+                color: 'text.tertiary',
                 backgroundColor: 'neutral.20',
+              },
+              _focus: {
+                backgroundColor: 'neutral.30',
               },
             })}
             aria-pressed={activeNodeTypeId === nodeType.id}
@@ -210,7 +223,21 @@
               topLevelNodeTypePickerOpened = false;
             }}
           >
-            {nodeType.label}
+            <div
+              class={css({
+                borderWidth: '1px',
+                borderColor: 'border.image',
+                borderRadius: '4px',
+                padding: '4px',
+              })}
+            >
+              <Icon icon={nodeType.icon} size={16} />
+            </div>
+            <span class={css({ color: 'text.primary' })}>{nodeType.label}</span>
+
+            {#if activeNodeTypeId === nodeType.id}
+              <Icon style={css.raw({ marginLeft: 'auto', color: 'neutral.60' })} icon={CheckIcon} size={12} />
+            {/if}
           </button>
         {/each}
       </div>
@@ -239,17 +266,13 @@
   </button>
   <button
     class={flex({
-      height: '30px',
-      gap: '4px',
       alignItems: 'center',
+      gap: '6px',
+      height: '30px',
       borderRadius: '4px',
-      paddingLeft: '6px',
-      paddingRight: '5px',
+      paddingLeft: '7px',
+      paddingRight: '6px',
       _hover: {
-        backgroundColor: 'neutral.10',
-      },
-      _pressed: {
-        // theme=selected
         backgroundColor: 'neutral.20',
       },
       _active: {
@@ -267,39 +290,41 @@
     <div
       style={activeColor && `background-color: ${activeColor}`}
       class={css({
-        width: '18px',
-        height: '18px',
         borderRadius: 'full',
         backgroundColor: `text.primary`,
+        size: '18px',
       })}
     />
-    <Icon icon={ChevronDownIcon} size={12} />
+    <Icon style={css.raw({ color: 'neutral.60' })} icon={ChevronDownIcon} size={14} />
   </button>
+
   {#if colorPickerOpened}
     <div
       class={flex({
-        width: '163px',
         flexDirection: 'column',
-        backgroundColor: 'surface.tertiary',
-        borderRadius: '6px',
-        boxShadow: 'heavy',
-        gap: '4px',
-        padding: '5px',
+        gap: '1px',
+        borderRadius: '14px',
+        padding: '6px',
+        backgroundColor: 'background.overlay',
+        boxShadow: 'emphasize',
+        width: '164px',
       })}
       use:colorPickerFloating
     >
       {#each colors as { name, label, hex } (name)}
         <button
           class={flex({
+            align: 'center',
             gap: '8px',
-            paddingX: '10px',
-            paddingY: '8px',
-            borderRadius: '6px',
+            borderRadius: '8px',
+            paddingLeft: '4px',
+            paddingRight: '6px',
+            paddingY: '4px',
             _hover: {
-              backgroundColor: 'neutral.10',
-            },
-            _pressed: {
               backgroundColor: 'neutral.20',
+            },
+            _focus: {
+              backgroundColor: 'neutral.30',
             },
           })}
           aria-pressed={activeColor === hex}
@@ -322,13 +347,13 @@
               backgroundColor: `text.primary`,
             })}
           />
-          <div
-            class={css({
-              textStyle: '14sb',
-            })}
-          >
+          <div class={css({ textStyle: '14m' })}>
             {label}
           </div>
+
+          {#if activeColor === hex}
+            <Icon style={css.raw({ marginLeft: 'auto', color: 'neutral.60' })} icon={CheckIcon} size={12} />
+          {/if}
         </button>
       {/each}
     </div>
