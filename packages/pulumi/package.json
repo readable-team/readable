@@ -10,9 +10,9 @@
     "lint:typecheck": "tsc"
   },
   "dependencies": {
-    "@pulumi/aws": "^6.50.1",
+    "@pulumi/aws": "^6.51.0",
     "@pulumi/kubernetes": "^4.17.1",
-    "@pulumi/pulumi": "^3.130.0",
+    "@pulumi/pulumi": "^3.131.0",
     "ts-pattern": "^5.3.1"
   },
   "devDependencies": {

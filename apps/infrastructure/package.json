@@ -10,12 +10,12 @@
     "@readable/pulumi": "workspace:*"
   },
   "devDependencies": {
-    "@pulumi/aws": "^6.50.1",
+    "@pulumi/aws": "^6.51.0",
     "@pulumi/kubernetes": "^4.17.1",
-    "@pulumi/pulumi": "^3.130.0",
-    "@pulumi/random": "^4.16.3",
+    "@pulumi/pulumi": "^3.131.0",
+    "@pulumi/random": "^4.16.4",
     "@pulumi/tailscale": "^0.16.2",
-    "@pulumi/tls": "^5.0.4",
+    "@pulumi/tls": "^5.0.5",
     "@readable/tsconfig": "workspace:*",
     "fast-glob": "^3.3.2",
     "tsx": "^4.19.0"
