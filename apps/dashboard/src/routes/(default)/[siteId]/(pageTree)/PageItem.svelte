@@ -263,6 +263,10 @@
           type="text"
           on:blur={completeCategoryEdit}
           on:keydown={(e) => {
+            if (e.key === 'Escape') {
+              editing = false;
+            }
+
             if (e.key === 'Enter') {
               inputEl.blur();
             }
