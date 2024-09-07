@@ -307,11 +307,29 @@
         class={css({
           textStyle: '34b',
           height: 'auto',
+          wordBreak: 'break-all',
           overflowY: 'hidden',
           resize: 'none',
         })}
         placeholder="제목을 입력하세요"
         rows="1"
+        on:keydown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+          }
+        }}
+        on:paste|preventDefault={(e) => {
+          const pastedText = e.clipboardData?.getData('text');
+          if (!pastedText) return;
+
+          const cleanedText = pastedText.replaceAll('\n', '');
+          const selectionStart = e.currentTarget.selectionStart;
+          const selectionEnd = e.currentTarget.selectionEnd;
+          const textBeforeCursor = $title.slice(0, selectionStart);
+          const textAfterCursor = $title.slice(selectionEnd);
+          $title = textBeforeCursor + cleanedText + textAfterCursor;
+          e.currentTarget.selectionStart = e.currentTarget.selectionEnd = selectionStart + cleanedText.length;
+        }}
         bind:value={$title}
       />
     </div>
