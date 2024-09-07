@@ -374,7 +374,11 @@ builder.queryFields((t) => ({
     type: PublicPage,
     args: { slug: t.arg.string() },
     resolve: async (_, args) => {
-      return await db.select().from(Pages).where(eq(Pages.slug, args.slug)).then(firstOrThrow);
+      return await db
+        .select()
+        .from(Pages)
+        .where(and(eq(Pages.slug, args.slug), eq(Pages.state, PageState.PUBLISHED)))
+        .then(firstOrThrow);
     },
   }),
 }));
