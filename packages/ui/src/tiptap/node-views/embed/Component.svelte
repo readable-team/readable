@@ -14,6 +14,7 @@
   $$restProps;
 
   export let node: NodeViewProps['node'];
+  export let editor: NodeViewProps['editor'] | undefined;
   export let extension: NodeViewProps['extension'];
   export let selected: NodeViewProps['selected'];
   export let updateAttributes: NodeViewProps['updateAttributes'];
@@ -72,7 +73,7 @@
   >
     {#if node.attrs.id}
       {#if node.attrs.html}
-        <div class={css({ display: 'contents', pointerEvents: 'none' })}>
+        <div class={css({ display: 'contents' }, editor?.isEditable && { pointerEvents: 'none' })}>
           {@html node.attrs.html}
         </div>
       {:else}
@@ -101,28 +102,30 @@
         </div>
       {/if}
 
-      <button
-        class={css(
-          {
-            position: 'absolute',
-            top: '8px',
-            right: '8px',
-            display: 'none',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: '4px',
-            color: 'neutral.50',
-            backgroundColor: 'neutral.10',
-            size: '24px',
-            _hover: { backgroundColor: 'neutral.20' },
-          },
-          !node.attrs.id && { top: '1/2', translate: 'auto', translateY: '-1/2' },
-        )}
-        type="button"
-        on:click={() => deleteNode()}
-      >
-        <Icon icon={Trash2Icon} size={12} />
-      </button>
+      {#if editor?.isEditable}
+        <button
+          class={css(
+            {
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              display: 'none',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '4px',
+              color: 'neutral.50',
+              backgroundColor: 'neutral.10',
+              size: '24px',
+              _hover: { backgroundColor: 'neutral.20' },
+            },
+            !node.attrs.id && { top: '1/2', translate: 'auto', translateY: '-1/2' },
+          )}
+          type="button"
+          on:click={() => deleteNode()}
+        >
+          <Icon icon={Trash2Icon} size={12} />
+        </button>
+      {/if}
     {:else}
       <div
         class={flex({
@@ -176,7 +179,7 @@
   </div>
 </NodeView>
 
-{#if pickerOpened && !node.attrs.id && !inflight}
+{#if pickerOpened && !node.attrs.id && !inflight && editor?.isEditable}
   <form
     class={flex({
       direction: 'column',

@@ -13,6 +13,7 @@
   $$restProps;
 
   export let node: NodeViewProps['node'];
+  export let editor: NodeViewProps['editor'] | undefined;
   export let extension: NodeViewProps['extension'];
   export let selected: NodeViewProps['selected'];
   export let updateAttributes: NodeViewProps['updateAttributes'];
@@ -69,25 +70,27 @@
         url={node.attrs.url}
       />
 
-      <button
-        class={css({
-          position: 'absolute',
-          top: '8px',
-          right: '8px',
-          display: 'none',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: '4px',
-          color: 'neutral.50',
-          backgroundColor: 'neutral.10',
-          size: '24px',
-          _hover: { backgroundColor: 'neutral.20' },
-        })}
-        type="button"
-        on:click={() => deleteNode()}
-      >
-        <Icon icon={Trash2Icon} size={12} />
-      </button>
+      {#if editor?.isEditable}
+        <button
+          class={css({
+            position: 'absolute',
+            top: '8px',
+            right: '8px',
+            display: 'none',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '4px',
+            color: 'neutral.50',
+            backgroundColor: 'neutral.10',
+            size: '24px',
+            _hover: { backgroundColor: 'neutral.20' },
+          })}
+          type="button"
+          on:click={() => deleteNode()}
+        >
+          <Icon icon={Trash2Icon} size={12} />
+        </button>
+      {/if}
     </div>
   {:else}
     <div
@@ -151,7 +154,7 @@
   {/if}
 </NodeView>
 
-{#if pickerOpened && !node.attrs.id && !inflight}
+{#if pickerOpened && !node.attrs.id && !inflight && editor?.isEditable}
   <div
     class={flex({
       direction: 'column',

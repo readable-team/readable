@@ -14,6 +14,6 @@
   caret-color: transparent;
 
   & *::selection {
-    background-color: transparent;
+    display: none;
   }
 }

@@ -15,7 +15,7 @@
   $$restProps;
 
   export let node: NodeViewProps['node'];
-  // export let editor: NodeViewProps['editor'] | undefined;
+  export let editor: NodeViewProps['editor'] | undefined;
   // export let selected: NodeViewProps['selected'];
   // export let deleteNode: NodeViewProps['deleteNode'];
   // export let getPos: NodeViewProps['getPos'];
@@ -54,24 +54,30 @@
     })}
   >
     <button
-      class={flex({
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: '2px',
-        size: '28px',
-        textStyle: '20m',
-        _pressed: {
-          backgroundColor: 'gray.1000/10',
+      class={css(
+        {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '2px',
+          size: '28px',
+          textStyle: '20m',
+          _pressed: {
+            backgroundColor: 'gray.1000/10',
+          },
+          _hover: {
+            backgroundColor: 'gray.1000/10',
+          },
         },
-        _hover: {
-          backgroundColor: 'gray.1000/10',
-        },
-      })}
+        !editor?.isEditable && { pointerEvents: 'none' },
+      )}
       aria-pressed={emojiPickerOpened}
       contenteditable={false}
       type="button"
       on:click={() => {
-        emojiPickerOpened = true;
+        if (editor) {
+          emojiPickerOpened = true;
+        }
       }}
       use:anchor
     >

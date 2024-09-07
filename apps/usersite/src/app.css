@@ -1,4 +1,6 @@
-@layer reset, base, tokens, recipes, utilities;
+@layer reset, base, ui, tokens, recipes, utilities;
+
+@import url(@readable/ui/styles.css) layer(ui);
 
 html {
   scroll-margin-top: 113px; /* 헤더 높이 + 48px */

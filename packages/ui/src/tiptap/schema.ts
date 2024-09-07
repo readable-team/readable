@@ -35,7 +35,7 @@ import { Embed } from './node-views/embed';
 import { File } from './node-views/file';
 import { Image } from './node-views/image';
 
-export const extensions = [
+export const basicExtensions = [
   // special nodes
   Document.extend({
     content: 'block+',
@@ -148,11 +148,17 @@ export const extensions = [
   }),
 
   // extensions
-  Dropcursor.configure({ width: 4, class: css({ color: 'accent.60/40' }) }),
-  ListKeymap,
-  Placeholder,
   TextAlign,
   TextStyle,
+
+  // node views
+  Callout,
+];
+
+export const editorExtensions = [
+  Dropcursor.configure({ width: 4, class: css({ color: 'accent.60/40' }) }),
+  Placeholder,
+  ListKeymap,
 
   Behavior,
   BlockSelectionHelper,
@@ -161,9 +167,6 @@ export const extensions = [
   SlashMenu,
   LinkTooltip,
   LinkEditPopover,
-
-  // node views
-  Callout,
 ];
 
-export const schema = getSchema([...extensions, Embed, Image, File]);
+export const schema = getSchema([...basicExtensions, Embed, Image, File]);

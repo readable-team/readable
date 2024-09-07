@@ -7,7 +7,7 @@
   import { Embed } from '../node-views/embed';
   import { File } from '../node-views/file';
   import { Image } from '../node-views/image';
-  import { extensions } from '../schema';
+  import { basicExtensions, editorExtensions } from '../schema';
   import type { SystemStyleObject } from '@readable/styled-system/types';
   import type * as YAwareness from 'y-protocols/awareness';
   import type * as Y from 'yjs';
@@ -32,7 +32,8 @@
     editor = new Editor({
       element,
       extensions: [
-        ...extensions,
+        ...basicExtensions,
+        ...editorExtensions,
         Embed.configure({ handleEmbed }),
         Image.configure({ handleImageUpload }),
         File.configure({ handleFileUpload }),
