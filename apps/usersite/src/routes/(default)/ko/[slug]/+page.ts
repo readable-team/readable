@@ -2,9 +2,11 @@ import { redirect } from '@sveltejs/kit';
 import { pageUrl } from '$lib/utils/url';
 import type { PagePage_Query_AfterLoad, PagePage_Query_Variables } from './$graphql';
 
-export const _PagePage_Query_Variables: PagePage_Query_Variables = ({ params }) => ({
-  slug: params.slug.split('-', 2)[0],
-});
+export const _PagePage_Query_Variables: PagePage_Query_Variables = async ({ params, parent }) => {
+  const { hostname } = await parent();
+
+  return { hostname, slug: params.slug.split('-', 2)[0] };
+};
 
 export const _PagePage_Query_AfterLoad: PagePage_Query_AfterLoad = (query, event) => {
   const expectedUrl = pageUrl(query.publicPage);

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex, grid } from '@readable/styled-system/patterns';
-  import { Icon } from '@readable/ui/components';
+  import { Helmet, Icon } from '@readable/ui/components';
   import { TiptapRenderer } from '@readable/ui/tiptap';
   import MenuIcon from '~icons/lucide/menu';
   import { graphql } from '$graphql';
@@ -10,7 +10,12 @@
   import Toc from './Toc.svelte';
 
   $: query = graphql(`
-    query PagePage_Query($slug: String!) {
+    query PagePage_Query($hostname: String!, $slug: String!) {
+      publicSite(hostname: $hostname) {
+        id
+        name
+      }
+
       publicPage(slug: $slug) {
         id
         slug
@@ -28,6 +33,8 @@
 
   let headings: { level: number; text: string; scrollTop: number }[] = [];
 </script>
+
+<Helmet title={$query.publicSite.name} trailing={$query.publicPage.content.title} />
 
 <div class={flex({ flex: '1', direction: 'column' })}>
   <div
