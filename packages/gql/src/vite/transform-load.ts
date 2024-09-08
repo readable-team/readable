@@ -87,34 +87,65 @@ export const transformLoadPlugin = (contextHolder: ContextHolder): Plugin => {
           async: true,
           body: AST.b.blockStatement([
             AST.b.variableDeclaration.from({
-              kind: 'const',
+              kind: 'let',
               declarations: queries.map((query) =>
                 AST.b.variableDeclarator.from({
                   id: AST.b.identifier(query.name),
-                  init: AST.b.awaitExpression(
-                    AST.b.callExpression.from({
-                      callee: AST.b.callExpression.from({
-                        callee: AST.b.identifier(`__gql_${query.name}`),
-                        arguments: [],
-                      }),
-                      arguments: [
-                        AST.b.identifier('event.fetch'),
-                        ...(`_${query.name}_Variables` in exportedVariables
-                          ? [
-                              AST.b.awaitExpression(
-                                AST.b.callExpression.from({
-                                  callee: AST.b.identifier(`_${query.name}_Variables`),
-                                  arguments: [AST.b.identifier('event')],
-                                }),
-                              ),
-                            ]
-                          : []),
-                      ],
-                    }),
-                  ),
+                  init: AST.b.nullLiteral(),
                 }),
               ),
             }),
+            ...queries.map((query) =>
+              AST.b.tryStatement.from({
+                block: AST.b.blockStatement([
+                  AST.b.expressionStatement(
+                    AST.b.assignmentExpression.from({
+                      operator: '=',
+                      left: AST.b.identifier(query.name),
+                      right: AST.b.awaitExpression(
+                        AST.b.callExpression.from({
+                          callee: AST.b.callExpression.from({
+                            callee: AST.b.identifier(`__gql_${query.name}`),
+                            arguments: [],
+                          }),
+                          arguments: [
+                            AST.b.identifier('event.fetch'),
+                            ...(`_${query.name}_Variables` in exportedVariables
+                              ? [
+                                  AST.b.awaitExpression(
+                                    AST.b.callExpression.from({
+                                      callee: AST.b.identifier(`_${query.name}_Variables`),
+                                      arguments: [AST.b.identifier('event')],
+                                    }),
+                                  ),
+                                ]
+                              : []),
+                          ],
+                        }),
+                      ),
+                    }),
+                  ),
+                ]),
+                handler: AST.b.catchClause.from({
+                  param: AST.b.identifier('error'),
+                  body: AST.b.blockStatement([
+                    ...(`_${query.name}_OnError` in exportedVariables
+                      ? [
+                          AST.b.expressionStatement(
+                            AST.b.awaitExpression(
+                              AST.b.callExpression.from({
+                                callee: AST.b.identifier(`_${query.name}_OnError`),
+                                arguments: [AST.b.identifier('error'), AST.b.identifier('event')],
+                              }),
+                            ),
+                          ),
+                        ]
+                      : []),
+                    AST.b.throwStatement(AST.b.identifier('error')),
+                  ]),
+                }),
+              }),
+            ),
             ...queries
               .filter((query) => `_${query.name}_AfterLoad` in exportedVariables)
               .map((query) =>

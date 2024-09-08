@@ -244,6 +244,15 @@ export const writeTypeAssets = async ({ projectDir, gqlDir, artifacts }: Context
           }),
         }),
       }),
+      AST.b.exportNamedDeclaration.from({
+        declaration: AST.b.tsTypeAliasDeclaration.from({
+          id: AST.b.identifier(`${query.name}_OnError`),
+          typeAnnotation: AST.b.tsTypeReference.from({
+            typeName: AST.b.identifier('OnErrorFn'),
+            typeParameters: AST.b.tsTypeParameterInstantiation([AST.b.tsTypeReference(AST.b.identifier(eventName))]),
+          }),
+        }),
+      }),
     );
 
     typeMap.set(filename, types);
@@ -260,6 +269,9 @@ export const writeTypeAssets = async ({ projectDir, gqlDir, artifacts }: Context
           }),
           AST.b.importSpecifier.from({
             imported: AST.b.identifier('AfterLoadFn'),
+          }),
+          AST.b.importSpecifier.from({
+            imported: AST.b.identifier('OnErrorFn'),
           }),
         ],
       }),

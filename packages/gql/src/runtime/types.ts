@@ -11,3 +11,5 @@ export type AfterLoadFn<Event extends LoadEvent, Schema extends $StoreSchema> = 
   query: Schema['$output'],
   event: Event,
 ) => Awaitable<void>;
+
+export type OnErrorFn<Event extends LoadEvent> = (error: unknown, event: Event) => Awaitable<void>;
