@@ -140,24 +140,6 @@
       }
     }
   `);
-
-  const roleMenuItemStyle = flex({
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '20px',
-    borderRadius: '10px',
-    paddingX: '12px',
-    paddingY: '10px',
-    width: '260px',
-    _enabled: {
-      backgroundColor: { _hover: 'neutral.10', _checked: 'neutral.10' },
-    },
-    _disabled: {
-      '& p': {
-        color: 'text.disabled',
-      },
-    },
-  });
 </script>
 
 <div class={flex({ justifyContent: 'space-between', alignItems: 'center' })}>
@@ -279,7 +261,11 @@
 
         <div class={css({ flexShrink: 0, padding: '16px' })}>
           {#if $team.meAsMember?.role === 'ADMIN'}
-            <Menu listStyle={css.raw({ borderRadius: '[18px]', paddingY: '8px' })} offset={6} placement="bottom-start">
+            <Menu
+              listStyle={css.raw({ borderRadius: '[18px]', paddingY: '8px', paddingX: '2px' })}
+              offset={6}
+              placement="bottom-start"
+            >
               <div
                 slot="button"
                 class={flex({
@@ -300,51 +286,50 @@
                 <Icon style={css.raw({ color: 'neutral.60' })} icon={ChevronDownIcon} size={16} />
               </div>
 
-              <li class={css({ paddingX: '8px' })}>
-                <button
-                  class={roleMenuItemStyle}
-                  aria-checked={member.role === 'ADMIN'}
-                  role="menuitemradio"
-                  type="button"
-                  on:click={async () =>
-                    await updateTeamMemberRole({
-                      role: 'ADMIN',
-                      userId: member.user.id,
-                      teamId: $team.id,
-                    })}
-                >
-                  <div class={flex({ flexDirection: 'column', alignItems: 'start', gap: '2px' })}>
-                    <p class={css({ textStyle: '15sb', color: 'text.primary' })}>관리자</p>
-                    <p class={css({ textStyle: '13r', color: 'text.tertiary' })}>사이트 설정 변경, 멤버 초대 및 관리</p>
-                  </div>
-                  {#if member.role === 'ADMIN'}
-                    <Icon style={css.raw({ color: 'accent.60' })} icon={CheckIcon} size={16} />
-                  {/if}
-                </button>
-              </li>
-              <li class={css({ paddingX: '8px' })}>
-                <button
-                  class={roleMenuItemStyle}
-                  aria-checked={member.role === 'MEMBER'}
-                  disabled={member.role === 'ADMIN' && member.isSoleAdmin}
-                  role="menuitemradio"
-                  type="button"
-                  on:click={async () =>
-                    await updateTeamMemberRole({
-                      role: 'MEMBER',
-                      userId: member.user.id,
-                      teamId: $team.id,
-                    })}
-                >
-                  <div class={flex({ flexDirection: 'column', alignItems: 'start', gap: '2px' })}>
-                    <p class={css({ textStyle: '15sb', color: 'text.primary' })}>멤버</p>
-                    <p class={css({ textStyle: '13m', color: 'text.tertiary' })}>사이트 설정 변경</p>
-                  </div>
-                  {#if member.role === 'MEMBER'}
-                    <Icon style={css.raw({ color: 'accent.60' })} icon={CheckIcon} size={16} />
-                  {/if}
-                </button>
-              </li>
+              <MenuItem
+                style={css.raw({ gap: '20px', borderRadius: '10px', paddingY: '10px' })}
+                aria-checked={member.role === 'ADMIN'}
+                on:click={async () =>
+                  await updateTeamMemberRole({
+                    role: 'ADMIN',
+                    userId: member.user.id,
+                    teamId: $team.id,
+                  })}
+              >
+                <div class={flex({ flexDirection: 'column', alignItems: 'start', gap: '2px', width: 'full' })}>
+                  <p class={css({ textStyle: '15sb', color: 'text.primary' })}>관리자</p>
+                  <p class={css({ textStyle: '13r', color: 'text.tertiary' })}>사이트 설정 변경, 멤버 초대 및 관리</p>
+                </div>
+
+                <Icon
+                  style={css.raw(
+                    { visibility: 'hidden', color: 'accent.60' },
+                    member.role === 'ADMIN' && { visibility: 'visible' },
+                  )}
+                  icon={CheckIcon}
+                  size={16}
+                />
+              </MenuItem>
+              <MenuItem
+                style={css.raw({ gap: '20px', borderRadius: '10px', paddingY: '10px' })}
+                aria-checked={member.role === 'MEMBER'}
+                disabled={member.role === 'ADMIN' && member.isSoleAdmin}
+                on:click={async () =>
+                  await updateTeamMemberRole({
+                    role: 'MEMBER',
+                    userId: member.user.id,
+                    teamId: $team.id,
+                  })}
+              >
+                <div class={flex({ flexDirection: 'column', alignItems: 'start', gap: '2px', width: 'full' })}>
+                  <p class={css({ textStyle: '15sb', color: 'text.primary' })}>멤버</p>
+                  <p class={css({ textStyle: '13r', color: 'text.tertiary' })}>사이트 설정 변경</p>
+                </div>
+
+                {#if member.role === 'MEMBER'}
+                  <Icon style={css.raw({ color: 'accent.60' })} icon={CheckIcon} size={16} />
+                {/if}
+              </MenuItem>
             </Menu>
           {:else}
             <div
