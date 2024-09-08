@@ -1,10 +1,9 @@
 import type { entityLinkKey, rootFieldKey } from './const';
 
+type Arrayable<T> = T | T[];
+
 export type Typename = string & { __brand: 'Typename' };
 export type ID = string & { __brand: 'ID' };
-
-export type QueryKey = string;
-export type EntityKey = `${Typename}:${ID}`;
 
 export type KeyableEntity = {
   [key: string]: unknown;
@@ -12,13 +11,16 @@ export type KeyableEntity = {
   id: ID;
 };
 
-export type EntityLink = {
-  [entityLinkKey]: EntityKey;
-};
+export type EntityKey = `${Typename}:${ID}`;
+export type EntityLink = { [entityLinkKey]: EntityKey };
 
-export type FieldKey = string | `${string}@${string}` | typeof rootFieldKey;
+export type StorageKey = EntityKey | typeof rootFieldKey;
+export type Storage = Record<StorageKey, Field>;
 
-export type Data = Readonly<Record<string, unknown>>;
-export type Variables = Readonly<Record<string, unknown>>;
+export type FieldKey = string | `${string}@${string}`;
+export type Scalar = string | number | boolean | null | undefined;
+export type FieldValue = Arrayable<Scalar | EntityLink | { [key: FieldKey]: FieldValue }>;
+export type Field = Record<FieldKey, FieldValue>;
 
-export type Storage = Record<FieldKey, unknown>;
+export type Data = { [key: string]: Arrayable<Scalar | Data> };
+export type Variables = Record<string, unknown>;

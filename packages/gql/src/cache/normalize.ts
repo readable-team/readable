@@ -13,17 +13,17 @@ import {
   transformArguments,
 } from './utils';
 import type { Selection, StoreSchema } from '../types';
-import type { Data, Storage, Variables } from './types';
+import type { Data, Field, Storage, Variables } from './types';
 
 export const normalize = (storeSchema: StoreSchema, variables: Variables, data: Data) => {
   const {
     selections: { operation, fragments },
   } = storeSchema;
 
-  const storage: Storage = {};
+  const storage: Storage = { [rootFieldKey]: {} };
 
   const normalizeObject = (value: Data, selections: Selection[]) => {
-    let current: Storage = {};
+    let current: Field = {};
 
     for (const selection of selections) {
       // eslint-disable-next-line unicorn/prefer-switch
@@ -65,14 +65,14 @@ export const normalize = (storeSchema: StoreSchema, variables: Variables, data: 
       const entityKey = resolveEntityLink(current);
       storage[entityKey] ??= {};
       deepMerge(
-        storage[entityKey] as Storage,
+        storage[entityKey],
         Object.fromEntries(Object.entries(current).filter(([key]) => key !== entityLinkKey)),
       );
       current = makeEntityLink(entityKey);
     } else if (isEntityKeyable(current)) {
       const entityKey = makeEntityKey(current);
       storage[entityKey] ??= {};
-      deepMerge(storage[entityKey] as Storage, current);
+      deepMerge(storage[entityKey], current);
       current = makeEntityLink(entityKey);
     }
 
@@ -80,11 +80,11 @@ export const normalize = (storeSchema: StoreSchema, variables: Variables, data: 
   };
 
   const root = normalizeObject(data, operation);
+  const dependencies = new Set<string>(Object.keys(storage));
+
   if (storeSchema.kind === 'query') {
     storage[rootFieldKey] = root;
   }
-
-  const dependencies = new Set<string>(Object.keys(storage));
 
   return { data: storage, dependencies };
 };

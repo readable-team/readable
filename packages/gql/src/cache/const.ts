@@ -1,2 +1,2 @@
-export const rootFieldKey = '@ROOT';
-export const entityLinkKey = '@link';
+export const rootFieldKey = ' @ROOT';
+export const entityLinkKey = ' @link';

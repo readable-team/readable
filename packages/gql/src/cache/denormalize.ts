@@ -10,9 +10,9 @@ import {
   transformArguments,
 } from './utils';
 import type { Selection, StoreSchema } from '../types';
-import type { Storage, Variables } from './types';
+import type { Field, Storage, Variables } from './types';
 
-export const denormalize = (storeSchema: Pick<StoreSchema, 'selections'>, variables: Variables, storage: Storage) => {
+export const denormalize = (storeSchema: StoreSchema, variables: Variables, storage: Storage) => {
   const {
     selections: { operation, fragments },
   } = storeSchema;
@@ -20,7 +20,7 @@ export const denormalize = (storeSchema: Pick<StoreSchema, 'selections'>, variab
   let partial = false;
   const dependencies = new Set<string>();
 
-  const denormalizeObject = (value: Storage, selections: Selection[]) => {
+  const denormalizeObject = (value: Field, selections: Selection[]) => {
     const current: Record<string, unknown> = {};
 
     if (isEntityLink(value)) {
@@ -94,7 +94,7 @@ export const denormalize = (storeSchema: Pick<StoreSchema, 'selections'>, variab
     return current;
   };
 
-  const data = denormalizeObject(storage[rootFieldKey] as Storage, operation);
+  const data = denormalizeObject(storage[rootFieldKey], operation);
 
   return { data, partial, dependencies };
 };

@@ -6,7 +6,7 @@ import { denormalize } from './denormalize';
 import { normalize } from './normalize';
 import { isObject } from './utils';
 import type { $StoreSchema, StoreSchema } from '../types';
-import type { Data, Storage, Variables } from './types';
+import type { Data, Field, Storage, Variables } from './types';
 
 export class Cache {
   private storage: Storage = { [rootFieldKey]: {} };
@@ -44,7 +44,7 @@ export class Cache {
     );
   }
 
-  private writeInternal(source: Storage, data: Storage) {
+  private writeInternal(source: Field, data: Field) {
     for (const key in data) {
       if (Object.prototype.hasOwnProperty.call(data, key)) {
         const sourceValue = source[key];
