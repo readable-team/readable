@@ -600,6 +600,7 @@ builder.mutationFields((t) => ({
       });
 
       pubsub.publish('site:update', page.siteId, { scope: 'site' });
+      pubsub.publish('site:update', page.siteId, { scope: 'page', pageId: page.id });
 
       return page;
     },
