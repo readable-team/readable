@@ -1,8 +1,13 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { expoInOut, linear } from 'svelte/easing';
+  import { center, flex } from '@readable/styled-system/patterns';
+  import { backInOut, expoInOut, linear, sineInOut } from 'svelte/easing';
   import { tweened } from 'svelte/motion';
-  import { fade } from 'svelte/transition';
+  import { fly, scale, slide } from 'svelte/transition';
+  import CheckIcon from '~icons/lucide/check';
+  import XIcon from '~icons/lucide/x';
+  import ExclamationIcon from '../../assets/exclamation.svg?component';
+  import { Icon } from '../../components';
   import { store } from './store';
   import type { Toast } from './store';
 
@@ -17,25 +22,78 @@
 </script>
 
 <div
-  class={css({
-    display: 'flex',
-    alignItems: 'center',
-    borderRadius: '6px',
-    paddingX: '18px',
-    paddingY: '12px',
-    color: { base: 'white', _dark: 'darkgray.1000' },
+  class={flex({
+    align: 'center',
+    borderRadius: '10px',
+    paddingX: '4px',
     width: 'fit',
-    minWidth: '280px',
-    maxWidth: '420px',
-    backgroundColor: { base: 'gray.800', _dark: 'darkgray.200' },
+    minWidth: '44px',
+    maxWidth: '402px',
+    height: '38px',
+    backgroundColor: { base: 'gray.100', _dark: 'darkgray.800' },
+    boxShadow: 'strong',
     overflow: 'hidden',
     pointerEvents: 'auto',
   })}
-  on:introend={() => ($progress = 0)}
-  in:fade={{ duration: 400, delay: 300, easing: expoInOut }}
-  out:fade={{ duration: 400, delay: 200, easing: expoInOut }}
+  in:scale={{ duration: 400, easing: backInOut }}
+  out:scale={{ duration: 400, delay: 600, easing: backInOut }}
 >
-  <span class={css({ textStyle: '14sb', textAlign: 'center', wordBreak: 'break-all' })}>
-    {toast.message}
-  </span>
+  <div
+    class={css({
+      position: 'relative',
+      display: 'flex',
+      flex: 'none',
+      paddingX: '10px',
+      overflow: 'hidden',
+    })}
+  >
+    <div
+      class={css(
+        { borderRadius: 'full', padding: '3px', size: '18px' },
+        toast.type === 'success'
+          ? { backgroundColor: { base: '[#0CBB7A]', _dark: '[#19C283]' } }
+          : { backgroundColor: { base: 'red.600', _dark: 'red.500' } },
+      )}
+    >
+      {#if toast.type === 'success'}
+        <Icon style={css.raw({ color: 'white' })} icon={CheckIcon} size={12} />
+      {:else if toast.type === 'error'}
+        <Icon style={css.raw({ color: 'white' })} icon={ExclamationIcon} size={12} />
+      {/if}
+    </div>
+  </div>
+
+  <div
+    in:slide={{ axis: 'x', duration: 400, delay: 400, easing: expoInOut }}
+    out:slide={{ axis: 'x', duration: 400, delay: 200, easing: expoInOut }}
+  >
+    <div
+      class={css({ display: 'flex' })}
+      on:introend={() => ($progress = 0)}
+      in:fly={{ x: '-0.125rem', duration: 200, delay: 800, easing: sineInOut }}
+      out:fly={{ x: '-0.125rem', duration: 200, easing: sineInOut }}
+    >
+      <div class={flex({ direction: 'column', paddingY: '9px', paddingRight: '40px' })}>
+        <span class={css({ textStyle: '14m' })}>{toast.title}</span>
+        {#if toast.message}
+          <span class={css({ textStyle: '12r', color: 'text.secondary' })}>
+            {toast.message}
+          </span>
+        {/if}
+      </div>
+      <div
+        class={center({
+          borderLeftWidth: '1px',
+          borderLeftColor: 'border.secondary',
+          padding: '10px',
+          paddingRight: '6px',
+          color: 'text.secondary',
+        })}
+      >
+        <button type="button" on:click={dismiss}>
+          <Icon icon={XIcon} size={18} />
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
