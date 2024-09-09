@@ -1,6 +1,5 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
   import { fragment, graphql } from '$graphql';
   import type { PagePage_Breadcrumb_query } from '$graphql';
 
@@ -39,39 +38,32 @@
   );
 </script>
 
-<nav class={css({ truncate: true })} aria-label="Breadcrumb">
+<nav class={css({})} aria-label="Breadcrumb">
   <ol
-    class={flex({
-      'align': 'center',
-      'gap': '6px',
-      'truncate': true,
+    class={css({
       '& > li': {
+        display: 'inline-block',
+        color: 'text.secondary',
         textStyle: '15r',
       },
-      '& > li > span': {
-        display: 'block',
-        truncate: true,
-      },
       '& > li > a': {
-        display: 'block',
-        truncate: true,
         _hover: { color: 'var(--usersite-theme-color)' },
       },
     })}
   >
-    <li class={css({ color: 'text.secondary', truncate: true })}>
+    <li>
       <span>{$query.publicPage.category.name}</span>
+      <span class={css({ color: 'neutral.50' })} aria-hidden="true">/</span>
     </li>
     {#if $query.publicPage.parent}
-      <li class={css({ color: 'neutral.50' })} aria-hidden="true">/</li>
-      <li class={css({ color: 'text.secondary', truncate: true })}>
+      <li>
         <a href={`/ko/${$query.publicPage.parent.slug}`}>
           {$query.publicPage.parent.content.title}
         </a>
+        <span class={css({ color: 'neutral.50' })} aria-hidden="true">/</span>
       </li>
     {/if}
-    <li class={css({ color: 'neutral.50' })} aria-hidden="true">/</li>
-    <li class={css({ color: 'text.secondary', truncate: true })}>
+    <li>
       <a aria-current="page" href={`/ko/${$query.publicPage.slug}`}>
         {$query.publicPage.content.title}
       </a>
