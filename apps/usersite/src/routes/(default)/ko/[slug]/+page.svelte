@@ -86,10 +86,20 @@
       },
     })}
   >
-    <div class={css({ hideBelow: 'md', paddingTop: '38px', marginBottom: '24px', gridArea: 'breadcrumb' })}>
+    <div
+      class={css({
+        hideBelow: 'md',
+        paddingTop: '38px',
+        marginBottom: '24px',
+        gridArea: 'breadcrumb',
+        maxWidth: '720px',
+      })}
+    >
       <Breadcrumb _query={$query} />
     </div>
-    <h1 class={css({ marginTop: '16px', textStyle: '34b', marginBottom: '20px', gridArea: 'title' })}>
+    <h1
+      class={css({ marginTop: '16px', textStyle: '34b', marginBottom: '20px', gridArea: 'title', maxWidth: '720px' })}
+    >
       {$query.publicPage.content.title}
     </h1>
 
@@ -97,7 +107,7 @@
       <Toc {headings} />
     </div>
 
-    <div class={css({ gridArea: 'content', paddingBottom: '120px' })}>
+    <div class={css({ gridArea: 'content', paddingBottom: '120px', maxWidth: '720px' })}>
       <TiptapRenderer
         content={$query.publicPage.content.content}
         on:tocUpdate={(e) => (headings = e.detail.headings)}
