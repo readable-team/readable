@@ -57,7 +57,7 @@
   };
 </script>
 
-<NodeView>
+<NodeView data-drag-handle draggable>
   {#if node.attrs.id}
     <div class={css({ position: 'relative', _hover: { '& > button': { display: 'flex' } } })}>
       <Img

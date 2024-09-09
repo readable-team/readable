@@ -64,7 +64,7 @@
   });
 </script>
 
-<NodeView>
+<NodeView data-drag-handle draggable>
   <div
     class={css({
       position: 'relative',

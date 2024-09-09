@@ -17,6 +17,7 @@ type Options = {
 export const Image = createNodeView<Options>(Component, {
   name: 'image',
   group: 'block',
+  draggable: true,
 
   addOptions() {
     return {

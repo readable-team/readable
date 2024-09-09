@@ -1,12 +1,14 @@
 .ProseMirror {
-  /* & [data-drag-handle] {
-    cursor: grab;
-  } */
-
   line-height: 1.6;
 
   & > * + * {
     margin-top: 2px;
+  }
+
+  &[contenteditable='true'] {
+    & [data-drag-handle] {
+      cursor: grab;
+    }
   }
 }
 

@@ -17,6 +17,7 @@ type Options = {
 export const File = createNodeView<Options>(Component, {
   name: 'file',
   group: 'block',
+  draggable: true,
 
   addOptions() {
     return {

@@ -68,91 +68,93 @@
   };
 </script>
 
-<NodeView
-  style={css.raw(
-    {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      borderWidth: '1px',
-      borderColor: 'border.primary',
-      borderRadius: '10px',
-      backgroundColor: { base: 'neutral.20' },
-      _hover: { '& > button > div': { display: 'flex' } },
-    },
-    pickerOpened && { backgroundColor: 'neutral.30' },
-  )}
->
-  {#if node.attrs.id}
-    <a
-      class={css(
-        {
-          display: 'flex',
-          alignItems: 'center',
+<NodeView data-drag-handle draggable>
+  <div
+    class={css(
+      {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderWidth: '1px',
+        borderColor: 'border.primary',
+        borderRadius: '10px',
+        backgroundColor: { base: 'neutral.20' },
+        _hover: { '& > button > div': { display: 'flex' } },
+      },
+      pickerOpened && { backgroundColor: 'neutral.30' },
+    )}
+  >
+    {#if node.attrs.id}
+      <a
+        class={css(
+          {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            paddingX: '14px',
+            paddingY: '12px',
+            textStyle: '14r',
+            truncate: true,
+          },
+          editor?.isEditable && { pointerEvents: 'none' },
+        )}
+        href={node.attrs.url}
+      >
+        <Icon style={css.raw({ color: 'text.tertiary' })} icon={PaperclipIcon} size={20} />
+        <span class={css({ truncate: true })}>{node.attrs.name}</span>
+        <VerticalDivider style={css.raw({ height: '14px' })} color="secondary" />
+        <span class={css({ color: 'text.tertiary' })}>{formatFileSize(node.attrs.size)}</span>
+      </a>
+    {:else}
+      <div
+        class={flex({
+          align: 'center',
           gap: '12px',
           paddingX: '14px',
           paddingY: '12px',
           textStyle: '14r',
-          truncate: true,
-        },
-        editor?.isEditable && { pointerEvents: 'none' },
-      )}
-      href={node.attrs.url}
-    >
-      <Icon style={css.raw({ color: 'text.tertiary' })} icon={PaperclipIcon} size={20} />
-      <span class={css({ truncate: true })}>{node.attrs.name}</span>
-      <VerticalDivider style={css.raw({ height: '14px' })} color="secondary" />
-      <span class={css({ color: 'text.tertiary' })}>{formatFileSize(node.attrs.size)}</span>
-    </a>
-  {:else}
-    <div
-      class={flex({
-        align: 'center',
-        gap: '12px',
-        paddingX: '14px',
-        paddingY: '12px',
-        textStyle: '14r',
-        color: 'text.tertiary',
-        width: 'full',
-      })}
-      use:anchor
-    >
-      {#if inflight}
-        <RingSpinner style={css.raw({ size: '20px', color: 'neutral.40' })} />
-        파일 업로드 중...
-      {:else}
-        <Icon style={css.raw({ color: 'text.tertiary' })} icon={PaperclipIcon} size={20} />
-        파일을 업로드 해주세요
-      {/if}
-    </div>
-  {/if}
-
-  {#if editor?.isEditable}
-    <Menu>
-      <div
-        slot="button"
-        class={css(
-          {
-            display: 'none',
-            marginRight: '12px',
-            borderRadius: '4px',
-            padding: '2px',
-            color: 'text.tertiary',
-            _hover: { backgroundColor: 'neutral.40' },
-          },
-          open && { display: 'flex' },
-        )}
-        let:open
+          color: 'text.tertiary',
+          width: 'full',
+        })}
+        use:anchor
       >
-        <Icon icon={EllipsisIcon} size={20} />
+        {#if inflight}
+          <RingSpinner style={css.raw({ size: '20px', color: 'neutral.40' })} />
+          파일 업로드 중...
+        {:else}
+          <Icon style={css.raw({ color: 'text.tertiary' })} icon={PaperclipIcon} size={20} />
+          파일을 업로드 해주세요
+        {/if}
       </div>
+    {/if}
 
-      <MenuItem variant="danger" on:click={() => deleteNode()}>
-        <Icon icon={Trash2Icon} size={12} />
-        <span>삭제</span>
-      </MenuItem>
-    </Menu>
-  {/if}
+    {#if editor?.isEditable}
+      <Menu>
+        <div
+          slot="button"
+          class={css(
+            {
+              display: 'none',
+              marginRight: '12px',
+              borderRadius: '4px',
+              padding: '2px',
+              color: 'text.tertiary',
+              _hover: { backgroundColor: 'neutral.40' },
+            },
+            open && { display: 'flex' },
+          )}
+          let:open
+        >
+          <Icon icon={EllipsisIcon} size={20} />
+        </div>
+
+        <MenuItem variant="danger" on:click={() => deleteNode()}>
+          <Icon icon={Trash2Icon} size={12} />
+          <span>삭제</span>
+        </MenuItem>
+      </Menu>
+    {/if}
+  </div>
 </NodeView>
 
 {#if pickerOpened && !node.attrs.id && !inflight && editor?.isEditable}

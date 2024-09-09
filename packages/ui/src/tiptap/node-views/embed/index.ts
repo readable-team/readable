@@ -17,6 +17,7 @@ type Options = {
 export const Embed = createNodeView<Options>(Component, {
   name: 'embed',
   group: 'block',
+  draggable: true,
 
   addOptions() {
     return {
