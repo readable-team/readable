@@ -6,7 +6,7 @@
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
-  import { mobileNavOpen, treeOpenState } from '$lib/stores/ui';
+  import { treeOpenState } from '$lib/stores/ui';
   import type { Navigation_publicSite } from '$graphql';
 
   let _publicSite: Navigation_publicSite;
@@ -73,19 +73,30 @@
     ].find((p) => p.slug === slug);
   }
 
-  $: if ($mobileNavOpen && currentSlug) {
+  $: if (currentSlug) {
     $treeOpenState = {};
-    const p = findPage(currentSlug);
-    if (p) {
-      $treeOpenState[p.slug] = true;
-      if (p.parent) {
-        $treeOpenState[p.parent.slug] = true;
+    const page = findPage(currentSlug);
+
+    if (page) {
+      $treeOpenState[page.slug] = true;
+      if (page.parent) {
+        $treeOpenState[page.parent.slug] = true;
       }
+    }
+  }
+
+  let navEl: HTMLElement;
+
+  $: if (navEl) {
+    const currentEl = navEl.querySelector('[aria-current="page"]');
+
+    if (currentEl) {
+      currentEl.scrollIntoView({ block: 'center' });
     }
   }
 </script>
 
-<nav class={flex({ direction: 'column', gap: '40px' })}>
+<nav bind:this={navEl} class={flex({ direction: 'column', gap: '40px' })}>
   {#each $publicSite.categories as category (category.id)}
     <div>
       <h2
@@ -100,7 +111,7 @@
         {category.name}
       </h2>
       <ul class={flex({ direction: 'column', listStyle: 'none', gap: '2px' })}>
-        {#each category.pages as p (p.id)}
+        {#each category.pages as page (page.id)}
           <li
             class={cx(
               flex({
@@ -111,7 +122,7 @@
               }),
               'group',
             )}
-            aria-current={p.slug === currentSlug ? 'page' : undefined}
+            aria-current={page.slug === currentSlug ? 'page' : undefined}
           >
             <a
               class={css({
@@ -132,15 +143,15 @@
                   },
                 },
               })}
-              aria-current={p.slug === currentSlug ? 'page' : undefined}
-              href={`/ko/${p.slug}`}
+              aria-current={page.slug === currentSlug ? 'page' : undefined}
+              href={`/ko/${page.slug}`}
               on:click={() => {
-                $treeOpenState[p.slug] = true;
+                $treeOpenState[page.slug] = true;
               }}
             >
-              {p.content.title}
+              {page.content.title}
             </a>
-            {#if p.children.length > 0}
+            {#if page.children.length > 0}
               <button
                 class={css({
                   position: 'absolute',
@@ -156,19 +167,23 @@
                     color: 'var(--usersite-theme-color)',
                   },
                 })}
-                aria-expanded={$treeOpenState[p.slug] ? 'true' : 'false'}
+                aria-expanded={$treeOpenState[page.slug] ? 'true' : 'false'}
                 type="button"
                 on:click={() => {
-                  $treeOpenState[p.slug] = !$treeOpenState[p.slug];
+                  $treeOpenState[page.slug] = !$treeOpenState[page.slug];
                 }}
               >
-                <Icon ariaHidden={true} icon={$treeOpenState[p.slug] ? ChevronDownIcon : ChevronRightIcon} size={16} />
+                <Icon
+                  ariaHidden={true}
+                  icon={$treeOpenState[page.slug] ? ChevronDownIcon : ChevronRightIcon}
+                  size={16}
+                />
               </button>
             {/if}
           </li>
-          {#if p.children.length > 0 && $treeOpenState[p.slug]}
+          {#if page.children.length > 0 && $treeOpenState[page.slug]}
             <ul class={flex({ direction: 'column', listStyle: 'none', gap: '2px' })}>
-              {#each p.children as childPage (childPage.id)}
+              {#each page.children as childPage (childPage.id)}
                 <li class={css({ display: 'contents' })}>
                   <a
                     class={css({
