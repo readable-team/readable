@@ -157,10 +157,12 @@
       position: 'sticky',
       top: '65px',
       width: '260px',
+      height: '[calc(100vh - 65px)]',
       flexShrink: 0,
       paddingTop: '32px',
       paddingX: '20px',
       paddingBottom: '120px',
+      overflow: 'auto',
     })}
   >
     <Navigation $publicSite={$query.publicSite} />
