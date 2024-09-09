@@ -366,14 +366,14 @@ builder.queryFields((t) => ({
     },
   }),
 
-  publicPage: t.field({
+  publicPage: t.withAuth({ site: true }).field({
     type: PublicPage,
     args: { slug: t.arg.string() },
-    resolve: async (_, args) => {
+    resolve: async (_, args, ctx) => {
       return await db
         .select()
         .from(Pages)
-        .where(and(eq(Pages.slug, args.slug), eq(Pages.state, PageState.PUBLISHED)))
+        .where(and(eq(Pages.siteId, ctx.site.id), eq(Pages.slug, args.slug), eq(Pages.state, PageState.PUBLISHED)))
         .then(firstOrThrow);
     },
   }),

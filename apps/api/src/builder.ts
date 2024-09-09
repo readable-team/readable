@@ -6,16 +6,18 @@ import WithInputPlugin from '@pothos/plugin-with-input';
 import ZodPlugin from '@pothos/plugin-zod';
 import dayjs from 'dayjs';
 import { GraphQLJSON } from 'graphql-scalars';
-import type { Context, UserContext } from '@/context';
+import type { Context, SiteContext, UserContext } from '@/context';
 
 const upperFirst = (s: string) => s[0].toUpperCase() + s.slice(1);
 
 export const builder = new SchemaBuilder<{
   AuthContexts: {
     session: Context & UserContext;
+    site: Context & SiteContext;
   };
   AuthScopes: {
     session: boolean;
+    site: boolean;
   };
   Context: Context;
   DefaultInputFieldRequiredness: true;
@@ -35,6 +37,7 @@ export const builder = new SchemaBuilder<{
   scopeAuth: {
     authScopes: (context) => ({
       session: !!context.session,
+      site: !!context.site,
     }),
     treatErrorsAsUnauthorized: true,
     authorizeOnSubscribe: true,

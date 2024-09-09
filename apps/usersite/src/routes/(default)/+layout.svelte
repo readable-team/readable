@@ -7,8 +7,8 @@
   import { graphql } from '$graphql';
 
   $: query = graphql(`
-    query DefaultLayout_Query($hostname: String!) {
-      publicSite(hostname: $hostname) {
+    query DefaultLayout_Query {
+      publicSite {
         id
         url
         themeColor

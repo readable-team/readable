@@ -4,8 +4,8 @@
   import { pageUrl } from '$lib/utils/url';
 
   $: query = graphql(`
-    query IndexPage_Query($hostname: String!) {
-      publicSite(hostname: $hostname) {
+    query IndexPage_Query {
+      publicSite {
         id
         name
 

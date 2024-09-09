@@ -322,10 +322,10 @@ type Query {
   me: User
   page(pageId: ID!): Page!
   publicPage(slug: String!): PublicPage!
-  publicSite(hostname: String!): PublicSite!
+  publicSite: PublicSite!
   searchPage(query: String!, siteId: String!): SearchPageResult!
   searchPageByChange(query: String!, siteId: String!): [SearchPageByChangeHit!]!
-  searchPublicPage(query: String!, siteId: String!): SearchPublicPageResult!
+  searchPublicPage(query: String!): SearchPublicPageResult!
   site(siteId: ID!): Site!
   team(teamId: ID!): Team!
 }

@@ -11,8 +11,8 @@
   import SearchBar from './SearchBar.svelte';
 
   $: query = graphql(`
-    query KoLayout_Query($hostname: String!) {
-      publicSite(hostname: $hostname) {
+    query KoLayout_Query {
+      publicSite {
         id
         name
 

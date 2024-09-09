@@ -10,8 +10,8 @@
   import Toc from './Toc.svelte';
 
   $: query = graphql(`
-    query PagePage_Query($hostname: String!, $slug: String!) {
-      publicSite(hostname: $hostname) {
+    query PagePage_Query($slug: String!) {
+      publicSite {
         id
         name
       }
@@ -25,16 +25,16 @@
           title
           content
         }
-      }
 
-      ...PagePage_Breadcrumb_query
+        ...PagePage_Breadcrumb_publicPage
+      }
     }
   `);
 
   let headings: { level: number; text: string; scrollTop: number }[] = [];
 </script>
 
-<Helmet title={$query.publicSite.name} trailing={$query.publicPage.content.title} />
+<Helmet title={$query.publicPage.content.title} trailing={$query.publicSite.name} />
 
 <div class={flex({ flex: '1', direction: 'column' })}>
   <div
@@ -55,7 +55,7 @@
     <button type="button" on:click={() => mobileNavOpen.set(true)}>
       <Icon style={css.raw({ color: 'text.secondary' })} icon={MenuIcon} size={20} />
     </button>
-    <Breadcrumb _query={$query} />
+    <Breadcrumb _publicPage={$query.publicPage} />
   </div>
   <div
     class={grid({
@@ -95,7 +95,7 @@
         maxWidth: '720px',
       })}
     >
-      <Breadcrumb _query={$query} />
+      <Breadcrumb _publicPage={$query.publicPage} />
     </div>
     <h1
       class={css({ marginTop: '16px', textStyle: '34b', marginBottom: '20px', gridArea: 'title', maxWidth: '720px' })}

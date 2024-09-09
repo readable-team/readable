@@ -224,17 +224,14 @@ builder.queryFields((t) => ({
     },
   }),
 
-  searchPublicPage: t.field({
+  searchPublicPage: t.withAuth({ site: true }).field({
     type: SearchPublicPageResult,
-    args: {
-      siteId: t.arg.string(),
-      query: t.arg.string(),
-    },
-    resolve: async (_, args) => {
+    args: { query: t.arg.string() },
+    resolve: async (_, args, ctx) => {
       const result = await searchIndex('pages').search<PageSearchData>(args.query, {
         attributesToCrop: ['*'],
         attributesToHighlight: ['*'],
-        filter: [`siteId = ${args.siteId}`, `state = ${PageState.PUBLISHED}`],
+        filter: [`siteId = ${ctx.site.id}`, `state = ${PageState.PUBLISHED}`],
       });
 
       return result;

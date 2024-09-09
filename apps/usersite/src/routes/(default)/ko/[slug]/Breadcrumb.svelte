@@ -1,36 +1,34 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { fragment, graphql } from '$graphql';
-  import type { PagePage_Breadcrumb_query } from '$graphql';
+  import type { PagePage_Breadcrumb_publicPage } from '$graphql';
 
-  export let _query: PagePage_Breadcrumb_query;
+  export let _publicPage: PagePage_Breadcrumb_publicPage;
 
-  $: query = fragment(
-    _query,
+  $: publicPage = fragment(
+    _publicPage,
     graphql(`
-      fragment PagePage_Breadcrumb_query on Query {
-        publicPage(slug: $slug) {
+      fragment PagePage_Breadcrumb_publicPage on PublicPage {
+        id
+        slug
+
+        content {
+          id
+          title
+        }
+
+        category {
+          id
+          name
+        }
+
+        parent {
           id
           slug
 
           content {
             id
             title
-          }
-
-          category {
-            id
-            name
-          }
-
-          parent {
-            id
-            slug
-
-            content {
-              id
-              title
-            }
           }
         }
       }
@@ -52,20 +50,21 @@
     })}
   >
     <li>
-      <span>{$query.publicPage.category.name}</span>
+      <span>{$publicPage.category.name}</span>
       <span class={css({ color: 'neutral.50' })} aria-hidden="true">/</span>
+      <span>{$publicPage.category.name}</span>
     </li>
-    {#if $query.publicPage.parent}
+    {#if $publicPage.parent}
       <li>
-        <a href={`/ko/${$query.publicPage.parent.slug}`}>
-          {$query.publicPage.parent.content.title}
+        <a href={`/ko/${$publicPage.parent.slug}`}>
+          {$publicPage.parent.content.title}
         </a>
         <span class={css({ color: 'neutral.50' })} aria-hidden="true">/</span>
       </li>
     {/if}
     <li>
-      <a aria-current="page" href={`/ko/${$query.publicPage.slug}`}>
-        {$query.publicPage.content.title}
+      <a aria-current="page" href={`/ko/${$publicPage.slug}`}>
+        {$publicPage.content.title}
       </a>
     </li>
   </ol>

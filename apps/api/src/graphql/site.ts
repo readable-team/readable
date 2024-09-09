@@ -139,32 +139,10 @@ builder.queryFields((t) => ({
     },
   }),
 
-  publicSite: t.field({
+  publicSite: t.withAuth({ site: true }).field({
     type: PublicSite,
-    args: { hostname: t.arg.string() },
-    resolve: async (_, args) => {
-      if (args.hostname.endsWith(`.${env.USERSITE_DEFAULT_HOST}`)) {
-        const slug = args.hostname.split('.')[0];
-
-        return await db
-          .select()
-          .from(Sites)
-          .where(and(eq(Sites.slug, slug), eq(Sites.state, SiteState.ACTIVE)))
-          .then(firstOrThrow);
-      } else {
-        return await db
-          .select(getTableColumns(Sites))
-          .from(Sites)
-          .innerJoin(SiteCustomDomains, eq(Sites.id, SiteCustomDomains.siteId))
-          .where(
-            and(
-              eq(SiteCustomDomains.domain, args.hostname),
-              eq(SiteCustomDomains.state, SiteCustomDomainState.ACTIVE),
-              eq(Sites.state, SiteState.ACTIVE),
-            ),
-          )
-          .then(firstOrThrow);
-      }
+    resolve: async (_, __, ctx) => {
+      return ctx.site.id;
     },
   }),
 }));

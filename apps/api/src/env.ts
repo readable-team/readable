@@ -18,6 +18,7 @@ const schema = z.object({
   SENTRY_DSN: z.string().optional(),
   USERSITE_CNAME_HOST: z.string(),
   USERSITE_DEFAULT_HOST: z.string(),
+  USERSITE_FORCE_HOST: z.string().optional(),
 });
 
 export const env = schema.parse(process.env);

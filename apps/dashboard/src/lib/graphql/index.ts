@@ -12,6 +12,7 @@ export default createClient({
     const token = get(accessToken);
 
     return {
+      'x-rdbl-svc': 'dashboard',
       ...(token ? { Authorization: `Bearer ${token}` } : undefined),
     };
   },
