@@ -2,6 +2,7 @@
   import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon, Menu, MenuItem, VerticalDivider } from '@readable/ui/components';
+  import { toast } from '@readable/ui/notification';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import CopyIcon from '~icons/lucide/copy';
@@ -245,12 +246,12 @@
             variant="danger"
             on:click={() =>
               invokeAlert({
-                title: '페이지 삭제',
-                content: '페이지를 삭제하시겠습니까?',
+                title: '페이지를 삭제할까요?',
+                content: '이 작업은 되돌릴 수 없어요. 해당 페이지를 삭제하면 모든 하위 페이지도 함께 삭제돼요',
                 actionText: '삭제',
                 action: async () => {
                   await deletePage({ pageId: item.id });
-
+                  toast.success('페이지가 삭제되었습니다');
                   if (item.id === $page.params.pageId) {
                     if (item.parent?.id) {
                       await goto(`/${$page.params.siteId}/${item.parent.id}`);

@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { Button, FormField, Helmet, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
+  import { toast } from '@readable/ui/notification';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import { graphql } from '$graphql';
@@ -51,6 +52,7 @@
         themeColor,
         logoId: $query.site.logo?.id,
       });
+      toast.success('테마 색상이 변경되었습니다');
     },
   });
 
@@ -92,7 +94,7 @@
         <div
           slot="left-item"
           style:background={$data.themeColor}
-          class={css({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '16px' })}
+          class={css({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '20px' })}
         />
       </TextInput>
     </FormField>

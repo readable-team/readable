@@ -96,7 +96,7 @@
       email: dataSchemas.email,
     }),
     onSuccess: () => {
-      toast.success('초대 이메일이 발송되었습니다');
+      toast.success('초대할 멤버에게 이메일이 전송되었어요');
       reset();
     },
     onError: (e: unknown) => {
@@ -211,7 +211,7 @@
             <MenuItem
               on:click={async () => {
                 await resendInvitationEmail({ invitationId: invitation.id });
-                toast.success('초대 이메일이 재발송되었습니다');
+                toast.success(`${invitation.email}으로 메일을 재발송했습니다`);
               }}
             >
               <Icon icon={MailOpenIcon} size={14} />

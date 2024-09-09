@@ -3,6 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Button, FormField, HorizontalDivider, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
+  import { toast } from '@readable/ui/notification';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import { fragment, graphql } from '$graphql';
@@ -66,9 +67,9 @@
         ...rest,
       });
     },
-    onSuccess: (result) => {
-      console.log('success', result);
+    onSuccess: () => {
       setIsDirty(false);
+      toast.success('팀 설정이 변경되었습니다');
     },
     onError: (error) => {
       console.log(error);

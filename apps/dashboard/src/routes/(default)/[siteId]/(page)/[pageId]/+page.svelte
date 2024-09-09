@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Alert, Button, Helmet, Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
+  import { toast } from '@readable/ui/notification';
   import { redirect } from '@sveltejs/kit';
   import dayjs from 'dayjs';
   import { PageState } from '@/enums';
@@ -254,6 +255,7 @@
       size="md"
       on:click={async () => {
         await publishPage({ pageId: $query.page.id });
+        toast.success('발행이 완료되었습니다');
       }}
     >
       발행
@@ -316,6 +318,7 @@
 <Alert
   onAction={async () => {
     await deletePage({ pageId: $query.page.id });
+    toast.success('페이지가 삭제되었습니다');
     if ($query.page.parent?.id) {
       goto(`/${$query.page.site.id}/${$query.page.parent.id}`);
     } else {

@@ -12,6 +12,7 @@
     TextInput,
   } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
+  import { toast } from '@readable/ui/notification';
   import { onMount } from 'svelte';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
@@ -90,6 +91,7 @@
         themeColor: $query.site.themeColor,
         logoId,
       });
+      toast.success('프로필 변경이 완료되었습니다');
     },
   });
 
@@ -106,14 +108,16 @@
         title: 'URL 주소를 변경하시겠어요?',
         content: 'URL 변경 시 기존에 이용하던 공유 링크, 페이지 연결이 끊어집니다.',
         actionText: '변경',
-        action: async () =>
+        action: async () => {
           await updateSite({
             siteId: $query.site.id,
             name: $query.site.name,
             slug,
             themeColor: $query.site.themeColor,
             logoId: $query.site.logo?.id,
-          }),
+          });
+          toast.success('URL 변경이 완료되었습니다');
+        },
         variant: 'primary',
       });
     },
