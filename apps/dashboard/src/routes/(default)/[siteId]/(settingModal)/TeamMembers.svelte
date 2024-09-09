@@ -389,7 +389,7 @@
               <div
                 slot="button"
                 class={flex({
-                  borderRadius: '2px',
+                  borderRadius: '6px',
                   padding: '4px',
                   color: 'text.secondary',
                   _hover: {
