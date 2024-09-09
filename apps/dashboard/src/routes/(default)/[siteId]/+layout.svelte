@@ -26,6 +26,11 @@
 
         team {
           id
+
+          meAsMember {
+            id
+            role
+          }
         }
 
         logo {
@@ -142,11 +147,15 @@
             $page.url.pathname.startsWith(`/${$query.site.id}`) &&
             !$page.url.pathname.startsWith(`/${$query.site.id}/settings`),
         },
-        {
-          title: '사이트 설정',
-          path: `/${$query.site.id}/settings`,
-          selected: $page.url.pathname.startsWith(`/${$query.site.id}/settings`),
-        },
+        ...($query.site.team.meAsMember?.role === 'ADMIN'
+          ? [
+              {
+                title: '사이트 설정',
+                path: `/${$query.site.id}/settings`,
+                selected: $page.url.pathname.startsWith(`/${$query.site.id}/settings`),
+              },
+            ]
+          : []),
       ]}
     />
 
