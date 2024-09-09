@@ -9,6 +9,6 @@ import { elysia } from '@/rest';
 new Elysia()
   .use(elysia)
   .use(yoga)
-  .listen(3000, (server) => {
+  .listen({ port: 3000, idleTimeout: 0 }, (server) => {
     console.log(`Listening on ${server.url}`);
   });
