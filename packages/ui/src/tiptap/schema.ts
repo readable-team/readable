@@ -54,7 +54,7 @@ export const basicExtensions = [
       return [
         'p',
         mergeAttributes(HTMLAttributes, { class: css({ textStyle: '16r' }) }),
-        node.content.size === 0 ? ['br'] : 0,
+        !this.editor?.isEditable && node.content.size === 0 ? ['br'] : 0,
       ];
     },
   }),
