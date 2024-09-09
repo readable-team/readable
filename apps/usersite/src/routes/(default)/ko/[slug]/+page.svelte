@@ -41,6 +41,7 @@
     class={flex({
       position: 'sticky',
       top: '64px',
+      zIndex: '1',
       hideFrom: 'md',
       alignItems: 'center',
       gap: '8px',
