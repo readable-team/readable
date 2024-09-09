@@ -86,7 +86,7 @@
     class={flex({
       width: '460px',
       flexDirection: 'column',
-      backgroundColor: 'surface.tertiary',
+      backgroundColor: 'background.overlay',
       borderRadius: '10px',
       boxShadow: 'heavy',
       gap: '14px',
