@@ -1,11 +1,19 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Helmet, HorizontalDivider, Icon, Modal, TextInput } from '@readable/ui/components';
+  import { Button, Helmet, HorizontalDivider, Icon, Menu, MenuItem, Modal, TextInput } from '@readable/ui/components';
+  import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import { onMount } from 'svelte';
+  import { z } from 'zod';
+  import { dataSchemas } from '@/schemas';
   import CheckIcon from '~icons/lucide/check';
+  import CircleCheckIcon from '~icons/lucide/circle-check';
   import CopyIcon from '~icons/lucide/copy';
+  import EllipsisIcon from '~icons/lucide/ellipsis';
+  import SearchCheckIcon from '~icons/lucide/search-check';
+  import Trash2Icon from '~icons/lucide/trash-2';
+  import TriangleAlertIcon from '~icons/lucide/triangle-alert';
   import XIcon from '~icons/lucide/x';
   import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
@@ -14,9 +22,11 @@
 
   let open = false;
 
-  let domain = '';
   let hostCopied = false;
   let valueCopied = false;
+  let verifying = false;
+
+  let unsubscribe: (() => void) | undefined;
 
   $: query = graphql(`
     query SiteSettingsDomainPage_Query($siteId: ID!) {
@@ -39,18 +49,30 @@
   `);
 
   onMount(() => {
-    domain = $query.site.customDomain?.domain ?? '';
+    return () => {
+      unsubscribe?.();
+    };
   });
 
-  const setSiteCustomDomain = graphql(`
-    mutation SiteSettingsDomainPage_SetSiteCustomDomain_Mutation($input: SetSiteCustomDomainInput!) {
-      setSiteCustomDomain(input: $input) {
-        id
-        domain
-        state
+  const { form, setInitialValues } = createMutationForm({
+    mutation: graphql(`
+      mutation SiteSettingsDomainPage_SetSiteCustomDomain_Mutation($input: SetSiteCustomDomainInput!) {
+        setSiteCustomDomain(input: $input) {
+          id
+          domain
+          state
+        }
       }
-    }
-  `);
+    `),
+    schema: z.object({
+      siteId: z.string(),
+      domain: dataSchemas.site.domain,
+    }),
+    onSuccess: async () => {
+      await query.refetch();
+      open = true;
+    },
+  });
 
   const unsetSiteCustomDomain = graphql(`
     mutation SiteSettingsDomainPage_UnsetSiteCustomDomain_Mutation($input: UnsetSiteCustomDomainInput!) {
@@ -61,68 +83,168 @@
       }
     }
   `);
+
+  const siteCustomDomainValidationStream = graphql(`
+    subscription SiteSettingsDomainPage_SiteCustomDomainValidationStream_Subscription($siteCustomDomainId: ID!) {
+      siteCustomDomainValidationStream(siteCustomDomainId: $siteCustomDomainId) {
+        id
+        domain
+        state
+      }
+    }
+  `);
+
+  const verifyStream = () => {
+    if ($query.site.customDomain?.id) {
+      verifying = true;
+      unsubscribe = siteCustomDomainValidationStream.subscribe({
+        siteCustomDomainId: $query.site.customDomain?.id,
+      });
+    }
+  };
+
+  $: if ($query.site) {
+    setInitialValues({ siteId: $query.site.id, domain: $query.site.customDomain?.domain ?? '' });
+  }
+
+  $: if ($query.site.customDomain?.state === 'ACTIVE') {
+    open = false;
+    unsubscribe?.();
+  }
+
+  $: if (open === false && unsubscribe) {
+    unsubscribe?.();
+  }
 </script>
 
 <Helmet title="커스텀 도메인 설정" trailing={$query.site.name} />
 
 <div class={css({ paddingTop: '40px', paddingX: '34px', paddingBottom: '120px', width: 'full' })}>
   <h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>커스텀 도메인</h1>
-
-  <form
-    class={css({
-      marginBottom: '8px',
-      borderWidth: '1px',
-      borderColor: 'border.primary',
-      borderRadius: '10px',
-      padding: '32px',
-      width: 'full',
-      maxWidth: '720px',
-      backgroundColor: 'surface.primary',
-    })}
-    on:submit|preventDefault={() => (open = true)}
-  >
-    <label
+  {#if $query.site.customDomain}
+    <div
       class={css({
-        display: 'block',
         marginBottom: '8px',
-        textStyle: '14sb',
-        color: { base: 'gray.700', _dark: 'gray.300' },
+        borderWidth: '1px',
+        borderColor: 'border.primary',
+        borderRadius: '10px',
+        padding: '32px',
+        width: 'full',
+        maxWidth: '720px',
+        backgroundColor: 'surface.primary',
       })}
-      for="domain"
     >
-      커스텀 도메인 URL
-    </label>
-
-    <TextInput
-      name="domain"
-      disabled={!!$query.site.customDomain}
-      placeholder="도메인 주소를 입력해주세요"
-      bind:value={domain}
-    />
-
-    {#if $query.site.customDomain}
-      <Button
-        style={css.raw({ marginTop: '35px', marginLeft: 'auto' })}
-        size="lg"
-        variant="danger-fill"
-        on:click={async () => {
-          invokeAlert({
-            title: '설정하신 DNS 레코드로 도메인을 제거하시겠어요?',
-            content: 'URL 변경 시 기존에 이용하던 공유 링크, 페이지 연결이 끊어지니 주의해주세요',
-            actionText: '제거',
-            action: async () => {
-              if ($query.site.customDomain)
-                await unsetSiteCustomDomain({ siteCustomDomainId: $query.site.customDomain.id });
-            },
-          });
-        }}
+      <h2
+        class={css({
+          display: 'block',
+          marginBottom: '8px',
+          textStyle: '14sb',
+          color: { base: 'gray.700', _dark: 'gray.300' },
+        })}
       >
-        제거
-      </Button>
-    {:else}
-      <Button style={css.raw({ marginTop: '29px', marginLeft: 'auto' })} size="lg" type="submit">변경</Button>
-    {/if}
-  </form>
+        커스텀 도메인 URL
+      </h2>
+      <div class={flex({ alignItems: 'center', borderBottomWidth: '1px', borderColor: 'divider.primary' })}>
+        <p
+          class={css({
+            flex: '1',
+            marginRight: '16px',
+            textStyle: '16r',
+            color: 'text.secondary',
+            textOverflow: 'ellipsis',
+          })}
+        >
+          {$query.site.customDomain.domain}
+        </p>
+        <div
+          class={flex({
+            width: '114px',
+            height: '54px',
+            gap: '6px',
+            alignItems: 'center',
+            color: $query.site.customDomain.state === 'ACTIVE' ? '[#6CB425]' : '[#E9A137]',
+          })}
+        >
+          {#if $query.site.customDomain.state === 'ACTIVE'}
+            <Icon icon={CircleCheckIcon} size={16} />
+            <span class={css({ textStyle: '14sb' })}>확인됨</span>
+          {:else}
+            <Icon icon={TriangleAlertIcon} size={16} />
+            <span class={css({ textStyle: '14sb' })}>확인되지 않음</span>
+          {/if}
+        </div>
+        <Menu style={css.raw({ height: 'fit' })} listStyle={css.raw({ width: '[180px!]' })} placement="bottom-start">
+          <div slot="button" class={css({ padding: '10px' })}>
+            <button class={css({ padding: '4px', color: 'text.secondary' })} type="button">
+              <Icon icon={EllipsisIcon} size={20} />
+            </button>
+          </div>
+          {#if $query.site.customDomain.state !== 'ACTIVE'}
+            <MenuItem
+              variant="default"
+              on:click={() => {
+                open = true;
+                verifyStream();
+              }}
+            >
+              <Icon icon={SearchCheckIcon} size={14} />
+              <span>재확인</span>
+            </MenuItem>
+          {/if}
+          <MenuItem
+            variant="danger"
+            on:click={() => {
+              invokeAlert({
+                title: '도메인을 제거하시겠어요?',
+                content: '해당 도메인의 공유 링크, 페이지 연결이 끊어지니 주의해주세요',
+                actionText: '제거',
+                action: async () => {
+                  if ($query.site.customDomain) {
+                    await unsetSiteCustomDomain({ siteCustomDomainId: $query.site.customDomain.id });
+                    location.reload();
+                  }
+                },
+              });
+            }}
+          >
+            <Icon icon={Trash2Icon} size={14} />
+            <span>삭제</span>
+          </MenuItem>
+        </Menu>
+      </div>
+    </div>
+  {:else}
+    <form
+      class={css({
+        marginBottom: '8px',
+        borderWidth: '1px',
+        borderColor: 'border.primary',
+        borderRadius: '10px',
+        padding: '32px',
+        width: 'full',
+        maxWidth: '720px',
+        backgroundColor: 'surface.primary',
+      })}
+      use:form
+    >
+      <input name="siteId" type="hidden" />
+      <label
+        class={css({
+          display: 'block',
+          marginBottom: '8px',
+          textStyle: '14sb',
+          color: { base: 'gray.700', _dark: 'gray.300' },
+        })}
+        for="domain"
+      >
+        커스텀 도메인 URL
+      </label>
+
+      <TextInput name="domain" disabled={!!$query.site.customDomain} placeholder="도메인 주소를 입력해주세요" />
+
+      <Button style={css.raw({ marginTop: '29px', marginLeft: 'auto' })} size="lg" type="submit">설정</Button>
+    </form>
+  {/if}
 </div>
 
 <Modal style={css.raw({ width: '600px' })} close={() => (open = false)} bind:open>
@@ -192,12 +314,16 @@
       <div class={css({ flex: '1', truncate: true })}>
         <dt>Host</dt>
         <dd class={flex({ align: 'center', gap: '8px' })}>
-          <span class={css({ truncate: true })}>{domain}</span>
+          <span class={css({ truncate: true })}>{$query.site.customDomain?.domain}</span>
           <button
             type="button"
             on:click={() => {
+              if (!$query.site.customDomain) {
+                return;
+              }
+
               try {
-                navigator.clipboard.writeText(domain);
+                navigator.clipboard.writeText($query.site.customDomain.domain);
                 hostCopied = true;
 
                 setTimeout(() => {
@@ -240,22 +366,6 @@
       </div>
     </dl>
 
-    <Button
-      size="lg"
-      type="button"
-      on:click={() => {
-        invokeAlert({
-          title: '설정하신 DNS 레코드로 도메인을 설정하시겠어요?',
-          content: 'URL 변경 시 기존에 이용하던 공유 링크, 페이지 연결이 끊어지니 주의해주세요',
-          actionText: '변경',
-          action: async () => {
-            await setSiteCustomDomain({ domain, siteId: $query.site.id });
-          },
-          variant: 'primary',
-        });
-      }}
-    >
-      설정
-    </Button>
+    <Button loading={verifying} size="lg" type="button" on:click={verifyStream}>확인</Button>
   </div>
 </Modal>
