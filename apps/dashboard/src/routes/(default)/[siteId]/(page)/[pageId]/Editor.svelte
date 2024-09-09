@@ -286,7 +286,7 @@
   };
 </script>
 
-<div class={css({ flex: '1', paddingTop: '34px', paddingX: '80px', overflowY: 'auto' })}>
+<div class={css({ flex: '1', paddingX: '80px', overflowY: 'auto' })}>
   <div class={flex({ height: 'full', flexDirection: 'column' })}>
     <div class={css({ paddingTop: '46px' })}>
       <Breadcrumb style={css.raw({ marginX: 'auto', width: '720px' })} _query={$query} />
@@ -297,7 +297,8 @@
         flexDirection: 'column',
         gap: '8px',
         marginX: 'auto',
-        marginBottom: '12px',
+        marginTop: '34px',
+        marginBottom: '14px',
         width: '720px',
         color: 'text.primary',
       })}
