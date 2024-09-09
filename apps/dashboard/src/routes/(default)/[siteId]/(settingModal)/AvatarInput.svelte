@@ -35,7 +35,7 @@
   {#if file}
     <img alt="아바타" src={URL.createObjectURL(file)} />
   {:else}
-    <Img $image={avatar} alt="아바타" size={64} />
+    <Img style={css.raw({ size: 'full' })} $image={avatar} alt="아바타" size={64} />
   {/if}
   <div
     class={css({

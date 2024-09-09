@@ -286,7 +286,7 @@
           })}
           $image={contributor.user.avatar}
           alt={contributor.user.name}
-          size={24}
+          size={32}
         />
       </Tooltip>
     {/each}
