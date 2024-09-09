@@ -500,7 +500,8 @@ builder.mutationFields((t) => ({
           throw new ApiError({ code: 'team_needs_admin' });
         }
 
-        pubsub.publish('team:update', input.teamId, { scope: 'member', userId: input.userId });
+        // NOTE: 다른 멤버들의 isSoleAdmin도 업데이트되어야 해서 team scope로.
+        pubsub.publish('team:update', input.teamId, { scope: 'team' });
 
         return member;
       });
