@@ -50,9 +50,8 @@
     <div
       class={css(
         { borderRadius: 'full', padding: '3px', size: '18px' },
-        toast.type === 'success'
-          ? { backgroundColor: { base: '[#0CBB7A]', _dark: '[#19C283]' } }
-          : { backgroundColor: { base: 'red.600', _dark: 'red.500' } },
+        toast.type === 'success' && { backgroundColor: { base: '[#0CBB7A]', _dark: '[#19C283]' } },
+        toast.type === 'error' && { backgroundColor: { base: 'red.600', _dark: 'red.500' } },
       )}
     >
       {#if toast.type === 'success'}
