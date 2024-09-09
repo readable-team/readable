@@ -33,7 +33,10 @@ export const dataSchemas = {
       .string({ required_error: '도메인을 입력해 주세요' })
       .trim()
       .toLowerCase()
-      .min(1, { message: '도메인을 입력해 주세요' }),
+      .min(4, { message: '도메인을 입력해 주세요' })
+      .regex(/^(?:[\da-z](?:[\da-z-]{0,61}[\da-z])?\.)+[\da-z][\da-z-]{0,61}[\da-z]$/, {
+        message: '도메인이 형식에 맞지 않아요',
+      }),
 
     themeColor: z
       .string()
