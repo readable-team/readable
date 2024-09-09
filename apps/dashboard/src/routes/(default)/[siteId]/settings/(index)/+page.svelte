@@ -57,6 +57,7 @@
         id
         slug
         name
+        url
 
         logo {
           id
@@ -106,7 +107,6 @@
         content: 'URL 변경 시 기존에 이용하던 공유 링크, 페이지 연결이 끊어집니다.',
         actionText: '변경',
         action: async () =>
-          // TODO: 사이트 바로가기 버튼 url 업데이트
           await updateSite({
             siteId: $query.site.id,
             name: $query.site.name,
