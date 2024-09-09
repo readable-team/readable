@@ -272,7 +272,7 @@
       {#if editing}
         <input
           bind:this={inputEl}
-          class={css({ paddingX: '8px', paddingY: '4px', textStyle: '14b', color: 'text.secondary' })}
+          class={css({ paddingX: '8px', paddingY: '4px', textStyle: '14b', color: 'text.secondary', width: 'full' })}
           type="text"
           on:blur={completeCategoryEdit}
           on:keydown={(e) => {
@@ -299,59 +299,59 @@
         >
           {item.name}
         </div>
-      {/if}
-      <div
-        class={flex({
-          display: 'none',
-          _groupHover: {
-            display: 'flex',
-          },
-          alignItems: 'center',
-          justifyContent: 'center',
-        })}
-      >
-        <Menu disableAutoUpdate placement="bottom-start">
-          <button
-            slot="button"
-            class={css({
-              display: 'none',
-              _groupHover: {
-                display: 'block',
-              },
-              borderRadius: '4px',
-              padding: '3px',
-              color: 'neutral.60',
-              _hover: {
-                backgroundColor: 'neutral.30',
-              },
-            })}
-            type="button"
-          >
-            <Icon icon={EllipsisIcon} size={14} />
-          </button>
-          <MenuItem
-            on:click={() => {
-              editing = true;
-            }}
-          >
-            <Icon icon={PencilIcon} size={14} />
-            <span>이름 변경</span>
-          </MenuItem>
-          <MenuItem
-            variant="danger"
-            on:click={() =>
-              invokeAlert({
-                title: '카테고리 삭제',
-                content: '카테고리를 삭제하시겠습니까?',
-                actionText: '삭제',
-                action: () => deleteCategory({ categoryId: item.id }),
+        <div
+          class={flex({
+            display: 'none',
+            _groupHover: {
+              display: 'flex',
+            },
+            alignItems: 'center',
+            justifyContent: 'center',
+          })}
+        >
+          <Menu disableAutoUpdate placement="bottom-start">
+            <button
+              slot="button"
+              class={css({
+                display: 'none',
+                _groupHover: {
+                  display: 'block',
+                },
+                borderRadius: '4px',
+                padding: '3px',
+                color: 'neutral.60',
+                _hover: {
+                  backgroundColor: 'neutral.30',
+                },
               })}
-          >
-            <Icon icon={Trash2Icon} size={14} />
-            <span>삭제</span>
-          </MenuItem>
-        </Menu>
-      </div>
+              type="button"
+            >
+              <Icon icon={EllipsisIcon} size={14} />
+            </button>
+            <MenuItem
+              on:click={() => {
+                editing = true;
+              }}
+            >
+              <Icon icon={PencilIcon} size={14} />
+              <span>이름 변경</span>
+            </MenuItem>
+            <MenuItem
+              variant="danger"
+              on:click={() =>
+                invokeAlert({
+                  title: '카테고리 삭제',
+                  content: '카테고리를 삭제하시겠습니까?',
+                  actionText: '삭제',
+                  action: () => deleteCategory({ categoryId: item.id }),
+                })}
+            >
+              <Icon icon={Trash2Icon} size={14} />
+              <span>삭제</span>
+            </MenuItem>
+          </Menu>
+        </div>
+      {/if}
     {/if}
   </div>
 
