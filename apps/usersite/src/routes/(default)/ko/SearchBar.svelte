@@ -6,7 +6,7 @@
   import { tick } from 'svelte';
   import CircleXIcon from '~icons/lucide/circle-x';
   import MoveLeftIcon from '~icons/lucide/move-left';
-  import { goto } from '$app/navigation';
+  import { beforeNavigate, goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import { searchBarOpen } from '$lib/stores/ui';
 
@@ -60,11 +60,6 @@
     selectedResultIndex = null;
   }
 
-  function handleSelect(slug: string) {
-    goto(`/ko/${slug}`);
-    closeModal();
-  }
-
   function clearSearch(e: MouseEvent) {
     e.stopPropagation();
     searchQuery = '';
@@ -101,7 +96,7 @@
 
       if (event.key === 'Enter' && selectedResultIndex !== null) {
         event.preventDefault();
-        handleSelect(searchResults[selectedResultIndex].page.slug);
+        goto(`/ko/${searchResults[selectedResultIndex].page.slug}`);
         return;
       }
 
@@ -123,6 +118,10 @@
       }
     }
   }
+
+  beforeNavigate(() => {
+    closeModal();
+  });
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
