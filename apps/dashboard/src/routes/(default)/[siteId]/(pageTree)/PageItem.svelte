@@ -99,6 +99,7 @@
     if (inputEl && editing) {
       editing = false;
       await updateCategory({ categoryId: item.id, name: inputEl.value });
+      toast.success('카테고리 이름이 변경되었습니다');
       // FIXME: 에러 핸들링?
     }
   };
