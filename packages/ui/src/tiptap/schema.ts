@@ -1,6 +1,6 @@
 import { css } from '@readable/styled-system/css';
 import { createAnchorId } from '@readable/ui/utils';
-import { getSchema } from '@tiptap/core';
+import { getSchema, mergeAttributes } from '@tiptap/core';
 import { Blockquote } from '@tiptap/extension-blockquote';
 import { Bold } from '@tiptap/extension-bold';
 import { BulletList } from '@tiptap/extension-bullet-list';
@@ -48,6 +48,14 @@ export const basicExtensions = [
       class: css({
         textStyle: '16r',
       }),
+    },
+  }).extend({
+    renderHTML({ node, HTMLAttributes }) {
+      return [
+        'p',
+        mergeAttributes(HTMLAttributes, { class: css({ textStyle: '16r' }) }),
+        node.content.size === 0 ? ['br'] : 0,
+      ];
     },
   }),
   Heading.configure({
