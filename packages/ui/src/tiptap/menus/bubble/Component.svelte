@@ -14,6 +14,7 @@
   import LetterTextIcon from '~icons/lucide/letter-text';
   import LinkIcon from '~icons/lucide/link';
   import StrikethroughIcon from '~icons/lucide/strikethrough';
+  import TypeIcon from '~icons/lucide/type';
   import UnderlineIcon from '~icons/lucide/underline';
   import { createFloatingActions } from '../../../actions';
   import type { Editor } from '@tiptap/core';
@@ -61,12 +62,12 @@
   // TODO: dark mode 지원
   const colors = [
     { name: 'black', label: '검정', hex: null },
-    { name: 'gray', label: '회색', hex: '#6F7379' },
-    { name: 'red', label: '빨간색', hex: '#EF4444' },
-    { name: 'blue', label: '파란색', hex: '#3C82F6' },
-    { name: 'yellow', label: '노란색', hex: '#F59E0C' },
-    { name: 'green', label: '초록색', hex: '#12B981' },
-    { name: 'orange', label: '주황색', hex: '#EB690C' },
+    { name: 'gray', label: '회색', hex: '#A1A1AA' },
+    { name: 'red', label: '빨간색', hex: '#E52F17' },
+    { name: 'yellow', label: '노란색', hex: '#DDC91B' },
+    { name: 'orange', label: '주황색', hex: '#CE7F09' },
+    { name: 'green', label: '초록색', hex: '#31A12E' },
+    { name: 'blue', label: '파란색', hex: '#278EC1' },
   ];
 
   let activeMarks: string[] = [];
@@ -291,7 +292,7 @@
       style={activeColor && `background-color: ${activeColor}`}
       class={css({
         borderRadius: 'full',
-        backgroundColor: `text.primary`,
+        backgroundColor: 'text.primary',
         size: '18px',
       })}
     />
@@ -327,7 +328,7 @@
               backgroundColor: 'neutral.30',
             },
           })}
-          aria-pressed={activeColor === hex}
+          aria-pressed={activeColor === hex || (!activeColor && hex === null)}
           type="button"
           on:click={() => {
             if (hex === null) {
@@ -339,19 +340,17 @@
           }}
         >
           <div
-            style:background-color={hex}
-            class={css({
-              width: '18px',
-              height: '18px',
-              borderRadius: 'full',
-              backgroundColor: `text.primary`,
-            })}
-          />
+            style:color={hex}
+            class={css({ borderWidth: '1px', borderColor: 'border.image', borderRadius: '4px', padding: '4px' })}
+          >
+            <Icon icon={TypeIcon} size={14} />
+          </div>
+
           <div class={css({ textStyle: '14m' })}>
             {label}
           </div>
 
-          {#if activeColor === hex}
+          {#if activeColor === hex || (!activeColor && hex === null)}
             <Icon style={css.raw({ marginLeft: 'auto', color: 'neutral.60' })} icon={CheckIcon} size={12} />
           {/if}
         </button>
