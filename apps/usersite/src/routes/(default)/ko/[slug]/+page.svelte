@@ -98,7 +98,13 @@
       <Breadcrumb _publicPage={$query.publicPage} />
     </div>
     <h1
-      class={css({ marginTop: '16px', textStyle: '34b', marginBottom: '20px', gridArea: 'title', maxWidth: '720px' })}
+      class={css({
+        marginTop: { base: '32px', md: '16px' },
+        textStyle: '34b',
+        marginBottom: '20px',
+        gridArea: 'title',
+        maxWidth: '720px',
+      })}
     >
       {$query.publicPage.content.title}
     </h1>
