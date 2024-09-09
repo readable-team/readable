@@ -311,7 +311,16 @@
                 />
               </MenuItem>
               <MenuItem
-                style={css.raw({ gap: '20px', borderRadius: '10px', paddingY: '10px' })}
+                style={css.raw({
+                  gap: '20px',
+                  borderRadius: '10px',
+                  paddingY: '10px',
+                  _disabled: {
+                    '& p': {
+                      color: 'text.disabled',
+                    },
+                  },
+                })}
                 aria-checked={member.role === 'MEMBER'}
                 disabled={member.role === 'ADMIN' && member.isSoleAdmin}
                 on:click={async () =>

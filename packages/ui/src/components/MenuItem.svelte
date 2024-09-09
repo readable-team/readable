@@ -37,7 +37,6 @@
 
 <svelte:element
   this={element}
-  class={css({ paddingX: '6px' })}
   role="menuitem"
   tabindex="0"
   on:click
@@ -48,20 +47,19 @@
   }}
   {...props}
   {...$$restProps}
->
-  <div
-    class={cx(
-      cva({
-        base: flex.raw({
-          alignItems: 'center',
-          gap: '10px',
-          borderRadius: '6px',
-          paddingX: '12px',
-          paddingY: '7px',
-          textStyle: '14m',
-          textAlign: 'left',
-          color: 'text.secondary',
-          width: 'full',
+  class={cx(
+    cva({
+      base: flex.raw({
+        alignItems: 'center',
+        gap: '10px',
+        borderRadius: '6px',
+        marginX: '6px',
+        paddingX: '12px',
+        paddingY: '7px',
+        textStyle: '14m',
+        textAlign: 'left',
+        color: 'text.secondary',
+        _enabled: {
           _hover: {
             backgroundColor: 'neutral.10',
           },
@@ -76,22 +74,25 @@
             color: 'text.primary',
             backgroundColor: 'neutral.10',
           },
-        }),
-        variants: {
-          variant: {
-            default: {
-              color: 'text.secondary',
-            },
-            danger: {
-              color: 'text.danger',
-            },
+        },
+        _disabled: {
+          color: 'text.disabled',
+        },
+      }),
+      variants: {
+        variant: {
+          default: {
+            color: 'text.secondary',
+          },
+          danger: {
+            color: 'text.danger',
           },
         },
-      })({ variant }),
-      css(style),
-    )}
-  >
-    <slot name="prefix" />
-    <slot />
-  </div>
+      },
+    })({ variant }),
+    css(style),
+  )}
+>
+  <slot name="prefix" />
+  <slot />
 </svelte:element>
