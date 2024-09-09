@@ -87,7 +87,7 @@
     }
   }
 
-  function handleKeyDown(event: KeyboardEvent) {
+  async function handleKeyDown(event: KeyboardEvent) {
     if ($searchBarOpen) {
       if (event.key === 'Escape') {
         closeModal();
@@ -109,6 +109,18 @@
         } else if (event.key === 'ArrowUp') {
           selectedResultIndex = (selectedResultIndex - 1 + searchResults.length) % searchResults.length;
         }
+      }
+
+      await tick();
+      const selectedElem = listEl.querySelector('& > a[aria-selected="true"') as HTMLElement | null;
+      if (
+        selectedElem &&
+        (selectedElem.offsetTop < listEl.scrollTop ||
+          selectedElem.offsetTop + selectedElem.clientHeight > listEl.scrollTop + listEl.clientHeight)
+      ) {
+        selectedElem.scrollIntoView({
+          block: 'nearest',
+        });
       }
     } else {
       const metaKeyOnly = event.metaKey && !event.ctrlKey && !event.altKey && !event.shiftKey;
