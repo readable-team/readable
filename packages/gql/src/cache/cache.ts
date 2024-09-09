@@ -6,7 +6,7 @@ import { denormalize } from './denormalize';
 import { normalize } from './normalize';
 import { isObject } from './utils';
 import type { $StoreSchema, StoreSchema } from '../types';
-import type { Data, Field, Storage, Variables } from './types';
+import type { Data, EntityKey, Field, Storage, Variables } from './types';
 
 export class Cache {
   private storage: Storage = { [rootFieldKey]: {} };
@@ -21,6 +21,12 @@ export class Cache {
     const normalized = normalize(storeSchema, (variables ?? {}) as Variables, data as Data);
     this.writeInternal(this.storage, normalized.data);
     this.dependencies$.next(normalized.dependencies);
+  }
+
+  delete(key: EntityKey) {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete this.storage[key];
+    this.dependencies$.next(new Set([key]));
   }
 
   observe<T extends $StoreSchema>(

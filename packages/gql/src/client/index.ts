@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
 import { connectable, filter, finalize, Observable, share, Subject } from 'rxjs';
+import { Cache } from '../cache/cache';
 import { cacheExchange } from '../exchange/cache';
 import { composeExchanges } from '../exchange/compose';
 import { fetchExchange } from '../exchange/fetch';
@@ -45,13 +46,21 @@ class Client {
   private operation$: Subject<Operation>;
   private result$: Connectable<OperationResult>;
 
+  private _cache: Cache;
+
+  get cache() {
+    return this._cache;
+  }
+
   constructor({ url, headers, exchanges }: CreateClientParams) {
     this.url = url;
     this.headers = headers;
 
+    this._cache = new Cache();
+
     const composedExchange = composeExchanges([
       ...(exchanges ?? []),
-      cacheExchange,
+      cacheExchange(this._cache),
       fetchExchange,
       sseExchange(url, headers),
     ]);

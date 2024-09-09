@@ -2,8 +2,8 @@ import type { entityLinkKey, rootFieldKey } from './const';
 
 type Arrayable<T> = T | T[];
 
-export type Typename = string & { __brand: 'Typename' };
-export type ID = string & { __brand: 'ID' };
+export type Typename = string;
+export type ID = string;
 
 export type KeyableEntity = {
   [key: string]: unknown;

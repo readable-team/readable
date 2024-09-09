@@ -25,7 +25,7 @@ export const denormalize = (storeSchema: StoreSchema, variables: Variables, stor
 
     if (isEntityLink(value)) {
       const entityKey = resolveEntityLink(value);
-      value = storage[entityKey] as Storage;
+      value = storage[entityKey] ?? {};
       dependencies.add(entityKey);
     }
 

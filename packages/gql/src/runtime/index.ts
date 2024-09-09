@@ -1,3 +1,4 @@
+export * from './cache';
 export * from './functions';
 export * from './stores/fragment';
 export * from './stores/mutation';

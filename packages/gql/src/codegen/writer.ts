@@ -159,8 +159,30 @@ export const writePublicAssets = async ({ gqlDir, artifacts }: Context) => {
   await writeFile(path.join(gqlDir, 'public/types.d.ts'), AST.print(types));
 
   const indexTs = AST.b.program([
+    AST.b.importDeclaration.from({
+      importKind: 'type',
+      source: AST.b.stringLiteral('@readable/gql/runtime'),
+      specifiers: [AST.b.importSpecifier.from({ imported: AST.b.identifier('CacheFacade') })],
+    }),
     AST.b.exportAllDeclaration(AST.b.stringLiteral('./public/functions')),
     AST.b.exportAllDeclaration(AST.b.stringLiteral('./public/types')),
+    AST.b.exportNamedDeclaration.from({
+      declaration: AST.b.variableDeclaration.from({
+        kind: 'const',
+        declarations: [
+          AST.b.variableDeclarator.from({
+            id: AST.b.identifier.from({
+              name: 'cache',
+              typeAnnotation: AST.b.tsTypeAnnotation.from({
+                typeAnnotation: AST.b.tsTypeReference.from({
+                  typeName: AST.b.identifier('CacheFacade'),
+                }),
+              }),
+            }),
+          }),
+        ],
+      }),
+    }),
   ]);
   await writeFile(path.join(gqlDir, 'index.d.ts'), AST.print(indexTs));
 
