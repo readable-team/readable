@@ -19,7 +19,7 @@ import TeamMemberAddedEmail from '@/email/templates/TeamMemberAdded.tsx';
 import TeamMemberInvitedEmail from '@/email/templates/TeamMemberInvited.tsx';
 import { PaymentMethodState, SiteState, TeamMemberRole, TeamState, UserState } from '@/enums';
 import { env } from '@/env';
-import { ApiError } from '@/errors';
+import { ReadableError } from '@/errors';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { generateRandomAvatar } from '@/utils/image-generation';
@@ -256,7 +256,7 @@ builder.mutationFields((t) => ({
         .where(and(eq(Sites.teamId, input.teamId), eq(Sites.state, SiteState.ACTIVE)));
 
       if (sites.length > 0) {
-        throw new ApiError({ code: 'team_has_sites' });
+        throw new ReadableError({ code: 'team_has_sites' });
       }
 
       return await db
@@ -304,7 +304,7 @@ builder.mutationFields((t) => ({
           .then(first);
 
         if (existingMember) {
-          throw new ApiError({ code: 'team_member_exists' });
+          throw new ReadableError({ code: 'team_member_exists' });
         }
 
         const member = await db
@@ -458,7 +458,7 @@ builder.mutationFields((t) => ({
           .then(first);
 
         if (adminCount?.count === 0) {
-          throw new ApiError({ code: 'team_needs_admin' });
+          throw new ReadableError({ code: 'team_needs_admin' });
         }
 
         pubsub.publish('team:update', input.teamId, { scope: 'team' });
@@ -497,7 +497,7 @@ builder.mutationFields((t) => ({
           .then(first);
 
         if (adminCount?.count === 0) {
-          throw new ApiError({ code: 'team_needs_admin' });
+          throw new ReadableError({ code: 'team_needs_admin' });
         }
 
         // NOTE: 다른 멤버들의 isSoleAdmin도 업데이트되어야 해서 team scope로.

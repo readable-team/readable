@@ -6,9 +6,9 @@ import WithInputPlugin from '@pothos/plugin-with-input';
 import ZodPlugin from '@pothos/plugin-zod';
 import dayjs from 'dayjs';
 import { GraphQLJSON } from 'graphql-scalars';
+import * as R from 'remeda';
+import { ReadableError } from './errors';
 import type { Context, SiteContext, UserContext } from '@/context';
-
-const upperFirst = (s: string) => s[0].toUpperCase() + s.slice(1);
 
 export const builder = new SchemaBuilder<{
   AuthContexts: {
@@ -41,21 +41,18 @@ export const builder = new SchemaBuilder<{
     }),
     treatErrorsAsUnauthorized: true,
     authorizeOnSubscribe: true,
-    // unauthorizedError: (_, __, ___, result) => new PermissionDeniedError(result),
+    unauthorizedError: (_, __, ___, result) => new ReadableError({ code: 'unauthorized', message: result.message }),
   },
 
   withInput: {
     typeOptions: {
-      name: ({ fieldName }) => `${upperFirst(fieldName)}Input`,
+      name: ({ fieldName }) => `${R.capitalize(fieldName)}Input`,
     },
   },
 
   zod: {
-    // validationError: (error) => new IntentionalError(error.issues[0].message),
+    validationError: (error) => new ReadableError({ code: 'validation_error', message: error.issues[0].message }),
   },
-  // racPluginOptions: {
-  //   permissionDeniedError: () => new PermissionDeniedError(),
-  // },
 });
 
 builder.queryType();

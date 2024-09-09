@@ -1,5 +1,6 @@
-import { createClient } from '@readable/gql';
+import { createClient, errorExchange } from '@readable/gql';
 import { get } from 'svelte/store';
+import { ReadableError } from '@/errors';
 import { env } from '$env/dynamic/public';
 import { persisted } from '$lib/svelte/stores/persisted';
 
@@ -16,4 +17,16 @@ export default createClient({
       ...(token ? { Authorization: `Bearer ${token}` } : undefined),
     };
   },
+  exchanges: [
+    errorExchange((error) => {
+      if (error.extensions.type === 'ReadableError') {
+        return new ReadableError({
+          code: error.extensions.code as string,
+          message: error.message,
+        });
+      }
+
+      return error;
+    }),
+  ],
 });

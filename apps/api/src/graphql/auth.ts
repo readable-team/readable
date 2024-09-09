@@ -15,7 +15,7 @@ import {
   UserSingleSignOns,
 } from '@/db';
 import { SingleSignOnProvider, TeamMemberRole, UserState } from '@/enums';
-import { ApiError } from '@/errors';
+import { ReadableError } from '@/errors';
 import * as google from '@/external/google';
 import { createAccessToken } from '@/utils/access-token';
 import { persistBlobAsImage } from '@/utils/user-contents';
@@ -83,7 +83,7 @@ builder.mutationFields((t) => ({
         .then(first);
 
       if (existingUser) {
-        throw new ApiError({ code: 'user_email_exists' });
+        throw new ReadableError({ code: 'user_email_exists' });
       }
 
       const user = await db.transaction(async (tx) => {

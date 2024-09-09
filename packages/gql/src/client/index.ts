@@ -9,6 +9,8 @@ import type { Connectable } from 'rxjs';
 import type { Exchange, ExchangeIO, Operation, OperationResult } from '../exchange/types';
 import type { $StoreSchema, StoreSchema } from '../types';
 
+export { errorExchange } from '../exchange/error';
+
 export type GqlClient = {
   client: Client;
 };

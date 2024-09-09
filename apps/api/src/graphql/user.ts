@@ -2,7 +2,7 @@ import { and, asc, eq, getTableColumns } from 'drizzle-orm';
 import { builder } from '@/builder';
 import { db, firstOrThrow, TeamMembers, Teams, Users, UserSessions, UserSingleSignOns } from '@/db';
 import { TeamState, UserState } from '@/enums';
-import { ApiError } from '@/errors';
+import { ReadableError } from '@/errors';
 import { dataSchemas } from '@/schemas';
 import { Image, Team, User } from './objects';
 
@@ -79,7 +79,7 @@ builder.mutationFields((t) => ({
         .where(and(eq(TeamMembers.userId, ctx.session.userId), eq(Teams.state, TeamState.ACTIVE)));
 
       if (members.length > 0) {
-        throw new ApiError({ code: 'user_has_teams' });
+        throw new ReadableError({ code: 'user_has_teams' });
       }
 
       return await db.transaction(async (tx) => {

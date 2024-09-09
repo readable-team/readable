@@ -1,12 +1,16 @@
 import { GraphQLError } from 'graphql';
 
-type ApiErrorParams = {
+type ReadableErrorParams = {
   code: string;
+  message?: string;
 };
 
-export class ApiError extends GraphQLError {
-  constructor({ code }: ApiErrorParams) {
-    super('ApiError', { extensions: { code } });
-    this.name = 'ApiError';
+export class ReadableError extends GraphQLError {
+  public code: string;
+
+  constructor({ code, message }: ReadableErrorParams) {
+    super(message ?? code, { extensions: { type: 'ReadableError', code } });
+    this.name = 'ReadableError';
+    this.code = code;
   }
 }

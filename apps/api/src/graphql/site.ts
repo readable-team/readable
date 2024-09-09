@@ -7,13 +7,12 @@ import { builder } from '@/builder';
 import { Categories, db, extractTableCode, first, firstOrThrow, Pages, SiteCustomDomains, Sites } from '@/db';
 import { CategoryState, PageState, SiteCustomDomainState, SiteState, TeamMemberRole } from '@/enums';
 import { env } from '@/env';
-import { ApiError } from '@/errors';
+import { ReadableError } from '@/errors';
 import * as dns from '@/external/dns';
 import { enqueueJob } from '@/jobs';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
-import { getPlanRule } from '@/utils/plan';
 import { Category, Image, ISite, Page, PublicCategory, PublicSite, Site, SiteCustomDomain, Team } from './objects';
 
 /**
@@ -165,19 +164,6 @@ builder.mutationFields((t) => ({
         role: TeamMemberRole.ADMIN,
       });
 
-      const [siteCountLimit, currnetSiteCount] = await Promise.all([
-        getPlanRule({ teamId: input.teamId, rule: 'siteLimit' }),
-        db
-          .select({ count: count(Sites.id) })
-          .from(Sites)
-          .where(and(eq(Sites.teamId, input.teamId), eq(Sites.state, SiteState.ACTIVE)))
-          .then((rows) => rows[0]?.count ?? 0),
-      ]);
-
-      if (currnetSiteCount >= siteCountLimit) {
-        throw new ApiError({ code: 'site_limit_exceeded' });
-      }
-
       const slug = [
         faker.word.adjective({ length: { min: 3, max: 5 } }),
         faker.word.noun({ length: { min: 4, max: 6 } }),
@@ -228,7 +214,7 @@ builder.mutationFields((t) => ({
         .then(first);
 
       if (existingSite) {
-        throw new ApiError({ code: 'site_slug_exists' });
+        throw new ReadableError({ code: 'site_slug_exists' });
       }
 
       return await db
@@ -257,7 +243,7 @@ builder.mutationFields((t) => ({
         .then(first);
 
       if (existingDomain) {
-        throw new ApiError({ code: 'site_custom_domain_duplicate' });
+        throw new ReadableError({ code: 'site_custom_domain_exists' });
       }
 
       return await db.transaction(async (tx) => {

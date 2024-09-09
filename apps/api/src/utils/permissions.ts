@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import { Categories, db, first, Pages, Sites, TeamMembers, Teams } from '@/db';
 import { SiteState, TeamMemberRole, TeamState } from '@/enums';
-import { ApiError } from '@/errors';
+import { ReadableError } from '@/errors';
 
 export const throwableToBoolean = <T extends unknown[]>(
   fn: (...args: T) => Promise<void>,
@@ -26,7 +26,7 @@ export const assertTeamPermission = async ({
   role = TeamMemberRole.MEMBER,
 }: AssertTeamPermissionParams) => {
   if (!userId) {
-    throw new ApiError({ code: 'unauthorized' });
+    throw new ReadableError({ code: 'unauthorized' });
   }
 
   const member = await db
@@ -37,7 +37,7 @@ export const assertTeamPermission = async ({
     .then(first);
 
   if (!member || teamMemberRolePrecedences.indexOf(member.role) < teamMemberRolePrecedences.indexOf(role)) {
-    throw new ApiError({ code: 'forbidden' });
+    throw new ReadableError({ code: 'forbidden' });
   }
 };
 
@@ -54,7 +54,7 @@ export const assertSitePermission = async ({
 }: AssertSitePermissionParams) => {
   // 사실 지금은 사이트별 권한이 없어서 팀 권한만 봄
   if (!userId) {
-    throw new ApiError({ code: 'unauthorized' });
+    throw new ReadableError({ code: 'unauthorized' });
   }
 
   const member = await db
@@ -73,7 +73,7 @@ export const assertSitePermission = async ({
     .then(first);
 
   if (!member || teamMemberRolePrecedences.indexOf(member.role) < teamMemberRolePrecedences.indexOf(role)) {
-    throw new ApiError({ code: 'forbidden' });
+    throw new ReadableError({ code: 'forbidden' });
   }
 };
 
@@ -89,7 +89,7 @@ export const assertCategoryPermission = async ({
   role = TeamMemberRole.MEMBER,
 }: AssertCategoryPermissionParams) => {
   if (!userId) {
-    throw new ApiError({ code: 'unauthorized' });
+    throw new ReadableError({ code: 'unauthorized' });
   }
 
   const member = await db
@@ -109,7 +109,7 @@ export const assertCategoryPermission = async ({
     .then(first);
 
   if (!member || teamMemberRolePrecedences.indexOf(member.role) < teamMemberRolePrecedences.indexOf(role)) {
-    throw new ApiError({ code: 'forbidden' });
+    throw new ReadableError({ code: 'forbidden' });
   }
 };
 
@@ -125,7 +125,7 @@ export const assertPagePermission = async ({
   role = TeamMemberRole.MEMBER,
 }: AssertPagePermissionParams) => {
   if (!userId) {
-    throw new ApiError({ code: 'unauthorized' });
+    throw new ReadableError({ code: 'unauthorized' });
   }
 
   const member = await db
@@ -145,6 +145,6 @@ export const assertPagePermission = async ({
     .then(first);
 
   if (!member || teamMemberRolePrecedences.indexOf(member.role) < teamMemberRolePrecedences.indexOf(role)) {
-    throw new ApiError({ code: 'forbidden' });
+    throw new ReadableError({ code: 'forbidden' });
   }
 };
