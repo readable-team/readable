@@ -307,6 +307,7 @@
         bind:this={titleEl}
         class={css({
           textStyle: '34b',
+          lineHeight: '[1.3]',
           height: 'auto',
           wordBreak: 'break-all',
           overflowY: 'hidden',
