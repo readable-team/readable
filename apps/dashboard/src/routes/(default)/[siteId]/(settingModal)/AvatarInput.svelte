@@ -1,6 +1,5 @@
 <script lang="ts">
   import { css, cx } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
   import { getFormContext } from '@readable/ui/forms';
   import UploadIcon from '~icons/lucide/upload';
@@ -9,6 +8,7 @@
 
   export let avatar: Img_image;
   export let name: string;
+  export let canEdit = true;
 
   const { data } = getFormContext().form ?? {};
 
@@ -16,19 +16,25 @@
   $: file = $data?.[name] as File | undefined;
 </script>
 
-<label
+<svelte:element
+  this={canEdit ? 'label' : 'div'}
   class={cx(
-    flex({
-      position: 'relative',
-      alignItems: 'center',
-      justifyContent: 'center',
-      size: '64px',
-      borderWidth: '1px',
-      borderColor: 'border.image',
-      borderRadius: 'full',
-      cursor: 'pointer',
-      overflow: 'hidden',
-    }),
+    css(
+      {
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        size: '64px',
+        borderWidth: '1px',
+        borderColor: 'border.image',
+        borderRadius: 'full',
+        overflow: 'hidden',
+      },
+      canEdit && {
+        cursor: 'pointer',
+      },
+    ),
     'group',
   )}
 >
@@ -37,26 +43,30 @@
   {:else}
     <Img style={css.raw({ size: 'full' })} $image={avatar} alt="아바타" size={64} />
   {/if}
-  <div
-    class={css({
-      display: 'none',
-      _groupHover: {
-        position: 'absolute',
-        display: 'flex',
-        size: 'full',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'neutral.100/16',
-        color: 'neutral.0',
-        borderRadius: 'full',
-        transition: '[opacity 0.2s]',
-      },
-      _groupActive: {
-        backgroundColor: 'neutral.100/24',
-      },
-    })}
-  >
-    <Icon icon={UploadIcon} size={28} />
-  </div>
-  <input {name} accept="image/*" hidden type="file" />
-</label>
+
+  {#if canEdit}
+    <div
+      class={css({
+        display: 'none',
+        _groupHover: {
+          position: 'absolute',
+          display: 'flex',
+          size: 'full',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'neutral.100/16',
+          color: 'neutral.0',
+          borderRadius: 'full',
+          transition: '[opacity 0.2s]',
+        },
+        _groupActive: {
+          backgroundColor: 'neutral.100/24',
+        },
+      })}
+    >
+      <Icon icon={UploadIcon} size={28} />
+    </div>
+
+    <input {name} accept="image/*" hidden type="file" />
+  {/if}
+</svelte:element>

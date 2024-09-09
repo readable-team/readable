@@ -22,6 +22,11 @@
         id
         name
 
+        meAsMember {
+          id
+          role
+        }
+
         avatar {
           id
           ...Img_image
@@ -91,10 +96,10 @@
 
   <div class={flex({ flexDirection: 'column', gap: '24px' })}>
     <FormField name="avatar" label="이미지" noMessage>
-      <AvatarInput name="avatarDraftFile" avatar={$team.avatar} />
+      <AvatarInput name="avatarDraftFile" avatar={$team.avatar} canEdit={$team.meAsMember?.role !== 'MEMBER'} />
     </FormField>
     <FormField name="name" label="이름">
-      <TextInput name="name" placeholder="이름" />
+      <TextInput name="name" disabled={$team.meAsMember?.role === 'MEMBER'} placeholder="이름" />
     </FormField>
   </div>
 
