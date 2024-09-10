@@ -187,6 +187,7 @@
     >
       <div
         class={flex({
+          flexShrink: 0,
           alignItems: 'center',
           smOnly: {
             gap: '12px',
