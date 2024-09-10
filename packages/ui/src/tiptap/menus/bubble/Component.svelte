@@ -45,9 +45,9 @@
   });
 
   const topLevelNodeTypes = [
-    { id: 'heading-1', label: '제목1', icon: Heading1Icon },
-    { id: 'heading-2', label: '제목2', icon: Heading2Icon },
-    { id: 'heading-3', label: '제목3', icon: Heading3Icon },
+    { id: 'heading-1', label: '제목 1', icon: Heading1Icon },
+    { id: 'heading-2', label: '제목 2', icon: Heading2Icon },
+    { id: 'heading-3', label: '제목 3', icon: Heading3Icon },
     { id: 'paragraph', label: '텍스트', icon: LetterTextIcon },
   ];
 

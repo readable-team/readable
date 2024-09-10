@@ -205,7 +205,7 @@
               backgroundColor: 'neutral.30',
             })}
           >
-            미발행
+            미게시
           </div>
         {/if}
         <span
@@ -247,8 +247,9 @@
             variant="danger"
             on:click={() =>
               invokeAlert({
-                title: '페이지를 삭제할까요?',
-                content: '이 작업은 되돌릴 수 없어요. 해당 페이지를 삭제하면 모든 하위 페이지도 함께 삭제돼요',
+                title: `"${item.content?.title ?? '(제목 없음)'}" 페이지를 삭제하시겠어요?`,
+                content: '삭제된 페이지는 복구할 수 없습니다',
+                // TODO: n개의 하위 페이지가 함께 삭제됩니다
                 actionText: '삭제',
                 action: async () => {
                   await deletePage({ pageId: item.id });
@@ -342,10 +343,14 @@
               variant="danger"
               on:click={() =>
                 invokeAlert({
-                  title: '카테고리 삭제',
-                  content: '카테고리를 삭제하시겠습니까?',
+                  title: `"${item.name}" 카테고리를 삭제하시겠어요?`,
+                  content: '삭제된 카테고리와 페이지는 복구할 수 없습니다',
+                  // TODO: n개의 페이지가 함께 삭제됩니다
                   actionText: '삭제',
-                  action: () => deleteCategory({ categoryId: item.id }),
+                  action: async () => {
+                    await deleteCategory({ categoryId: item.id });
+                    toast.error('카테고리가 삭제되었습니다');
+                  },
                 })}
             >
               <Icon icon={Trash2Icon} size={14} />

@@ -36,7 +36,7 @@ export const Placeholder = Extension.create({
                 createDecoration(
                   $anchor.pos === 0 ? 0 : $anchor.before(),
                   $anchor.pos === 0 ? 2 : $anchor.after(),
-                  '내용을 입력하거나 /를 입력해 명령어 사용하기...',
+                  '내용을 입력하거나 /를 입력해 블록 삽입하기...',
                 ),
               );
             }
@@ -54,9 +54,9 @@ export const Placeholder = Extension.create({
 
               const placeholder = match(block.type.name)
                 .with('heading', () => `제목 ${block.attrs.level}`)
-                .with('blockquote', () => '무언가 인용해보세요...')
+                .with('blockquote', () => '인용구')
                 .with('bulletList', 'orderedList', () => '목록')
-                .with('callout', () => '무언가 적어보세요...')
+                .with('callout', () => '콜아웃')
                 .otherwise(() => null);
 
               if (!placeholder) {

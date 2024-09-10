@@ -120,10 +120,11 @@
       >
         {#if inflight}
           <RingSpinner style={css.raw({ size: '20px', color: 'neutral.40' })} />
+          <!-- TODO: 파일명 보여주기 -->
           파일 업로드 중...
         {:else}
           <Icon style={css.raw({ color: 'text.tertiary' })} icon={PaperclipIcon} size={20} />
-          파일을 업로드 해주세요
+          파일 업로드
         {/if}
       </div>
     {/if}
@@ -174,9 +175,9 @@
     use:floating
   >
     <p class={css({ marginBottom: '2px', textStyle: '14b' })}>파일 업로드</p>
-    <span class={css({ textStyle: '13r', color: 'text.tertiary' })}>
-      파일을 드래그하거나 버튼을 클릭하여 업로드하세요
-    </span>
-    <Button style={css.raw({ marginTop: '12px', width: 'full' })} size="sm" on:click={handleUpload}>업로드</Button>
+    <span class={css({ textStyle: '13r', color: 'text.tertiary' })}>아래 버튼을 클릭해 파일을 선택하세요</span>
+    <Button style={css.raw({ marginTop: '12px', width: 'full' })} size="sm" on:click={handleUpload}>
+      파일 선택하기...
+    </Button>
   </div>
 {/if}

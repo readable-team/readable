@@ -3,6 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Button, Icon } from '@readable/ui/components';
   import { onMount } from 'svelte';
+  import MousePointerClickIcon from '~icons/lucide/mouse-pointer-click';
   import ReadableIcon from '~icons/rdbl/readable';
   import SlashDividerIcon from '~icons/rdbl/slash-divider';
   import { page } from '$app/stores';
@@ -141,7 +142,7 @@
     <Tabs
       tabs={[
         {
-          title: '콘텐츠',
+          title: '페이지',
           path: `/${$query.site.id}`,
           selected:
             $page.url.pathname.startsWith(`/${$query.site.id}`) &&
@@ -159,8 +160,18 @@
       ]}
     />
 
-    <Button href={$query.site.url} rel="noopener noreferrer" size="sm" target="_blank" type="link" variant="secondary">
-      사이트 바로가기
+    <!-- TODO: 스타일 수정 -->
+    <Button
+      style={css.raw({ gap: '6px' })}
+      href={$query.site.url}
+      rel="noopener noreferrer"
+      size="sm"
+      target="_blank"
+      type="link"
+      variant="secondary"
+    >
+      <Icon icon={MousePointerClickIcon} />
+      {$query.site.url}
     </Button>
   </nav>
 

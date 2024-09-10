@@ -43,8 +43,6 @@
       <FullLogo class={css({ height: '20px' })} />
     </a>
 
-    <h1 class={css({ marginTop: '40px', marginBottom: '12px', textStyle: '28b' })}>로그인/회원가입</h1>
-
     <p class={css({ marginBottom: '80px', textStyle: '20sb', color: 'neutral.70' })}>
       제품과 문서를 동기화하고
       <br />

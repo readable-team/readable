@@ -108,13 +108,9 @@
   <FullLogo class={css({ height: '20px' })} />
 
   <div>
-    <h1 class={css({ marginBottom: '12px', textStyle: '28b', textAlign: 'center' })}>
-      {$query.me.name}님, 환영해요!
-      <br />
-      팀을 만들어 주세요.
-    </h1>
+    <h1 class={css({ marginBottom: '12px', textStyle: '28b', textAlign: 'center' })}>사이트를 만들어보세요</h1>
     <p class={css({ textStyle: '16m', color: 'neutral.80' })}>
-      팀에서는 팀원들을 초대해 사이트를 함께 관리할 수 있어요
+      도움센터, 업데이트노트, 개발자 문서 등 다양한 사이트를 제작해보세요
     </p>
   </div>
 
@@ -129,14 +125,14 @@
     use:form
   >
     <input name="teamId" type="hidden" />
-    <FormField name="name" description="설정에서 언제든지 변경할 수 있어요." label="사이트 이름 *">
-      <TextInput placeholder="예: ACME 도움센터" />
+    <FormField name="name" description="설정에서 언제든지 변경할 수 있어요" label="사이트 이름 *">
+      <TextInput placeholder="ACME 도움센터" />
       <svelte:fragment slot="right-text">{$data.name?.length ?? 0}/50</svelte:fragment>
     </FormField>
 
     <HorizontalDivider style={css.raw({ marginY: '32px' })} />
 
-    <p class={css({ marginBottom: '4px', textStyle: '14b', color: 'neutral.80' })}>어떤 목적으로 도입하나요?</p>
+    <p class={css({ marginBottom: '4px', textStyle: '14b', color: 'neutral.80' })}>도입 목적</p>
 
     <Menu placement="bottom" setFullWidth>
       <div
@@ -160,17 +156,14 @@
         <Icon style={css.raw({ color: { base: 'gray.500', _dark: 'darkgray.400' } })} icon={ChevronDownIcon} />
       </div>
 
-      <MenuItem on:click={() => (purpose = '고객용 도움센터 제작')}>고객용 도움센터 제작</MenuItem>
-      <MenuItem on:click={() => (purpose = '개발자 문서 제작')}>개발자 문서 제작</MenuItem>
-      <MenuItem on:click={() => (purpose = '사내 문서 제작')}>사내 문서 제작</MenuItem>
-      <MenuItem on:click={() => (purpose = '그냥 써 보는 중')}>그냥 써 보는 중</MenuItem>
+      <MenuItem on:click={() => (purpose = '고객용 도움센터')}>고객용 도움센터</MenuItem>
+      <MenuItem on:click={() => (purpose = '업데이트 노트')}>업데이트 노트</MenuItem>
+      <MenuItem on:click={() => (purpose = '개발자 문서')}>개발자 문서</MenuItem>
+      <MenuItem on:click={() => (purpose = '사내 문서')}>사내 문서</MenuItem>
       <MenuItem on:click={() => (purpose = '기타')}>기타</MenuItem>
-      <MenuItem on:click={() => (purpose = '응답하고 싶지 않음')}>응답하고 싶지 않음</MenuItem>
     </Menu>
 
-    <p class={css({ marginTop: '24px', marginBottom: '4px', textStyle: '14b', color: 'neutral.80' })}>
-      {$query.me.name}님의 직군을 선택해 주세요.
-    </p>
+    <p class={css({ marginTop: '24px', marginBottom: '4px', textStyle: '14b', color: 'neutral.80' })}>직군</p>
 
     <Menu setFullWidth>
       <div
@@ -194,15 +187,14 @@
         <Icon style={css.raw({ color: { base: 'gray.500', _dark: 'darkgray.400' } })} icon={ChevronDownIcon} />
       </div>
 
-      <MenuItem on:click={() => (jobRole = '기획/마케팅')}>기획/마케팅</MenuItem>
       <MenuItem on:click={() => (jobRole = '운영/고객지원')}>운영/고객지원</MenuItem>
+      <MenuItem on:click={() => (jobRole = '기획/마케팅')}>기획/마케팅</MenuItem>
       <MenuItem on:click={() => (jobRole = '개발')}>개발</MenuItem>
       <MenuItem on:click={() => (jobRole = '디자인')}>디자인</MenuItem>
       <MenuItem on:click={() => (jobRole = '1인 사업자/프리랜서')}>1인 사업자/프리랜서</MenuItem>
       <MenuItem on:click={() => (jobRole = '기타')}>기타</MenuItem>
-      <MenuItem on:click={() => (jobRole = '응답하고 싶지 않음')}>응답하고 싶지 않음</MenuItem>
     </Menu>
 
-    <Button style={css.raw({ marginTop: '32px', width: 'full' })} size="lg" type="submit">만들기</Button>
+    <Button style={css.raw({ marginTop: '32px', width: 'full' })} size="lg" type="submit">시작하기</Button>
   </form>
 </div>

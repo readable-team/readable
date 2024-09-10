@@ -142,7 +142,7 @@
           color: { base: 'gray.700', _dark: 'gray.300' },
         })}
       >
-        커스텀 도메인 URL
+        연결된 도메인
       </h2>
       <div class={flex({ alignItems: 'center', borderBottomWidth: '1px', borderColor: 'divider.primary' })}>
         <p
@@ -195,8 +195,8 @@
             variant="danger"
             on:click={() => {
               invokeAlert({
-                title: '도메인을 제거하시겠어요?',
-                content: '해당 도메인의 공유 링크, 페이지 연결이 끊어지니 주의해주세요',
+                title: '커스텀 도메인을 제거하시겠어요?',
+                content: '커스텀 도메인을 제거하면 기존 주소로는 접근할 수 없습니다',
                 actionText: '제거',
                 action: async () => {
                   if ($query.site.customDomain) {
@@ -208,7 +208,7 @@
             }}
           >
             <Icon icon={Trash2Icon} size={14} />
-            <span>삭제</span>
+            <span>제거</span>
           </MenuItem>
         </Menu>
       </div>
@@ -240,7 +240,7 @@
         커스텀 도메인 URL
       </label>
 
-      <TextInput name="domain" disabled={!!$query.site.customDomain} placeholder="도메인 주소를 입력해주세요" />
+      <TextInput name="domain" disabled={!!$query.site.customDomain} placeholder="docs.example.com" />
 
       <Button style={css.raw({ marginTop: '29px', marginLeft: 'auto' })} size="lg" type="submit">설정</Button>
     </form>
@@ -280,10 +280,10 @@
   </div>
 
   <div class={flex({ direction: 'column', gap: '20px', paddingX: '32px', paddingY: '24px' })}>
-    <div class={css({ textStyle: '13r', color: 'text.tertiary' })}>
-      <p>사용중인 도메인 관리 페이지에서 다음 DNS 레코드를 추가해 주시기 바랍니다.</p>
-      <p>1. CNAME 레코드에는 'www'를 쓰고 도메인 이름을 입력해주세요.</p>
-      <p>2. TXT 레코드에 '@'를 쓰고 옆에 'verify=abc123xyz'를 넣어주세요.</p>
+    <div class={css({ textStyle: '13r', color: 'text.secondary' })}>
+      <p>사용중인 도메인 관리 페이지에서 아래 DNS 레코드를 추가해 주세요.</p>
+      <p>- Cloudflare DNS를 이용 중인 경우 프록시 상태를 DNS 전용으로 설정해 주세요.</p>
+      <p>- TTL 설정이 필요한 경우 Auto 혹은 300초 (5분) 이하로 설정해 주세요.</p>
     </div>
 
     <HorizontalDivider />
@@ -366,6 +366,6 @@
       </div>
     </dl>
 
-    <Button loading={verifying} size="lg" type="button" on:click={verifyStream}>확인</Button>
+    <Button loading={verifying} size="lg" type="button" on:click={verifyStream}>DNS 레코드 확인</Button>
   </div>
 </Modal>

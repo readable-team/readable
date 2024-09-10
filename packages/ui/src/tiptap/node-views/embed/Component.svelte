@@ -148,7 +148,7 @@
           <p>임베드 중...</p>
         {:else}
           <Icon icon={FileUpIcon} size={20} />
-          <p>임베드할 링크를 입력해주세요</p>
+          <p>링크 임베드</p>
         {/if}
       </div>
 
@@ -197,9 +197,11 @@
   >
     <p class={css({ marginBottom: '2px', textStyle: '14b' })}>URL을 입력해주세요</p>
     <span class={css({ marginBottom: '12px', textStyle: '13r', color: 'text.tertiary' })}>
-      PDF, Google Drive 등의 링크와 호환됩니다
+      Youtube, Google Drive, 일반 링크 등
+      <br />
+      다양한 콘텐츠를 임베드할 수 있어요
     </span>
-    <TextInput style={css.raw({ width: 'full' })} bind:value={url} bind:inputEl />
+    <TextInput style={css.raw({ width: 'full' })} placeholder="https://..." bind:value={url} bind:inputEl />
     <Button style={css.raw({ marginTop: '27px', width: 'full' })} size="lg" type="submit">확인</Button>
   </form>
 {/if}

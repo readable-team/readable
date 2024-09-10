@@ -96,11 +96,12 @@
       email: dataSchemas.email,
     }),
     onSuccess: () => {
-      toast.success('초대할 멤버에게 이메일이 전송되었어요');
+      toast.success('초대 이메일이 발송되었습니다');
       reset();
     },
     onError: (e: unknown) => {
       if (e instanceof GraphQLError) {
+        // FIXME: unexpected error
         setErrors({ email: e.message });
       } else {
         setErrors({ email: '알 수 없는 오류가 발생했습니다.' });
@@ -211,21 +212,20 @@
             <MenuItem
               on:click={async () => {
                 await resendInvitationEmail({ invitationId: invitation.id });
-                toast.success(`${invitation.email}으로 메일을 재발송했습니다`);
+                toast.success('초대 이메일이 재발송되었습니다');
               }}
             >
               <Icon icon={MailOpenIcon} size={14} />
-              <span>재발송</span>
+              <span>이메일 재발송</span>
             </MenuItem>
             <MenuItem
               variant="danger"
               on:click={async () => {
                 invokeAlert({
                   title: '초대를 취소하시겠어요?',
-                  content: '이미 발송된 초대 이메일은 회수할 수 없지만, 초대 링크는 더이상 작동하지 않습니다',
+                  content: '발송된 초대 이메일에 포함된 링크는 더 이상 작동하지 않습니다',
                   actionText: '발송 취소',
                   action: async () => {
-                    // TODO: cache invalidate
                     await revokeInvitation({ invitationId: invitation.id });
                   },
                 });
@@ -282,7 +282,7 @@
                   },
                 })}
               >
-                <span>{member.role === 'ADMIN' ? '관리자' : '멤버'}</span>
+                <span>{member.role === 'ADMIN' ? '관리자' : '편집자'}</span>
                 <Icon style={css.raw({ color: 'neutral.60' })} icon={ChevronDownIcon} size={16} />
               </div>
 
@@ -298,7 +298,9 @@
               >
                 <div class={flex({ flexDirection: 'column', alignItems: 'start', gap: '2px', width: 'full' })}>
                   <p class={css({ textStyle: '15sb', color: 'text.primary' })}>관리자</p>
-                  <p class={css({ textStyle: '13r', color: 'text.tertiary' })}>사이트 설정 변경, 멤버 초대 및 관리</p>
+                  <p class={css({ textStyle: '13r', color: 'text.tertiary' })}>
+                    사이트 및 팀 설정 변경, 문서 편집, 발행 및 삭제
+                  </p>
                 </div>
 
                 <Icon
@@ -331,8 +333,8 @@
                   })}
               >
                 <div class={flex({ flexDirection: 'column', alignItems: 'start', gap: '2px', width: 'full' })}>
-                  <p class={css({ textStyle: '15sb', color: 'text.primary' })}>멤버</p>
-                  <p class={css({ textStyle: '13r', color: 'text.tertiary' })}>사이트 설정 변경</p>
+                  <p class={css({ textStyle: '15sb', color: 'text.primary' })}>편집자</p>
+                  <p class={css({ textStyle: '13r', color: 'text.tertiary' })}>문서 편집, 발행 및 삭제</p>
                 </div>
 
                 {#if member.role === 'MEMBER'}
@@ -350,7 +352,7 @@
                 width: '86px',
               })}
             >
-              {member.role === 'ADMIN' ? '관리자' : '멤버'}
+              {member.role === 'ADMIN' ? '관리자' : '편집자'}
             </div>
           {/if}
         </div>
@@ -375,11 +377,10 @@
                 variant="danger"
                 on:click={async () => {
                   invokeAlert({
-                    title: `"${$team.name}" 팀에서 떠나시겠어요?`,
-                    content: '팀에서 떠나게 될 시 팀에 접근할 수 없으며, 관련 권한이 모두 해제됩니다',
+                    title: '팀에서 떠나시겠어요?',
+                    content: '더 이상 팀 대시보드에 접근할 수 없습니다',
                     actionText: '떠나기',
                     action: async () => {
-                      // TODO: alert, cache invalidate
                       await removeTeamMember({ userId: member.user.id, teamId: $team.id });
                       if (member.id === $team.meAsMember?.id) {
                         await invalidateAll();
@@ -390,7 +391,7 @@
                 }}
               >
                 <Icon slot="prefix" icon={UserRoundMinusIcon} size={14} />
-                <span>팀 떠나기</span>
+                <span>팀에서 떠나기</span>
               </MenuItem>
             </Menu>
           {:else if $team.meAsMember?.role === 'ADMIN' && !(member.id === $team.meAsMember?.id && member.isSoleAdmin)}
@@ -412,18 +413,17 @@
                 variant="danger"
                 on:click={async () => {
                   invokeAlert({
-                    title: `"${member.user.name}"을 팀 멤버에서 제거하시겠어요?`,
-                    content: '제거된 멤버는 팀 리소스에 접근할 수 없게 되며, 관련 권한이 모두 해제됩니다 ',
+                    title: `"${member.user.name}"님을 팀에서 제거하시겠어요?`,
+                    content: '제거된 멤버는 더 이상 팀 대시보드에 접근할 수 없습니다',
                     actionText: '제거',
                     action: async () => {
-                      // TODO: alert, cache invalidate
                       await removeTeamMember({ userId: member.user.id, teamId: $team.id });
                     },
                   });
                 }}
               >
                 <Icon slot="prefix" icon={UserRoundMinusIcon} size={14} />
-                <span>멤버 제거</span>
+                <span>팀에서 제거</span>
               </MenuItem>
             </Menu>
           {/if}
@@ -456,7 +456,7 @@
         alt={`${$team.name}의 아바타`}
         size={24}
       />
-      <h2 class={css({ textStyle: '16b' })}>팀 초대 요청</h2>
+      <h2 class={css({ textStyle: '16b' })}>팀에 초대하기</h2>
     </div>
     <button type="button" on:click={() => (isInviteModalOpen = false)}>
       <Icon icon={XIcon} size={20} />
@@ -467,7 +467,7 @@
     <input name="teamId" type="hidden" value={$team.id} />
 
     <FormField name="email" label="이메일">
-      <TextInput placeholder="초대할 이메일을 입력해주세요 (email@example.com...)" />
+      <TextInput placeholder="me@example.com" />
     </FormField>
 
     <Button style={css.raw({ marginLeft: 'auto' })} size="md" type="submit">초대하기</Button>

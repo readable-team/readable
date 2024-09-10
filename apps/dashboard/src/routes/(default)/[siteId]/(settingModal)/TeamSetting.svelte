@@ -95,11 +95,11 @@
   <input name="avatarId" type="hidden" />
 
   <div class={flex({ flexDirection: 'column', gap: '24px' })}>
-    <FormField name="avatar" label="이미지" noMessage>
+    <FormField name="avatar" label="팀 로고" noMessage>
       <AvatarInput name="avatarDraftFile" avatar={$team.avatar} canEdit={$team.meAsMember?.role !== 'MEMBER'} />
     </FormField>
-    <FormField name="name" label="이름">
-      <TextInput name="name" disabled={$team.meAsMember?.role === 'MEMBER'} placeholder="이름" />
+    <FormField name="name" label="팀 이름">
+      <TextInput name="name" disabled={$team.meAsMember?.role === 'MEMBER'} placeholder="ACME Inc." />
     </FormField>
   </div>
 

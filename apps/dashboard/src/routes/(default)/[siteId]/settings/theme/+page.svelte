@@ -52,7 +52,7 @@
         themeColor,
         logoId: $query.site.logo?.id,
       });
-      toast.success('테마 색상이 변경되었습니다');
+      toast.success('사이트 테마 색상이 변경되었습니다');
     },
   });
 

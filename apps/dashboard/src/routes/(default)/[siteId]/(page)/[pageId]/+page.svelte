@@ -8,7 +8,7 @@
   import CopyIcon from '~icons/lucide/copy';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import ExternalLinkIcon from '~icons/lucide/external-link';
-  import FileWarningIcon from '~icons/lucide/file-warning';
+  import FileXIcon from '~icons/lucide/file-x';
   import Trash2Icon from '~icons/lucide/trash-2';
   import UndoIcon from '~icons/lucide/undo';
   import { afterNavigate, goto } from '$app/navigation';
@@ -116,12 +116,13 @@
 
 {#if $query.page.state === 'DELETED'}
   <div class={flex({ direction: 'column', align: 'center', justify: 'center', gap: '24px', width: 'full' })}>
-    <Icon style={css.raw({ size: '60px' })} icon={FileWarningIcon} />
+    <Icon style={css.raw({ size: '60px' })} icon={FileXIcon} />
     <div class={css({ textAlign: 'center' })}>
       <h1 class={css({ textStyle: '22b', marginBottom: '4px' })}>페이지가 삭제되었습니다</h1>
       <p class={css({ textStyle: '15r', color: 'text.secondary' })}>
-        현재 페이지 또는 카테고리가 삭제되어 더 이상 접근할 수 없습니다. <br />
-        다른 페이지를 선택해 주세요.
+        페이지가 삭제되어 더 이상 접근할 수 없습니다.
+        <br />
+        다른 페이지를 선택해 주세요
       </p>
     </div>
   </div>
@@ -165,8 +166,8 @@
             )}
           >
             {$query.page.state === PageState.DRAFT
-              ? '아직 발행되지 않은 페이지입니다'
-              : '발행되지 않은 수정 내역이 있습니다'}
+              ? '아직 게시되지 않은 페이지입니다'
+              : '발행하지 않은 수정 내역이 있습니다'}
           </div>
         </div>
       {/if}
@@ -238,7 +239,7 @@
           {#if $query.page.state === PageState.PUBLISHED}
             <MenuItem on:click={() => (unpublishPageOpen = true)}>
               <Icon icon={UndoIcon} size={14} />
-              <span>발행 취소</span>
+              <span>게시 취소</span>
             </MenuItem>
           {/if}
           <MenuItem variant="danger" on:click={() => (deletePageOpen = true)}>
@@ -251,9 +252,9 @@
 
     <Tooltip
       style={css.raw({ marginBottom: '34px' })}
-      enabled={$query.page.hasUnpublishedParents ||
-        ($query.page.state === PageState.PUBLISHED && !$query.page.hasUnpublishedChanges)}
-      message="이미 최신 버전으로 발행되어 있어요"
+      enabled={$query.page.hasUnpublishedParents}
+      message="상위 페이지를 먼저 게시해주세요"
+      placement="left"
     >
       <Button
         style={css.raw({ width: 'full' })}
@@ -266,8 +267,12 @@
         }}
       >
         발행
+        <!-- TODO: 게시 안됐을 때 -> 게시 및 발행, 발행 완료 -> 발행됨 -->
       </Button>
     </Tooltip>
+
+    <!-- TODO: 게시됨 표시, 간격 조정 -->
+    <p class={css({ marginBottom: '4px', textStyle: '14sb', color: 'text.secondary' })}>상태</p>
 
     <p class={css({ marginBottom: '8px', textStyle: '14sb', color: 'text.secondary' })}>편집자</p>
 
@@ -312,7 +317,7 @@
       </time>
     {/if}
 
-    <p class={css({ marginBottom: '4px', textStyle: '14sb', color: 'text.secondary' })}>마지막 편집 시간</p>
+    <p class={css({ marginBottom: '4px', textStyle: '14sb', color: 'text.secondary' })}>마지막 수정 시간</p>
 
     <time
       class={css({ display: 'block', textStyle: '14r', color: 'text.tertiary' })}
@@ -336,13 +341,14 @@
   }}
   bind:open={deletePageOpen}
 >
-  <svelte:fragment slot="title">페이지를 삭제할까요?</svelte:fragment>
-  <svelte:fragment slot="content">
-    이 작업은 되돌릴 수 없어요. 해당 페이지를 삭제하면 모든 하위 페이지도 함께 삭제돼요
+  <svelte:fragment slot="title">
+    "{$query.page.content?.title ?? '(제목 없음)'}" 페이지를 삭제하시겠어요?
   </svelte:fragment>
+  <svelte:fragment slot="content">삭제된 페이지는 복구할 수 없습니다</svelte:fragment>
 
-  <svelte:fragment slot="action">페이지 삭제</svelte:fragment>
-  <svelte:fragment slot="cancel">삭제하지 않을래요</svelte:fragment>
+  <!-- TODO: n개의 하위 페이지가 함께 삭제됩니다 -->
+  <svelte:fragment slot="action">삭제</svelte:fragment>
+  <svelte:fragment slot="cancel">취소</svelte:fragment>
 </Alert>
 
 <Alert
@@ -351,9 +357,24 @@
   }}
   bind:open={unpublishPageOpen}
 >
-  <svelte:fragment slot="title">페이지 발행을 취소할까요?</svelte:fragment>
-  <svelte:fragment slot="content">페이지 발행을 취소하면 해당 페이지가 사이트에서 숨겨져요</svelte:fragment>
+  <svelte:fragment slot="title">
+    "{$query.page.content?.title ?? '(제목 없음)'}" 페이지 게시를 취소하시겠어요?
+  </svelte:fragment>
+  <svelte:fragment slot="content">
+    사이트에서 이 페이지가 더 이상 노출되지 않습니다.
+    <br />
+    게시 취소한 페이지는 언제든 발행 버튼으로 다시 게시할 수 있습니다
+  </svelte:fragment>
 
-  <svelte:fragment slot="action">페이지 발행 취소</svelte:fragment>
-  <svelte:fragment slot="cancel">발행 취소를 하지 않을래요</svelte:fragment>
+  <!-- TODO: n개의 하위 페이지가 함께 게시 취소됩니다 -->
+  <svelte:fragment slot="action">게시 취소</svelte:fragment>
+  <svelte:fragment slot="cancel">취소</svelte:fragment>
 </Alert>
+
+<!-- 
+  TODO: 게시할 때 알럿
+  title: "{제목}" 페이지를 게시하시겠어요?
+  content: 누구나 사이트에서 이 페이지를 볼 수 있으며, 언제든 게시를 취소할 수 있습니다
+  action: 게시 및 발행
+  variant: primary
+ -->

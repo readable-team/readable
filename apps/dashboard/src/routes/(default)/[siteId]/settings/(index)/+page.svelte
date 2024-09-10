@@ -91,7 +91,7 @@
         themeColor: $query.site.themeColor,
         logoId,
       });
-      toast.success('프로필 변경이 완료되었습니다');
+      toast.success('사이트 설정이 변경되었습니다');
     },
   });
 
@@ -105,8 +105,8 @@
     }),
     mutation: async ({ slug }) => {
       invokeAlert({
-        title: 'URL 주소를 변경하시겠어요?',
-        content: 'URL 변경 시 기존에 이용하던 공유 링크, 페이지 연결이 끊어집니다.',
+        title: '사이트 주소를 변경하시겠어요?',
+        content: '사이트 주소가 변경되면 기존 주소로는 접근할 수 없습니다',
         actionText: '변경',
         action: async () => {
           await updateSite({
@@ -116,7 +116,7 @@
             themeColor: $query.site.themeColor,
             logoId: $query.site.logo?.id,
           });
-          toast.success('URL 변경이 완료되었습니다');
+          toast.success('사이트 주소가 변경되었습니다');
         },
         variant: 'primary',
       });
@@ -223,8 +223,8 @@
       }}
     />
 
-    <FormField name="name" style={css.raw({ marginTop: '24px' })} label="사이트명">
-      <TextInput placeholder="사이트명을 입력해주세요" />
+    <FormField name="name" style={css.raw({ marginTop: '24px' })} label="사이트 이름">
+      <TextInput placeholder="ACME 도움센터" />
     </FormField>
 
     <Button style={css.raw({ marginTop: '8px', marginLeft: 'auto' })} size="lg" type="submit">변경</Button>
@@ -251,14 +251,14 @@
       })}
       for="slug"
     >
-      URL
+      사이트 주소
     </label>
 
     <div class={flex({ align: 'center' })}>
       <TextInput
         name="slug"
         style={css.raw({ borderTopRightRadius: '0', borderBottomRightRadius: '0', width: 'full' })}
-        placeholder="URL을 입력해주세요"
+        placeholder="acme-docs"
       />
 
       <div

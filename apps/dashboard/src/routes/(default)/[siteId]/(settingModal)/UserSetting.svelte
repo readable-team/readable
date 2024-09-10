@@ -94,7 +94,7 @@
     <FormField name="name" label="이름">
       <TextInput name="name" placeholder="이름" />
     </FormField>
-    <FormField name="" description="FIXME: 이메일은 변경할 수 없습니다." label="이메일">
+    <FormField name="" description="이메일은 수정할 수 없어요" label="이메일">
       <TextInput disabled value={$user.email} />
     </FormField>
   </div>
@@ -103,6 +103,6 @@
     {#if $isDirty}
       <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
     {/if}
-    <Button disabled={!$isDirty} size="lg" type="submit">저장</Button>
+    <Button disabled={!$isDirty} size="lg" type="submit">변경</Button>
   </div>
 </form>

@@ -3,10 +3,10 @@
   import { flex } from '@readable/styled-system/patterns';
   import { HorizontalDivider, Icon, Menu, MenuItem } from '@readable/ui/components';
   import mixpanel from 'mixpanel-browser';
-  import BookMinusIcon from '~icons/lucide/book-minus';
+  // import BookMinusIcon from '~icons/lucide/book-minus';
   import Building2Icon from '~icons/lucide/building-2';
   import CircleUserRoundIcon from '~icons/lucide/circle-user-round';
-  import InfoIcon from '~icons/lucide/info';
+  // import InfoIcon from '~icons/lucide/info';
   import LogOutIcon from '~icons/lucide/log-out';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
@@ -123,7 +123,7 @@
 
   <HorizontalDivider />
 
-  <MenuItem>
+  <!-- <MenuItem>
     <Icon icon={InfoIcon} size={14} />
     <span>문의하기</span>
   </MenuItem>
@@ -132,7 +132,7 @@
     <span>사용가이드</span>
   </MenuItem>
 
-  <HorizontalDivider />
+  <HorizontalDivider /> -->
 
   <MenuItem
     type="button"

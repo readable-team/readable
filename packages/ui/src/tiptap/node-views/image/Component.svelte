@@ -120,10 +120,11 @@
       >
         {#if inflight}
           <RingSpinner style={css.raw({ color: 'neutral.40', size: '20px' })} />
+          이미지 업로드 중
         {:else}
           <Icon style={css.raw({ color: 'text.tertiary' })} icon={ImageIcon} size={20} />
+          이미지 업로드
         {/if}
-        이미지를 업로드해주세요
       </div>
 
       <Menu>
@@ -170,9 +171,9 @@
     use:floating
   >
     <p class={css({ marginBottom: '2px', textStyle: '14b' })}>이미지 업로드</p>
-    <span class={css({ textStyle: '13r', color: 'text.tertiary' })}>
-      이미지를 드래그하거나 버튼을 클릭하여 업로드하세요
-    </span>
-    <Button style={css.raw({ marginTop: '12px', width: 'full' })} size="sm" on:click={handleUpload}>업로드</Button>
+    <span class={css({ textStyle: '13r', color: 'text.tertiary' })}>아래 버튼을 클릭해 파일을 선택하세요</span>
+    <Button style={css.raw({ marginTop: '12px', width: 'full' })} size="sm" on:click={handleUpload}>
+      파일 선택하기...
+    </Button>
   </div>
 {/if}

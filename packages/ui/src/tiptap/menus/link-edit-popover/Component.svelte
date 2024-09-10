@@ -95,17 +95,12 @@
     on:submit|preventDefault={updateLink}
   >
     <!-- FIXME: 유효한 링크인지 검사? -->
-    <TextInput
-      name="link-draft"
-      placeholder="링크를 붙여넣어주세요"
-      bind:inputEl={inputElement}
-      bind:value={linkDraft}
-    />
+    <TextInput name="link-draft" placeholder="https://..." bind:inputEl={inputElement} bind:value={linkDraft} />
     <Button disabled={linkDraft === ''} size="lg" type="submit" variant="primary">
       {#if !currentLink}
-        링크 업로드
+        확인
       {:else}
-        링크 수정
+        수정
       {/if}
     </Button>
   </form>
