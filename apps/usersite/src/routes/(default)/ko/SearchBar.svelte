@@ -111,7 +111,7 @@
       }
 
       await tick();
-      const selectedElem = listEl.querySelector('& > a[aria-selected="true"') as HTMLElement | null;
+      const selectedElem = listEl?.querySelector<HTMLElement>('& > a[aria-selected="true"');
       if (
         selectedElem &&
         (selectedElem.offsetTop < listEl.scrollTop ||
@@ -279,81 +279,83 @@
           {/if}
         </label>
       </div>
-      {#if searchResults.length > 0}
-        <ul bind:this={listEl} class={css({ paddingY: '12px', overflowY: 'auto', smOnly: { paddingX: '20px' } })}>
-          {#each searchResults as result, index (result.page.id)}
-            <a
-              class={flex({
-                flexDirection: 'column',
-                gap: '2px',
-                paddingX: '18px',
-                paddingY: '16px',
-                cursor: 'pointer',
-                borderRadius: '10px',
-                _hover: {
-                  backgroundColor: 'var(--usersite-theme-color)/4',
-                },
-                _selected: {
-                  backgroundColor: 'var(--usersite-theme-color)/4',
-                },
-                _focus: {
-                  backgroundColor: 'var(--usersite-theme-color)/4',
-                },
-              })}
-              aria-selected={selectedResultIndex === index}
-              href={`/ko/${result.page.slug}`}
-              role="option"
-              tabindex="0"
-              on:focus={() => {
-                selectedResultIndex = index;
-              }}
-            >
-              <h3
-                class={css({
-                  'color': 'text.primary',
-                  'textStyle': '16sb',
-                  '& em': {
-                    color: 'var(--usersite-theme-color)',
+      {#if searchQuery.length > 0}
+        {#if searchResults.length > 0}
+          <ul bind:this={listEl} class={css({ paddingY: '12px', overflowY: 'auto', smOnly: { paddingX: '20px' } })}>
+            {#each searchResults as result, index (result.page.id)}
+              <a
+                class={flex({
+                  flexDirection: 'column',
+                  gap: '2px',
+                  paddingX: '18px',
+                  paddingY: '16px',
+                  cursor: 'pointer',
+                  borderRadius: '10px',
+                  _hover: {
+                    backgroundColor: 'var(--usersite-theme-color)/4',
+                  },
+                  _selected: {
+                    backgroundColor: 'var(--usersite-theme-color)/4',
+                  },
+                  _focus: {
+                    backgroundColor: 'var(--usersite-theme-color)/4',
                   },
                 })}
-                aria-label={result.page.content.title}
+                aria-selected={selectedResultIndex === index}
+                href={`/ko/${result.page.slug}`}
+                role="option"
+                tabindex="0"
+                on:focus={() => {
+                  selectedResultIndex = index;
+                }}
               >
-                {@html result.highlight?.title || result.page.content.title}
-              </h3>
-              {#if result.highlight?.text}
-                <p
+                <h3
                   class={css({
-                    'color': 'text.secondary',
-                    'textStyle': '14r',
+                    'color': 'text.primary',
+                    'textStyle': '16sb',
                     '& em': {
                       color: 'var(--usersite-theme-color)',
                     },
                   })}
-                  aria-label={result.highlight.text}
+                  aria-label={result.page.content.title}
                 >
-                  {@html result.highlight.text}
-                </p>
-              {/if}
-            </a>
-          {/each}
-        </ul>
-      {:else if searchQuery.length > 0}
-        <div
-          class={flex({
-            marginTop: '12px',
-            flexDirection: 'column',
-            paddingX: '18px',
-            smOnly: {
-              paddingX: '38px',
-            },
-            paddingY: '16px',
-            color: 'text.tertiary',
-            gap: '2px',
-          })}
-        >
-          <p class={css({ textStyle: '16sb' })}>검색결과가 없어요</p>
-          <p class={css({ textStyle: '14r' })}>다른 검색어를 입력해주세요</p>
-        </div>
+                  {@html result.highlight?.title || result.page.content.title}
+                </h3>
+                {#if result.highlight?.text}
+                  <p
+                    class={css({
+                      'color': 'text.secondary',
+                      'textStyle': '14r',
+                      '& em': {
+                        color: 'var(--usersite-theme-color)',
+                      },
+                    })}
+                    aria-label={result.highlight.text}
+                  >
+                    {@html result.highlight.text}
+                  </p>
+                {/if}
+              </a>
+            {/each}
+          </ul>
+        {:else}
+          <div
+            class={flex({
+              marginTop: '12px',
+              flexDirection: 'column',
+              paddingX: '18px',
+              smOnly: {
+                paddingX: '38px',
+              },
+              paddingY: '16px',
+              color: 'text.tertiary',
+              gap: '2px',
+            })}
+          >
+            <p class={css({ textStyle: '16sb' })}>검색결과가 없어요</p>
+            <p class={css({ textStyle: '14r' })}>다른 검색어를 입력해주세요</p>
+          </div>
+        {/if}
       {/if}
     </div>
   </div>
