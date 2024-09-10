@@ -11,14 +11,12 @@
   import { graphql } from '$graphql';
   import { searchBarOpen } from '$lib/stores/ui';
 
-  export let siteId: string;
-
   let searchQuery = '';
   let searchResults: Awaited<ReturnType<typeof searchPublicPage.refetch>>['searchPublicPage']['hits'] = [];
 
   const searchPublicPage = graphql(`
-    query SearchBar_Query($query: String!, $siteId: String!) @manual {
-      searchPublicPage(query: $query, siteId: $siteId) {
+    query SearchBar_Query($query: String!) @manual {
+      searchPublicPage(query: $query) {
         estimatedTotalHits
         hits {
           highlight {
@@ -41,7 +39,7 @@
   const debouncedSearch = R.debounce(
     async (query: string) => {
       if (query.length > 0) {
-        const result = await searchPublicPage.refetch({ siteId, query });
+        const result = await searchPublicPage.refetch({ query });
         searchResults = result.searchPublicPage.hits;
         selectedResultIndex = null;
       }

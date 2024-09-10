@@ -152,7 +152,7 @@
   </div>
 </header>
 
-<SearchBar siteId={$query.publicSite.id} />
+<SearchBar />
 
 <main
   id="main-content"
