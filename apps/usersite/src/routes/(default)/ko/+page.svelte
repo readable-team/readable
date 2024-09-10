@@ -3,7 +3,7 @@
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   $: query = graphql(`
-    query IndexPage_Query {
+    query KoIndexPage_Query {
       publicSite {
         id
 

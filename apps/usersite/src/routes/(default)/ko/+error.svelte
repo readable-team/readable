@@ -26,6 +26,5 @@
     </p>
   </div>
 
-  <!-- TODO: 페이지 하나도 없을 때는 버튼 없애기 -->
-  <Button href="/" size="lg" type="link" variant="secondary">홈으로 이동</Button>
+  <Button href="/ko" size="lg" type="link" variant="secondary">홈으로 이동</Button>
 </div>

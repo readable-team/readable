@@ -1,14 +1,29 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  $: code = $page.error!.code;
+  import { css } from '@readable/styled-system/css';
+  import { flex } from '@readable/styled-system/patterns';
+  import { Icon } from '@readable/ui/components';
+  import FileSearchIcon from '~icons/lucide/file-search';
 </script>
 
-{#if code === 'site_not_found'}
-  <h1>사이트를 찾을 수 없어요</h1>
-  <p>이 주소에는 사이트가 설정되어 있지 않아요</p>
-{:else}
-  <h1>Error</h1>
-  <p>An error occurred.</p>
-{/if}
+<div
+  class={flex({
+    width: 'full',
+    height: 'full',
+    direction: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '24px',
+    minHeight: 'screen',
+  })}
+>
+  <Icon style={css.raw({ width: '60px', height: '60px' })} icon={FileSearchIcon} />
+
+  <div class={flex({ direction: 'column', alignItems: 'center', gap: '2px' })}>
+    <h1 class={css({ fontSize: '22px', fontWeight: 'bold' })}>존재하지 않는 페이지입니다</h1>
+    <p class={css({ textAlign: 'center', fontSize: '15px', color: 'text.secondary' })}>
+      페이지의 주소가 잘못 입력되었거나 존재하지 않는 페이지에요.
+      <br />
+      입력한 주소를 다시 한 번 확인해주세요.
+    </p>
+  </div>
+</div>

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
   import ReadableIcon from '~icons/rdbl/readable';
@@ -28,7 +27,10 @@
   {/if}
 </svelte:head>
 
-<div style:--usersite-theme-color={$query.publicSite.themeColor} class={css({ display: 'contents' })}>
+<div
+  style:--usersite-theme-color={$query.publicSite.themeColor}
+  class={flex({ direction: 'column', minHeight: 'screen' })}
+>
   <slot />
 </div>
 
