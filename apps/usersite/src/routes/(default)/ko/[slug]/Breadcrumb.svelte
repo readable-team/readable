@@ -52,7 +52,6 @@
     <li>
       <span>{$publicPage.category.name}</span>
       <span class={css({ color: 'neutral.50' })} aria-hidden="true">/</span>
-      <span>{$publicPage.category.name}</span>
     </li>
     {#if $publicPage.parent}
       <li>
