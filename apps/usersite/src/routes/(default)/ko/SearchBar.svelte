@@ -343,6 +343,9 @@
             marginTop: '12px',
             flexDirection: 'column',
             paddingX: '18px',
+            smOnly: {
+              paddingX: '38px',
+            },
             paddingY: '16px',
             color: 'text.tertiary',
             gap: '2px',
