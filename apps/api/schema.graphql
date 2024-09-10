@@ -300,6 +300,7 @@ type PublicPage implements IPage {
 
 type PublicPageContent {
   content: JSON!
+  excerpt: String!
   id: ID!
   subtitle: String
   title: String!

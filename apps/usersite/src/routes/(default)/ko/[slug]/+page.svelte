@@ -25,6 +25,7 @@
           id
           title
           content
+          excerpt
         }
 
         ...PagePage_Breadcrumb_publicPage
@@ -36,7 +37,11 @@
 </script>
 
 <Helmet
-  image={`${env.PUBLIC_API_URL}/opengraph/pages/${$query.publicPage.id}.png`}
+  description={$query.publicPage.content.excerpt}
+  image={{
+    src: `${env.PUBLIC_API_URL}/opengraph/pages/${$query.publicPage.id}.png`,
+    size: 'large',
+  }}
   title={$query.publicPage.content.title}
   trailing={$query.publicSite.name}
 />

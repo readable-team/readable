@@ -35,7 +35,7 @@
   {/if}
   <link {href} rel="canonical" />
   <meta content={href} property="og:url" />
-  <meta content="readable" property="og:site_name" />
+  <meta content="Readable" property="og:site_name" />
   <meta content={type} property="og:type" />
   <meta content="ko_KR" property="og:locale" />
   {#if struct}

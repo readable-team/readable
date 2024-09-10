@@ -346,6 +346,12 @@ PublicPageContent.implement({
 
     content: t.expose('content', { type: 'JSON' }),
 
+    excerpt: t.string({
+      resolve: (content) => {
+        return content.text.slice(0, 200);
+      },
+    }),
+
     tocs: t.field({
       type: [PageContentToc],
       resolve: (state) => {
