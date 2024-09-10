@@ -13,7 +13,18 @@ import { enqueueJob } from '@/jobs';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
-import { Category, Image, ISite, Page, PublicCategory, PublicSite, Site, SiteCustomDomain, Team } from './objects';
+import {
+  Category,
+  Image,
+  ISite,
+  Page,
+  PublicCategory,
+  PublicPage,
+  PublicSite,
+  Site,
+  SiteCustomDomain,
+  Team,
+} from './objects';
 
 /**
  * * Types
@@ -107,6 +118,21 @@ PublicSite.implement({
           .where(and(eq(Categories.siteId, site.id), eq(Categories.state, CategoryState.ACTIVE)))
           .groupBy(Categories.id)
           .orderBy(asc(Categories.order));
+      },
+    }),
+
+    firstPage: t.field({
+      type: PublicPage,
+      nullable: true,
+      resolve: async (site) => {
+        return await db
+          .select(getTableColumns(Pages))
+          .from(Categories)
+          .innerJoin(Pages, and(eq(Categories.id, Pages.categoryId), eq(Pages.state, PageState.PUBLISHED)))
+          .where(and(eq(Categories.siteId, site.id), eq(Categories.state, CategoryState.ACTIVE)))
+          .orderBy(asc(Categories.order), asc(Pages.order))
+          .limit(1)
+          .then(first);
       },
     }),
   }),

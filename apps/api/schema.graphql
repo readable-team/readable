@@ -306,6 +306,7 @@ type PublicPageSearchHit implements IPageSearchHit {
 
 type PublicSite implements ISite {
   categories: [PublicCategory!]!
+  firstPage: PublicPage
   id: ID!
   logo: Image
   name: String!
