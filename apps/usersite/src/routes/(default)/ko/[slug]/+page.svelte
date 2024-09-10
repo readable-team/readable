@@ -36,7 +36,7 @@
 </script>
 
 <Helmet
-  image={`${env.PUBLIC_API_URL}/opengraph/pages/${$query.publicPage.id}`}
+  image={`${env.PUBLIC_API_URL}/opengraph/pages/${$query.publicPage.id}.png`}
   title={$query.publicPage.content.title}
   trailing={$query.publicSite.name}
 />

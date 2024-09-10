@@ -11,7 +11,7 @@ const SUITMedium = await ky.get('https://cdn.rdbl.app/fonts/SUIT-Medium.otf').ar
 const SUITExtraBold = await ky.get('https://cdn.rdbl.app/fonts/SUIT-ExtraBold.otf').arrayBuffer();
 
 opengraph.get('/pages/:pageId', async (req) => {
-  const pageId = req.params.pageId;
+  const [pageId] = req.params.pageId.split('.');
 
   const page = await db
     .select({
