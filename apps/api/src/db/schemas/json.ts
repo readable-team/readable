@@ -1,7 +1,7 @@
 export type PlanRules = {
-  memberLimit: number;
-  siteLimit: number;
-  pageViewLimit: number;
+  memberLimit: number | 'Infinity';
+  siteLimit: number | 'Infinity';
+  pageViewLimit: number | 'Infinity';
   auditLog: boolean;
   statistics: boolean;
 };

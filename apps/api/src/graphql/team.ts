@@ -24,6 +24,7 @@ import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { generateRandomAvatar } from '@/utils/image-generation';
 import { assertTeamPermission, throwableToBoolean } from '@/utils/permissions';
+import { assertPlanRule } from '@/utils/plan';
 import { persistBlobAsImage } from '@/utils/user-contents';
 import { Image, PaymentMethod, Site, Team, TeamMember, TeamMemberInvitation, User } from './objects';
 
@@ -280,6 +281,8 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
         role: TeamMemberRole.ADMIN,
       });
+
+      await assertPlanRule({ teamId: input.teamId, rule: 'memberLimit' });
 
       const invitedUser = await db
         .select({ id: Users.id })
