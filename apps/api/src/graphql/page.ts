@@ -329,6 +329,14 @@ PageContentState.implement({
   }),
 });
 
+const PageContentToc = builder.simpleObject('PageContentToc', {
+  fields: (t) => ({
+    anchorId: t.string(),
+    title: t.string(),
+    level: t.int(),
+  }),
+});
+
 PublicPageContent.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
@@ -337,6 +345,22 @@ PublicPageContent.implement({
     subtitle: t.exposeString('subtitle', { nullable: true }),
 
     content: t.expose('content', { type: 'JSON' }),
+
+    tocs: t.field({
+      type: [PageContentToc],
+      resolve: (state) => {
+        return (
+          state.content.content
+            ?.filter((content) => content.type === 'heading' && content.attrs?.anchorId)
+            .map((content) => ({
+              anchorId: content.attrs?.anchorId,
+              title: content.content?.find((child) => child.type === 'text')?.text ?? '',
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              level: content.attrs!.level,
+            })) ?? []
+        );
+      },
+    }),
   }),
 });
 

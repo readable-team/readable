@@ -237,6 +237,12 @@ type PageContentSyncOperation {
   pageId: ID!
 }
 
+type PageContentToc {
+  anchorId: String!
+  level: Int!
+  title: String!
+}
+
 type PageSearchHighlight {
   subtitle: String
   text: String
@@ -297,6 +303,7 @@ type PublicPageContent {
   id: ID!
   subtitle: String
   title: String!
+  tocs: [PageContentToc!]!
 }
 
 type PublicPageSearchHit implements IPageSearchHit {
