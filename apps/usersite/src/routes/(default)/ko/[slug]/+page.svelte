@@ -4,6 +4,7 @@
   import { Helmet, Icon } from '@readable/ui/components';
   import { TiptapRenderer } from '@readable/ui/tiptap';
   import MenuIcon from '~icons/lucide/menu';
+  import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
   import { mobileNavOpen } from '$lib/stores/ui';
   import Breadcrumb from './Breadcrumb.svelte';
@@ -34,7 +35,11 @@
   let headings: { level: number; text: string; scrollTop: number }[] = [];
 </script>
 
-<Helmet title={$query.publicPage.content.title} trailing={$query.publicSite.name} />
+<Helmet
+  image={`${env.PUBLIC_API_URL}/opengraph/pages/${$query.publicPage.id}`}
+  title={$query.publicPage.content.title}
+  trailing={$query.publicSite.name}
+/>
 
 <div class={flex({ flex: '1', direction: 'column' })}>
   <div
