@@ -6,6 +6,7 @@
   import { tick } from 'svelte';
   import CircleXIcon from '~icons/lucide/circle-x';
   import MoveLeftIcon from '~icons/lucide/move-left';
+  import SearchIcon from '~icons/lucide/search';
   import { beforeNavigate, goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import { searchBarOpen } from '$lib/stores/ui';
@@ -176,7 +177,7 @@
         maxWidth: '850px',
         maxHeight: '590px',
         backgroundColor: 'surface.primary',
-        borderRadius: '14px',
+        borderRadius: { md: '[22px]' },
         boxShadow: 'heavy',
         padding: '8px',
         smOnly: {
@@ -198,26 +199,19 @@
           },
         })}
       >
-        <button
-          class={flex({
-            color: 'neutral.50',
-            hideFrom: 'md',
-          })}
-          aria-label="검색 모드 닫기"
-          type="button"
-          on:click={closeModal}
-        >
+        <button class={flex({ hideFrom: 'md' })} aria-label="검색 모드 닫기" type="button" on:click={closeModal}>
           <Icon icon={MoveLeftIcon} size={24} />
         </button>
-        <div
+        <label
           class={flex({
             'position': 'relative',
             'width': 'full',
-            'borderRadius': '10px',
+            'borderRadius': '14px',
             'textStyle': '16m',
             'alignItems': 'center',
             'borderWidth': '1px',
             'borderColor': { base: 'gray.300', _dark: 'darkgray.700' },
+            'paddingX': '18px',
             'color': { base: 'gray.500', _dark: 'darkgray.400' },
             'backgroundColor': { base: 'white', _dark: 'darkgray.1000' },
             'transition': 'common',
@@ -229,6 +223,8 @@
             },
             '_hasFocusedInput': {
               borderColor: 'var(--usersite-theme-color)',
+              outlineWidth: '1px',
+              outlineColor: 'var(--usersite-theme-color)',
             },
             '_hasFilledInput': {
               color: { base: 'gray.1000', _dark: 'darkgray.100' },
@@ -251,12 +247,14 @@
             },
           })}
         >
+          <Icon style={css.raw({ marginRight: '8px' })} icon={SearchIcon} size={18} />
+
           <input
             bind:this={inputEl}
             class={css({
               width: 'full',
-              paddingX: '12px',
               paddingY: '8px',
+              height: '47px',
             })}
             aria-live={searchQuery ? 'polite' : 'off'}
             placeholder="검색어를 입력하세요"
@@ -281,7 +279,7 @@
               <Icon icon={CircleXIcon} size={18} />
             </button>
           {/if}
-        </div>
+        </label>
       </div>
       {#if searchResults.length > 0}
         <ul bind:this={listEl} class={css({ paddingY: '12px', overflowY: 'auto', smOnly: { paddingX: '20px' } })}>
