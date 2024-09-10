@@ -79,6 +79,7 @@
           flex: '1',
           overflow: 'auto',
         })}
+        data-scroll-lock-ignore
       >
         <slot name="navigation" />
         <div
