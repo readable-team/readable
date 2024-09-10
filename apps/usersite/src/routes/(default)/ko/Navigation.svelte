@@ -4,9 +4,10 @@
   import { Icon } from '@readable/ui/components';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
+  import { beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
-  import { treeOpenState } from '$lib/stores/ui';
+  import { mobileNavOpen, treeOpenState } from '$lib/stores/ui';
   import type { Navigation_publicSite } from '$graphql';
 
   let _publicSite: Navigation_publicSite;
@@ -94,6 +95,10 @@
       currentEl.scrollIntoView({ block: 'center' });
     }
   }
+
+  beforeNavigate(() => {
+    mobileNavOpen.set(false);
+  });
 </script>
 
 <nav bind:this={navEl} class={flex({ direction: 'column', gap: '40px' })}>
