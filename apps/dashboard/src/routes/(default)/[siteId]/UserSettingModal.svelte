@@ -2,7 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
   import { scrollLock } from '@readable/ui/actions';
-  import { HorizontalDivider, Icon } from '@readable/ui/components';
+  import { Dialog, HorizontalDivider, Icon } from '@readable/ui/components';
   import Building2Icon from '~icons/lucide/building-2';
   import CircleUserIcon from '~icons/lucide/circle-user';
   import CreditCardIcon from '~icons/lucide/credit-card';
@@ -109,20 +109,11 @@
   };
 </script>
 
-<svelte:window
-  on:keydown={(event) => {
-    if (event.key === 'Escape') {
-      closeModal();
-    }
-  }}
-/>
-
-{#if open}
+<Dialog {open} on:close={closeModal}>
   <div
     class={flex({
       position: 'fixed',
       inset: '0',
-      zIndex: '20',
       width: 'screen',
       height: 'screen',
       backgroundColor: 'surface.primary',
@@ -285,4 +276,4 @@
       </div>
     </div>
   </div>
-{/if}
+</Dialog>

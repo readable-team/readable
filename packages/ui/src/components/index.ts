@@ -2,6 +2,7 @@ export { default as Alert } from './Alert.svelte';
 export { default as Button } from './Button.svelte';
 export { default as Checkbox } from './Checkbox.svelte';
 export { default as Chip } from './Chip.svelte';
+export { default as Dialog } from './Dialog.svelte';
 export { default as FormField } from './FormField.svelte';
 export { default as FormValidationMessage } from './FormValidationMessage.svelte';
 export { default as Helmet } from './Helmet.svelte';

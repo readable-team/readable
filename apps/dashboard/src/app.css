@@ -1,3 +1,14 @@
 @layer reset, base, ui, tokens, recipes, utilities;
 
 @import url(@readable/ui/styles.css) layer(ui);
+
+/* for accessibility */
+[role='button']:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input[type='checkbox']:focus-visible,
+input[type='radio']:focus-visible {
+  outline: revert;
+  outline-offset: -2px;
+  box-shadow: none;
+}

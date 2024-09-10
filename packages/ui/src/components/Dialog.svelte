@@ -1,0 +1,38 @@
+<script lang="ts">
+  import { css } from '@readable/styled-system/css';
+  import { createEventDispatcher } from 'svelte';
+
+  export let open = false;
+
+  const dispatch = createEventDispatcher();
+
+  let dialogElement: HTMLDialogElement;
+  $: if (open) {
+    dialogElement?.showModal();
+  } else {
+    dialogElement?.close();
+  }
+
+  function handleClose() {
+    dispatch('close');
+  }
+</script>
+
+<dialog
+  bind:this={dialogElement}
+  class={css({
+    'width': 'full',
+    'height': 'full',
+    'maxWidth': '[unset]',
+    'maxHeight': '[unset]',
+    '& ::backdrop': {
+      display: 'none',
+    },
+  })}
+  on:close={handleClose}
+>
+  {#if open}
+    <!-- NOTE: dialog 닫혀있을 때는 scrollLock 등 사이드 이펙트 안 일어나게 아예 렌더링 안 함 -->
+    <slot />
+  {/if}
+</dialog>
