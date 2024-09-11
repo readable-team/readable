@@ -156,7 +156,7 @@
             marginRight: '16px',
             textStyle: '16r',
             color: 'text.secondary',
-            textOverflow: 'ellipsis',
+            truncate: true,
           })}
         >
           {$query.site.customDomain.domain}
@@ -178,11 +178,17 @@
             <span class={css({ textStyle: '14sb' })}>확인되지 않음</span>
           {/if}
         </div>
-        <Menu style={css.raw({ height: 'fit' })} listStyle={css.raw({ width: '[180px!]' })} placement="bottom-start">
-          <div slot="button" class={css({ padding: '10px' })}>
-            <button class={css({ padding: '4px', color: 'text.secondary' })} type="button">
-              <Icon icon={EllipsisIcon} size={20} />
-            </button>
+        <Menu style={css.raw({ marginX: '10px' })} placement="bottom-start">
+          <div
+            slot="button"
+            class={css({
+              borderRadius: '4px',
+              padding: '4px',
+              color: 'text.secondary',
+              _hover: { backgroundColor: 'neutral.20' },
+            })}
+          >
+            <Icon icon={EllipsisIcon} size={20} />
           </div>
           {#if $query.site.customDomain.state !== 'ACTIVE'}
             <MenuItem
