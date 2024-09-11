@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Button, Icon } from '@readable/ui/components';
+  import mixpanel from 'mixpanel-browser';
   import { SingleSignOnProvider } from '@/enums';
   import IconGithub from '~icons/simple-icons/github';
   import { page } from '$app/stores';
@@ -47,6 +48,10 @@
       const url = await generateSingleSignOnAuthorizationUrl({
         provider: SingleSignOnProvider.GOOGLE,
         email: $page.url.searchParams.get('email'),
+      });
+
+      mixpanel.track('user:login:start', {
+        provider: SingleSignOnProvider.GOOGLE,
       });
 
       location.href = url;

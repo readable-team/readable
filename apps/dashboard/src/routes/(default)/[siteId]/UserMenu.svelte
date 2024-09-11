@@ -138,9 +138,11 @@
     type="button"
     on:click={async () => {
       await logout();
-
       $accessToken = null;
 
+      mixpanel.track('user:logout', {
+        via: 'user_menu',
+      });
       mixpanel.reset();
 
       location.href = '/';

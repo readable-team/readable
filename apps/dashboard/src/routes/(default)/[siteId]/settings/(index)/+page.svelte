@@ -13,6 +13,7 @@
   } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
+  import mixpanel from 'mixpanel-browser';
   import { onMount } from 'svelte';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
@@ -92,6 +93,9 @@
         logoId,
       });
       toast.success('사이트 설정이 변경되었습니다');
+      mixpanel.track('site:update', {
+        fields: ['name', 'logo'],
+      });
     },
   });
 
@@ -117,6 +121,9 @@
             logoId: $query.site.logo?.id,
           });
           toast.success('사이트 주소가 변경되었습니다');
+          mixpanel.track('site:update', {
+            fields: ['slug'],
+          });
         },
         variant: 'primary',
       });

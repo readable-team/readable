@@ -4,6 +4,7 @@
   import { Button, Helmet, HorizontalDivider, Icon, Menu, MenuItem, Modal, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
+  import mixpanel from 'mixpanel-browser';
   import { onMount } from 'svelte';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
@@ -71,6 +72,7 @@
     onSuccess: async () => {
       await query.refetch();
       open = true;
+      mixpanel.track('site:custom-domain:set');
     },
   });
 
@@ -100,6 +102,7 @@
       unsubscribe = siteCustomDomainValidationStream.subscribe({
         siteCustomDomainId: $query.site.customDomain?.id,
       });
+      mixpanel.track('site:custom-domain:validation:start');
     }
   };
 
@@ -107,9 +110,11 @@
     setInitialValues({ siteId: $query.site.id, domain: $query.site.customDomain?.domain ?? '' });
   }
 
-  $: if ($query.site.customDomain?.state === 'ACTIVE') {
+  $: if (verifying && $query.site.customDomain?.state === 'ACTIVE') {
     open = false;
+    verifying = false;
     unsubscribe?.();
+    mixpanel.track('site:custom-domain:validation:success');
   }
 
   $: if (open === false && unsubscribe) {
@@ -201,6 +206,7 @@
                 action: async () => {
                   if ($query.site.customDomain) {
                     await unsetSiteCustomDomain({ siteCustomDomainId: $query.site.customDomain.id });
+                    mixpanel.track('site:custom-domain:unset');
                     location.reload();
                   }
                 },

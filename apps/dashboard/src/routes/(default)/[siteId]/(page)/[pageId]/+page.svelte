@@ -4,6 +4,7 @@
   import { Alert, Button, Helmet, Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
   import { toast } from '@readable/ui/notification';
   import dayjs from 'dayjs';
+  import mixpanel from 'mixpanel-browser';
   import { PageState } from '@/enums';
   import CopyIcon from '~icons/lucide/copy';
   import EllipsisIcon from '~icons/lucide/ellipsis';
@@ -237,6 +238,9 @@
           <MenuItem
             on:click={async () => {
               await duplicatePage({ pageId: $query.page.id });
+              mixpanel.track('page:duplicate', {
+                via: 'panel',
+              });
             }}
           >
             <Icon icon={CopyIcon} size={14} />
@@ -277,11 +281,17 @@
               action: async () => {
                 await publishPage({ pageId: $query.page.id });
                 toast.success('발행이 완료되었습니다');
+                mixpanel.track('page:publish', {
+                  state: PageState.DRAFT,
+                });
               },
             });
           } else {
             await publishPage({ pageId: $query.page.id });
             toast.success('발행이 완료되었습니다');
+            mixpanel.track('page:publish', {
+              state: PageState.PUBLISHED,
+            });
           }
         }}
       >
@@ -383,6 +393,9 @@
   onAction={async () => {
     await deletePage({ pageId: $query.page.id });
     toast.success('페이지가 삭제되었습니다');
+    mixpanel.track('page:delete', {
+      via: 'panel',
+    });
     if ($query.page.parent?.id) {
       goto(`/${$query.page.site.id}/${$query.page.parent.id}`);
     } else {
@@ -405,6 +418,9 @@
 <Alert
   onAction={async () => {
     await unpublishPage({ pageId: $query.page.id });
+    mixpanel.track('page:unpublish', {
+      via: 'panel',
+    });
   }}
   bind:open={unpublishPageOpen}
 >

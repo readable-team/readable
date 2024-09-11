@@ -3,6 +3,7 @@
   import { Button, FormField, Helmet, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
+  import mixpanel from 'mixpanel-browser';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import { graphql } from '$graphql';
@@ -53,6 +54,9 @@
         logoId: $query.site.logo?.id,
       });
       toast.success('사이트 테마 색상이 변경되었습니다');
+      mixpanel.track('site:update', {
+        fields: ['themeColor'],
+      });
     },
   });
 

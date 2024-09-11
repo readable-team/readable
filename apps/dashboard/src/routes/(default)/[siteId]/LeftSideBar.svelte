@@ -1,6 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import mixpanel from 'mixpanel-browser';
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
   import { PageList } from './(pageTree)';
@@ -84,6 +85,10 @@
 
     const page = await createPage(createPageInput);
 
+    mixpanel.track('page:create', {
+      depth: parent.__typename === 'Category' ? 1 : 2,
+    });
+
     await goto(`/${$site.id}/${page.id}`);
   }
 
@@ -102,7 +107,7 @@
       upper: target.nextOrder,
     });
 
-    // query.refetch(); // FIXME: cache invalidation
+    mixpanel.track('page:move');
 
     return true;
   }
@@ -176,6 +181,8 @@
             siteId: $site.id,
             lower: $site.categories.at(-1)?.order,
           });
+
+          mixpanel.track('category:create');
         }}
         onDrop={onDropPage}
         onDropCategory={async (target) => {
@@ -184,6 +191,8 @@
             lower: target.previousOrder,
             upper: target.nextOrder,
           });
+
+          mixpanel.track('category:move');
         }}
       />
     </div>

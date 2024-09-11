@@ -3,6 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Icon, Menu, MenuItem, VerticalDivider } from '@readable/ui/components';
   import { toast } from '@readable/ui/notification';
+  import mixpanel from 'mixpanel-browser';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import CopyIcon from '~icons/lucide/copy';
@@ -100,6 +101,7 @@
       editing = false;
       await updateCategory({ categoryId: item.id, name: inputEl.value });
       toast.success('카테고리 이름이 변경되었습니다');
+      mixpanel.track('category:update');
       // FIXME: 에러 핸들링?
     }
   };
@@ -239,7 +241,14 @@
           >
             <Icon icon={EllipsisIcon} size={14} />
           </div>
-          <MenuItem on:click={() => duplicatePage({ pageId: item.id })}>
+          <MenuItem
+            on:click={async () => {
+              await duplicatePage({ pageId: item.id });
+              mixpanel.track('page:duplicate', {
+                via: 'sidebar',
+              });
+            }}
+          >
             <Icon icon={CopyIcon} size={14} />
             <span>복제</span>
           </MenuItem>
@@ -254,6 +263,10 @@
                 action: async () => {
                   await deletePage({ pageId: item.id });
                   toast.success('페이지가 삭제되었습니다');
+                  mixpanel.track('page:delete', {
+                    via: 'sidebar',
+                  });
+
                   if (item.id === $page.params.pageId) {
                     if (item.parent?.id) {
                       await goto(`/${$page.params.siteId}/${item.parent.id}`);
@@ -350,6 +363,7 @@
                   action: async () => {
                     await deleteCategory({ categoryId: item.id });
                     toast.error('카테고리가 삭제되었습니다');
+                    mixpanel.track('category:delete');
                   },
                 })}
             >

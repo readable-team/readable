@@ -3,6 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Button, FormField, HorizontalDivider, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
+  import mixpanel from 'mixpanel-browser';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import { fragment, graphql } from '$graphql';
@@ -69,6 +70,8 @@
     onSuccess: (result) => {
       console.log('success', result);
       setIsDirty(false);
+
+      mixpanel.track('user:update');
     },
     onError: (error) => {
       console.log(error);

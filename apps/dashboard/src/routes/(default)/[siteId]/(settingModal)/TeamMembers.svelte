@@ -14,6 +14,7 @@
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import { GraphQLError } from 'graphql';
+  import mixpanel from 'mixpanel-browser';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import CheckIcon from '~icons/lucide/check';
@@ -98,6 +99,8 @@
     onSuccess: () => {
       toast.success('초대 이메일이 발송되었습니다');
       reset();
+
+      mixpanel.track('team:member:invitation:send');
     },
     onError: (e: unknown) => {
       if (e instanceof GraphQLError) {
@@ -213,6 +216,8 @@
               on:click={async () => {
                 await resendInvitationEmail({ invitationId: invitation.id });
                 toast.success('초대 이메일이 재발송되었습니다');
+
+                mixpanel.track('team:member:invitation:resend');
               }}
             >
               <Icon icon={MailOpenIcon} size={14} />
@@ -227,6 +232,8 @@
                   actionText: '발송 취소',
                   action: async () => {
                     await revokeInvitation({ invitationId: invitation.id });
+
+                    mixpanel.track('team:member:invitation:revoke');
                   },
                 });
               }}
@@ -289,12 +296,17 @@
               <MenuItem
                 style={css.raw({ gap: '20px', borderRadius: '10px', paddingY: '10px' })}
                 aria-checked={member.role === 'ADMIN'}
-                on:click={async () =>
+                on:click={async () => {
                   await updateTeamMemberRole({
                     role: 'ADMIN',
                     userId: member.user.id,
                     teamId: $team.id,
-                  })}
+                  });
+
+                  mixpanel.track('team:member:role:update', {
+                    role: 'ADMIN',
+                  });
+                }}
               >
                 <div class={flex({ flexDirection: 'column', alignItems: 'start', gap: '2px', width: 'full' })}>
                   <p class={css({ textStyle: '15sb', color: 'text.primary' })}>관리자</p>
@@ -325,12 +337,17 @@
                 })}
                 aria-checked={member.role === 'MEMBER'}
                 disabled={member.role === 'ADMIN' && member.isSoleAdmin}
-                on:click={async () =>
+                on:click={async () => {
                   await updateTeamMemberRole({
                     role: 'MEMBER',
                     userId: member.user.id,
                     teamId: $team.id,
-                  })}
+                  });
+
+                  mixpanel.track('team:member:role:update', {
+                    role: 'MEMBER',
+                  });
+                }}
               >
                 <div class={flex({ flexDirection: 'column', alignItems: 'start', gap: '2px', width: 'full' })}>
                   <p class={css({ textStyle: '15sb', color: 'text.primary' })}>편집자</p>
@@ -382,6 +399,9 @@
                     actionText: '떠나기',
                     action: async () => {
                       await removeTeamMember({ userId: member.user.id, teamId: $team.id });
+
+                      mixpanel.track('team:member:remove:self');
+
                       if (member.id === $team.meAsMember?.id) {
                         await invalidateAll();
                         await goto('/');
@@ -418,6 +438,8 @@
                     actionText: '제거',
                     action: async () => {
                       await removeTeamMember({ userId: member.user.id, teamId: $team.id });
+
+                      mixpanel.track('team:member:remove');
                     },
                   });
                 }}

@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
+  import mixpanel from 'mixpanel-browser';
   import { onMount } from 'svelte';
   import MousePointerClickIcon from '~icons/lucide/mouse-pointer-click';
   import ReadableIcon from '~icons/rdbl/readable';
@@ -80,14 +81,21 @@
   `);
 
   onMount(() => {
+    mixpanel.register({
+      site_id: $query.site.id,
+    });
+
     const unsubscribe = siteUpdateStream.subscribe({
       siteId: $query.site.id,
     });
+
     const unsubscribe2 = teamUpdateStream.subscribe({
       teamId: $query.site.team.id,
     });
 
     return () => {
+      mixpanel.unregister('site_id');
+
       unsubscribe();
       unsubscribe2();
     };

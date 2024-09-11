@@ -4,6 +4,8 @@
   import { Button, FormField, HorizontalDivider, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import mixpanel from 'mixpanel-browser';
+  import qs from 'query-string';
+  import { onMount } from 'svelte';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
@@ -13,6 +15,7 @@
   import { graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
   import { accessToken } from '$lib/graphql';
+  import { currentTeamId } from '$lib/stores';
 
   $: query = graphql(`
     query NewPage_Query {
@@ -23,6 +26,7 @@
 
         avatar {
           id
+          url
           ...Img_image
         }
 
@@ -58,19 +62,44 @@
   const { form } = createMutationForm({
     mutation: async ({ name }) => {
       const team = await createDefaultTeam();
+      $currentTeamId = team.id;
+
+      mixpanel.track('team:create');
+      mixpanel.register({
+        team_id: $currentTeamId,
+      });
+
       return await createSite({ teamId: team.id, name });
     },
     schema: z.object({
       teamId: dataSchemas.team.id,
       name: dataSchemas.site.name,
     }),
-    onSuccess: (resp) => {
-      goto(`/${resp.id}`);
+    onSuccess: async (resp) => {
+      mixpanel.track('site:create');
+      mixpanel.track('user:onboarding:complete', {
+        purpose,
+        role: jobRole,
+      });
+
+      await goto(`/${resp.id}`);
     },
   });
 
   let purpose = '';
   let jobRole = '';
+
+  onMount(() => {
+    mixpanel.identify($query.me.id);
+
+    mixpanel.people.set({
+      $email: $query.me.email,
+      $name: $query.me.name,
+      $avatar: qs.stringifyUrl({ url: $query.me.avatar.url, query: { s: 256, f: 'png' } }),
+    });
+
+    mixpanel.track('user:onboarding:start');
+  });
 </script>
 
 <header
@@ -82,8 +111,11 @@
     variant="secondary"
     on:click={async () => {
       await logout();
-
       $accessToken = null;
+
+      mixpanel.track('user:logout', {
+        via: 'onboarding',
+      });
       mixpanel.reset();
 
       location.href = env.PUBLIC_WEBSITE_URL;
@@ -226,7 +258,7 @@
           let:open
         >
           <span
-            class={css({ textStyle: '16r' }, purpose === '' && { color: { base: 'gray.600', _dark: 'darkgray.400' } })}
+            class={css({ textStyle: '16r' }, jobRole === '' && { color: { base: 'gray.600', _dark: 'darkgray.400' } })}
           >
             {jobRole === '' ? '선택' : jobRole}
           </span>

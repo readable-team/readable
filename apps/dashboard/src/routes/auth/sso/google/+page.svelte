@@ -1,4 +1,5 @@
 <script lang="ts">
+  import mixpanel from 'mixpanel-browser';
   import { onMount } from 'svelte';
   import { linear } from 'svelte/easing';
   import { tweened } from 'svelte/motion';
@@ -21,8 +22,11 @@
       provider: SingleSignOnProvider.GOOGLE,
       params: Object.fromEntries($page.url.searchParams),
     });
-
     $accessToken = resp.accessToken;
+
+    mixpanel.track('user:login:success', {
+      provider: SingleSignOnProvider.GOOGLE,
+    });
 
     await goto('/');
   });
