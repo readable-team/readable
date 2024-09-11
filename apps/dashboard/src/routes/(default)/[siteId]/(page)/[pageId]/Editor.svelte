@@ -113,6 +113,8 @@
     });
 
     editor.view.dispatch(tr);
+
+    onTransaction();
   });
 
   let editor: Editor | undefined;
