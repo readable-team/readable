@@ -135,7 +135,14 @@ export function createFloatingActions(options?: CreateFloatingActionsOptions): C
   };
 
   const floatingAction: FloatingAction = (element) => {
-    document.body.append(element);
+    // NOTE: top layer에 표시되는 조상 요소가 있다면 그 요소에 추가해서 floating element와 상호작용이 되도록 함
+    const topLayerElem = element.closest('dialog, [popover]');
+    if (topLayerElem) {
+      topLayerElem.append(element);
+    } else {
+      document.body.append(element);
+    }
+
     Object.assign(element.style, {
       position: 'absolute',
       top: '0',
