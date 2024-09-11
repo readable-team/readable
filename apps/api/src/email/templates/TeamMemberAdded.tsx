@@ -53,8 +53,10 @@ const Email = (props: Props) => {
           <a href={props.websiteUrl}>
             <Img src="https://cdn.rdbl.app/email/logo-full.png" style={{ width: '99px' }} />
           </a>
-          <Text style={{ marginTop: '6px', fontSize: '12px', color: '#71717A' }}>
-            Copyright 2024 readable. All rights reserved.
+          <Text style={{ marginTop: '12px', fontSize: '12px', color: '#71717A' }}>
+            주식회사 펜슬컴퍼니 | hello@penxle.io
+            <br />
+            서울특별시 강남구 강남대로100길 14, 6층
           </Text>
         </Container>
       </Body>
@@ -64,7 +66,7 @@ const Email = (props: Props) => {
 
 Email.PreviewProps = {
   dashboardUrl: 'http://localhost:4100',
-  websiteUrl: 'https://rdbl.ninja',
+  websiteUrl: 'http://localhost:4000',
   teamName: '유키컴퍼니',
   inviterName: '유키',
 };
