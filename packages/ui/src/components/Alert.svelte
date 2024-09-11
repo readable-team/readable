@@ -3,7 +3,7 @@
   import { fade, fly } from 'svelte/transition';
   import { scrollLock } from '../actions';
   import Button from './Button.svelte';
-  import Dialog from './Dialog.svelte';
+  import Dialog from './dialog/Dialog.svelte';
   import type { SystemStyleObject } from '@readable/styled-system/types';
 
   export let open: boolean;

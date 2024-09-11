@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { css } from '@readable/styled-system/css';
+  import { css, cx } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
   import { backInOut, expoInOut, linear, sineInOut } from 'svelte/easing';
   import { tweened } from 'svelte/motion';
@@ -22,19 +22,22 @@
 </script>
 
 <div
-  class={flex({
-    align: 'center',
-    borderRadius: '10px',
-    paddingX: '4px',
-    width: 'fit',
-    minWidth: '44px',
-    maxWidth: '402px',
-    height: '38px',
-    backgroundColor: { base: 'gray.100', _dark: 'darkgray.800' },
-    boxShadow: 'strong',
-    overflow: 'hidden',
-    pointerEvents: 'auto',
-  })}
+  class={cx(
+    'toast-item',
+    flex({
+      align: 'center',
+      borderRadius: '10px',
+      paddingX: '4px',
+      width: 'fit',
+      minWidth: '44px',
+      maxWidth: '402px',
+      height: '38px',
+      backgroundColor: { base: 'gray.100', _dark: 'darkgray.800' },
+      boxShadow: 'strong',
+      overflow: 'hidden',
+      pointerEvents: 'auto',
+    }),
+  )}
   in:scale={{ duration: 400, easing: backInOut }}
   out:scale={{ duration: 400, delay: 600, easing: backInOut }}
 >

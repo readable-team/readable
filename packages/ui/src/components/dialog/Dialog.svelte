@@ -1,6 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { createEventDispatcher } from 'svelte';
+  import { dialogStore } from './store';
 
   export let open = false;
 
@@ -9,8 +10,10 @@
   let dialogElement: HTMLDialogElement;
   $: if (open) {
     dialogElement?.showModal();
+    dialogStore.update((prev) => [...prev, dialogElement]);
   } else {
     dialogElement?.close();
+    dialogStore.update((prev) => prev.filter((el) => el !== dialogElement));
   }
 
   function handleClose() {

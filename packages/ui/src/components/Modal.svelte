@@ -2,7 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { fade, fly } from 'svelte/transition';
   import { scrollLock } from '../actions';
-  import Dialog from './Dialog.svelte';
+  import Dialog from './dialog/Dialog.svelte';
   import type { SystemStyleObject } from '@readable/styled-system/types';
 
   export let open = false;
