@@ -19,7 +19,7 @@
 
   const { anchor, floating, arrow } = createFloatingActions({
     placement,
-    offset: offset ?? 2,
+    offset: offset ?? 6,
     arrow: true,
   });
 </script>
