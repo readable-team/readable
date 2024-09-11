@@ -3,24 +3,19 @@ import dayjs from 'dayjs';
 import { and, asc, desc, eq, gt, inArray, isNull, ne, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
-import { Repeater } from 'graphql-yoga';
-import { base64 } from 'rfc4648';
-import { prosemirrorToYDoc, yXmlFragmentToProseMirrorRootNode } from 'y-prosemirror';
-import * as Y from 'yjs';
 import { builder } from '@/builder';
 import {
   Categories,
   db,
   first,
   firstOrThrow,
+  PageContentCommits,
   PageContentContributors,
   PageContents,
-  PageContentSnapshots,
   PageContentStates,
-  PageContentUpdates,
   Pages,
 } from '@/db';
-import { CategoryState, PageContentSyncKind, PageState } from '@/enums';
+import { CategoryState, PageState } from '@/enums';
 import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
@@ -32,7 +27,6 @@ import {
   IPage,
   Page,
   PageContentContributor,
-  PageContentSnapshot,
   PageContentState,
   PublicCategory,
   PublicPage,
@@ -40,7 +34,6 @@ import {
   Site,
   User,
 } from './objects';
-import type { JSONContent } from '@tiptap/core';
 
 /**
  * * Types
@@ -314,18 +307,15 @@ PageContentContributor.implement({
   }),
 });
 
-PageContentSnapshot.implement({
-  fields: (t) => ({
-    id: t.exposeID('id'),
-  }),
-});
-
 PageContentState.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
 
     title: t.string({ resolve: (state) => state.title ?? '(제목 없음)' }),
+    subtitle: t.string({ nullable: true, resolve: (state) => state.subtitle }),
+    content: t.expose('content', { type: 'JSON' }),
+    version: t.exposeInt('version'),
   }),
 });
 
@@ -370,11 +360,12 @@ PublicPageContent.implement({
   }),
 });
 
-const PageContentSyncOperation = builder.simpleObject('PageContentSyncOperation', {
+const PageContentCommit = builder.simpleObject('PageContentCommit', {
   fields: (t) => ({
     pageId: t.id(),
-    kind: t.field({ type: PageContentSyncKind }),
-    data: t.string(),
+    version: t.int(),
+    ref: t.string(),
+    steps: t.field({ type: ['JSON'] }),
   }),
 });
 
@@ -537,11 +528,6 @@ builder.mutationFields((t) => ({
       const content = node.toJSON();
       const text = node.content.textBetween(0, node.content.size, '\n');
 
-      const doc = prosemirrorToYDoc(node, 'content');
-      const update = Y.encodeStateAsUpdateV2(doc);
-      const vector = Y.encodeStateVector(doc);
-      const snapshot = Y.encodeSnapshotV2(Y.snapshot(doc));
-
       const last = await db
         .select({ order: Pages.order })
         .from(Pages)
@@ -572,17 +558,10 @@ builder.mutationFields((t) => ({
 
         await tx.insert(PageContentStates).values({
           pageId: page.id,
-          update,
-          vector,
           content,
           text,
+          version: 0,
           hash: hashPageContent({ title: null, subtitle: null, content }),
-          upToSeq: 0n,
-        });
-
-        await tx.insert(PageContentSnapshots).values({
-          pageId: page.id,
-          snapshot,
         });
 
         await tx.insert(PageContentContributors).values({
@@ -689,24 +668,23 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
       });
 
-      const state = await getLatestPageContentState(input.pageId);
+      const state = await db
+        .select({
+          title: PageContentStates.title,
+          subtitle: PageContentStates.subtitle,
+          content: PageContentStates.content,
+          text: PageContentStates.text,
+          hash: PageContentStates.hash,
+        })
+        .from(PageContentStates)
+        .where(eq(PageContentStates.pageId, input.pageId))
+        .then(firstOrThrow);
 
-      const doc = new Y.Doc();
-      Y.applyUpdateV2(doc, state.update);
-
-      const title = doc.getText('title').toString();
-      const subtitle = doc.getText('subtitle').toString();
-
-      const content = doc.getXmlFragment('content');
-      const node = yXmlFragmentToProseMirrorRootNode(content, schema);
-      const text = node.content.textBetween(0, node.content.size, '\n');
-
-      const jsonContent: JSONContent = node.toJSON();
-      const hash = hashPageContent({ title, subtitle, content: jsonContent });
+      const { content } = state;
 
       // 그니까 이건 Array.forEach 아니라니까 ESLint는 바보야 앨랠래
       // eslint-disable-next-line unicorn/no-array-for-each
-      jsonContent.content?.forEach((child) => {
+      content.content?.forEach((child) => {
         if (child.type === 'heading' && !child.attrs?.anchorId) {
           const anchorId = encodeURIComponent(
             child.content
@@ -725,7 +703,7 @@ builder.mutationFields((t) => ({
         }
       });
 
-      jsonContent.content = jsonContent.content?.filter((child) => {
+      content.content = content.content?.filter((child) => {
         if (['image', 'file', 'embed'].includes(child.type ?? '') && !child.attrs?.id) {
           return false;
         }
@@ -745,20 +723,20 @@ builder.mutationFields((t) => ({
           .insert(PageContents)
           .values({
             pageId: page.id,
-            title: title.length > 0 ? title : null,
-            subtitle: subtitle.length > 0 ? subtitle : null,
-            content: jsonContent,
-            text,
-            hash,
+            title: state.title,
+            subtitle: state.subtitle,
+            content,
+            text: state.text,
+            hash: state.hash,
           })
           .onConflictDoUpdate({
             target: [PageContents.pageId],
             set: {
-              title: title.length > 0 ? title : null,
-              subtitle: subtitle.length > 0 ? subtitle : null,
-              content: jsonContent,
-              text,
-              hash,
+              title: state.title,
+              subtitle: state.subtitle,
+              content,
+              text: state.text,
+              hash: state.hash,
               updatedAt: dayjs(),
             },
           });
@@ -819,83 +797,35 @@ builder.mutationFields((t) => ({
     },
   }),
 
-  syncPageContent: t.withAuth({ session: true }).fieldWithInput({
-    type: [PageContentSyncOperation],
+  commitPageContent: t.withAuth({ session: true }).fieldWithInput({
+    type: 'Boolean',
     input: {
       pageId: t.input.id(),
-      clientId: t.input.string(),
-      kind: t.input.field({ type: PageContentSyncKind }),
-      data: t.input.string(),
+      version: t.input.int(),
+      ref: t.input.string(),
+      steps: t.input.field({ type: ['JSON'] }),
     },
     resolve: async (_, { input }, ctx) => {
-      if (input.kind === 'UPDATE') {
-        pubsub.publish('page:content:sync', input.pageId, {
-          pageId: input.pageId,
-          kind: 'UPDATE',
-          data: input.data,
-        });
-
-        await db.transaction(async (tx) => {
-          await tx.insert(PageContentUpdates).values({
+      await db.transaction(async (tx) => {
+        const commit = await tx
+          .insert(PageContentCommits)
+          .values({
             pageId: input.pageId,
             userId: ctx.session.userId,
-            update: base64.parse(input.data),
-          });
+            version: input.version,
+            ref: input.ref,
+            steps: input.steps,
+          })
+          .onConflictDoNothing({ target: [PageContentCommits.ref] })
+          .returning({ id: PageContentCommits.id })
+          .then(first);
 
-          await enqueueJob(tx, 'page:content:state-update', input.pageId);
-        });
-      } else if (input.kind === 'SYNCHRONIZE_1') {
-        const state = await getLatestPageContentState(input.pageId);
+        if (commit) {
+          await enqueueJob(tx, 'page:content:state-update', commit.id);
+        }
+      });
 
-        const clientStateVector = base64.parse(input.data);
-        const clientMissingUpdate = Y.diffUpdateV2(state.update, clientStateVector);
-        const serverStateVector = state.vector;
-
-        return [
-          {
-            pageId: input.pageId,
-            kind: 'SYNCHRONIZE_2',
-            data: base64.stringify(clientMissingUpdate),
-          },
-          {
-            pageId: input.pageId,
-            kind: 'SYNCHRONIZE_1',
-            data: base64.stringify(serverStateVector),
-          },
-        ] as const;
-      } else if (input.kind == 'SYNCHRONIZE_2') {
-        pubsub.publish('page:content:sync', input.pageId, {
-          pageId: input.pageId,
-          kind: 'UPDATE',
-          data: input.data,
-        });
-
-        const serverMissingUpdate = base64.parse(input.data);
-
-        await db.transaction(async (tx) => {
-          await tx.insert(PageContentUpdates).values({
-            pageId: input.pageId,
-            userId: ctx.session.userId,
-            update: serverMissingUpdate,
-          });
-
-          await enqueueJob(tx, 'page:content:state-update', input.pageId);
-        });
-
-        pubsub.publish('page:content:sync', input.pageId, {
-          pageId: input.pageId,
-          kind: 'SYNCHRONIZE_3',
-          data: input.clientId,
-        });
-      } else if (input.kind === 'AWARENESS') {
-        pubsub.publish('page:content:sync', input.pageId, {
-          pageId: input.pageId,
-          kind: 'AWARENESS',
-          data: input.data,
-        });
-      }
-
-      return [];
+      return true;
     },
   }),
 
@@ -918,26 +848,19 @@ builder.mutationFields((t) => ({
         .limit(1)
         .then((rows) => (rows[0]?.order ? decoder.decode(rows[0].order) : null));
 
-      const { update } = await getLatestPageContentState(input.pageId);
+      const state = await db
+        .select({
+          title: PageContentStates.title,
+          subtitle: PageContentStates.subtitle,
+          content: PageContentStates.content,
+          text: PageContentStates.text,
+          hash: PageContentStates.hash,
+        })
+        .from(PageContentStates)
+        .where(eq(PageContentStates.pageId, input.pageId))
+        .then(firstOrThrow);
 
-      const doc = new Y.Doc();
-      Y.applyUpdateV2(doc, update);
-
-      const node = yXmlFragmentToProseMirrorRootNode(doc.getXmlFragment('content'), schema);
-      const content = node.toJSON();
-      const text = node.content.textBetween(0, node.content.size, '\n');
-
-      const title = `(사본) ${doc.getText('title').toString() || '(제목 없음)'}`;
-      const subtitle = doc.getText('subtitle').toString();
-
-      const newDoc = prosemirrorToYDoc(node, 'content');
-      newDoc.getText('title').insert(0, title);
-      newDoc.getText('subtitle').insert(0, subtitle);
-
-      const newUpdate = Y.encodeStateAsUpdateV2(newDoc);
-      const newVector = Y.encodeStateVector(newDoc);
-
-      const snapshot = Y.encodeSnapshotV2(Y.snapshot(newDoc));
+      const title = `(사본) ${state.title ?? '(제목 없음)'}`;
 
       const newPage = await db.transaction(async (tx) => {
         const newPage = await tx
@@ -955,19 +878,12 @@ builder.mutationFields((t) => ({
 
         await tx.insert(PageContentStates).values({
           pageId: newPage.id,
-          update: newUpdate,
-          vector: newVector,
           title,
-          subtitle: subtitle.length > 0 ? subtitle : null,
-          content,
-          text,
-          hash: hashPageContent({ title, subtitle, content }),
-          upToSeq: 0n,
-        });
-
-        await tx.insert(PageContentSnapshots).values({
-          pageId: newPage.id,
-          snapshot,
+          subtitle: state.subtitle,
+          content: state.content,
+          text: state.text,
+          version: 0,
+          hash: state.hash,
         });
 
         await tx.insert(PageContentContributors).values({
@@ -992,8 +908,8 @@ builder.mutationFields((t) => ({
  */
 
 builder.subscriptionFields((t) => ({
-  pageContentSyncStream: t.withAuth({ session: true }).field({
-    type: PageContentSyncOperation,
+  pageContentCommitStream: t.withAuth({ session: true }).field({
+    type: PageContentCommit,
     args: { pageId: t.arg.id() },
     subscribe: async (_, args, ctx) => {
       assertPagePermission({
@@ -1001,16 +917,7 @@ builder.subscriptionFields((t) => ({
         userId: ctx.session.userId,
       });
 
-      const repeater = Repeater.merge([
-        pubsub.subscribe('page:content:sync', args.pageId),
-        new Repeater<typeof PageContentSyncOperation.$inferType>(async (push, stop) => {
-          const timer = setInterval(() => {
-            push({ pageId: args.pageId, kind: PageContentSyncKind.PING, data: dayjs().unix().toString() });
-          }, 1000);
-          await stop;
-          clearInterval(timer);
-        }),
-      ]);
+      const repeater = pubsub.subscribe('page:content:commit', args.pageId);
 
       ctx.req.signal.addEventListener('abort', () => {
         repeater.return();
@@ -1029,31 +936,3 @@ builder.subscriptionFields((t) => ({
 const createPageSlug = init({ length: 8 });
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
-
-const getLatestPageContentState = async (pageId: string) => {
-  const state = await db
-    .select({ update: PageContentStates.update, vector: PageContentStates.vector, upToSeq: PageContentStates.upToSeq })
-    .from(PageContentStates)
-    .where(eq(PageContentStates.pageId, pageId))
-    .then(firstOrThrow);
-
-  const pendingUpdates = await db
-    .select({ update: PageContentUpdates.update })
-    .from(PageContentUpdates)
-    .where(and(eq(PageContentUpdates.pageId, pageId), gt(PageContentUpdates.seq, state.upToSeq)));
-
-  if (pendingUpdates.length === 0) {
-    return {
-      update: state.update,
-      vector: state.vector,
-    };
-  }
-
-  const updatedUpdate = Y.mergeUpdatesV2([state.update, ...pendingUpdates.map(({ update }) => update)]);
-  const updatedVector = Y.encodeStateVectorFromUpdateV2(updatedUpdate);
-
-  return {
-    update: updatedUpdate,
-    vector: updatedVector,
-  };
-};

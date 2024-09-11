@@ -199,24 +199,24 @@ export const PageContentContributors = pgTable(
   }),
 );
 
-export const PageContentSnapshots = pgTable(
-  'page_content_snapshots',
-  {
-    id: text('id')
-      .primaryKey()
-      .$defaultFn(() => createDbId('PCSN')),
-    pageId: text('page_id')
-      .notNull()
-      .references(() => Pages.id),
-    snapshot: bytea('snapshot').notNull(),
-    createdAt: datetime('created_at')
-      .notNull()
-      .default(sql`now()`),
-  },
-  (t) => ({
-    pageIdCreatedAtIdx: index().on(t.pageId, t.createdAt),
-  }),
-);
+export const PageContentCommits = pgTable('page_content_commits', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('PCCM', { length: 'long' })),
+  pageId: text('page_id')
+    .notNull()
+    .references(() => Pages.id),
+  userId: text('user_id')
+    .notNull()
+    .references(() => Users.id),
+  version: integer('version').notNull(),
+  ref: text('ref').notNull().unique(),
+  steps: jsonb('steps').notNull().$type<unknown[]>(),
+  seq: bigint('seq', { mode: 'bigint' }).notNull().generatedAlwaysAsIdentity(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
 
 export const PageContentStates = pgTable('page_content_states', {
   id: text('id')
@@ -226,13 +226,11 @@ export const PageContentStates = pgTable('page_content_states', {
     .notNull()
     .unique()
     .references(() => Pages.id),
-  update: bytea('update').notNull(),
-  vector: bytea('vector').notNull(),
-  upToSeq: bigint('up_to_seq', { mode: 'bigint' }).notNull(),
   title: text('title'),
   subtitle: text('subtitle'),
   content: jsonb('content').notNull().$type<JSONContent>(),
   text: text('text').notNull(),
+  version: integer('version').notNull().default(0),
   hash: text('hash').notNull(),
   createdAt: datetime('created_at')
     .notNull()
@@ -241,29 +239,6 @@ export const PageContentStates = pgTable('page_content_states', {
     .notNull()
     .default(sql`now()`),
 });
-
-export const PageContentUpdates = pgTable(
-  'page_content_updates',
-  {
-    id: text('id')
-      .primaryKey()
-      .$defaultFn(() => createDbId('PCUP', { length: 'long' })),
-    pageId: text('page_id')
-      .notNull()
-      .references(() => Pages.id),
-    userId: text('user_id')
-      .notNull()
-      .references(() => Users.id),
-    update: bytea('update').notNull(),
-    seq: bigint('seq', { mode: 'bigint' }).notNull().generatedAlwaysAsIdentity(),
-    createdAt: datetime('created_at')
-      .notNull()
-      .default(sql`now()`),
-  },
-  (t) => ({
-    pageIdSeqIdx: index().on(t.pageId, t.seq),
-  }),
-);
 
 export const Plans = pgTable('plans', {
   id: text('id')

@@ -56,8 +56,6 @@
     "sharp": "^0.33.5",
     "thumbhash": "^0.1.1",
     "ts-pattern": "^5.3.1",
-    "y-prosemirror": "^1.2.12",
-    "yjs": "^13.6.19",
     "zod": "^3.23.8"
   },
   "devDependencies": {

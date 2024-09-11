@@ -19,6 +19,13 @@ enum CategoryState {
   DELETED
 }
 
+input CommitPageContentInput {
+  pageId: ID!
+  ref: String!
+  steps: [JSON!]!
+  version: Int!
+}
+
 input CreateCategoryInput {
   lower: ID
   siteId: ID!
@@ -153,6 +160,7 @@ enum JobState {
 
 type Mutation {
   authorizeSingleSignOn(input: AuthorizeSingleSignOnInput!): UserWithAccessToken!
+  commitPageContent(input: CommitPageContentInput!): Boolean!
   createCategory(input: CreateCategoryInput!): Category!
   createDefaultTeam: Team!
   createPage(input: CreatePageInput!): Page!
@@ -175,7 +183,6 @@ type Mutation {
   resendInvitationEmail(input: ResendInvitationEmailInput!): TeamMemberInvitation!
   revokeInvitation(input: RevokeInvitationInput!): TeamMemberInvitation!
   setSiteCustomDomain(input: SetSiteCustomDomainInput!): SiteCustomDomain!
-  syncPageContent(input: SyncPageContentInput!): [PageContentSyncOperation!]!
   unfurlEmbed(input: UnfurlEmbedInput!): Embed!
   unpublishPage(input: UnpublishPageInput!): Page!
   unsetSiteCustomDomain(input: UnsetSiteCustomDomainInput!): SiteCustomDomain!
@@ -205,6 +212,13 @@ type Page implements IPage {
   state: PageState!
 }
 
+type PageContentCommit {
+  pageId: ID!
+  ref: String!
+  steps: [JSON!]!
+  version: Int!
+}
+
 type PageContentContributor {
   createdAt: DateTime!
   id: ID!
@@ -212,14 +226,13 @@ type PageContentContributor {
   user: User!
 }
 
-type PageContentSnapshot {
-  id: ID!
-}
-
 type PageContentState {
+  content: JSON!
   id: ID!
+  subtitle: String
   title: String!
   updatedAt: DateTime!
+  version: Int!
 }
 
 enum PageContentSyncKind {
@@ -229,12 +242,6 @@ enum PageContentSyncKind {
   SYNCHRONIZE_2
   SYNCHRONIZE_3
   UPDATE
-}
-
-type PageContentSyncOperation {
-  data: String!
-  kind: PageContentSyncKind!
-  pageId: ID!
 }
 
 type PageContentToc {
@@ -416,17 +423,10 @@ enum SiteState {
 union SiteUpdateStreamPayload = Page | Site
 
 type Subscription {
-  pageContentSyncStream(pageId: ID!): PageContentSyncOperation!
+  pageContentCommitStream(pageId: ID!): PageContentCommit!
   siteCustomDomainValidationStream(siteCustomDomainId: ID!): SiteCustomDomain!
   siteUpdateStream(siteId: ID!): SiteUpdateStreamPayload!
   teamUpdateStream(teamId: ID!): TeamUpdateStreamPayload!
-}
-
-input SyncPageContentInput {
-  clientId: String!
-  data: String!
-  kind: PageContentSyncKind!
-  pageId: ID!
 }
 
 type Team {

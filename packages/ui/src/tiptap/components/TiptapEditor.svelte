@@ -1,6 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { Editor } from '@tiptap/core';
+  import { Transaction } from '@tiptap/pm/state';
   import { createEventDispatcher, onMount } from 'svelte';
   import { Collaboration } from '../extensions/collaboration';
   import { Freeze } from '../extensions/freeze';
@@ -9,18 +10,21 @@
   import { Image } from '../node-views/image';
   import { basicExtensions, editorExtensions } from '../schema';
   import type { SystemStyleObject } from '@readable/styled-system/types';
-  import type * as YAwareness from 'y-protocols/awareness';
-  import type * as Y from 'yjs';
+  import type { JSONContent } from '@tiptap/core';
 
-  const dispatch = createEventDispatcher<{ initialize: null; file: { pos: number; files: File[] } }>();
+  const dispatch = createEventDispatcher<{
+    initialize: null;
+    file: { pos: number; files: File[] };
+    change: { transaction: Transaction };
+  }>();
 
   export let style: SystemStyleObject | undefined = undefined;
 
-  export let document: Y.Doc | undefined = undefined;
-  export let awareness: YAwareness.Awareness | undefined = undefined;
-
   export let editor: Editor | undefined = undefined;
   export let frozen = false;
+
+  export let content: JSONContent | undefined = undefined;
+  export let version: number | undefined = undefined;
 
   export let handleImageUpload: (file: File) => Promise<Record<string, unknown>>;
   export let handleFileUpload: (file: File) => Promise<Record<string, unknown>>;
@@ -31,13 +35,14 @@
   onMount(() => {
     editor = new Editor({
       element,
+      content,
       extensions: [
         ...basicExtensions,
         ...editorExtensions,
         Embed.configure({ handleEmbed }),
         Image.configure({ handleImageUpload }),
         File.configure({ handleFileUpload }),
-        ...(document && awareness ? [Collaboration.configure({ document, awareness })] : []),
+        Collaboration.configure({ version }),
         ...(frozen ? [Freeze] : []),
       ],
       injectCSS: false,
@@ -58,6 +63,7 @@
               pos: view.posAtCoords({ left: event.clientX, top: event.clientY })?.pos ?? view.state.selection.to,
               files: [...event.dataTransfer.files],
             });
+
             return true;
           }
         },
@@ -67,12 +73,17 @@
               pos: view.state.selection.to,
               files: [...event.clipboardData.files],
             });
+
             return true;
           }
         },
       },
-      onTransaction: ({ editor: editor_ }) => {
+      onTransaction: ({ editor: editor_, transaction }) => {
         editor = editor_;
+
+        if (transaction.docChanged) {
+          dispatch('change', { transaction });
+        }
       },
     });
 

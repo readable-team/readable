@@ -1,18 +1,14 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { TiptapEditor } from '@readable/ui/tiptap';
+  import { applyCommit, getCommit, TiptapEditor } from '@readable/ui/tiptap';
   import ky from 'ky';
-  import { nanoid } from 'nanoid';
-  import { base64 } from 'rfc4648';
+  import { Step } from 'prosemirror-transform';
   import { onMount } from 'svelte';
-  import * as YAwareness from 'y-protocols/awareness';
-  import * as Y from 'yjs';
-  import { PageContentSyncKind } from '@/enums';
+  import { writable } from 'svelte/store';
   import { fragment, graphql } from '$graphql';
   import Breadcrumb from './Breadcrumb.svelte';
   import type { Editor } from '@tiptap/core';
-  import type { Writable } from 'svelte/store';
   import type { PagePage_Editor_query } from '$graphql';
 
   export let _query: PagePage_Editor_query;
@@ -28,6 +24,13 @@
 
         page(pageId: $pageId) {
           id
+
+          content {
+            id
+            title
+            content
+            version
+          }
         }
 
         ...PagePage_Breadcrumb_query
@@ -35,22 +38,19 @@
     `),
   );
 
-  const syncPageContent = graphql(`
-    mutation PagePage_SyncPageContent_Mutation($input: SyncPageContentInput!) {
-      syncPageContent(input: $input) {
-        pageId
-        kind
-        data
-      }
+  const commitPageContent = graphql(`
+    mutation PagePage_CommitPageContent_Mutation($input: CommitPageContentInput!) {
+      commitPageContent(input: $input)
     }
   `);
 
-  const pageContentSyncStream = graphql(`
-    subscription PagePage_PageContentSyncStream_Subscription($pageId: ID!) {
-      pageContentSyncStream(pageId: $pageId) {
+  const pageContentCommitStream = graphql(`
+    subscription PagePage_PageContentCommitStream_Subscription($pageId: ID!) {
+      pageContentCommitStream(pageId: $pageId) {
         pageId
-        kind
-        data
+        version
+        ref
+        steps
       }
     }
   `);
@@ -100,161 +100,58 @@
     }
   `);
 
-  pageContentSyncStream.on('data', ({ pageContentSyncStream: operation }) => {
-    if (operation.pageId !== $query.page.id) {
+  pageContentCommitStream.on('data', ({ pageContentCommitStream: commit }) => {
+    if (!editor) {
       return;
     }
 
-    // eslint-disable-next-line unicorn/prefer-switch
-    if (operation.kind === PageContentSyncKind.PING) {
-      // TODO: PONG
-    } else if (operation.kind === PageContentSyncKind.SYNCHRONIZE_3) {
-      if (operation.data === clientId) {
-        // TODO: Update connection state
-      }
+    const tr = applyCommit(editor.state, {
+      version: commit.version,
+      ref: commit.ref,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      steps: commit.steps.map((step) => Step.fromJSON(editor!.schema, step)),
+    });
 
-      syncPageContent({
-        pageId: $query.page.id,
-        clientId,
-        kind: PageContentSyncKind.AWARENESS,
-        data: base64.stringify(YAwareness.encodeAwarenessUpdate(yAwareness, [yDoc.clientID])),
-      });
-    } else if (operation.kind === PageContentSyncKind.UPDATE) {
-      Y.applyUpdateV2(yDoc, base64.parse(operation.data), 'NETWORK');
-    } else if (operation.kind === PageContentSyncKind.AWARENESS) {
-      YAwareness.applyAwarenessUpdate(yAwareness, base64.parse(operation.data), 'NETWORK');
-    }
+    editor.view.dispatch(tr);
   });
 
   let editor: Editor | undefined;
 
-  const yDoc = new Y.Doc();
-  const yAwareness = new YAwareness.Awareness(yDoc);
-
-  const clientId = nanoid();
-
-  yDoc.on('updateV2', async (update, origin) => {
-    if (origin !== 'NETWORK') {
-      await syncPageContent({
-        pageId: $query.page.id,
-        clientId,
-        kind: PageContentSyncKind.UPDATE,
-        data: base64.stringify(update),
-      });
-    }
-  });
-
-  yAwareness.on(
-    'update',
-    async (states: { added: number[]; updated: number[]; removed: number[] }, origin: unknown) => {
-      if (origin === 'NETWORK') {
-        return;
-      }
-
-      const update = YAwareness.encodeAwarenessUpdate(yAwareness, [
-        ...states.added,
-        ...states.updated,
-        ...states.removed,
-      ]);
-
-      await syncPageContent({
-        pageId: $query.page.id,
-        clientId,
-        kind: PageContentSyncKind.AWARENESS,
-        data: base64.stringify(update),
-      });
-    },
-  );
-
-  const setupLocalAwareness = async () => {
-    yAwareness.setLocalStateField('user', {
-      name: $query.me.name,
-      color: '#000000',
-    });
-  };
-
-  const fullSync = async () => {
-    const clientStateVector = Y.encodeStateVector(yDoc);
-
-    const results = await syncPageContent({
-      pageId: $query.page.id,
-      clientId,
-      kind: PageContentSyncKind.SYNCHRONIZE_1,
-      data: base64.stringify(clientStateVector),
-    });
-
-    if (!results) {
+  const onTransaction = async () => {
+    if (!editor) {
       return;
     }
 
-    for (const { kind, data } of results) {
-      if (kind === PageContentSyncKind.SYNCHRONIZE_1) {
-        const serverStateVector = base64.parse(data);
-        const serverMissingUpdate = Y.encodeStateAsUpdateV2(yDoc, serverStateVector);
-
-        await syncPageContent({
-          pageId: $query.page.id,
-          clientId,
-          kind: PageContentSyncKind.SYNCHRONIZE_2,
-          data: base64.stringify(serverMissingUpdate),
-        });
-      } else if (kind === PageContentSyncKind.SYNCHRONIZE_2) {
-        const clientMissingUpdate = base64.parse(data);
-
-        Y.applyUpdateV2(yDoc, clientMissingUpdate, 'NETWORK');
-      }
+    const commit = getCommit(editor.state);
+    if (!commit) {
+      return;
     }
+
+    await commitPageContent({
+      pageId: $query.page.id,
+      version: commit.version,
+      ref: commit.ref,
+      steps: commit.steps.map((step) => step.toJSON()),
+    });
   };
-
-  const createStore = (doc: Y.Doc, name: string) => {
-    const yText = doc.getText(name);
-
-    const store: Writable<string> = {
-      subscribe: (run) => {
-        const handler = () => {
-          run(yText.toString());
-        };
-
-        yText.observe(handler);
-        handler();
-
-        return () => {
-          yText.unobserve(handler);
-        };
-      },
-      set: (value: string) => {
-        doc.transact(() => {
-          yText.delete(0, yText.length);
-          yText.insert(0, value);
-        });
-      },
-      update: (fn: (value: string) => string) => {
-        doc.transact(() => {
-          yText.delete(0, yText.length);
-          yText.insert(0, fn(yText.toString()));
-        });
-      },
-    };
-
-    return store;
-  };
-
-  const title = createStore(yDoc, 'title');
 
   onMount(() => {
-    const unsubscribe = pageContentSyncStream.subscribe({ pageId: $query.page.id });
+    const interval = setInterval(() => {
+      onTransaction();
+    }, 1000);
 
-    setupLocalAwareness();
-    fullSync();
+    const unsubscribe = pageContentCommitStream.subscribe({ pageId: $query.page.id });
 
     return () => {
+      clearInterval(interval);
       unsubscribe();
-      YAwareness.removeAwarenessStates(yAwareness, [yDoc.clientID], 'NETWORK');
-      yDoc.destroy();
     };
   });
 
+  const title = writable('');
   let titleEl: HTMLElement;
+
+  $: $title = $query.page.content.title;
 
   const adjustTextareaHeight = (el: HTMLElement) => {
     el.style.height = 'auto';
@@ -358,8 +255,7 @@
           width: '720px',
         },
       })}
-      awareness={yAwareness}
-      document={yDoc}
+      content={$query.page.content.content}
       handleEmbed={async (url) => {
         return await unfurlEmbed({ url });
       }}
@@ -371,6 +267,8 @@
         const path = await uploadBlob(file);
         return await persistBlobAsImage({ path });
       }}
+      version={$query.page.content.version}
+      on:change={onTransaction}
       bind:editor
     />
   </div>
