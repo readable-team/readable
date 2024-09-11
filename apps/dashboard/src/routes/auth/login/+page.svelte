@@ -18,62 +18,44 @@
   `);
 </script>
 
-<main
+<div
   class={flex({
     direction: 'column',
     align: 'center',
     justify: 'center',
-    grow: 1,
+    borderRadius: '8px',
+    padding: '40px',
+    textAlign: 'center',
+    width: 'full',
+    maxWidth: '576px',
     minHeight: 'screen',
-    background:
-      '[linear-gradient(123deg, rgba(251, 96, 189, 0.10) 0%, rgba(251, 96, 189, 0.03) 21.07%, rgba(251, 96, 189, 0.00) 39.96%, rgba(249, 106, 25, 0.02) 74.93%, rgba(249, 106, 25, 0.10) 90.54%)]',
   })}
 >
-  <div
-    class={css({
-      borderRadius: '8px',
-      padding: '40px',
-      width: 'full',
-      maxWidth: '576px',
-      boxShadow: 'emphasize',
-      backgroundColor: 'surface.primary',
-    })}
+  <FullLogo class={css({ marginBottom: '20px', color: 'text.accent', height: '30px' })} />
+
+  <p class={css({ marginBottom: '32px', textStyle: '15m', color: 'text.secondary' })}>
+    제품과 문서를 동기화하고
+    <br />
+    신뢰할 수 있는 가이드 문서를 만들어 보세요
+  </p>
+
+  <Button
+    style={flex.raw({ gap: '6px', width: '240px' })}
+    size="lg"
+    variant="secondary"
+    on:click={async () => {
+      const url = await generateSingleSignOnAuthorizationUrl({
+        provider: SingleSignOnProvider.GOOGLE,
+        email: $page.url.searchParams.get('email'),
+      });
+
+      location.href = url;
+    }}
   >
-    <a href="/">
-      <FullLogo class={css({ height: '20px' })} />
-    </a>
-
-    <p class={css({ marginBottom: '80px', textStyle: '20sb', color: 'neutral.70' })}>
-      제품과 문서를 동기화하고
-      <br />
-      신뢰할 수 있는 가이드 문서를 만들어 보세요
-    </p>
-
-    <Button
-      style={flex.raw({
-        align: 'center',
-        justify: 'center',
-        gap: '16px',
-        paddingX: '40px',
-        textStyle: '16b',
-        color: 'neutral.90',
-      })}
-      size="lg"
-      variant="secondary"
-      on:click={async () => {
-        const url = await generateSingleSignOnAuthorizationUrl({
-          provider: SingleSignOnProvider.GOOGLE,
-          email: $page.url.searchParams.get('email'),
-        });
-
-        location.href = url;
-      }}
-    >
-      <GoogleLogo class={css({ size: '18px' })} />
-      <span>구글로 시작하기</span>
-    </Button>
-  </div>
-</main>
+    <GoogleLogo class={css({ size: '16px' })} />
+    <span>구글로 시작하기</span>
+  </Button>
+</div>
 
 <footer
   class={flex({
