@@ -9,5 +9,6 @@
 /packages/gql/ @devunt
 /packages/lintconfig/ @devunt
 /packages/pulumi/ @devunt
+/packages/styled-system/ @Seohyun-Roh @dolsup
 /packages/tsconfig/ @devunt
 /packages/ui/ @Seohyun-Roh @dolsup
