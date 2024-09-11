@@ -66,9 +66,9 @@
     "@types/body-scroll-lock": "^3.1.2",
     "svelte-check": "^4.0.1",
     "svelte-preprocess": "^6.0.2",
-    "typescript": "^5.5.4",
+    "typescript": "^5.6.2",
     "unplugin-icons": "^0.19.3",
     "y-protocols": "^1.0.6",
-    "yjs": "^13.6.18"
+    "yjs": "^13.6.19"
   }
 }

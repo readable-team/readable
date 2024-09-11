@@ -21,13 +21,13 @@
     "query-string": "^9.1.0",
     "rfc4648": "^1.5.3",
     "y-protocols": "^1.0.6",
-    "yjs": "^13.6.18",
+    "yjs": "^13.6.19",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@iconify-json/lucide": "^1.2.2",
-    "@iconify-json/simple-icons": "^1.2.1",
-    "@pandacss/dev": "^0.45.2",
+    "@iconify-json/lucide": "^1.2.3",
+    "@iconify-json/simple-icons": "^1.2.2",
+    "@pandacss/dev": "^0.46.0",
     "@pulumi/pulumi": "^3.131.0",
     "@readable/adapter-bun": "workspace:*",
     "@readable/pulumi": "workspace:*",
@@ -39,7 +39,7 @@
     "svelte-check": "^4.0.1",
     "svelte-preprocess": "^6.0.2",
     "tsx": "^4.19.0",
-    "typescript": "^5.5.4",
+    "typescript": "^5.6.2",
     "unplugin-icons": "^0.19.3",
     "vite": "^5.4.3"
   }
