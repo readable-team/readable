@@ -496,8 +496,15 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
       });
 
+      let deletedPageIds: string[] = [];
+
       const category = await db.transaction(async (tx) => {
-        await tx.update(Pages).set({ state: PageState.DELETED }).where(eq(Pages.categoryId, input.categoryId));
+        deletedPageIds = await tx
+          .update(Pages)
+          .set({ state: PageState.DELETED })
+          .where(eq(Pages.categoryId, input.categoryId))
+          .returning({ id: Pages.id })
+          .then((rows) => rows.map((row) => row.id));
 
         return await tx
           .update(Categories)
@@ -508,6 +515,9 @@ builder.mutationFields((t) => ({
       });
 
       pubsub.publish('site:update', category.siteId, { scope: 'site' });
+      for (const pageId of deletedPageIds) {
+        pubsub.publish('site:update', category.siteId, { scope: 'page', pageId });
+      }
 
       return category;
     },
@@ -630,7 +640,9 @@ builder.mutationFields((t) => ({
       });
 
       pubsub.publish('site:update', page.siteId, { scope: 'site' });
-      pubsub.publish('site:update', page.siteId, { scope: 'page', pageId: page.id });
+      for (const pageId of deletedPageIds) {
+        pubsub.publish('site:update', page.siteId, { scope: 'page', pageId });
+      }
 
       return page;
     },
