@@ -12,7 +12,7 @@ export const _SitePage_Query_AfterLoad: SitePage_Query_AfterLoad = async (query)
   const visitedPage = get(lastVisitedPage);
 
   if (visitedPage) {
-    redirect(302, `/${query.site.id}/${visitedPage}/`);
+    redirect(302, `/${query.site.id}/${visitedPage}`);
   }
 };
 

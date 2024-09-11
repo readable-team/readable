@@ -14,19 +14,19 @@
       name: '일반',
       href: `/${data.props.siteId}/settings`,
       icon: IconSettings,
-      selected: $page.url.pathname === `/${data.props.siteId}/settings/`,
+      selected: $page.url.pathname === `/${data.props.siteId}/settings`,
     },
     {
       name: '테마 색상',
       href: `/${data.props.siteId}/settings/theme`,
       icon: IconPaintbrushVertical,
-      selected: $page.url.pathname === `/${data.props.siteId}/settings/theme/`,
+      selected: $page.url.pathname === `/${data.props.siteId}/settings/theme`,
     },
     {
       name: '커스텀 도메인',
-      href: `/${data.props.siteId}/settings/domain/`,
+      href: `/${data.props.siteId}/settings/domain`,
       icon: IconLink2,
-      selected: $page.url.pathname === `/${data.props.siteId}/settings/domain/`,
+      selected: $page.url.pathname === `/${data.props.siteId}/settings/domain`,
     },
   ];
 </script>
