@@ -198,7 +198,7 @@
           display: 'none',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: '4px',
+          borderRadius: '10px',
           color: 'neutral.0',
           backgroundColor: 'neutral.100/16',
           size: '64px',
