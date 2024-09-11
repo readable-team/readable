@@ -246,7 +246,7 @@
             },
           })}
         >
-          <Icon style={css.raw({ marginRight: '8px' })} icon={SearchIcon} size={18} />
+          <Icon style={css.raw({ marginRight: '8px', color: 'neutral.50' })} icon={SearchIcon} size={18} />
 
           <input
             bind:this={inputEl}
