@@ -88,6 +88,11 @@
         id
         state
         hasUnpublishedChanges
+
+        children {
+          id
+          hasUnpublishedParents
+        }
       }
     }
   `);
