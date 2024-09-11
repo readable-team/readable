@@ -89,27 +89,29 @@
       justifyContent: 'space-between',
     })}
   >
-    <h1
-      class={flex({
-        flex: '1',
-        alignItems: 'center',
-        gap: '12px',
-        truncate: true,
-      })}
-    >
-      {#if $query.publicSite.logo}
-        <Img
-          style={css.raw({
-            borderRadius: '6px',
-            size: '28px',
-          })}
-          $image={$query.publicSite.logo}
-          alt=""
-          size={32}
-        />
-      {/if}
-      <span class={css({ textStyle: '18b', truncate: true })}>{$query.publicSite.name}</span>
-    </h1>
+    <a class={css({ truncate: true })} href="/">
+      <h1
+        class={flex({
+          flex: '1',
+          alignItems: 'center',
+          gap: '12px',
+          truncate: true,
+        })}
+      >
+        {#if $query.publicSite.logo}
+          <Img
+            style={css.raw({
+              borderRadius: '6px',
+              size: '28px',
+            })}
+            $image={$query.publicSite.logo}
+            alt=""
+            size={32}
+          />
+        {/if}
+        <span class={css({ textStyle: '18b', truncate: true })}>{$query.publicSite.name}</span>
+      </h1>
+    </a>
     <div
       class={css({
         flexShrink: 0,
