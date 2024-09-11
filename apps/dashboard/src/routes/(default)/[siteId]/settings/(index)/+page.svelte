@@ -212,6 +212,7 @@
     <input
       bind:this={inputEl}
       class={css({ display: 'none' })}
+      accept="image/*"
       type="file"
       on:change={async (event) => {
         const file = event.currentTarget.files?.[0];
