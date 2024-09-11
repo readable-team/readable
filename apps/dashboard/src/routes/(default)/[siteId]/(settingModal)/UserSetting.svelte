@@ -3,6 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Button, FormField, HorizontalDivider, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
+  import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
@@ -67,9 +68,9 @@
         name,
       });
     },
-    onSuccess: (result) => {
-      console.log('success', result);
+    onSuccess: () => {
       setIsDirty(false);
+      toast.success('개인 설정이 변경되었습니다');
 
       mixpanel.track('user:update');
     },
