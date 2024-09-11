@@ -63,10 +63,6 @@
 
   $: currentSlug = $page.params.slug.split('-', 2)[0];
 
-  $: if (currentSlug) {
-    $treeOpenState[currentSlug] = true;
-  }
-
   function findPage(slug: string) {
     return [
       ...$publicSite.categories.flatMap((c) => c.pages),
@@ -75,7 +71,10 @@
   }
 
   $: if (currentSlug) {
-    $treeOpenState = {};
+    // NOTE: 모바일에서 사이드바를 열 때는 현재 페이지만 트리에서 열도록 함
+    if ($mobileNavOpen) {
+      $treeOpenState = {};
+    }
     const page = findPage(currentSlug);
 
     if (page) {
