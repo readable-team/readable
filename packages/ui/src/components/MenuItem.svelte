@@ -47,6 +47,10 @@
   }}
   {...props}
   {...$$restProps}
+  {...type === 'link' && {
+    // NOTE: link 타입이어도 _enabled 스타일이 적용되도록 함
+    'aria-disabled': 'false',
+  }}
   class={cx(
     cva({
       base: flex.raw({
