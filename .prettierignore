@@ -1,1 +1,4 @@
 .husky/_/
+
+docs/*
+!docs/*.md
