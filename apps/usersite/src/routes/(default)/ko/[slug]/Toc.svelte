@@ -73,8 +73,11 @@
   const scrollToElementTop = (top: number) => {
     const maxScrollY = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight;
 
+    // HACK: 어째선지 0.5px 차이가 난다
+    const scrollY = Math.floor(window.scrollY);
+
     // NOTE: 같은 위치거나 이미 스크롤 끝에 있음
-    if (top === window.scrollY || (top > maxScrollY && window.scrollY === maxScrollY)) {
+    if (top === scrollY || (top > maxScrollY && scrollY === maxScrollY)) {
       return Promise.resolve();
     }
 
