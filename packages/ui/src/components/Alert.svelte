@@ -78,7 +78,6 @@
             marginTop: '6px',
             textStyle: '15r',
             color: 'text.secondary',
-            whiteSpace: 'pre-wrap',
           })}
         >
           <slot name="content" />

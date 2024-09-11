@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Icon } from '@readable/ui/components';
+  import { Icon } from '@readable/ui/components';
   import { onMount } from 'svelte';
   import MousePointerClickIcon from '~icons/lucide/mouse-pointer-click';
   import ReadableIcon from '~icons/rdbl/readable';
@@ -160,19 +160,26 @@
       ]}
     />
 
-    <!-- TODO: 스타일 수정 -->
-    <Button
-      style={css.raw({ gap: '6px' })}
+    <a
+      class={flex({
+        align: 'center',
+        gap: '6px',
+        borderWidth: '1px',
+        borderColor: 'border.secondary',
+        borderRadius: '4px',
+        paddingX: '8px',
+        paddingY: '4px',
+        color: 'text.tertiary',
+        textStyle: '14sb',
+        backgroundColor: { base: 'neutral.10', _hover: 'neutral.20', _pressed: 'neutral.30' },
+      })}
       href={$query.site.url}
       rel="noopener noreferrer"
-      size="sm"
       target="_blank"
-      type="link"
-      variant="secondary"
     >
       <Icon icon={MousePointerClickIcon} />
       {$query.site.url}
-    </Button>
+    </a>
   </nav>
 
   <div

@@ -14,6 +14,7 @@
   import { afterNavigate, goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
+  import { invokeAlert } from '$lib/components/invoke-alert';
   import { lastVisitedPage } from '$lib/stores';
   import { pageUrl } from '$lib/utils/url';
   import Editor from './Editor.svelte';
@@ -262,69 +263,114 @@
           ($query.page.state === PageState.PUBLISHED && !$query.page.hasUnpublishedChanges)}
         size="md"
         on:click={async () => {
-          await publishPage({ pageId: $query.page.id });
-          toast.success('발행이 완료되었습니다');
+          if ($query.page.state === PageState.DRAFT) {
+            invokeAlert({
+              title: `"${$query.page.content.title}" 페이지를 게시하시겠어요?`,
+              content: '누구나 사이트에서 이 페이지를 볼 수 있으며, 언제든 게시를 취소할 수 있습니다',
+              actionText: '게시 및 발행',
+              variant: 'primary',
+              action: async () => {
+                await publishPage({ pageId: $query.page.id });
+                toast.success('발행이 완료되었습니다');
+              },
+            });
+          } else {
+            await publishPage({ pageId: $query.page.id });
+            toast.success('발행이 완료되었습니다');
+          }
         }}
       >
-        발행
-        <!-- TODO: 게시 안됐을 때 -> 게시 및 발행, 발행 완료 -> 발행됨 -->
+        {#if $query.page.state === PageState.DRAFT}
+          게시 및 발행
+        {:else if !$query.page.hasUnpublishedChanges}
+          발행됨
+        {:else}
+          발행
+        {/if}
       </Button>
     </Tooltip>
 
-    <!-- TODO: 게시됨 표시, 간격 조정 -->
-    <p class={css({ marginBottom: '4px', textStyle: '14sb', color: 'text.secondary' })}>상태</p>
+    <div class={flex({ direction: 'column', gap: '20px' })}>
+      {#if $query.page.state === PageState.PUBLISHED}
+        <div>
+          <p class={css({ marginBottom: '6px', textStyle: '14sb', color: 'text.secondary' })}>상태</p>
 
-    <p class={css({ marginBottom: '8px', textStyle: '14sb', color: 'text.secondary' })}>편집자</p>
-
-    <div class={flex({ align: 'center', wrap: 'wrap', paddingLeft: '4px', marginBottom: '16px' })}>
-      {#each $query.page.contentContributor as contributor (contributor.id)}
-        <Tooltip
-          style={css.raw({
-            borderRadius: 'full',
-            marginLeft: '-4px',
-            marginBottom: '4px',
-            size: '28px',
-          })}
-          message={contributor.user.name}
-          offset={8}
-          tooltipStyle={css.raw({ maxWidth: '100px', truncate: true })}
-        >
-          <Img
-            style={css.raw({
-              flex: 'none',
-              ringWidth: '1px',
-              ringColor: 'border.image',
-              borderRadius: 'full',
-              size: '28px',
-              _hover: { ringWidth: '2px', ringColor: { base: 'gray.800', _dark: 'darkgray.500' } },
+          <div
+            class={flex({
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '4px',
+              paddingX: '4px',
+              paddingY: '2px',
+              color: 'text.secondary',
+              textStyle: '11b',
+              backgroundColor: 'neutral.30',
+              width: 'fit',
             })}
-            $image={contributor.user.avatar}
-            alt={contributor.user.name}
-            size={32}
-          />
-        </Tooltip>
-      {/each}
+          >
+            게시됨
+          </div>
+        </div>
+      {/if}
+
+      <div>
+        <p class={css({ marginBottom: '8px', textStyle: '14sb', color: 'text.secondary' })}>편집자</p>
+
+        <div class={flex({ align: 'center', wrap: 'wrap', paddingLeft: '4px' })}>
+          {#each $query.page.contentContributor as contributor (contributor.id)}
+            <Tooltip
+              style={css.raw({
+                borderRadius: 'full',
+                marginLeft: '-4px',
+                marginBottom: '4px',
+                size: '28px',
+              })}
+              message={contributor.user.name}
+              offset={8}
+              tooltipStyle={css.raw({ maxWidth: '100px', truncate: true })}
+            >
+              <Img
+                style={css.raw({
+                  flex: 'none',
+                  ringWidth: '1px',
+                  ringColor: 'border.image',
+                  borderRadius: 'full',
+                  size: '28px',
+                  _hover: { ringWidth: '2px', ringColor: { base: 'gray.800', _dark: 'darkgray.500' } },
+                })}
+                $image={contributor.user.avatar}
+                alt={contributor.user.name}
+                size={32}
+              />
+            </Tooltip>
+          {/each}
+        </div>
+      </div>
+
+      {#if $query.page.state === PageState.PUBLISHED}
+        <div>
+          <p class={css({ marginBottom: '4px', textStyle: '14sb', color: 'text.secondary' })}>마지막 발행 시간</p>
+
+          <time
+            class={css({ display: 'block', textStyle: '14r', color: 'text.tertiary' })}
+            datetime={$query.page.lastPublishedAt}
+          >
+            {dayjs($query.page.lastPublishedAt).formatAsDateTime()}
+          </time>
+        </div>
+      {/if}
+
+      <div>
+        <p class={css({ marginBottom: '4px', textStyle: '14sb', color: 'text.secondary' })}>마지막 수정 시간</p>
+
+        <time
+          class={css({ display: 'block', textStyle: '14r', color: 'text.tertiary' })}
+          datetime={$query.page.content.updatedAt}
+        >
+          {dayjs($query.page.content.updatedAt).formatAsDateTime()}
+        </time>
+      </div>
     </div>
-
-    {#if $query.page.state === PageState.PUBLISHED}
-      <p class={css({ marginBottom: '4px', textStyle: '14sb', color: 'text.secondary' })}>마지막 발행 시간</p>
-
-      <time
-        class={css({ display: 'block', marginBottom: '20px', textStyle: '14r', color: 'text.tertiary' })}
-        datetime={$query.page.lastPublishedAt}
-      >
-        {dayjs($query.page.lastPublishedAt).formatAsDateTime()}
-      </time>
-    {/if}
-
-    <p class={css({ marginBottom: '4px', textStyle: '14sb', color: 'text.secondary' })}>마지막 수정 시간</p>
-
-    <time
-      class={css({ display: 'block', textStyle: '14r', color: 'text.tertiary' })}
-      datetime={$query.page.content.updatedAt}
-    >
-      {dayjs($query.page.content.updatedAt).formatAsDateTime()}
-    </time>
   </aside>
 {/if}
 
@@ -370,11 +416,3 @@
   <svelte:fragment slot="action">게시 취소</svelte:fragment>
   <svelte:fragment slot="cancel">취소</svelte:fragment>
 </Alert>
-
-<!-- 
-  TODO: 게시할 때 알럿
-  title: "{제목}" 페이지를 게시하시겠어요?
-  content: 누구나 사이트에서 이 페이지를 볼 수 있으며, 언제든 게시를 취소할 수 있습니다
-  action: 게시 및 발행
-  variant: primary
- -->
