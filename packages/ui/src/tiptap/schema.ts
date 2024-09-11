@@ -10,6 +10,7 @@ import { Document } from '@tiptap/extension-document';
 import { Dropcursor } from '@tiptap/extension-dropcursor';
 import { HardBreak } from '@tiptap/extension-hard-break';
 import { Heading } from '@tiptap/extension-heading';
+import { History } from '@tiptap/extension-history';
 import { HorizontalRule } from '@tiptap/extension-horizontal-rule';
 import { Italic } from '@tiptap/extension-italic';
 import { Link } from '@tiptap/extension-link';
@@ -177,6 +178,7 @@ export const basicExtensions = [
 
 export const editorExtensions = [
   Dropcursor.configure({ width: 4, class: css({ color: 'accent.60/40' }) }),
+  History,
   Placeholder,
   ListKeymap,
 
