@@ -7,6 +7,7 @@ import {
   extractTableCode,
   first,
   firstOrThrow,
+  Images,
   PaymentMethods,
   Sites,
   TeamMemberInvitations,
@@ -284,6 +285,13 @@ builder.mutationFields((t) => ({
 
       await assertPlanRule({ teamId: input.teamId, rule: 'memberLimit' });
 
+      const me = await db
+        .select({ name: Users.name, avatarPath: Images.path })
+        .from(Users)
+        .leftJoin(Images, eq(Users.avatarId, Images.id))
+        .where(and(eq(Users.id, ctx.session.userId), eq(Users.state, UserState.ACTIVE)))
+        .then(firstOrThrow);
+
       const invitedUser = await db
         .select({ id: Users.id })
         .from(Users)
@@ -326,8 +334,11 @@ builder.mutationFields((t) => ({
           subject: `[Readable] ${team.name}에 추가되었어요`,
           body: TeamMemberAddedEmail({
             dashboardUrl: env.PUBLIC_DASHBOARD_URL,
+            websiteUrl: env.PUBLIC_WEBSITE_URL,
             teamId: input.teamId,
             teamName: team.name,
+            inviterName: me.name,
+            inviterAvatarPath: me.avatarPath ? `${env.PUBLIC_USERCONTENTS_URL}/images/${me.avatarPath}` : undefined,
           }),
         });
 
@@ -350,8 +361,11 @@ builder.mutationFields((t) => ({
           subject: `[Readable] ${team.name}에 참여하세요`,
           body: TeamMemberInvitedEmail({
             dashboardUrl: env.PUBLIC_DASHBOARD_URL,
+            websiteUrl: env.PUBLIC_WEBSITE_URL,
             teamName: team.name,
             email: input.email,
+            inviterName: me.name,
+            inviterAvatarPath: me.avatarPath ? `${env.PUBLIC_USERCONTENTS_URL}/images/${me.avatarPath}` : undefined,
           }),
         });
 
@@ -379,6 +393,13 @@ builder.mutationFields((t) => ({
         .where(eq(TeamMemberInvitations.id, input.invitationId))
         .then(firstOrThrow);
 
+      const me = await db
+        .select({ name: Users.name, avatarPath: Images.path })
+        .from(Users)
+        .leftJoin(Images, eq(Users.avatarId, Images.id))
+        .where(and(eq(Users.id, ctx.session.userId), eq(Users.state, UserState.ACTIVE)))
+        .then(firstOrThrow);
+
       await assertTeamPermission({
         teamId: invitation.teamId,
         userId: ctx.session.userId,
@@ -390,8 +411,11 @@ builder.mutationFields((t) => ({
         subject: `[Readable] ${invitation.team.name}에 참여하세요`,
         body: TeamMemberInvitedEmail({
           dashboardUrl: env.PUBLIC_DASHBOARD_URL,
+          websiteUrl: env.PUBLIC_WEBSITE_URL,
           teamName: invitation.team.name,
           email: invitation.email,
+          inviterName: me.name,
+          inviterAvatarPath: me.avatarPath ? `${env.PUBLIC_USERCONTENTS_URL}/images/${me.avatarPath}` : undefined,
         }),
       });
 
