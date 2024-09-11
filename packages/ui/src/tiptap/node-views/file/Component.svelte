@@ -21,6 +21,7 @@
 
   let inflight = false;
   let pickerOpened = false;
+  let file: File | undefined = undefined;
   $: pickerOpened = selected;
 
   const { anchor, floating } = createFloatingActions({
@@ -38,7 +39,7 @@
     picker.addEventListener('change', async () => {
       pickerOpened = false;
 
-      const file = picker.files?.[0];
+      file = picker.files?.[0];
       if (!file) {
         return;
       }
@@ -120,8 +121,13 @@
       >
         {#if inflight}
           <RingSpinner style={css.raw({ size: '20px', color: 'neutral.40' })} />
-          <!-- TODO: 파일명 보여주기 -->
-          파일 업로드 중...
+          {#if file}
+            <span class={css({ truncate: true })}>{file.name}</span>
+            <VerticalDivider style={css.raw({ height: '14px' })} color="secondary" />
+            <span class={css({ color: 'text.tertiary' })}>{formatFileSize(file.size)}</span>
+          {:else}
+            파일 업로드 중...
+          {/if}
         {:else}
           <Icon style={css.raw({ color: 'text.tertiary' })} icon={PaperclipIcon} size={20} />
           파일 업로드
