@@ -1,0 +1,13 @@
+* @devunt
+/apps/api/ @devunt @robin-maki
+/apps/dashboard/ @Seohyun-Roh @dolsup
+/apps/infrastructure/ @devunt
+/apps/literoom/ @devunt
+/apps/usersite/ @Seohyun-Roh @dolsup
+/apps/website/ @Seohyun-Roh @dolsup
+/packages/adapter-bun/ @devunt
+/packages/gql/ @devunt
+/packages/lintconfig/ @devunt
+/packages/pulumi/ @devunt
+/packages/tsconfig/ @devunt
+/packages/ui/ @Seohyun-Roh @dolsup

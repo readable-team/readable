@@ -6,7 +6,15 @@
   "enabledFileTypes": { "*": true },
   "enableGlobDot": true,
   "useGitignore": true,
-  "ignorePaths": [".git", ".gitignore", ".vscode", "*.svg", "drizzle", "packages/styled-system/styled-system"],
+  "ignorePaths": [
+    ".git",
+    ".gitignore",
+    ".vscode",
+    "*.svg",
+    "CODEOWNERS",
+    "drizzle",
+    "packages/styled-system/styled-system"
+  ],
   "words": [
     "amazonses",
     "brotli",
