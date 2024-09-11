@@ -5,14 +5,14 @@
   import { Dialog, HorizontalDivider, Icon } from '@readable/ui/components';
   import Building2Icon from '~icons/lucide/building-2';
   import CircleUserIcon from '~icons/lucide/circle-user';
-  import CreditCardIcon from '~icons/lucide/credit-card';
+  // import CreditCardIcon from '~icons/lucide/credit-card';
   import UsersRoundIcon from '~icons/lucide/users-round';
   import XIcon from '~icons/lucide/x';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
   import { Img } from '$lib/components';
-  import Subscription from './(settingModal)/Subscription.svelte';
+  // import Subscription from './(settingModal)/Subscription.svelte';
   import TeamMembers from './(settingModal)/TeamMembers.svelte';
   import TeamSetting from './(settingModal)/TeamSetting.svelte';
   import UserSetting from './(settingModal)/UserSetting.svelte';
@@ -95,12 +95,12 @@
       href: '?tab=settings/team/members',
       selected: selectedTab === 'settings/team/members',
     },
-    {
-      icon: CreditCardIcon,
-      name: '구독 및 결제',
-      href: '?tab=settings/team/subscription',
-      selected: selectedTab === 'settings/team/subscription',
-    },
+    // {
+    //   icon: CreditCardIcon,
+    //   name: '구독 및 결제',
+    //   href: '?tab=settings/team/subscription',
+    //   selected: selectedTab === 'settings/team/subscription',
+    // },
   ];
 
   const closeModal = () => {
@@ -240,8 +240,8 @@
           <TeamSetting $team={$site.team} />
         {:else if selectedTab === 'settings/team/members'}
           <TeamMembers $team={$site.team} />
-        {:else if selectedTab === 'settings/team/subscription'}
-          <Subscription />
+          <!-- {:else if selectedTab === 'settings/team/subscription'}
+          <Subscription /> -->
         {:else if selectedTab === 'settings/personal'}
           <UserSetting {$user} />
         {/if}
