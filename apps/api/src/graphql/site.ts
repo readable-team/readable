@@ -13,7 +13,6 @@ import { enqueueJob } from '@/jobs';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
-import { assertPlanRule } from '@/utils/plan';
 import {
   Category,
   Image,
@@ -190,8 +189,6 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
         role: TeamMemberRole.ADMIN,
       });
-
-      await assertPlanRule({ teamId: input.teamId, rule: 'siteLimit' });
 
       const slug = [
         faker.word.adjective({ length: { min: 3, max: 5 } }),
