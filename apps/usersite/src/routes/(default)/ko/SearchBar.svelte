@@ -261,13 +261,11 @@
             bind:value={searchQuery}
             on:keydown={handleInputKeyDown}
           />
+
           {#if searchQuery}
             <button
               class={css({
-                position: 'absolute',
-                right: '16px',
-                top: '[50%]',
-                transform: 'translateY(-50%)',
+                marginLeft: '14px',
                 cursor: 'pointer',
                 color: 'neutral.50',
               })}
