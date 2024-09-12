@@ -149,7 +149,7 @@ export const basicExtensions = [
         borderRadius: '4px',
         paddingX: '4px',
         paddingY: '2px',
-        textStyle: '14sb',
+        textStyle: '14m',
         backgroundColor: 'neutral.30/70',
       }),
     },
