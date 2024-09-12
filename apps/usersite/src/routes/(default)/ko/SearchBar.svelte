@@ -206,6 +206,9 @@
             'position': 'relative',
             'width': 'full',
             'borderRadius': '14px',
+            'smOnly': {
+              borderRadius: '10px',
+            },
             'textStyle': '16m',
             'alignItems': 'center',
             'borderWidth': '1px',
