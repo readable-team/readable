@@ -17,6 +17,7 @@
   import { Img } from '$lib/components';
   import { invokeAlert } from '$lib/components/invoke-alert';
   import { lastVisitedPage } from '$lib/stores';
+  import { treeOpenState } from '$lib/svelte/stores/ui';
   import { pageUrl } from '$lib/utils/url';
   import Editor from './Editor.svelte';
 
@@ -116,6 +117,7 @@
 
   afterNavigate(() => {
     $lastVisitedPage = $query.page.state === 'DELETED' ? null : $query.page.id;
+    $treeOpenState[$query.page.id] = true;
   });
 </script>
 

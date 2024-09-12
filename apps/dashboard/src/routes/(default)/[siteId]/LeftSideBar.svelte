@@ -4,6 +4,7 @@
   import mixpanel from 'mixpanel-browser';
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
+  import { treeOpenState } from '$lib/svelte/stores/ui';
   import { PageList } from './(pageTree)';
   import type { LeftSideBar_site } from '$graphql';
   import type { CategoryData, PageData } from './(pageTree)/types';
@@ -194,6 +195,7 @@
 
           mixpanel.track('category:move');
         }}
+        openState={$treeOpenState}
       />
     </div>
   </nav>
