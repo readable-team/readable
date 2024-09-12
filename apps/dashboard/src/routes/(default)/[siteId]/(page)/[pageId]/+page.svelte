@@ -261,7 +261,7 @@
     </div>
 
     <Tooltip
-      style={css.raw({ marginBottom: '34px' })}
+      style={css.raw({ position: 'relative', marginBottom: '34px' })}
       enabled={$query.page.hasUnpublishedParents}
       message="상위 페이지를 먼저 게시해주세요"
       placement="left"
@@ -303,6 +303,21 @@
           발행
         {/if}
       </Button>
+      {#if !($query.page.hasUnpublishedParents || ($query.page.state === PageState.PUBLISHED && !$query.page.hasUnpublishedChanges))}
+        <div
+          class={css({
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            size: 'full',
+            borderRadius: '10px',
+            bgGradient: 'to-r',
+            gradientFrom: 'white/20',
+            gradientTo: 'white/0',
+            pointerEvents: 'none',
+          })}
+        />
+      {/if}
     </Tooltip>
 
     <div class={flex({ direction: 'column', gap: '20px' })}>
