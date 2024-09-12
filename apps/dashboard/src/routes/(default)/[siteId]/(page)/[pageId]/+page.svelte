@@ -162,6 +162,7 @@
             zIndex: '1',
             backgroundColor: 'surface.primary',
             width: 'full',
+            pointerEvents: 'none',
           })}
         >
           <div
