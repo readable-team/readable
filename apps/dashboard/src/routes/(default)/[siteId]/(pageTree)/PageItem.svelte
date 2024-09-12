@@ -362,7 +362,7 @@
                   actionText: '삭제',
                   action: async () => {
                     await deleteCategory({ categoryId: item.id });
-                    toast.error('카테고리가 삭제되었습니다');
+                    toast.success('카테고리가 삭제되었습니다');
                     mixpanel.track('category:delete');
                   },
                 })}
