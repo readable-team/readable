@@ -134,7 +134,7 @@
         listStyle: 'none',
         gap: '6px',
         borderLeftWidth: '1px',
-        borderColor: 'neutral.40',
+        borderColor: 'neutral.30',
       })}
     >
       {#each headings as item, index (item.text)}
@@ -145,6 +145,7 @@
               {
                 marginLeft: '-1px',
                 display: 'block',
+                paddingY: '1px',
                 textStyle: '14r',
                 color: 'text.secondary',
                 _hover: { textDecoration: 'underline' },
