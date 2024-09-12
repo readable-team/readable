@@ -28,7 +28,9 @@
       provider: SingleSignOnProvider.GOOGLE,
     });
 
-    await goto('/');
+    await goto('/', {
+      replaceState: true,
+    });
   });
 
   /**
