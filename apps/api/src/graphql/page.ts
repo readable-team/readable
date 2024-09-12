@@ -1,7 +1,7 @@
 import { init } from '@paralleldrive/cuid2';
 import { Node } from '@tiptap/pm/model';
 import dayjs from 'dayjs';
-import { and, asc, desc, eq, gt, inArray, isNull, ne, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, inArray, isNull, ne, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { base64 } from 'rfc4648';
@@ -74,6 +74,16 @@ Category.implement({
         });
 
         return await loader.load(category.id);
+      },
+    }),
+
+    recursivePageCount: t.int({
+      resolve: async (category) => {
+        return await db
+          .select({ count: count(Pages.id) })
+          .from(Pages)
+          .where(and(eq(Pages.categoryId, category.id), ne(Pages.state, PageState.DELETED)))
+          .then((rows) => rows[0]?.count ?? 0);
       },
     }),
   }),

@@ -14,6 +14,7 @@ type Category implements ICategory {
   name: String!
   order: String!
   pages: [Page!]!
+  recursivePageCount: Int!
 }
 
 enum CategoryState {
