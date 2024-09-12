@@ -439,6 +439,8 @@
                     action: async () => {
                       await removeTeamMember({ userId: member.user.id, teamId: $team.id });
 
+                      toast.success(`${member.user.name}님을 팀에서 제거했습니다`);
+
                       mixpanel.track('team:member:remove');
                     },
                   });
