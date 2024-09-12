@@ -280,7 +280,7 @@ Page.implement({
             UNION ALL
             SELECT ${p.id}, ${p.parentId}
             FROM pages AS p
-            INNER JOIN sq ON ${p.parentId} = sq.id
+            INNER JOIN sq ON ${p.parentId} = sq.id AND ${p.state} <> ${PageState.DELETED}
           )
           SELECT count(*) AS count
           FROM sq
