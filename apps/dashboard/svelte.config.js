@@ -31,4 +31,9 @@ export default {
     },
     version: { pollInterval: 60 * 1000 },
   },
+
+  vitePlugin: {
+    // see: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/inspector.md
+    inspector: true,
+  },
 };
