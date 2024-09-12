@@ -217,7 +217,7 @@
   };
 </script>
 
-<div class={css({ flex: '1', paddingX: '80px', overflowY: 'auto' })}>
+<div class={css({ flex: '1', overflowY: 'auto' })}>
   <div class={flex({ height: 'full', flexDirection: 'column' })}>
     <div class={css({ paddingTop: '46px' })}>
       <Breadcrumb style={css.raw({ marginX: 'auto', width: '720px' })} _query={$query} />
