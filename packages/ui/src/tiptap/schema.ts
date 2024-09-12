@@ -117,14 +117,19 @@ export const basicExtensions = [
   OrderedList.configure({
     HTMLAttributes: {
       class: css({
-        '&:not(ol ol)': { paddingLeft: '24px' }, // ul 루트 노드
-        'paddingLeft': '33px',
+        '&:not(ol ol)': { marginLeft: '9px' }, // ol 루트 노드
+        'marginLeft': '3px',
+        'paddingLeft': '15px',
         'listStylePosition': 'outside',
         'listStyleType': 'decimal',
         'ol ol&': { listStyleType: 'lower-alpha' },
-        '& li': {
-          textIndent: '12px',
+        '& li + li': {
+          marginTop: '4px',
         },
+        '& p + ul': {
+          marginTop: '4px',
+        },
+        '& p': { paddingLeft: '4px' },
       }),
     },
   }),
