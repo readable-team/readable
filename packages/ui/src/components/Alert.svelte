@@ -81,6 +81,8 @@
         <slot name="content" />
       </div>
 
+      <slot />
+
       <div
         class={css(
           {

@@ -11,6 +11,7 @@
   import ExternalLinkIcon from '~icons/lucide/external-link';
   import FileXIcon from '~icons/lucide/file-x';
   import Trash2Icon from '~icons/lucide/trash-2';
+  import TriangleAlertIcon from '~icons/lucide/triangle-alert';
   import UndoIcon from '~icons/lucide/undo';
   import { afterNavigate, goto } from '$app/navigation';
   import { graphql } from '$graphql';
@@ -37,6 +38,7 @@
         hasUnpublishedParents
         lastPublishedAt
         slug
+        recursiveChildCount
 
         content {
           id
@@ -431,7 +433,25 @@
   </svelte:fragment>
   <svelte:fragment slot="content">삭제된 페이지는 복구할 수 없습니다</svelte:fragment>
 
-  <!-- TODO: n개의 하위 페이지가 함께 삭제됩니다 -->
+  {#if $query.page.recursiveChildCount > 0}
+    <div
+      class={flex({
+        align: 'center',
+        gap: '6px',
+        marginTop: '16px',
+        borderRadius: '8px',
+        paddingX: '10px',
+        paddingY: '8px',
+        textStyle: '13m',
+        color: 'text.danger',
+        backgroundColor: 'danger.10',
+      })}
+    >
+      <Icon icon={TriangleAlertIcon} />
+      <p>{$query.page.recursiveChildCount}개의 하위 페이지가 함께 삭제됩니다</p>
+    </div>
+  {/if}
+
   <svelte:fragment slot="action">삭제</svelte:fragment>
   <svelte:fragment slot="cancel">취소</svelte:fragment>
 </Alert>
@@ -454,7 +474,25 @@
     게시 취소한 페이지는 언제든 발행 버튼으로 다시 게시할 수 있습니다
   </svelte:fragment>
 
-  <!-- TODO: n개의 하위 페이지가 함께 게시 취소됩니다 -->
+  {#if $query.page.recursiveChildCount > 0}
+    <div
+      class={flex({
+        align: 'center',
+        gap: '6px',
+        marginTop: '16px',
+        borderRadius: '8px',
+        paddingX: '10px',
+        paddingY: '8px',
+        textStyle: '13m',
+        color: 'text.danger',
+        backgroundColor: 'danger.10',
+      })}
+    >
+      <Icon icon={TriangleAlertIcon} />
+      <p>{$query.page.recursiveChildCount}개의 하위 페이지가 함께 게시 취소됩니다</p>
+    </div>
+  {/if}
+
   <svelte:fragment slot="action">게시 취소</svelte:fragment>
   <svelte:fragment slot="cancel">취소</svelte:fragment>
 </Alert>

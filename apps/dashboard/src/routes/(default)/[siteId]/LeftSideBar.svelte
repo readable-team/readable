@@ -23,12 +23,14 @@
           id
           name
           order
+          recursivePageCount
           __typename
 
           pages {
             id
             state
             order
+            recursiveChildCount
             __typename
 
             category {
@@ -48,6 +50,7 @@
               id
               state
               order
+              recursiveChildCount
               __typename
 
               category {

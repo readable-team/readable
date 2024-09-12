@@ -4,6 +4,7 @@ export type CategoryData = {
   name: string;
   order: string;
   pages: PageData[];
+  recursivePageCount: number;
   editing?: boolean; // 카테고리 이름 편집 중 여부
 };
 
@@ -14,6 +15,7 @@ export type PageData = {
     id: string;
   };
   order: string;
+  recursiveChildCount: number;
   content: {
     title: string;
   };

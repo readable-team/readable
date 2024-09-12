@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon, Menu, MenuItem, VerticalDivider } from '@readable/ui/components';
+  import { Alert, Icon, Menu, MenuItem, VerticalDivider } from '@readable/ui/components';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
@@ -10,10 +10,10 @@
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import PencilIcon from '~icons/lucide/pencil';
   import Trash2Icon from '~icons/lucide/trash-2';
+  import TriangleAlertIcon from '~icons/lucide/triangle-alert';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
-  import { invokeAlert } from '$lib/components/invoke-alert';
   import { lastVisitedPage } from '$lib/stores';
   import { editingCategoryId } from '$lib/svelte/stores/ui';
   import { maxDepth } from './const';
@@ -36,6 +36,8 @@
   export let registerNode: (node: HTMLElement, item: (PageData | CategoryData) & { depth: number }) => void;
   export let getPageUrl: (page: PageData) => string;
 
+  let deleteCategoryOpen = false;
+  let deletePageOpen = false;
   let elem: HTMLElement;
 
   $: editing = item.id === $editingCategoryId;
@@ -254,32 +256,7 @@
             <Icon icon={CopyIcon} size={14} />
             <span>복제</span>
           </MenuItem>
-          <MenuItem
-            variant="danger"
-            on:click={() =>
-              invokeAlert({
-                title: `"${item.content?.title ?? '(제목 없음)'}" 페이지를 삭제하시겠어요?`,
-                content: '삭제된 페이지는 복구할 수 없습니다',
-                // TODO: n개의 하위 페이지가 함께 삭제됩니다
-                actionText: '삭제',
-                action: async () => {
-                  await deletePage({ pageId: item.id });
-                  toast.success('페이지가 삭제되었습니다');
-                  mixpanel.track('page:delete', {
-                    via: 'sidebar',
-                  });
-
-                  if (item.id === $page.params.pageId) {
-                    if (item.parent?.id) {
-                      await goto(`/${$page.params.siteId}/${item.parent.id}`);
-                    } else {
-                      $lastVisitedPage = null;
-                      await goto(`/${$page.params.siteId}`);
-                    }
-                  }
-                },
-              })}
-          >
+          <MenuItem variant="danger" on:click={() => (deletePageOpen = true)}>
             <Icon icon={Trash2Icon} size={14} />
             <span>삭제</span>
           </MenuItem>
@@ -353,21 +330,7 @@
               <Icon icon={PencilIcon} size={14} />
               <span>이름 변경</span>
             </MenuItem>
-            <MenuItem
-              variant="danger"
-              on:click={() =>
-                invokeAlert({
-                  title: `"${item.name}" 카테고리를 삭제하시겠어요?`,
-                  content: '삭제된 카테고리와 페이지는 복구할 수 없습니다',
-                  // TODO: n개의 페이지가 함께 삭제됩니다
-                  actionText: '삭제',
-                  action: async () => {
-                    await deleteCategory({ categoryId: item.id });
-                    toast.success('카테고리가 삭제되었습니다');
-                    mixpanel.track('category:delete');
-                  },
-                })}
-            >
+            <MenuItem variant="danger" on:click={() => (deleteCategoryOpen = true)}>
               <Icon icon={Trash2Icon} size={14} />
               <span>삭제</span>
             </MenuItem>
@@ -381,3 +344,90 @@
     <PageList {...childrenListProps} />
   {/if}
 </li>
+
+{#if item.__typename !== 'Category'}
+  <Alert
+    onAction={async () => {
+      await deletePage({ pageId: item.id });
+      toast.success('페이지가 삭제되었습니다');
+      mixpanel.track('page:delete', {
+        via: 'sidebar',
+      });
+
+      if (item.id === $page.params.pageId) {
+        if (item.parent?.id) {
+          await goto(`/${$page.params.siteId}/${item.parent.id}`);
+        } else {
+          $lastVisitedPage = null;
+          await goto(`/${$page.params.siteId}`);
+        }
+      }
+    }}
+    bind:open={deletePageOpen}
+  >
+    <svelte:fragment slot="title">
+      "{item.content?.title ?? '(제목 없음)'}" 페이지를 삭제하시겠어요?
+    </svelte:fragment>
+    <svelte:fragment slot="content">삭제된 페이지는 복구할 수 없습니다</svelte:fragment>
+
+    {#if item.recursiveChildCount > 0}
+      <div
+        class={flex({
+          align: 'center',
+          gap: '6px',
+          marginTop: '16px',
+          borderRadius: '8px',
+          paddingX: '10px',
+          paddingY: '8px',
+          textStyle: '13m',
+          color: 'text.danger',
+          backgroundColor: 'danger.10',
+        })}
+      >
+        <Icon icon={TriangleAlertIcon} />
+        <p>{item.recursiveChildCount}개의 하위 페이지가 함께 삭제됩니다</p>
+      </div>
+    {/if}
+
+    <svelte:fragment slot="action">삭제</svelte:fragment>
+    <svelte:fragment slot="cancel">취소</svelte:fragment>
+  </Alert>
+{/if}
+
+{#if item.__typename === 'Category'}
+  <Alert
+    onAction={async () => {
+      await deleteCategory({ categoryId: item.id });
+      toast.success('카테고리가 삭제되었습니다');
+      mixpanel.track('category:delete');
+    }}
+    bind:open={deleteCategoryOpen}
+  >
+    <svelte:fragment slot="title">
+      "{item.name}" 카테고리를 삭제하시겠어요?
+    </svelte:fragment>
+    <svelte:fragment slot="content">삭제된 카테고리와 페이지는 복구할 수 없습니다</svelte:fragment>
+
+    {#if item.recursivePageCount > 0}
+      <div
+        class={flex({
+          align: 'center',
+          gap: '6px',
+          marginTop: '16px',
+          borderRadius: '8px',
+          paddingX: '10px',
+          paddingY: '8px',
+          textStyle: '13m',
+          color: 'text.danger',
+          backgroundColor: 'danger.10',
+        })}
+      >
+        <Icon icon={TriangleAlertIcon} />
+        <p>{item.recursivePageCount}개의 하위 페이지가 함께 삭제됩니다</p>
+      </div>
+    {/if}
+
+    <svelte:fragment slot="action">삭제</svelte:fragment>
+    <svelte:fragment slot="cancel">취소</svelte:fragment>
+  </Alert>
+{/if}
