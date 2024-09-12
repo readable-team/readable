@@ -186,8 +186,10 @@
           color: 'text.primary',
           width: 'full',
           truncate: true,
+          textStyle: '15m',
           _selected: {
-            color: 'text.accent',
+            color: 'text.primary',
+            textStyle: '15b',
           },
         })}
         aria-selected={item.id === $page.params.pageId ? 'true' : 'false'}
@@ -215,7 +217,6 @@
           class={css({
             truncate: true,
             flex: '1',
-            textStyle: '15m',
           })}
         >
           {item.content.title}
