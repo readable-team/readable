@@ -209,7 +209,7 @@ builder.mutationFields((t) => ({
 
       await db.insert(Categories).values({
         siteId: site.id,
-        name: '섹션',
+        name: '새 카테고리',
         order: new TextEncoder().encode(generateJitteredKeyBetween(null, null)),
       });
 
