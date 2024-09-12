@@ -15,6 +15,7 @@
   import { graphql } from '$graphql';
   import { invokeAlert } from '$lib/components/invoke-alert';
   import { lastVisitedPage } from '$lib/stores';
+  import { editingCategoryId } from '$lib/svelte/stores/ui';
   import { maxDepth } from './const';
   import PageList from './PageList.svelte';
   import type { ComponentProps } from 'svelte';
@@ -37,7 +38,7 @@
 
   let elem: HTMLElement;
 
-  let editing = false;
+  $: editing = item.id === $editingCategoryId;
   let inputEl: HTMLInputElement;
 
   $: registerNode(elem, {
@@ -98,8 +99,8 @@
 
   const completeCategoryEdit = async () => {
     if (inputEl && editing) {
-      editing = false;
       await updateCategory({ categoryId: item.id, name: inputEl.value });
+      editingCategoryId.set(null);
       toast.success('카테고리 이름이 변경되었습니다');
       mixpanel.track('category:update');
       // FIXME: 에러 핸들링?
@@ -293,10 +294,9 @@
           on:blur={completeCategoryEdit}
           on:keydown={(e) => {
             if (e.key === 'Escape') {
-              editing = false;
+              editingCategoryId.set(null);
             }
-
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !e.isComposing) {
               inputEl.blur();
             }
           }}
@@ -346,7 +346,7 @@
             </button>
             <MenuItem
               on:click={() => {
-                editing = true;
+                editingCategoryId.set(item.id);
               }}
             >
               <Icon icon={PencilIcon} size={14} />

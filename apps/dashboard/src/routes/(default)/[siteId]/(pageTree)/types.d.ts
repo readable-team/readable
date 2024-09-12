@@ -4,6 +4,7 @@ export type CategoryData = {
   name: string;
   order: string;
   pages: PageData[];
+  editing?: boolean; // 카테고리 이름 편집 중 여부
 };
 
 export type PageData = {

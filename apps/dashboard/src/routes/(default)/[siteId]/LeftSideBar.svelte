@@ -4,7 +4,7 @@
   import mixpanel from 'mixpanel-browser';
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
-  import { treeOpenState } from '$lib/svelte/stores/ui';
+  import { editingCategoryId, treeOpenState } from '$lib/svelte/stores/ui';
   import { PageList } from './(pageTree)';
   import type { LeftSideBar_site } from '$graphql';
   import type { CategoryData, PageData } from './(pageTree)/types';
@@ -178,10 +178,12 @@
         items={$site.categories}
         onCreate={onCreatePage}
         onCreateCategory={async () => {
-          await createCategory({
+          const category = await createCategory({
             siteId: $site.id,
             lower: $site.categories.at(-1)?.order,
           });
+
+          editingCategoryId.set(category.id);
 
           mixpanel.track('category:create');
         }}
