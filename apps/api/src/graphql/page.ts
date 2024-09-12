@@ -313,7 +313,9 @@ PageContentState.implement({
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
 
     title: t.string({ resolve: (state) => state.title ?? '(제목 없음)' }),
-    subtitle: t.string({ nullable: true, resolve: (state) => state.subtitle }),
+    editorTitle: t.exposeString('title', { nullable: true }),
+    subtitle: t.exposeString('subtitle', { nullable: true }),
+
     content: t.expose('content', { type: 'JSON' }),
     version: t.exposeInt('version'),
   }),
@@ -360,7 +362,7 @@ PublicPageContent.implement({
   }),
 });
 
-const PageContentCommit = builder.simpleObject('PageContentCommit', {
+const PageContentCommitStreamPayload = builder.simpleObject('PageContentCommitStreamPayload', {
   fields: (t) => ({
     pageId: t.id(),
     version: t.int(),
@@ -797,6 +799,58 @@ builder.mutationFields((t) => ({
     },
   }),
 
+  updatePageContent: t.withAuth({ session: true }).fieldWithInput({
+    type: Page,
+    input: {
+      pageId: t.input.id(),
+      title: t.input.string({ required: false }),
+      subtitle: t.input.string({ required: false }),
+    },
+    resolve: async (_, { input }, ctx) => {
+      await assertPagePermission({
+        pageId: input.pageId,
+        userId: ctx.session.userId,
+      });
+
+      await db.transaction(async (tx) => {
+        const state = await tx
+          .select({
+            title: PageContentStates.title,
+            subtitle: PageContentStates.subtitle,
+            content: PageContentStates.content,
+          })
+          .from(PageContentStates)
+          .where(eq(PageContentStates.pageId, input.pageId))
+          .for('update')
+          .then(firstOrThrow);
+
+        const title = input.title === '' ? null : (input.title ?? undefined);
+        const subtitle = input.subtitle === '' ? null : (input.subtitle ?? undefined);
+
+        await tx.update(PageContentStates).set({ title, subtitle }).where(eq(PageContentStates.pageId, input.pageId));
+
+        await tx
+          .update(PageContentStates)
+          .set({
+            hash: hashPageContent({
+              title: title ?? state.title,
+              subtitle: subtitle ?? state.subtitle,
+              content: state.content,
+            }),
+          })
+          .where(eq(PageContentStates.pageId, input.pageId));
+
+        await enqueueJob(tx, 'page:search:index-update', input.pageId);
+      });
+
+      const page = await db.select().from(Pages).where(eq(Pages.id, input.pageId)).then(firstOrThrow);
+
+      pubsub.publish('site:update', page.siteId, { scope: 'page', pageId: input.pageId });
+
+      return page;
+    },
+  }),
+
   commitPageContent: t.withAuth({ session: true }).fieldWithInput({
     type: 'Boolean',
     input: {
@@ -909,10 +963,10 @@ builder.mutationFields((t) => ({
 
 builder.subscriptionFields((t) => ({
   pageContentCommitStream: t.withAuth({ session: true }).field({
-    type: PageContentCommit,
+    type: PageContentCommitStreamPayload,
     args: { pageId: t.arg.id() },
     subscribe: async (_, args, ctx) => {
-      assertPagePermission({
+      await assertPagePermission({
         pageId: args.pageId,
         userId: ctx.session.userId,
       });

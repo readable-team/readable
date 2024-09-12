@@ -5,10 +5,10 @@
   import ky from 'ky';
   import { Step } from 'prosemirror-transform';
   import { onMount } from 'svelte';
-  import { writable } from 'svelte/store';
   import { fragment, graphql } from '$graphql';
   import Breadcrumb from './Breadcrumb.svelte';
   import type { Editor } from '@tiptap/core';
+  import type { Writable } from 'svelte/store';
   import type { PagePage_Editor_query } from '$graphql';
 
   export let _query: PagePage_Editor_query;
@@ -27,7 +27,7 @@
 
           content {
             id
-            title
+            editorTitle
             content
             version
           }
@@ -37,6 +37,20 @@
       }
     `),
   );
+
+  const updatePageContent = graphql(`
+    mutation PagePage_UpdatePageContent_Mutation($input: UpdatePageContentInput!) {
+      updatePageContent(input: $input) {
+        id
+
+        content {
+          id
+          editorTitle
+          subtitle
+        }
+      }
+    }
+  `);
 
   const commitPageContent = graphql(`
     mutation PagePage_CommitPageContent_Mutation($input: CommitPageContentInput!) {
@@ -144,29 +158,47 @@
 
     const unsubscribe = pageContentCommitStream.subscribe({ pageId: $query.page.id });
 
+    if (titleEl) adjustTextareaHeight(titleEl);
+
     return () => {
       clearInterval(interval);
       unsubscribe();
     };
   });
 
-  const title = writable('');
   let titleEl: HTMLElement;
+  let title: Writable<string>;
 
-  $: $title = $query.page.content.title;
+  const createTitleStore = (): Writable<string> => {
+    return {
+      subscribe: (set) => {
+        const unsubscribe = query.subscribe((query) => {
+          set(query.page.content.editorTitle ?? '');
+          if (titleEl) adjustTextareaHeight(titleEl);
+        });
+        return () => unsubscribe();
+      },
+      set: (value) => {
+        if (titleEl) adjustTextareaHeight(titleEl);
+        const v = value.replaceAll('\n', '');
+        updatePageContent({ pageId: $query.page.id, title: v });
+      },
+      update: (fn) => {
+        if (titleEl) adjustTextareaHeight(titleEl);
+        const v = fn($query.page.content.editorTitle ?? '')?.replaceAll('\n', '');
+        updatePageContent({ pageId: $query.page.id, title: v });
+      },
+    };
+  };
+
+  $: if (!title && $query) {
+    title = createTitleStore();
+  }
 
   const adjustTextareaHeight = (el: HTMLElement) => {
     el.style.height = 'auto';
     el.style.height = `${el.scrollHeight}px`;
   };
-
-  $: {
-    setTimeout(() => {
-      if (titleEl) adjustTextareaHeight(titleEl);
-    }, 0);
-
-    [$title];
-  }
 
   const uploadBlob = async (file: File) => {
     const { path, url, fields } = await issueBlobUploadUrl({ filename: file.name });
@@ -218,18 +250,6 @@
           if (e.key === 'Enter') {
             e.preventDefault();
           }
-        }}
-        on:paste|preventDefault={(e) => {
-          const pastedText = e.clipboardData?.getData('text');
-          if (!pastedText) return;
-
-          const cleanedText = pastedText.replaceAll('\n', '');
-          const selectionStart = e.currentTarget.selectionStart;
-          const selectionEnd = e.currentTarget.selectionEnd;
-          const textBeforeCursor = $title.slice(0, selectionStart);
-          const textAfterCursor = $title.slice(selectionEnd);
-          $title = textBeforeCursor + cleanedText + textAfterCursor;
-          e.currentTarget.selectionStart = e.currentTarget.selectionEnd = selectionStart + cleanedText.length;
         }}
         bind:value={$title}
       />

@@ -22,7 +22,7 @@ import { enqueueJob } from './index';
 import { defineJob } from './types';
 
 export const PageContentStateUpdateJob = defineJob('page:content:state-update', async (commitId: string) => {
-  const commit = await db.transaction(async (tx) => {
+  await db.transaction(async (tx) => {
     const commit = await tx
       .select({
         pageId: PageContentCommits.pageId,
@@ -38,8 +38,8 @@ export const PageContentStateUpdateJob = defineJob('page:content:state-update', 
       .select({
         title: PageContentStates.title,
         subtitle: PageContentStates.subtitle,
-        version: PageContentStates.version,
         content: PageContentStates.content,
+        version: PageContentStates.version,
       })
       .from(PageContentStates)
       .where(eq(PageContentStates.pageId, commit.pageId))
@@ -100,17 +100,7 @@ export const PageContentStateUpdateJob = defineJob('page:content:state-update', 
       ref: commit.ref,
       steps: tr.steps.map((s) => s.toJSON()),
     });
-
-    return commit;
   });
-
-  const page = await db
-    .select({ siteId: Pages.siteId })
-    .from(Pages)
-    .where(eq(Pages.id, commit.pageId))
-    .then(firstOrThrow);
-
-  pubsub.publish('site:update', page.siteId, { scope: 'page', pageId: commit.pageId });
 });
 
 export const PageSearchIndexUpdateJob = defineJob('page:search:index-update', async (pageId: string) => {
