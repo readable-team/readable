@@ -61,5 +61,5 @@
   target="_blank"
 >
   <Icon icon={ReadableIcon} size={18} />
-  <span>Powered by readable</span>
+  <span>Powered by Readable</span>
 </a>
