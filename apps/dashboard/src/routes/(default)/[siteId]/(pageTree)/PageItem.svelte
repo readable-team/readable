@@ -183,11 +183,11 @@
           alignItems: 'center',
           gap: '4px',
           flex: '1',
-          color: 'text.secondary',
+          color: 'text.primary',
           width: 'full',
           truncate: true,
           _selected: {
-            color: 'text.primary',
+            color: 'text.accent',
           },
         })}
         aria-selected={item.id === $page.params.pageId ? 'true' : 'false'}
