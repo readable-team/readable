@@ -37,5 +37,3 @@ $$
 LANGUAGE 'plpgsql'
 RETURNS NULL ON NULL INPUT
 SECURITY DEFINER;
-
-INSERT INTO plans (id, name, rules) VALUES ('PLN0FREE', '무료', '{}'::jsonb);
