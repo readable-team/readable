@@ -131,24 +131,17 @@ CREATE TABLE IF NOT EXISTS "page_content_contributors" (
 	CONSTRAINT "page_content_contributors_page_id_user_id_unique" UNIQUE("page_id","user_id")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "page_content_snapshots" (
-	"id" text PRIMARY KEY NOT NULL,
-	"page_id" text NOT NULL,
-	"snapshot" "bytea" NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "page_content_states" (
 	"id" text PRIMARY KEY NOT NULL,
 	"page_id" text NOT NULL,
-	"update" "bytea" NOT NULL,
-	"vector" "bytea" NOT NULL,
-	"up_to_seq" bigint NOT NULL,
 	"title" text,
 	"subtitle" text,
 	"content" jsonb NOT NULL,
 	"text" text NOT NULL,
+	"update" "bytea" NOT NULL,
+	"vector" "bytea" NOT NULL,
 	"hash" text NOT NULL,
+	"seq" bigint DEFAULT 0 NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "page_content_states_page_id_unique" UNIQUE("page_id")
@@ -156,8 +149,8 @@ CREATE TABLE IF NOT EXISTS "page_content_states" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "page_content_updates" (
 	"id" text PRIMARY KEY NOT NULL,
-	"page_id" text NOT NULL,
 	"user_id" text NOT NULL,
+	"page_id" text NOT NULL,
 	"update" "bytea" NOT NULL,
 	"seq" bigint GENERATED ALWAYS AS IDENTITY (sequence name "page_content_updates_seq_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1),
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
@@ -322,25 +315,19 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "page_content_snapshots" ADD CONSTRAINT "page_content_snapshots_page_id_pages_id_fk" FOREIGN KEY ("page_id") REFERENCES "public"."pages"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
  ALTER TABLE "page_content_states" ADD CONSTRAINT "page_content_states_page_id_pages_id_fk" FOREIGN KEY ("page_id") REFERENCES "public"."pages"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "page_content_updates" ADD CONSTRAINT "page_content_updates_page_id_pages_id_fk" FOREIGN KEY ("page_id") REFERENCES "public"."pages"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "page_content_updates" ADD CONSTRAINT "page_content_updates_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "page_content_updates" ADD CONSTRAINT "page_content_updates_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "page_content_updates" ADD CONSTRAINT "page_content_updates_page_id_pages_id_fk" FOREIGN KEY ("page_id") REFERENCES "public"."pages"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -444,8 +431,6 @@ END $$;
 CREATE INDEX IF NOT EXISTS "jobs_lane_state_created_at_index" ON "jobs" USING btree ("lane","state","created_at");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "vector_cosine_similarity_idx" ON "page_content_chunks" USING hnsw ("vector" vector_cosine_ops);--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "page_content_contributors_page_id_updated_at_index" ON "page_content_contributors" USING btree ("page_id","updated_at");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "page_content_snapshots_page_id_created_at_index" ON "page_content_snapshots" USING btree ("page_id","created_at");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "page_content_updates_page_id_seq_index" ON "page_content_updates" USING btree ("page_id","seq");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "page_contents_page_id_created_at_index" ON "page_contents" USING btree ("page_id","created_at");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "pages_site_id_state_index" ON "pages" USING btree ("site_id","state");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "payment_methods_team_id_index" ON "payment_methods" USING btree ("team_id") WHERE "payment_methods"."state" = 'ACTIVE';--> statement-breakpoint

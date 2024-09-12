@@ -1,5 +1,5 @@
 {
-  "id": "5b68e9f4-8fae-4c88-8f32-34665d0d4ed7",
+  "id": "228c9cf1-cd9a-455a-b99e-7d4ba0e4a539",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -526,73 +526,6 @@
         }
       }
     },
-    "public.page_content_snapshots": {
-      "name": "page_content_snapshots",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "page_id": {
-          "name": "page_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "snapshot": {
-          "name": "snapshot",
-          "type": "bytea",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "page_content_snapshots_page_id_created_at_index": {
-          "name": "page_content_snapshots_page_id_created_at_index",
-          "columns": [
-            {
-              "expression": "page_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "created_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "page_content_snapshots_page_id_pages_id_fk": {
-          "name": "page_content_snapshots_page_id_pages_id_fk",
-          "tableFrom": "page_content_snapshots",
-          "tableTo": "pages",
-          "columnsFrom": ["page_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
     "public.page_content_states": {
       "name": "page_content_states",
       "schema": "",
@@ -606,24 +539,6 @@
         "page_id": {
           "name": "page_id",
           "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "update": {
-          "name": "update",
-          "type": "bytea",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "vector": {
-          "name": "vector",
-          "type": "bytea",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "up_to_seq": {
-          "name": "up_to_seq",
-          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         },
@@ -651,11 +566,30 @@
           "primaryKey": false,
           "notNull": true
         },
+        "update": {
+          "name": "update",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vector": {
+          "name": "vector",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
         "hash": {
           "name": "hash",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "seq": {
+          "name": "seq",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "0"
         },
         "created_at": {
           "name": "created_at",
@@ -703,14 +637,14 @@
           "primaryKey": true,
           "notNull": true
         },
-        "page_id": {
-          "name": "page_id",
+        "user_id": {
+          "name": "user_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
+        "page_id": {
+          "name": "page_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -746,44 +680,22 @@
           "default": "now()"
         }
       },
-      "indexes": {
-        "page_content_updates_page_id_seq_index": {
-          "name": "page_content_updates_page_id_seq_index",
-          "columns": [
-            {
-              "expression": "page_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "seq",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
-        "page_content_updates_page_id_pages_id_fk": {
-          "name": "page_content_updates_page_id_pages_id_fk",
-          "tableFrom": "page_content_updates",
-          "tableTo": "pages",
-          "columnsFrom": ["page_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "page_content_updates_user_id_users_id_fk": {
           "name": "page_content_updates_user_id_users_id_fk",
           "tableFrom": "page_content_updates",
           "tableTo": "users",
           "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "page_content_updates_page_id_pages_id_fk": {
+          "name": "page_content_updates_page_id_pages_id_fk",
+          "tableFrom": "page_content_updates",
+          "tableTo": "pages",
+          "columnsFrom": ["page_id"],
           "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
