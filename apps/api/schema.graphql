@@ -193,7 +193,6 @@ type Mutation {
 
 type Page implements IPage {
   category: Category!
-  childPagesCount: Int!
   children: [Page!]!
   content: PageContentState!
   contentContributor: [PageContentContributor!]!
@@ -203,6 +202,7 @@ type Page implements IPage {
   lastPublishedAt: DateTime
   order: String!
   parent: Page
+  recursiveChildCount: Int!
   site: Site!
   slug: String!
   state: PageState!

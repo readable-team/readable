@@ -256,11 +256,11 @@ Page.implement({
       },
     }),
 
-    childPagesCount: t.int({
+    recursiveChildCount: t.int({
       resolve: async (page) => {
         const p = alias(Pages, 'p');
 
-        const childPageCount = await db
+        const recursiveChildCount = await db
           .execute(
             sql<{ count: number }[]>`
           WITH RECURSIVE sq AS (
@@ -279,7 +279,7 @@ Page.implement({
           )
           .then((rows) => (rows[0].count ?? 0) as number);
 
-        return childPageCount;
+        return recursiveChildCount;
       },
     }),
   }),
