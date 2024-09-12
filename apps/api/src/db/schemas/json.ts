@@ -1,9 +1,10 @@
 export type PlanRules = {
-  memberLimit: number | 'Infinity';
-  siteLimit: number | 'Infinity';
-  pageViewLimit: number | 'Infinity';
+  memberLimit: number | null;
+  siteLimit: number | null;
+  pageViewLimit: number | null;
   auditLog: boolean;
   statistics: boolean;
+  aiSearch: boolean;
 };
 
 export const defaultPlanRules: PlanRules = {
@@ -12,4 +13,5 @@ export const defaultPlanRules: PlanRules = {
   pageViewLimit: 5000,
   auditLog: false,
   statistics: false,
+  aiSearch: false,
 };

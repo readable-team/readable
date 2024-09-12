@@ -283,6 +283,21 @@ input PersistBlobAsImageInput {
   path: String!
 }
 
+type Plan {
+  id: ID!
+  name: String!
+  rules: PlanRule!
+}
+
+type PlanRule {
+  aiSearch: Boolean!
+  auditLog: Boolean!
+  memberLimit: Int
+  pageViewLimit: Int
+  siteLimit: Int
+  statistics: Boolean!
+}
+
 type PublicCategory implements ICategory {
   id: ID!
   name: String!
@@ -449,6 +464,7 @@ type Team {
   members: [TeamMember!]!
   name: String!
   paymentMethod: PaymentMethod
+  plan: Plan!
   sites: [Site!]!
 }
 

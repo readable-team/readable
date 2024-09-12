@@ -26,13 +26,14 @@ export const getPlanRule = async <T extends keyof PlanRules>({
 
 export const assertPlanRule = async <T extends keyof PlanRules>(params: GetPlanParams<T>) => {
   const value = await getPlanRule(params);
-  if (value === 'Infinity') {
+  if (value === null) {
     return;
   }
 
   switch (params.rule) {
     case 'auditLog':
-    case 'statistics': {
+    case 'statistics':
+    case 'aiSearch': {
       if (!value) {
         throw new ReadableError({ code: 'feature_not_available' });
       }
