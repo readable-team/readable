@@ -30,7 +30,7 @@
 
   const { anchor, floating } = createFloatingActions({
     placement: 'bottom-start',
-    offset: 12,
+    offset: 10,
     onClickOutside: () => {
       topLevelNodeTypePickerOpened = false;
     },
@@ -38,7 +38,7 @@
 
   const { anchor: colorPickerAnchor, floating: colorPickerFloating } = createFloatingActions({
     placement: 'bottom-start',
-    offset: 12,
+    offset: 10,
     onClickOutside: () => {
       colorPickerOpened = false;
     },
@@ -63,11 +63,11 @@
   const colors = [
     { name: 'black', label: '검정', hex: null },
     { name: 'gray', label: '회색', hex: '#A1A1AA' },
-    { name: 'red', label: '빨간색', hex: '#E52F17' },
-    { name: 'yellow', label: '노란색', hex: '#DDC91B' },
-    { name: 'orange', label: '주황색', hex: '#CE7F09' },
-    { name: 'green', label: '초록색', hex: '#31A12E' },
-    { name: 'blue', label: '파란색', hex: '#278EC1' },
+    { name: 'red', label: '빨간색', hex: '#dc2626' },
+    { name: 'yellow', label: '노란색', hex: '#eab308' },
+    { name: 'orange', label: '주황색', hex: '#f97316' },
+    { name: 'green', label: '초록색', hex: '#22c55e' },
+    { name: 'blue', label: '파란색', hex: '#3b82f6' },
   ];
 
   let activeMarks: string[] = [];
@@ -87,7 +87,8 @@
     },
     _pressed: {
       // theme=selected
-      color: 'text.accent',
+      'color': 'text.accent',
+      '& *': { strokeWidth: '[2.5]' },
     },
     _active: {
       // theme=pressed
@@ -131,27 +132,27 @@
 <div
   class={flex({
     alignItems: 'center',
-    gap: '4px',
+    gap: '2px',
     borderWidth: '1px',
-    borderColor: 'border.primary',
+    borderColor: 'border.secondary',
     borderRadius: '10px',
-    padding: '6px',
+    padding: '4px',
     backgroundColor: 'background.overlay',
     height: '42px',
-    boxShadow: 'normal',
+    boxShadow: 'strong',
   })}
 >
   {#if selectedBlocks.length === 1}
     <button
       class={flex({
-        paddingLeft: '7px',
-        paddingRight: '6px',
+        paddingLeft: '8px',
+        paddingRight: '4px',
         height: '30px',
         alignItems: 'center',
-        gap: '14px',
+        gap: '4px',
         borderRadius: '4px',
         _hover: {
-          backgroundColor: 'neutral.10',
+          backgroundColor: 'neutral.20',
         },
         _pressed: {
           // theme=selected
@@ -169,27 +170,23 @@
       }}
       use:anchor
     >
-      <div
-        class={css({
-          textStyle: '14sb',
-        })}
-      >
+      <div class={css({ textStyle: '15m' })}>
         {topLevelNodeTypes.find((nodeType) => nodeType.id === activeNodeTypeId)?.label}
       </div>
-      <Icon icon={ChevronDownIcon} size={12} />
+      <Icon style={css.raw({ color: 'neutral.50' })} icon={ChevronDownIcon} />
     </button>
     {#if topLevelNodeTypePickerOpened}
       <div
         class={flex({
           flexDirection: 'column',
-          gap: '8px',
+          gap: '4px',
           borderWidth: '1px',
-          borderColor: 'border.primary',
-          borderRadius: '14px',
-          padding: '6px',
+          borderColor: 'border.secondary',
+          borderRadius: '10px',
+          padding: '4px',
           backgroundColor: 'background.overlay',
           width: '164px',
-          boxShadow: 'emphasize',
+          boxShadow: 'strong',
         })}
         use:floating
       >
@@ -199,7 +196,7 @@
               align: 'center',
               gap: '8px',
               paddingLeft: '4px',
-              paddingRight: '6px',
+              paddingRight: '8px',
               paddingY: '4px',
               borderRadius: '8px',
               textStyle: '14m',
@@ -227,9 +224,9 @@
             <div
               class={css({
                 borderWidth: '1px',
-                borderColor: 'border.image',
+                borderColor: 'border.secondary',
                 borderRadius: '4px',
-                padding: '4px',
+                padding: '2px',
               })}
             >
               <Icon icon={nodeType.icon} size={16} />
@@ -237,7 +234,11 @@
             <span class={css({ color: 'text.primary' })}>{nodeType.label}</span>
 
             {#if activeNodeTypeId === nodeType.id}
-              <Icon style={css.raw({ marginLeft: 'auto', color: 'neutral.60' })} icon={CheckIcon} size={12} />
+              <Icon
+                style={css.raw({ 'marginLeft': 'auto', 'color': 'text.accent', '& *': { strokeWidth: '[2.5]' } })}
+                icon={CheckIcon}
+                size={12}
+              />
             {/if}
           </button>
         {/each}
@@ -268,11 +269,11 @@
   <button
     class={flex({
       alignItems: 'center',
-      gap: '6px',
+      gap: '4px',
       height: '30px',
       borderRadius: '4px',
-      paddingLeft: '7px',
-      paddingRight: '6px',
+      paddingLeft: '8px',
+      paddingRight: '4px',
       _hover: {
         backgroundColor: 'neutral.20',
       },
@@ -293,21 +294,23 @@
       class={css({
         borderRadius: 'full',
         backgroundColor: 'text.primary',
-        size: '18px',
+        size: '16px',
       })}
     />
-    <Icon style={css.raw({ color: 'neutral.60' })} icon={ChevronDownIcon} size={14} />
+    <Icon style={css.raw({ color: 'neutral.50' })} icon={ChevronDownIcon} />
   </button>
 
   {#if colorPickerOpened}
     <div
       class={flex({
         flexDirection: 'column',
-        gap: '1px',
-        borderRadius: '14px',
-        padding: '6px',
+        gap: '4px',
+        borderWidth: '1px',
+        borderColor: 'border.secondary',
+        borderRadius: '10px',
+        padding: '4px',
         backgroundColor: 'background.overlay',
-        boxShadow: 'emphasize',
+        boxShadow: 'strong',
         width: '164px',
       })}
       use:colorPickerFloating
@@ -319,7 +322,7 @@
             gap: '8px',
             borderRadius: '8px',
             paddingLeft: '4px',
-            paddingRight: '6px',
+            paddingRight: '8px',
             paddingY: '4px',
             _hover: {
               backgroundColor: 'neutral.20',
@@ -341,7 +344,7 @@
         >
           <div
             style:color={hex}
-            class={css({ borderWidth: '1px', borderColor: 'border.image', borderRadius: '4px', padding: '4px' })}
+            class={css({ borderWidth: '1px', borderColor: 'border.secondary', borderRadius: '4px', padding: '2px' })}
           >
             <Icon icon={TypeIcon} size={14} />
           </div>
@@ -351,7 +354,11 @@
           </div>
 
           {#if activeColor === hex || (!activeColor && hex === null)}
-            <Icon style={css.raw({ marginLeft: 'auto', color: 'neutral.60' })} icon={CheckIcon} size={12} />
+            <Icon
+              style={css.raw({ 'marginLeft': 'auto', 'color': 'text.accent', '& *': { strokeWidth: '[2.5]' } })}
+              icon={CheckIcon}
+              size={12}
+            />
           {/if}
         </button>
       {/each}

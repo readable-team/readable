@@ -130,10 +130,10 @@
       <div
         class={flex({
           align: 'center',
-          gap: '7px',
+          gap: '12px',
           borderWidth: '1px',
           borderColor: 'border.primary',
-          borderRadius: '10px',
+          borderRadius: '4px',
           paddingX: '14px',
           paddingY: '12px',
           textStyle: '14r',

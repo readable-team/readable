@@ -100,7 +100,7 @@
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '7px',
-          borderRadius: '10px',
+          borderRadius: '4px',
           backgroundColor: 'neutral.20',
           _hover: { '& > button > div': { display: 'flex' } },
         },

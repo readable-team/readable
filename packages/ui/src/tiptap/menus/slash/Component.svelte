@@ -49,9 +49,9 @@
     direction: 'column',
     gap: '1px',
     borderWidth: '1px',
-    borderColor: 'border.primary',
+    borderColor: 'border.secondary',
     borderRadius: '12px',
-    paddingY: '6px',
+    paddingY: '4px',
     backgroundColor: 'background.overlay',
     width: '210px',
     maxHeight: '340px',
@@ -63,7 +63,7 @@
   {#each items as item, idx (item.id)}
     {#if items[idx - 1]?.group !== item.group}
       {#if idx !== 0}
-        <HorizontalDivider style={css.raw({ marginY: '1px' })} color="secondary" />
+        <HorizontalDivider style={css.raw({ marginY: '2px' })} color="secondary" />
       {/if}
     {/if}
 
@@ -72,7 +72,7 @@
       class={flex({
         align: 'center',
         gap: '8px',
-        marginX: '6px',
+        marginX: '4px',
         borderRadius: '6px',
         padding: '4px',
         backgroundColor: selectedIdx === idx ? 'neutral.20' : undefined,
@@ -93,7 +93,7 @@
         <Icon icon={item.icon} />
       </div>
 
-      <div class={css({ textStyle: '14r' })}>{item.name}</div>
+      <div class={css({ textStyle: '14m' })}>{item.name}</div>
     </div>
   {:else}
     <div class={css({ paddingX: '8px', color: 'text.tertiary', textStyle: '14sb' })}>결과 없음</div>

@@ -63,10 +63,10 @@
           size: '28px',
           textStyle: '20m',
           _pressed: {
-            backgroundColor: 'gray.1000/10',
+            backgroundColor: 'gray.1000/8',
           },
           _hover: {
-            backgroundColor: 'gray.1000/10',
+            backgroundColor: 'gray.1000/8',
           },
         },
         !editor?.isEditable && { pointerEvents: 'none' },
@@ -82,7 +82,7 @@
       use:anchor
     >
       {#if emoji}
-        <Icon icon={emoji} />
+        <Icon icon={emoji} size={20} />
       {/if}
     </button>
     {#if emojiPickerOpened}
@@ -105,10 +105,10 @@
               size: '28px',
               textStyle: '20m',
               _pressed: {
-                backgroundColor: 'gray.1000/10',
+                backgroundColor: 'gray.1000/8',
               },
               _hover: {
-                backgroundColor: 'gray.1000/10',
+                backgroundColor: 'gray.1000/8',
               },
             })}
             aria-pressed={emojiKey === node.attrs.emoji}
@@ -118,7 +118,7 @@
               emojiPickerOpened = false;
             }}
           >
-            <Icon icon={emoji} />
+            <Icon icon={emoji} size={20} />
           </button>
         {/each}
       </div>

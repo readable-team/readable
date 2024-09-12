@@ -78,7 +78,7 @@
         justifyContent: 'space-between',
         borderWidth: '1px',
         borderColor: 'border.primary',
-        borderRadius: '10px',
+        borderRadius: '4px',
         backgroundColor: { base: 'neutral.20' },
         _hover: { '& > button > div': { display: 'flex' } },
       },

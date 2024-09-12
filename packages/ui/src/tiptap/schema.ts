@@ -150,7 +150,7 @@ export const basicExtensions = [
         paddingX: '4px',
         paddingY: '2px',
         textStyle: '14sb',
-        backgroundColor: 'surface.tertiary',
+        backgroundColor: 'neutral.30/70',
       }),
     },
   }),
