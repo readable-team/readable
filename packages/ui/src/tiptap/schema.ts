@@ -156,7 +156,7 @@ export const basicExtensions = [
     },
   }),
   Link.configure({
-    openOnClick: true,
+    openOnClick: false,
     HTMLAttributes: {
       class: css({
         color: 'var(--usersite-theme-color)',
