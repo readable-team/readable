@@ -144,6 +144,18 @@
       }
     }
   `);
+
+  const setRoleToMember = async (userId: string, teamId: string) => {
+    await updateTeamMemberRole({
+      role: 'MEMBER',
+      userId,
+      teamId,
+    });
+
+    mixpanel.track('team:member:role:update', {
+      role: 'MEMBER',
+    });
+  };
 </script>
 
 <div class={flex({ justifyContent: 'space-between', alignItems: 'center' })}>
@@ -339,15 +351,18 @@
                 aria-checked={member.role === 'MEMBER'}
                 disabled={member.role === 'ADMIN' && member.isSoleAdmin}
                 on:click={async () => {
-                  await updateTeamMemberRole({
-                    role: 'MEMBER',
-                    userId: member.user.id,
-                    teamId: $team.id,
-                  });
-
-                  mixpanel.track('team:member:role:update', {
-                    role: 'MEMBER',
-                  });
+                  if (member.id === $team.meAsMember?.id) {
+                    invokeAlert({
+                      title: '스스로의 역할을 편집자로 변경하시겠어요?',
+                      content: '이 작업은 되돌릴 수 없으며, 더 이상 설정을 변경할 수 없게 됩니다',
+                      actionText: '변경',
+                      action: async () => {
+                        setRoleToMember(member.user.id, $team.id);
+                      },
+                    });
+                  } else {
+                    setRoleToMember(member.user.id, $team.id);
+                  }
                 }}
               >
                 <div class={flex({ flexDirection: 'column', alignItems: 'start', gap: '2px', width: 'full' })}>
@@ -365,7 +380,7 @@
               class={css({
                 paddingX: '8px',
                 paddingY: '4px',
-                textStyle: '14sb',
+                textStyle: '16m',
                 color: 'text.secondary',
                 width: '86px',
               })}
