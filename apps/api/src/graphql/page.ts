@@ -1,11 +1,8 @@
-import { init } from '@paralleldrive/cuid2';
-import { Node } from '@tiptap/pm/model';
 import dayjs from 'dayjs';
 import { and, asc, count, desc, eq, gt, inArray, isNull, ne, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { base64 } from 'rfc4648';
-import { prosemirrorToYXmlFragment } from 'y-prosemirror';
 import * as Y from 'yjs';
 import { builder } from '@/builder';
 import {
@@ -23,7 +20,7 @@ import { CategoryState, PageContentSyncKind, PageState } from '@/enums';
 import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
-import { hashPageContent } from '@/utils/page';
+import { hashPageContent, makeYDoc } from '@/utils/page';
 import { assertCategoryPermission, assertPagePermission, assertSitePermission } from '@/utils/permissions';
 import {
   Category,
@@ -570,9 +567,11 @@ builder.mutationFields((t) => ({
       const content = node.toJSON();
       const text = node.content.textBetween(0, node.content.size, '\n');
 
-      const doc = new Y.Doc();
-      const fragment = doc.getXmlFragment('content');
-      prosemirrorToYXmlFragment(node, fragment);
+      const doc = makeYDoc({
+        title: null,
+        subtitle: null,
+        content,
+      });
 
       const last = await db
         .select({ order: Pages.order })
@@ -595,7 +594,6 @@ builder.mutationFields((t) => ({
             siteId: input.siteId,
             parentId: input.parentId,
             categoryId: input.categoryId,
-            slug: createPageSlug(),
             order: encoder.encode(generateJitteredKeyBetween(last ? decoder.decode(last.order) : null, null)),
             state: 'DRAFT',
           })
@@ -910,10 +908,12 @@ builder.mutationFields((t) => ({
         .then(firstOrThrow);
 
       const title = `(사본) ${state.title ?? '(제목 없음)'}`;
-      const node = Node.fromJSON(schema, state.content);
-      const doc = new Y.Doc();
-      const fragment = doc.getXmlFragment('content');
-      prosemirrorToYXmlFragment(node, fragment);
+
+      const doc = makeYDoc({
+        title,
+        subtitle: state.subtitle,
+        content: state.content,
+      });
 
       const newPage = await db.transaction(async (tx) => {
         const newPage = await tx
@@ -922,7 +922,6 @@ builder.mutationFields((t) => ({
             siteId: page.siteId,
             categoryId: page.categoryId,
             parentId: page.parentId,
-            slug: createPageSlug(),
             order: encoder.encode(generateJitteredKeyBetween(decoder.decode(page.order), nextPageOrder)),
             state: 'DRAFT',
           })
@@ -991,6 +990,5 @@ builder.subscriptionFields((t) => ({
  * * Utils
  */
 
-const createPageSlug = init({ length: 8 });
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();

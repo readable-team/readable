@@ -1,10 +1,20 @@
 import { faker } from '@faker-js/faker';
-import { and, asc, count, eq, getTableColumns, ne } from 'drizzle-orm';
-import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
+import { and, asc, count, eq, getTableColumns, isNull, ne } from 'drizzle-orm';
 import { Repeater } from 'graphql-yoga';
 import { match } from 'ts-pattern';
+import * as Y from 'yjs';
 import { builder } from '@/builder';
-import { Categories, db, extractTableCode, first, firstOrThrow, Pages, SiteCustomDomains, Sites } from '@/db';
+import {
+  Categories,
+  db,
+  extractTableCode,
+  first,
+  firstOrThrow,
+  PageContentStates,
+  Pages,
+  SiteCustomDomains,
+  Sites,
+} from '@/db';
 import { CategoryState, PageState, SiteCustomDomainState, SiteState, TeamMemberRole } from '@/enums';
 import { env } from '@/env';
 import { ReadableError } from '@/errors';
@@ -12,6 +22,7 @@ import * as dns from '@/external/dns';
 import { enqueueJob } from '@/jobs';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
+import { makeYDoc } from '@/utils/page';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
 import {
   Category,
@@ -190,30 +201,132 @@ builder.mutationFields((t) => ({
         role: TeamMemberRole.ADMIN,
       });
 
-      const slug = [
-        faker.word.adjective({ length: { min: 3, max: 5 } }),
-        faker.word.noun({ length: { min: 4, max: 6 } }),
-        faker.string.numeric({ length: { min: 3, max: 4 } }),
-      ].join('-');
+      return await db.transaction(async (tx) => {
+        const slug = [
+          faker.word.adjective({ length: { min: 3, max: 5 } }),
+          faker.word.noun({ length: { min: 4, max: 6 } }),
+          faker.string.numeric({ length: { min: 3, max: 4 } }),
+        ].join('-');
 
-      const site = await db
-        .insert(Sites)
-        .values({
-          teamId: input.teamId,
-          name: input.name,
-          slug,
-          themeColor: '#ff7b2e',
-        })
-        .returning()
-        .then(firstOrThrow);
+        const templateSite = await tx
+          .select({
+            id: Sites.id,
+            themeColor: Sites.themeColor,
+          })
+          .from(Sites)
+          .where(eq(Sites.id, 'S0TEMPLATE'))
+          .then(firstOrThrow);
 
-      await db.insert(Categories).values({
-        siteId: site.id,
-        name: '새 카테고리',
-        order: new TextEncoder().encode(generateJitteredKeyBetween(null, null)),
+        const site = await tx
+          .insert(Sites)
+          .values({
+            teamId: input.teamId,
+            name: input.name,
+            slug,
+            themeColor: templateSite.themeColor,
+          })
+          .returning()
+          .then(firstOrThrow);
+
+        const templateCategories = await tx
+          .select({
+            id: Categories.id,
+            name: Categories.name,
+            order: Categories.order,
+          })
+          .from(Categories)
+          .where(and(eq(Categories.siteId, templateSite.id), eq(Categories.state, CategoryState.ACTIVE)))
+          .orderBy(asc(Categories.order));
+
+        const idMap: Record<string, string> = {};
+
+        for (const templateCategory of templateCategories) {
+          const category = await tx
+            .insert(Categories)
+            .values({
+              siteId: site.id,
+              name: templateCategory.name,
+              order: templateCategory.order,
+            })
+            .returning({ id: Categories.id })
+            .then(firstOrThrow);
+
+          const templatePageParentIds: (string | null)[] = [null];
+
+          while (templatePageParentIds.length > 0) {
+            const templatePageParentId = templatePageParentIds.pop();
+            if (templatePageParentId === undefined) {
+              break;
+            }
+
+            const templatePages = await tx
+              .select({
+                id: Pages.id,
+                categoryId: Pages.categoryId,
+                order: Pages.order,
+              })
+              .from(Pages)
+              .where(
+                and(
+                  eq(Pages.categoryId, templateCategory.id),
+                  ne(Pages.state, PageState.DELETED),
+                  templatePageParentId === null ? isNull(Pages.parentId) : eq(Pages.parentId, templatePageParentId),
+                ),
+              )
+              .orderBy(asc(Pages.order));
+
+            for (const templatePage of templatePages) {
+              templatePageParentIds.push(templatePage.id);
+
+              const templatePageContentState = await tx
+                .select({
+                  title: PageContentStates.title,
+                  subtitle: PageContentStates.subtitle,
+                  content: PageContentStates.content,
+                  text: PageContentStates.text,
+                  hash: PageContentStates.hash,
+                })
+                .from(PageContentStates)
+                .where(eq(PageContentStates.pageId, templatePage.id))
+                .then(firstOrThrow);
+
+              const title = templatePageContentState.title?.replaceAll('{siteName}', input.name);
+
+              const doc = makeYDoc({
+                title: title ?? null,
+                subtitle: templatePageContentState.subtitle,
+                content: templatePageContentState.content,
+              });
+
+              const page = await tx
+                .insert(Pages)
+                .values({
+                  siteId: site.id,
+                  categoryId: category.id,
+                  parentId: templatePageParentId === null ? null : idMap[templatePageParentId],
+                  order: templatePage.order,
+                })
+                .returning({ id: Pages.id })
+                .then(firstOrThrow);
+
+              idMap[templatePage.id] = page.id;
+
+              await tx.insert(PageContentStates).values({
+                pageId: page.id,
+                title: title ?? null,
+                subtitle: templatePageContentState.subtitle,
+                content: templatePageContentState.content,
+                text: templatePageContentState.text,
+                update: Y.encodeStateAsUpdateV2(doc),
+                vector: Y.encodeStateVector(doc),
+                hash: templatePageContentState.hash,
+              });
+            }
+          }
+        }
+
+        return site;
       });
-
-      return site;
     },
   }),
 

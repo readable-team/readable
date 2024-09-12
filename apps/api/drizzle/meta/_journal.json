@@ -8,6 +8,13 @@
       "when": 1726139689041,
       "tag": "0000_zippy_moonstone",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1726146613142,
+      "tag": "0001_careless_omega_red",
+      "breakpoints": true
     }
   ]
 }

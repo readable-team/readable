@@ -1,5 +1,6 @@
 // spell-checker:ignoreRegExp /createDbId\('[A-Z]{1,4}'/g
 
+import { init } from '@paralleldrive/cuid2';
 import { sql } from 'drizzle-orm';
 import { bigint, index, integer, pgTable, text, unique, uniqueIndex, vector } from 'drizzle-orm/pg-core';
 import * as E from './enums';
@@ -99,6 +100,7 @@ export const Jobs = pgTable(
   }),
 );
 
+const createPageSlug = init({ length: 8 });
 export const Pages = pgTable(
   'pages',
   {
@@ -112,8 +114,10 @@ export const Pages = pgTable(
       .notNull()
       .references(() => Categories.id),
     parentId: text('parent_id').references((): AnyPgColumn => Pages.id),
-    slug: text('slug').notNull(),
-    state: E._PageState('state').notNull(),
+    slug: text('slug')
+      .notNull()
+      .$defaultFn(() => createPageSlug()),
+    state: E._PageState('state').notNull().default('DRAFT'),
     order: bytea('order').notNull(),
     createdAt: datetime('created_at')
       .notNull()
