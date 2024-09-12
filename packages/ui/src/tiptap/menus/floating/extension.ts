@@ -124,7 +124,7 @@ export const FloatingMenu = Extension.create({
 
                 const { x, y } = await computePosition(element, dom, {
                   placement: 'left-start',
-                  middleware: [offset(4 + marginLeft)],
+                  middleware: [offset(8 + marginLeft)],
                 });
 
                 const effectiveX = x;

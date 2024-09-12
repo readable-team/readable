@@ -88,13 +88,13 @@
   };
 </script>
 
-<div class={flex({ align: 'center', gap: '4px' })}>
+<div class={flex({ align: 'center' })}>
   <button
     class={css({ borderRadius: '6px', padding: '2px', color: 'neutral.50', _hover: { backgroundColor: 'neutral.20' } })}
     type="button"
     on:click={handlePlusClick}
   >
-    <Icon icon={PlusIcon} size={20} />
+    <Icon icon={PlusIcon} size={18} />
   </button>
 
   <button
@@ -104,6 +104,6 @@
     on:click={handleGripClick}
     on:dragstart={handleDragStart}
   >
-    <Icon icon={GripVerticalIcon} size={20} />
+    <Icon icon={GripVerticalIcon} size={18} />
   </button>
 </div>
