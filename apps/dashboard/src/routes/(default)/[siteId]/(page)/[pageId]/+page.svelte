@@ -154,6 +154,7 @@
         <div
           class={css({
             position: 'absolute',
+            zIndex: '1',
             backgroundColor: 'surface.primary',
             width: 'full',
           })}
