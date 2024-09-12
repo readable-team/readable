@@ -151,6 +151,7 @@ export const basicExtensions = [
         paddingY: '2px',
         textStyle: '14m',
         backgroundColor: 'neutral.30/70',
+        fontFamily: 'mono',
       }),
     },
   }),
