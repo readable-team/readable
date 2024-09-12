@@ -222,7 +222,7 @@
                 },
               })}
             >
-              <Icon icon={EllipsisIcon} size={16} />
+              <Icon icon={EllipsisIcon} size={20} />
             </div>
 
             <MenuItem
