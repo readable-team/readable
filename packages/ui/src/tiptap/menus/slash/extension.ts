@@ -125,6 +125,10 @@ export const SlashMenu = Extension.create({
                 selectedItem = event.detail;
               });
 
+              component.$on('close', () => {
+                exitSlashMenu();
+              });
+
               if (!clientRect) {
                 return;
               }

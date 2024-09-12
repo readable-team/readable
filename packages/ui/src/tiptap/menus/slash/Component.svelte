@@ -11,7 +11,7 @@
   export let items: MenuItem[];
   export let selectedIdx = 0;
 
-  const dispatch = createEventDispatcher<{ select: MenuItem }>();
+  const dispatch = createEventDispatcher<{ select: MenuItem; close: undefined }>();
 
   $: dispatch('select', items[selectedIdx]);
 
@@ -38,6 +38,11 @@
     if (!editor.view.hasFocus()) {
       editor.view.focus();
     }
+
+    if (event.key === 'Escape') {
+      dispatch('close');
+    }
+
     return false;
   };
 
