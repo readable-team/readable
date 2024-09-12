@@ -14,12 +14,9 @@ export const JobState = {
 
 export type PageContentSyncKind = keyof typeof PageContentSyncKind;
 export const PageContentSyncKind = {
-  PING: 'PING',
   UPDATE: 'UPDATE',
-  SYNCHRONIZE_1: 'SYNCHRONIZE_1',
-  SYNCHRONIZE_2: 'SYNCHRONIZE_2',
-  SYNCHRONIZE_3: 'SYNCHRONIZE_3',
-  AWARENESS: 'AWARENESS',
+  VERSION: 'VERSION',
+  CURSOR: 'CURSOR',
 } as const;
 
 export type PageState = keyof typeof PageState;

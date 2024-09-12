@@ -4,6 +4,7 @@ import { createPubSub } from 'graphql-yoga';
 import { db, firstOrThrow, pg, Pubsubs } from '@/db';
 import { dev, env } from '@/env';
 import type { TypedEventTarget } from '@graphql-yoga/typed-event-target';
+import type { PageContentSyncKind } from '@/enums';
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const channel = `pubsub_${dev ? Bun.sha(os.hostname(), 'hex').slice(0, 6) : env.PUBLIC_PULUMI_STACK!}`;
@@ -70,7 +71,7 @@ export const createEventTarget = async <T extends CustomEvent>(): Promise<TypedE
 };
 
 export const pubsub = createPubSub<{
-  'page:content:commit': [pageId: string, { pageId: string; version: number; ref: string; steps: unknown[] }];
+  'page:content:sync': [pageId: string, { kind: PageContentSyncKind; data: string }];
   'site:update': [siteId: string, { scope: 'page'; pageId: string } | { scope: 'site' }];
   'team:update': [teamId: string, { scope: 'member'; userId: string } | { scope: 'team' }];
 }>({

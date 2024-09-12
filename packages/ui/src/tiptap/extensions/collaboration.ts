@@ -1,197 +1,162 @@
-/* eslint-disable unicorn/no-array-callback-reference */
-
+import { css } from '@readable/styled-system/css';
 import { Extension } from '@tiptap/core';
-import { EditorState, Plugin, PluginKey } from '@tiptap/pm/state';
-import { Step, Transform } from '@tiptap/pm/transform';
-import { nanoid } from 'nanoid';
+import { redo, undo, yCursorPlugin, ySyncPlugin, yUndoPlugin, yUndoPluginKey } from 'y-prosemirror';
+import type { EditorView } from '@tiptap/pm/view';
+import type * as YAwareness from 'y-protocols/awareness';
+import type * as Y from 'yjs';
 
-type Commit = {
-  version: number;
-  ref: string;
-  steps: Step[];
-};
-
-type MappedStep = {
-  step: Step;
-  inverted: Step;
-  origin: Transform;
-};
-
-// export function neutralizeSteps(steps: Step[]) {
-//   const mapping = new Mapping(steps.map((s) => s.getMap()));
-//   const invertedMapping = mapping.invert();
-
-//   const neutralizedSteps: Step[] = [];
-
-//   for (let i = 0, mapFrom = steps.length; i < steps.length; i++) {
-//     const partialMapping = invertedMapping.slice(mapFrom--);
-//     const mapped = steps[i].map(partialMapping);
-
-//     if (!mapped) {
-//       throw new Error('failed to neutralize steps');
-//     }
-
-//     neutralizedSteps.push(mapped);
-//   }
-
-//   return neutralizedSteps;
-// }
-
-const rebaseSteps = (transform: Transform, steps: MappedStep[], over: Step[]) => {
-  for (const step of steps.reverse()) {
-    transform.step(step.inverted);
-  }
-
-  for (const step of over) {
-    transform.step(step);
-  }
-
-  const result: MappedStep[] = [];
-  for (let i = 0, mapFrom = steps.length; i < steps.length; i++) {
-    const mapping = transform.mapping.slice(mapFrom--);
-    const mapped = steps[i].step.map(mapping);
-
-    if (mapped && transform.maybeStep(mapped).doc) {
-      // @ts-expect-error ProseMirror internal
-      transform.mapping.setMirror(mapFrom, transform.steps.length - 1);
-
-      result.push({
-        step: mapped,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        inverted: mapped.invert(transform.docs.at(-1)!),
-        origin: steps[i].origin,
-      });
-    }
-  }
-
-  return result;
-};
-
-class CollabState {
-  get nextVersion() {
-    return this.version + 1;
-  }
-
-  constructor(
-    public version: number,
-    public unconfirmedSteps: MappedStep[],
-    public inflightCommit?: Commit,
-  ) {}
-
-  getCommit() {
-    if (this.inflightCommit) {
-      return this.inflightCommit;
-    }
-
-    if (this.unconfirmedSteps.length === 0) {
-      return null;
-    }
-
-    this.inflightCommit = {
-      version: this.version,
-      ref: nanoid(32),
-      steps: this.unconfirmedSteps.map((step) => step.step),
+declare module '@tiptap/core' {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+  interface Commands<ReturnType> {
+    collaboration: {
+      undo: () => ReturnType;
+      redo: () => ReturnType;
     };
-
-    return this.inflightCommit;
   }
 }
-
-function getMappedSteps(transform: Transform) {
-  const result = [];
-
-  for (let i = 0; i < transform.steps.length; i++) {
-    const step = transform.steps[i];
-    const inverted = step.invert(transform.docs[i]);
-
-    result.push({
-      step,
-      inverted,
-      origin: transform,
-    });
-  }
-
-  return result;
-}
-
-const collabKey = new PluginKey<CollabState>('collab');
 
 type CollaborationOptions = {
-  version: number;
-  clientId: string;
+  doc: Y.Doc;
+  awareness: YAwareness.Awareness;
 };
 
 export const Collaboration = Extension.create<CollaborationOptions>({
-  addOptions() {
+  name: 'collaboration',
+  priority: 1000,
+
+  addCommands() {
     return {
-      version: 0,
-      clientId: nanoid(),
+      undo:
+        () =>
+        ({ state, tr, dispatch }) => {
+          tr.setMeta('preventDispatch', true);
+
+          const undoManager = yUndoPluginKey.getState(state).undoManager as Y.UndoManager;
+          if (undoManager.undoStack.length === 0) {
+            return false;
+          }
+
+          if (!dispatch) {
+            return true;
+          }
+
+          return undo(state);
+        },
+      redo:
+        () =>
+        ({ state, tr, dispatch }) => {
+          tr.setMeta('preventDispatch', true);
+
+          const undoManager = yUndoPluginKey.getState(state).undoManager as Y.UndoManager;
+          if (undoManager.redoStack.length === 0) {
+            return false;
+          }
+
+          if (!dispatch) {
+            return true;
+          }
+
+          return redo(state);
+        },
     };
   },
 
   addProseMirrorPlugins() {
-    return [
-      new Plugin({
-        key: collabKey,
+    const fragment = this.options.doc.getXmlFragment('content');
 
-        state: {
-          init: () => new CollabState(this.options.version, []),
+    const yUndoPluginInstance = yUndoPlugin();
+    const originalUndoPluginView = yUndoPluginInstance.spec.view;
 
-          apply: (tr, collab) => {
-            const state = tr.getMeta(collabKey);
-            if (state) {
-              return state;
+    yUndoPluginInstance.spec.view = (view: EditorView) => {
+      const { undoManager } = yUndoPluginKey.getState(view.state);
+
+      if (undoManager.restore) {
+        undoManager.restore();
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        undoManager.restore = () => {};
+      }
+
+      const viewRet = originalUndoPluginView ? originalUndoPluginView(view) : undefined;
+
+      return {
+        destroy: () => {
+          const hasUndoManSelf = undoManager.trackedOrigins.has(undoManager);
+          const observers = undoManager._observers;
+
+          undoManager.restore = () => {
+            if (hasUndoManSelf) {
+              undoManager.trackedOrigins.add(undoManager);
             }
 
-            if (tr.docChanged) {
-              return new CollabState(
-                collab.version,
-                [...collab.unconfirmedSteps, ...getMappedSteps(tr)],
-                collab.inflightCommit,
-              );
-            }
+            undoManager.doc.on('afterTransaction', undoManager.afterTransactionHandler);
+            undoManager._observers = observers;
+          };
 
-            return collab;
-          },
+          if (viewRet?.destroy) {
+            viewRet.destroy();
+          }
         },
+      };
+    };
 
-        historyPreserveItems: true,
-      }),
+    type User = { name: string; color: string };
+
+    const cursorBuilder = (user: User) => {
+      const cursor = document.createElement('span');
+      cursor.className = css({
+        'position': 'relative',
+        'marginX': '-1px',
+        'borderXWidth': '1px',
+        'borderColor': '[var(--user-color)]',
+        'pointerEvents': 'none',
+        '& + .ProseMirror-separator': {
+          display: 'none',
+        },
+        '& + .ProseMirror-separator + .ProseMirror-trailingBreak': {
+          display: 'none',
+        },
+        '_before': {
+          content: 'var(--user-name)',
+          position: 'absolute',
+          top: '0',
+          left: '-1px',
+          paddingX: '4px',
+          paddingY: '2px',
+          width: 'max',
+          fontFamily: 'ui',
+          fontSize: '13px',
+          lineHeight: 'none',
+          textIndent: '0',
+          color: 'gray.100',
+          backgroundColor: '[var(--user-color)]',
+          translate: 'auto',
+          translateY: '-full',
+        },
+      });
+      cursor.style.setProperty('--user-name', `"${user.name}"`);
+      cursor.style.setProperty('--user-color', user.color);
+      return cursor;
+    };
+
+    const selectionBuilder = (user: User) => {
+      return {
+        style: `--user-color: color-mix(in srgb, ${user.color} 50%, transparent);`,
+        class: css({ backgroundColor: '[var(--user-color)]' }),
+      };
+    };
+
+    return [
+      ySyncPlugin(fragment),
+      yUndoPluginInstance,
+      yCursorPlugin(this.options.awareness, { cursorBuilder, selectionBuilder }),
     ];
   },
+
+  addKeyboardShortcuts() {
+    return {
+      'Mod-z': () => this.editor.commands.undo(),
+      'Mod-y': () => this.editor.commands.redo(),
+      'Shift-Mod-z': () => this.editor.commands.redo(),
+    };
+  },
 });
-
-export function getCommit(state: EditorState): Commit | null {
-  return collabKey.getState(state)?.getCommit() ?? null;
-}
-
-export function applyCommit(state: EditorState, commit: Commit) {
-  const { tr } = state;
-
-  const collabState = collabKey.getState(state);
-  if (!collabState) {
-    return tr;
-  }
-
-  const { nextVersion, unconfirmedSteps, inflightCommit } = collabState;
-  if (nextVersion !== commit.version) {
-    return tr;
-  }
-
-  if (commit.ref === inflightCommit?.ref) {
-    const newCollabState = new CollabState(nextVersion, unconfirmedSteps.slice(commit.steps.length));
-    return tr.setMeta(collabKey, newCollabState);
-  } else {
-    const rebasedSteps = rebaseSteps(tr, unconfirmedSteps, commit.steps);
-    const newCollabState = new CollabState(nextVersion, rebasedSteps, inflightCommit);
-
-    return tr
-      .setMeta('addToHistory', false)
-      .setMeta('rebased', unconfirmedSteps.length)
-      .setMeta(collabKey, newCollabState);
-  }
-}
-
-export function getVersion(state: EditorState) {
-  return collabKey.getState(state)?.version ?? 0;
-}

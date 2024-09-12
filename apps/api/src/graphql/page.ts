@@ -1,21 +1,25 @@
 import { init } from '@paralleldrive/cuid2';
+import { Node } from '@tiptap/pm/model';
 import dayjs from 'dayjs';
 import { and, asc, desc, eq, gt, inArray, isNull, ne, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
+import { base64 } from 'rfc4648';
+import { prosemirrorToYXmlFragment } from 'y-prosemirror';
+import * as Y from 'yjs';
 import { builder } from '@/builder';
 import {
   Categories,
   db,
   first,
   firstOrThrow,
-  PageContentCommits,
   PageContentContributors,
   PageContents,
   PageContentStates,
+  PageContentUpdates,
   Pages,
 } from '@/db';
-import { CategoryState, PageState } from '@/enums';
+import { CategoryState, PageContentSyncKind, PageState } from '@/enums';
 import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
@@ -316,8 +320,8 @@ PageContentState.implement({
     editorTitle: t.exposeString('title', { nullable: true }),
     subtitle: t.exposeString('subtitle', { nullable: true }),
 
-    content: t.expose('content', { type: 'JSON' }),
-    version: t.exposeInt('version'),
+    update: t.expose('update', { type: 'Binary' }),
+    vector: t.expose('vector', { type: 'Binary' }),
   }),
 });
 
@@ -362,12 +366,11 @@ PublicPageContent.implement({
   }),
 });
 
-const PageContentCommitStreamPayload = builder.simpleObject('PageContentCommitStreamPayload', {
+const PageContentSyncStreamPayload = builder.simpleObject('PageContentSyncStreamPayload', {
   fields: (t) => ({
     pageId: t.id(),
-    version: t.int(),
-    ref: t.string(),
-    steps: t.field({ type: ['JSON'] }),
+    kind: t.field({ type: PageContentSyncKind }),
+    data: t.field({ type: 'Binary' }),
   }),
 });
 
@@ -530,6 +533,10 @@ builder.mutationFields((t) => ({
       const content = node.toJSON();
       const text = node.content.textBetween(0, node.content.size, '\n');
 
+      const doc = new Y.Doc();
+      const fragment = doc.getXmlFragment('content');
+      prosemirrorToYXmlFragment(node, fragment);
+
       const last = await db
         .select({ order: Pages.order })
         .from(Pages)
@@ -562,7 +569,8 @@ builder.mutationFields((t) => ({
           pageId: page.id,
           content,
           text,
-          version: 0,
+          update: Y.encodeStateAsUpdateV2(doc),
+          vector: Y.encodeStateVector(doc),
           hash: hashPageContent({ title: null, subtitle: null, content }),
         });
 
@@ -799,12 +807,12 @@ builder.mutationFields((t) => ({
     },
   }),
 
-  updatePageContent: t.withAuth({ session: true }).fieldWithInput({
-    type: Page,
+  syncPageContent: t.withAuth({ session: true }).fieldWithInput({
+    type: 'Boolean',
     input: {
       pageId: t.input.id(),
-      title: t.input.string({ required: false }),
-      subtitle: t.input.string({ required: false }),
+      kind: t.input.field({ type: PageContentSyncKind }),
+      data: t.input.field({ type: 'Binary' }),
     },
     resolve: async (_, { input }, ctx) => {
       await assertPagePermission({
@@ -812,72 +820,22 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
       });
 
-      await db.transaction(async (tx) => {
-        const state = await tx
-          .select({
-            title: PageContentStates.title,
-            subtitle: PageContentStates.subtitle,
-            content: PageContentStates.content,
-          })
-          .from(PageContentStates)
-          .where(eq(PageContentStates.pageId, input.pageId))
-          .for('update')
-          .then(firstOrThrow);
-
-        const title = input.title === '' ? null : (input.title ?? undefined);
-        const subtitle = input.subtitle === '' ? null : (input.subtitle ?? undefined);
-
-        await tx.update(PageContentStates).set({ title, subtitle }).where(eq(PageContentStates.pageId, input.pageId));
-
-        await tx
-          .update(PageContentStates)
-          .set({
-            hash: hashPageContent({
-              title: title ?? state.title,
-              subtitle: subtitle ?? state.subtitle,
-              content: state.content,
-            }),
-          })
-          .where(eq(PageContentStates.pageId, input.pageId));
-
-        await enqueueJob(tx, 'page:search:index-update', input.pageId);
+      pubsub.publish('page:content:sync', input.pageId, {
+        kind: input.kind,
+        data: base64.stringify(input.data),
       });
 
-      const page = await db.select().from(Pages).where(eq(Pages.id, input.pageId)).then(firstOrThrow);
-
-      pubsub.publish('site:update', page.siteId, { scope: 'page', pageId: input.pageId });
-
-      return page;
-    },
-  }),
-
-  commitPageContent: t.withAuth({ session: true }).fieldWithInput({
-    type: 'Boolean',
-    input: {
-      pageId: t.input.id(),
-      version: t.input.int(),
-      ref: t.input.string(),
-      steps: t.input.field({ type: ['JSON'] }),
-    },
-    resolve: async (_, { input }, ctx) => {
-      await db.transaction(async (tx) => {
-        const commit = await tx
-          .insert(PageContentCommits)
-          .values({
+      if (input.kind === PageContentSyncKind.UPDATE) {
+        await db.transaction(async (tx) => {
+          await tx.insert(PageContentUpdates).values({
             pageId: input.pageId,
             userId: ctx.session.userId,
-            version: input.version,
-            ref: input.ref,
-            steps: input.steps,
-          })
-          .onConflictDoNothing({ target: [PageContentCommits.ref] })
-          .returning({ id: PageContentCommits.id })
-          .then(first);
+            update: input.data,
+          });
 
-        if (commit) {
-          await enqueueJob(tx, 'page:content:state-update', commit.id);
-        }
-      });
+          await enqueueJob(tx, 'page:content:state-update', input.pageId);
+        });
+      }
 
       return true;
     },
@@ -915,6 +873,10 @@ builder.mutationFields((t) => ({
         .then(firstOrThrow);
 
       const title = `(사본) ${state.title ?? '(제목 없음)'}`;
+      const node = Node.fromJSON(schema, state.content);
+      const doc = new Y.Doc();
+      const fragment = doc.getXmlFragment('content');
+      prosemirrorToYXmlFragment(node, fragment);
 
       const newPage = await db.transaction(async (tx) => {
         const newPage = await tx
@@ -936,7 +898,8 @@ builder.mutationFields((t) => ({
           subtitle: state.subtitle,
           content: state.content,
           text: state.text,
-          version: 0,
+          update: Y.encodeStateAsUpdateV2(doc),
+          vector: Y.encodeStateVector(doc),
           hash: state.hash,
         });
 
@@ -962,8 +925,8 @@ builder.mutationFields((t) => ({
  */
 
 builder.subscriptionFields((t) => ({
-  pageContentCommitStream: t.withAuth({ session: true }).field({
-    type: PageContentCommitStreamPayload,
+  pageContentSyncStream: t.withAuth({ session: true }).field({
+    type: PageContentSyncStreamPayload,
     args: { pageId: t.arg.id() },
     subscribe: async (_, args, ctx) => {
       await assertPagePermission({
@@ -971,7 +934,7 @@ builder.subscriptionFields((t) => ({
         userId: ctx.session.userId,
       });
 
-      const repeater = pubsub.subscribe('page:content:commit', args.pageId);
+      const repeater = pubsub.subscribe('page:content:sync', args.pageId);
 
       ctx.req.signal.addEventListener('abort', () => {
         repeater.return();
@@ -979,7 +942,11 @@ builder.subscriptionFields((t) => ({
 
       return repeater;
     },
-    resolve: (payload) => payload,
+    resolve: (payload, args) => ({
+      pageId: args.pageId,
+      kind: payload.kind,
+      data: base64.parse(payload.data),
+    }),
   }),
 }));
 

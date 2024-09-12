@@ -19,6 +19,10 @@ export const scalarTSTypes = {
     Input: 'boolean',
     Output: 'boolean',
   },
+  Binary: {
+    Input: 'string',
+    Output: 'string',
+  },
   DateTime: {
     Input: 'string',
     Output: 'string',

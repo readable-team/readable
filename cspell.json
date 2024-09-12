@@ -3,7 +3,9 @@
   "allowCompoundWords": true,
   "numSuggestions": 0,
   "validateDirectives": true,
-  "enabledFileTypes": { "*": true },
+  "enabledFileTypes": {
+    "*": true
+  },
   "enableGlobDot": true,
   "useGitignore": true,
   "ignorePaths": [

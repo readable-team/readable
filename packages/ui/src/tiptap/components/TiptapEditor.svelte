@@ -1,7 +1,6 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { Editor } from '@tiptap/core';
-  import { Transaction } from '@tiptap/pm/state';
   import { createEventDispatcher, onMount } from 'svelte';
   import { Collaboration } from '../extensions/collaboration';
   import { Freeze } from '../extensions/freeze';
@@ -10,12 +9,12 @@
   import { Image } from '../node-views/image';
   import { basicExtensions, editorExtensions } from '../schema';
   import type { SystemStyleObject } from '@readable/styled-system/types';
-  import type { JSONContent } from '@tiptap/core';
+  import type * as YAwareness from 'y-protocols/awareness';
+  import type * as Y from 'yjs';
 
   const dispatch = createEventDispatcher<{
     initialize: null;
     file: { pos: number; files: File[] };
-    change: { transaction: Transaction };
   }>();
 
   export let style: SystemStyleObject | undefined = undefined;
@@ -23,8 +22,8 @@
   export let editor: Editor | undefined = undefined;
   export let frozen = false;
 
-  export let content: JSONContent | undefined = undefined;
-  export let version: number | undefined = undefined;
+  export let doc: Y.Doc | undefined = undefined;
+  export let awareness: YAwareness.Awareness | undefined = undefined;
 
   export let handleImageUpload: (file: File) => Promise<Record<string, unknown>>;
   export let handleFileUpload: (file: File) => Promise<Record<string, unknown>>;
@@ -35,14 +34,13 @@
   onMount(() => {
     editor = new Editor({
       element,
-      content,
       extensions: [
         ...basicExtensions,
         ...editorExtensions,
         Embed.configure({ handleEmbed }),
         Image.configure({ handleImageUpload }),
         File.configure({ handleFileUpload }),
-        Collaboration.configure({ version }),
+        Collaboration.configure({ doc, awareness }),
         ...(frozen ? [Freeze] : []),
       ],
       injectCSS: false,
@@ -78,12 +76,8 @@
           }
         },
       },
-      onTransaction: ({ editor: editor_, transaction }) => {
+      onTransaction: ({ editor: editor_ }) => {
         editor = editor_;
-
-        if (transaction.docChanged) {
-          dispatch('change', { transaction });
-        }
       },
     });
 

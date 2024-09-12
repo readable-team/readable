@@ -7,6 +7,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [
+    svg(),
     icons({
       scale: 1,
       compiler: 'svelte',
@@ -15,7 +16,6 @@ export default defineConfig({
       },
     }),
     gql(),
-    svg(),
     sveltekit(),
   ],
   server: {

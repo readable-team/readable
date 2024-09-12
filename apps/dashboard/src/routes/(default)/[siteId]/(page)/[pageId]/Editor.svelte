@@ -1,10 +1,13 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { applyCommit, getCommit, TiptapEditor } from '@readable/ui/tiptap';
+  import { TiptapEditor } from '@readable/ui/tiptap';
   import ky from 'ky';
-  import { Step } from 'prosemirror-transform';
+  import { base64 } from 'rfc4648';
   import { onMount } from 'svelte';
+  import * as YAwareness from 'y-protocols/awareness';
+  import * as Y from 'yjs';
+  import { PageContentSyncKind } from '@/enums';
   import { fragment, graphql } from '$graphql';
   import Breadcrumb from './Breadcrumb.svelte';
   import type { Editor } from '@tiptap/core';
@@ -27,9 +30,7 @@
 
           content {
             id
-            editorTitle
-            content
-            version
+            update
           }
         }
 
@@ -38,33 +39,18 @@
     `),
   );
 
-  const updatePageContent = graphql(`
-    mutation PagePage_UpdatePageContent_Mutation($input: UpdatePageContentInput!) {
-      updatePageContent(input: $input) {
-        id
-
-        content {
-          id
-          editorTitle
-          subtitle
-        }
-      }
+  const syncPageContent = graphql(`
+    mutation PagePage_SyncPageContent_Mutation($input: SyncPageContentInput!) {
+      syncPageContent(input: $input)
     }
   `);
 
-  const commitPageContent = graphql(`
-    mutation PagePage_CommitPageContent_Mutation($input: CommitPageContentInput!) {
-      commitPageContent(input: $input)
-    }
-  `);
-
-  const pageContentCommitStream = graphql(`
-    subscription PagePage_PageContentCommitStream_Subscription($pageId: ID!) {
-      pageContentCommitStream(pageId: $pageId) {
+  const pageContentSyncStream = graphql(`
+    subscription PagePage_PageContentSyncStream_Subscription($pageId: ID!) {
+      pageContentSyncStream(pageId: $pageId) {
         pageId
-        version
-        ref
-        steps
+        kind
+        data
       }
     }
   `);
@@ -114,85 +100,45 @@
     }
   `);
 
-  pageContentCommitStream.on('data', ({ pageContentCommitStream: commit }) => {
-    if (!editor) {
-      return;
-    }
-
-    const tr = applyCommit(editor.state, {
-      version: commit.version,
-      ref: commit.ref,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      steps: commit.steps.map((step) => Step.fromJSON(editor!.schema, step)),
-    });
-
-    editor.view.dispatch(tr);
-
-    onTransaction();
-  });
-
   let editor: Editor | undefined;
 
-  const onTransaction = async () => {
-    if (!editor) {
-      return;
-    }
-
-    const commit = getCommit(editor.state);
-    if (!commit) {
-      return;
-    }
-
-    await commitPageContent({
-      pageId: $query.page.id,
-      version: commit.version,
-      ref: commit.ref,
-      steps: commit.steps.map((step) => step.toJSON()),
-    });
-  };
-
-  onMount(() => {
-    const interval = setInterval(() => {
-      onTransaction();
-    }, 1000);
-
-    const unsubscribe = pageContentCommitStream.subscribe({ pageId: $query.page.id });
-
-    if (titleEl) adjustTextareaHeight(titleEl);
-
-    return () => {
-      clearInterval(interval);
-      unsubscribe();
-    };
-  });
-
   let titleEl: HTMLElement;
-  let title: Writable<string>;
 
-  const createTitleStore = (): Writable<string> => {
+  const createStore = (name: 'title' | 'subtitle'): Writable<string> => {
+    const text = doc.getText(name);
+
     return {
       subscribe: (set) => {
-        const unsubscribe = query.subscribe((query) => {
-          set(query.page.content.editorTitle ?? '');
-          if (titleEl) adjustTextareaHeight(titleEl);
-        });
-        return () => unsubscribe();
+        const handler = () => {
+          set(text.toString());
+        };
+
+        text.observe(handler);
+        handler();
+
+        return () => {
+          text.unobserve(handler);
+        };
       },
       set: (value) => {
-        if (titleEl) adjustTextareaHeight(titleEl);
-        const v = value.replaceAll('\n', '');
-        updatePageContent({ pageId: $query.page.id, title: v });
+        doc.transact(() => {
+          text.delete(0, text.length);
+          text.insert(0, value);
+        });
       },
       update: (fn) => {
-        if (titleEl) adjustTextareaHeight(titleEl);
-        const v = fn($query.page.content.editorTitle ?? '')?.replaceAll('\n', '');
-        updatePageContent({ pageId: $query.page.id, title: v });
+        doc.transact(() => {
+          text.delete(0, text.length);
+          text.insert(0, fn(text.toString()));
+        });
       },
     };
   };
 
-  $: if (!title && $query) {
-    title = createTitleStore();
+  $: {
+    if (titleEl) adjustTextareaHeight(titleEl);
+
+    $title;
   }
 
   const adjustTextareaHeight = (el: HTMLElement) => {
@@ -215,6 +161,59 @@
 
     return path;
   };
+
+  const doc = new Y.Doc();
+  const awareness = new YAwareness.Awareness(doc);
+
+  doc.on('updateV2', async (update, origin) => {
+    if (origin === 'remote') {
+      return;
+    }
+
+    await syncPageContent({
+      pageId: $query.page.id,
+      kind: PageContentSyncKind.UPDATE,
+      data: base64.stringify(update),
+    });
+  });
+
+  awareness.on('update', async (states: { added: number[]; updated: number[]; removed: number[] }, origin: unknown) => {
+    if (origin === 'remote') {
+      return;
+    }
+
+    const update = YAwareness.encodeAwarenessUpdate(awareness, [...states.added, ...states.updated, ...states.removed]);
+
+    await syncPageContent({
+      pageId: $query.page.id,
+      kind: PageContentSyncKind.CURSOR,
+      data: base64.stringify(update),
+    });
+  });
+
+  pageContentSyncStream.on('data', ({ pageContentSyncStream: { kind, data } }) => {
+    if (kind === PageContentSyncKind.UPDATE) {
+      Y.applyUpdateV2(doc, base64.parse(data), 'remote');
+    } else if (kind === PageContentSyncKind.CURSOR) {
+      YAwareness.applyAwarenessUpdate(awareness, base64.parse(data), 'remote');
+    }
+  });
+
+  const title = createStore('title');
+
+  onMount(() => {
+    const unsubscribe = pageContentSyncStream.subscribe({ pageId: $query.page.id });
+
+    Y.applyUpdateV2(doc, base64.parse($query.page.content.update), 'remote');
+    awareness.setLocalStateField('user', {
+      name: $query.me.name,
+      color: '#000000',
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  });
 </script>
 
 <div class={css({ flex: '1', overflowY: 'auto' })}>
@@ -277,7 +276,8 @@
           width: '720px',
         },
       })}
-      content={$query.page.content.content}
+      {awareness}
+      {doc}
       handleEmbed={async (url) => {
         return await unfurlEmbed({ url });
       }}
@@ -289,8 +289,6 @@
         const path = await uploadBlob(file);
         return await persistBlobAsImage({ path });
       }}
-      version={$query.page.content.version}
-      on:change={onTransaction}
       bind:editor
     />
   </div>

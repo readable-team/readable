@@ -1,15 +1,16 @@
 import { Node } from '@tiptap/pm/model';
-import { Mapping, Step, Transform } from '@tiptap/pm/transform';
-import { and, asc, eq, gt, inArray, notInArray } from 'drizzle-orm';
+import { and, desc, eq, gt, inArray, notInArray } from 'drizzle-orm';
 import * as R from 'remeda';
+import { yXmlFragmentToProseMirrorRootNode } from 'y-prosemirror';
+import * as Y from 'yjs';
 import {
   db,
   first,
   firstOrThrow,
   PageContentChunks,
-  PageContentCommits,
   PageContents,
   PageContentStates,
+  PageContentUpdates,
   Pages,
 } from '@/db';
 import { PageState } from '@/enums';
@@ -21,86 +22,67 @@ import { hashPageContent } from '@/utils/page';
 import { enqueueJob } from './index';
 import { defineJob } from './types';
 
-export const PageContentStateUpdateJob = defineJob('page:content:state-update', async (commitId: string) => {
-  await db.transaction(async (tx) => {
-    const commit = await tx
-      .select({
-        pageId: PageContentCommits.pageId,
-        version: PageContentCommits.version,
-        ref: PageContentCommits.ref,
-        steps: PageContentCommits.steps,
-      })
-      .from(PageContentCommits)
-      .where(eq(PageContentCommits.id, commitId))
-      .then(firstOrThrow);
-
+export const PageContentStateUpdateJob = defineJob('page:content:state-update', async (pageId: string) => {
+  const update = await db.transaction(async (tx) => {
     const state = await tx
       .select({
-        title: PageContentStates.title,
-        subtitle: PageContentStates.subtitle,
-        content: PageContentStates.content,
-        version: PageContentStates.version,
+        update: PageContentStates.update,
+        vector: PageContentStates.vector,
+        seq: PageContentStates.seq,
       })
       .from(PageContentStates)
-      .where(eq(PageContentStates.pageId, commit.pageId))
+      .where(eq(PageContentStates.pageId, pageId))
       .for('update')
       .then(firstOrThrow);
 
-    const newerCommits = await tx
-      .select({ steps: PageContentCommits.steps })
-      .from(PageContentCommits)
-      .where(and(eq(PageContentCommits.pageId, commit.pageId), gt(PageContentCommits.version, commit.version)))
-      .orderBy(asc(PageContentCommits.version));
+    const updates = await tx
+      .select({ update: PageContentUpdates.update, seq: PageContentUpdates.seq })
+      .from(PageContentUpdates)
+      .where(and(eq(PageContentUpdates.pageId, pageId), gt(PageContentUpdates.seq, state.seq)))
+      .orderBy(desc(PageContentUpdates.seq));
 
-    const node = Node.fromJSON(schema, state.content);
-
-    const newerSteps = newerCommits.flatMap((commit) => Step.fromJSON(schema, commit.steps));
-    const newerMapping = new Mapping(newerSteps.map((s) => s.getMap()));
-
-    const steps = commit.steps.map((step) => Step.fromJSON(schema, step));
-    const mapping = new Mapping(steps.map((s) => s.getMap())).invert();
-
-    mapping.appendMapping(newerMapping);
-
-    const tr = new Transform(node);
-
-    let from = steps.length;
-    for (const step of steps) {
-      const slice = mapping.slice(from--);
-      // eslint-disable-next-line unicorn/no-array-callback-reference
-      const mapped = step.map(slice);
-
-      if (mapped && tr.maybeStep(mapped).doc) {
-        mapping.appendMapping(new Mapping(tr.mapping.maps.slice(tr.steps.length - 1)));
-        // @ts-expect-error ProseMirror internal
-        mapping.setMirror(from, mapping.maps.length - 1);
-      }
+    if (updates.length === 0) {
+      return;
     }
 
-    const content = tr.doc.toJSON();
+    const update = Y.mergeUpdatesV2(updates.map(({ update }) => update));
+
+    const doc = new Y.Doc();
+
+    Y.applyUpdateV2(doc, state.update);
+    Y.applyUpdateV2(doc, update);
+
+    const title = doc.getText('title').toString() || null;
+    const subtitle = doc.getText('subtitle').toString() || null;
+    const fragment = doc.getXmlFragment('content');
+
+    const node = yXmlFragmentToProseMirrorRootNode(fragment, schema);
+    const content = node.toJSON();
+    const text = node.textBetween(0, node.content.size, '\n');
 
     await tx
       .update(PageContentStates)
       .set({
+        title,
+        subtitle,
         content,
-        version: state.version + 1,
-        hash: hashPageContent({
-          title: state.title,
-          subtitle: state.subtitle,
-          content,
-        }),
+        text,
+        update: Y.encodeStateAsUpdateV2(doc),
+        vector: Y.encodeStateVector(doc),
+        seq: updates[0].seq,
+        hash: hashPageContent({ title, subtitle, content }),
       })
-      .where(and(eq(PageContentStates.pageId, commit.pageId)));
+      .where(and(eq(PageContentStates.pageId, pageId)));
 
-    await enqueueJob(tx, 'page:search:index-update', commit.pageId);
+    await enqueueJob(tx, 'page:search:index-update', pageId);
 
-    pubsub.publish('page:content:commit', commit.pageId, {
-      pageId: commit.pageId,
-      version: state.version + 1,
-      ref: commit.ref,
-      steps: tr.steps.map((s) => s.toJSON()),
-    });
+    return update;
   });
+
+  if (update) {
+    const page = await db.select({ siteId: Pages.siteId }).from(Pages).where(eq(Pages.id, pageId)).then(firstOrThrow);
+    pubsub.publish('site:update', page.siteId, { scope: 'page', pageId });
+  }
 });
 
 export const PageSearchIndexUpdateJob = defineJob('page:search:index-update', async (pageId: string) => {

@@ -3,6 +3,8 @@ input AuthorizeSingleSignOnInput {
   provider: SingleSignOnProvider!
 }
 
+scalar Binary
+
 interface Blob {
   id: ID!
 }
@@ -17,13 +19,6 @@ type Category implements ICategory {
 enum CategoryState {
   ACTIVE
   DELETED
-}
-
-input CommitPageContentInput {
-  pageId: ID!
-  ref: String!
-  steps: [JSON!]!
-  version: Int!
 }
 
 input CreateCategoryInput {
@@ -160,7 +155,6 @@ enum JobState {
 
 type Mutation {
   authorizeSingleSignOn(input: AuthorizeSingleSignOnInput!): UserWithAccessToken!
-  commitPageContent(input: CommitPageContentInput!): Boolean!
   createCategory(input: CreateCategoryInput!): Category!
   createDefaultTeam: Team!
   createPage(input: CreatePageInput!): Page!
@@ -183,12 +177,12 @@ type Mutation {
   resendInvitationEmail(input: ResendInvitationEmailInput!): TeamMemberInvitation!
   revokeInvitation(input: RevokeInvitationInput!): TeamMemberInvitation!
   setSiteCustomDomain(input: SetSiteCustomDomainInput!): SiteCustomDomain!
+  syncPageContent(input: SyncPageContentInput!): Boolean!
   unfurlEmbed(input: UnfurlEmbedInput!): Embed!
   unpublishPage(input: UnpublishPageInput!): Page!
   unsetSiteCustomDomain(input: UnsetSiteCustomDomainInput!): SiteCustomDomain!
   updateCategory(input: UpdateCategoryInput!): Category!
   updateCategoryPosition(input: UpdateCategoryPositionInput!): Category!
-  updatePageContent(input: UpdatePageContentInput!): Page!
   updatePagePosition(input: UpdatePagePositionInput!): Page!
   updatePaymentMethod(input: UpdatePaymentMethodInput!): PaymentMethod!
   updateSite(input: UpdateSiteInput!): Site!
@@ -213,13 +207,6 @@ type Page implements IPage {
   state: PageState!
 }
 
-type PageContentCommitStreamPayload {
-  pageId: ID!
-  ref: String!
-  steps: [JSON!]!
-  version: Int!
-}
-
 type PageContentContributor {
   createdAt: DateTime!
   id: ID!
@@ -228,22 +215,25 @@ type PageContentContributor {
 }
 
 type PageContentState {
-  content: JSON!
   editorTitle: String
   id: ID!
   subtitle: String
   title: String!
+  update: Binary!
   updatedAt: DateTime!
-  version: Int!
+  vector: Binary!
 }
 
 enum PageContentSyncKind {
-  AWARENESS
-  PING
-  SYNCHRONIZE_1
-  SYNCHRONIZE_2
-  SYNCHRONIZE_3
+  CURSOR
   UPDATE
+  VERSION
+}
+
+type PageContentSyncStreamPayload {
+  data: Binary!
+  kind: PageContentSyncKind!
+  pageId: ID!
 }
 
 type PageContentToc {
@@ -425,10 +415,16 @@ enum SiteState {
 union SiteUpdateStreamPayload = Page | Site
 
 type Subscription {
-  pageContentCommitStream(pageId: ID!): PageContentCommitStreamPayload!
+  pageContentSyncStream(pageId: ID!): PageContentSyncStreamPayload!
   siteCustomDomainValidationStream(siteCustomDomainId: ID!): SiteCustomDomain!
   siteUpdateStream(siteId: ID!): SiteUpdateStreamPayload!
   teamUpdateStream(teamId: ID!): TeamUpdateStreamPayload!
+}
+
+input SyncPageContentInput {
+  data: Binary!
+  kind: PageContentSyncKind!
+  pageId: ID!
 }
 
 type Team {
@@ -488,12 +484,6 @@ input UpdateCategoryPositionInput {
   categoryId: String!
   lower: String
   upper: String
-}
-
-input UpdatePageContentInput {
-  pageId: ID!
-  subtitle: String
-  title: String
 }
 
 input UpdatePagePositionInput {

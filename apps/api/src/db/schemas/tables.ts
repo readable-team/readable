@@ -199,25 +199,6 @@ export const PageContentContributors = pgTable(
   }),
 );
 
-export const PageContentCommits = pgTable('page_content_commits', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => createDbId('PCCM', { length: 'long' })),
-  pageId: text('page_id')
-    .notNull()
-    .references(() => Pages.id),
-  userId: text('user_id')
-    .notNull()
-    .references(() => Users.id),
-  version: integer('version').notNull(),
-  ref: text('ref').notNull().unique(),
-  steps: jsonb('steps').notNull().$type<unknown[]>(),
-  seq: bigint('seq', { mode: 'bigint' }).notNull().generatedAlwaysAsIdentity(),
-  createdAt: datetime('created_at')
-    .notNull()
-    .default(sql`now()`),
-});
-
 export const PageContentStates = pgTable('page_content_states', {
   id: text('id')
     .primaryKey()
@@ -230,12 +211,33 @@ export const PageContentStates = pgTable('page_content_states', {
   subtitle: text('subtitle'),
   content: jsonb('content').notNull().$type<JSONContent>(),
   text: text('text').notNull(),
-  version: integer('version').notNull().default(0),
+  update: bytea('update').notNull(),
+  vector: bytea('vector').notNull(),
   hash: text('hash').notNull(),
+  seq: bigint('seq', { mode: 'bigint' })
+    .notNull()
+    .default(sql`0`),
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),
   updatedAt: datetime('updated_at')
+    .notNull()
+    .default(sql`now()`),
+});
+
+export const PageContentUpdates = pgTable('page_content_updates', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('PCUP')),
+  userId: text('user_id')
+    .notNull()
+    .references(() => Users.id),
+  pageId: text('page_id')
+    .notNull()
+    .references(() => Pages.id),
+  update: bytea('update').notNull(),
+  seq: bigint('seq', { mode: 'bigint' }).notNull().generatedAlwaysAsIdentity(),
+  createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),
 });
