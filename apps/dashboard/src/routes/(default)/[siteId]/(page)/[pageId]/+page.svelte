@@ -118,6 +118,9 @@
   afterNavigate(() => {
     $lastVisitedPage = $query.page.state === 'DELETED' ? null : $query.page.id;
     $treeOpenState[$query.page.id] = true;
+    if ($query.page.parent) {
+      $treeOpenState[$query.page.parent.id] = true;
+    }
   });
 </script>
 
