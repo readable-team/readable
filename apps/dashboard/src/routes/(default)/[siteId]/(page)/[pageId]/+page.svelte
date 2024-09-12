@@ -352,39 +352,41 @@
         </div>
       {/if}
 
-      <div>
-        <p class={css({ marginBottom: '8px', textStyle: '14sb', color: 'text.secondary' })}>편집자</p>
+      {#if $query.page.contentContributor.length > 0}
+        <div>
+          <p class={css({ marginBottom: '8px', textStyle: '14sb', color: 'text.secondary' })}>편집자</p>
 
-        <div class={flex({ align: 'center', wrap: 'wrap', paddingLeft: '4px' })}>
-          {#each $query.page.contentContributor as contributor (contributor.id)}
-            <Tooltip
-              style={css.raw({
-                borderRadius: 'full',
-                marginLeft: '-4px',
-                marginBottom: '4px',
-                size: '28px',
-              })}
-              message={contributor.user.name}
-              offset={8}
-              tooltipStyle={css.raw({ maxWidth: '100px', truncate: true })}
-            >
-              <Img
+          <div class={flex({ align: 'center', wrap: 'wrap', paddingLeft: '4px' })}>
+            {#each $query.page.contentContributor as contributor (contributor.id)}
+              <Tooltip
                 style={css.raw({
-                  flex: 'none',
-                  ringWidth: '1px',
-                  ringColor: 'border.image',
                   borderRadius: 'full',
+                  marginLeft: '-4px',
+                  marginBottom: '4px',
                   size: '28px',
-                  _hover: { ringWidth: '2px', ringColor: { base: 'gray.800', _dark: 'darkgray.500' } },
                 })}
-                $image={contributor.user.avatar}
-                alt={contributor.user.name}
-                size={32}
-              />
-            </Tooltip>
-          {/each}
+                message={contributor.user.name}
+                offset={8}
+                tooltipStyle={css.raw({ maxWidth: '100px', truncate: true })}
+              >
+                <Img
+                  style={css.raw({
+                    flex: 'none',
+                    ringWidth: '1px',
+                    ringColor: 'border.image',
+                    borderRadius: 'full',
+                    size: '28px',
+                    _hover: { ringWidth: '2px', ringColor: { base: 'gray.800', _dark: 'darkgray.500' } },
+                  })}
+                  $image={contributor.user.avatar}
+                  alt={contributor.user.name}
+                  size={32}
+                />
+              </Tooltip>
+            {/each}
+          </div>
         </div>
-      </div>
+      {/if}
 
       {#if $query.page.state === PageState.PUBLISHED}
         <div>
