@@ -255,6 +255,33 @@ Page.implement({
         return unpublishedParentsCount > 0;
       },
     }),
+
+    childPagesCount: t.int({
+      resolve: async (page) => {
+        const p = alias(Pages, 'p');
+
+        const childPageCount = await db
+          .execute(
+            sql<{ count: number }[]>`
+          WITH RECURSIVE sq AS (
+            SELECT ${Pages.id}, ${Pages.parentId}
+            FROM ${Pages}
+            WHERE ${eq(Pages.id, page.id)}
+            UNION ALL
+            SELECT ${p.id}, ${p.parentId}
+            FROM pages AS p
+            INNER JOIN sq ON ${p.parentId} = sq.id
+          )
+          SELECT count(*) AS count
+          FROM sq
+          WHERE id <> ${page.id};
+        `,
+          )
+          .then((rows) => (rows[0].count ?? 0) as number);
+
+        return childPageCount;
+      },
+    }),
   }),
 });
 

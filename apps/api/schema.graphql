@@ -193,6 +193,7 @@ type Mutation {
 
 type Page implements IPage {
   category: Category!
+  childPagesCount: Int!
   children: [Page!]!
   content: PageContentState!
   contentContributor: [PageContentContributor!]!
