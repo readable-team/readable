@@ -74,21 +74,21 @@
         <button
           class={css({
             position: 'absolute',
-            top: '8px',
-            right: '8px',
+            top: '20px',
+            right: '20px',
             display: 'none',
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: '4px',
-            color: 'neutral.50',
-            backgroundColor: 'neutral.10',
-            size: '24px',
-            _hover: { backgroundColor: 'neutral.20' },
+            color: 'neutral.0',
+            backgroundColor: '[#363839/70]',
+            size: '28px',
+            _hover: { backgroundColor: '[#363839/40]' },
           })}
           type="button"
           on:click={() => deleteNode()}
         >
-          <Icon icon={Trash2Icon} size={12} />
+          <Icon icon={Trash2Icon} size={16} />
         </button>
       {/if}
     </div>
