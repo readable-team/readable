@@ -20,7 +20,7 @@ export const createNodeView = <Options = any, Storage = any>(
 
     renderHTML({ node, HTMLAttributes }) {
       if (browser) {
-        return ['node-view', HTMLAttributes];
+        return ['node-view', HTMLAttributes, 0];
       } else {
         // @ts-expect-error svelte internal
         const { html } = component.render({
