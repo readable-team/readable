@@ -80,7 +80,7 @@ export const basicExtensions = [
           content: '""',
           display: 'block',
           height: '1px',
-          backgroundColor: 'neutral.40',
+          backgroundColor: 'neutral.30',
         },
       }),
     },
