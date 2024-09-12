@@ -173,6 +173,7 @@
               borderStyle: 'dashed',
               textStyle: '16b',
               color: 'neutral.40',
+              backgroundColor: 'surface.secondary',
               size: '32px',
             })}
           >
