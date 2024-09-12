@@ -90,20 +90,20 @@
 
 <div class={flex({ align: 'center', gap: '4px' })}>
   <button
-    class={css({ borderRadius: '4px', padding: '2px', color: 'neutral.50', _hover: { backgroundColor: 'neutral.20' } })}
+    class={css({ borderRadius: '6px', padding: '2px', color: 'neutral.50', _hover: { backgroundColor: 'neutral.20' } })}
     type="button"
     on:click={handlePlusClick}
   >
-    <Icon icon={PlusIcon} />
+    <Icon icon={PlusIcon} size={20} />
   </button>
 
   <button
-    class={css({ borderRadius: '4px', padding: '2px', color: 'neutral.50', _hover: { backgroundColor: 'neutral.20' } })}
+    class={css({ borderRadius: '6px', padding: '2px', color: 'neutral.50', _hover: { backgroundColor: 'neutral.20' } })}
     draggable="true"
     type="button"
     on:click={handleGripClick}
     on:dragstart={handleDragStart}
   >
-    <Icon icon={GripVerticalIcon} />
+    <Icon icon={GripVerticalIcon} size={20} />
   </button>
 </div>
