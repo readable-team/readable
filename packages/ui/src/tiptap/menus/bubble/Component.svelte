@@ -62,7 +62,7 @@
   // TODO: dark mode 지원
   const colors = [
     { name: 'black', label: '검정', hex: null },
-    { name: 'gray', label: '회색', hex: '#A1A1AA' },
+    { name: 'gray', label: '회색', hex: '#71717a' },
     { name: 'red', label: '빨간색', hex: '#dc2626' },
     { name: 'yellow', label: '노란색', hex: '#eab308' },
     { name: 'orange', label: '주황색', hex: '#f97316' },
