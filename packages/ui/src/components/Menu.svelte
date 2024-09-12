@@ -26,21 +26,25 @@
     },
   });
 
-  setContext('close', () => (open = false));
+  const close = () => {
+    open = false;
+    buttonEl?.focus();
+  };
+
+  setContext('close', close);
 
   afterNavigate(() => {
     open = false;
   });
 
   const onKeydown = (e: KeyboardEvent) => {
+    const target = e.target as HTMLElement;
     if (open) {
       if (e.key === 'Escape') {
         e.preventDefault();
-        open = false;
-        buttonEl?.focus();
+        close();
       }
 
-      const target = e.target as HTMLElement;
       const focusInList = menuEl?.contains(target);
 
       const menuItems = menuEl?.querySelectorAll('[role="menuitem"], [role="menuitemradio"]');
@@ -52,23 +56,29 @@
       const pos = Array.from(menuItems).indexOf(target);
 
       if (focusInList) {
-        if (e.key === 'ArrowDown') {
+        if (e.key === 'ArrowDown' || e.key === 'Tab') {
           e.preventDefault();
           const next = (menuItems[pos + 1] || menuItems[0]) as HTMLElement;
           next?.focus();
         }
 
-        if (e.key === 'ArrowUp') {
+        if (e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey)) {
           e.preventDefault();
           // eslint-disable-next-line unicorn/prefer-at
           const prev = (menuItems[pos - 1] || menuItems[menuItems.length - 1]) as HTMLElement;
           prev?.focus();
         }
       } else {
-        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        if (['ArrowDown', 'ArrowUp', 'Tab'].includes(e.key)) {
           e.preventDefault();
           (menuItems[0] as HTMLElement).focus();
         }
+      }
+    } else {
+      // 버튼에 포커스가 있을 때 아래 키로 메뉴를 열 수 있음
+      const focusInButton = buttonEl?.contains(target);
+      if (focusInButton && e.key === 'ArrowDown') {
+        open = true;
       }
     }
   };
