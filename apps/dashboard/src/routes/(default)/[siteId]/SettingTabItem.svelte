@@ -24,6 +24,7 @@
     _hover: { backgroundColor: 'neutral.20' },
     _selected: {
       color: 'text.primary',
+      textStyle: '15b',
       backgroundColor: 'neutral.20',
     },
   })}
