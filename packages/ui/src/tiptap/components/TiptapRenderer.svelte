@@ -1,9 +1,9 @@
 <script lang="ts">
   import { css, cx } from '@readable/styled-system/css';
   import { Editor } from '@tiptap/core';
-  import { generateHTML } from '@tiptap/html';
   import { createEventDispatcher, onMount } from 'svelte';
   import { TableOfContents } from '../extensions/table-of-contents';
+  import { renderHTML } from '../lib/html';
   import { Embed } from '../node-views/embed';
   import { File } from '../node-views/file';
   import { Image } from '../node-views/image';
@@ -22,7 +22,7 @@
     tocUpdate: { headings: { level: number; text: string; scrollTop: number }[] };
   }>();
 
-  $: html = generateHTML(content, [...basicExtensions, Embed, Image, File]);
+  $: html = renderHTML(content, [...basicExtensions, Embed, Image, File]);
   $: editor?.commands.setContent(content);
 
   onMount(() => {
