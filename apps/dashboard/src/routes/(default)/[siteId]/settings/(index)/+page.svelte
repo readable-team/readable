@@ -1,16 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
-  import {
-    Alert,
-    Button,
-    FormField,
-    FormValidationMessage,
-    Helmet,
-    Icon,
-    LogoPlaceholder,
-    TextInput,
-  } from '@readable/ui/components';
+  import { center, flex } from '@readable/styled-system/patterns';
+  import { Alert, Button, FormField, FormValidationMessage, Helmet, Icon, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
@@ -169,7 +160,7 @@
       사이트 로고
     </p>
 
-    <div class={css({ position: 'relative', width: 'fit', _hover: { '& > div': { display: 'flex' } } })}>
+    <div class={css({ position: 'relative', size: '64px', _hover: { '& > div': { display: 'flex' } } })}>
       <button
         type="button"
         on:click={() => {
@@ -184,9 +175,18 @@
             size={64}
           />
         {:else}
-          <LogoPlaceholder
-            style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '10px' })}
-          />
+          <div
+            class={center({
+              size: '64px',
+              borderWidth: '1px',
+              borderColor: 'border.image',
+              borderRadius: '10px',
+              color: 'neutral.60',
+              backgroundColor: 'neutral.20',
+            })}
+          >
+            <Icon icon={UploadIcon} size={28} />
+          </div>
         {/if}
       </button>
 
@@ -199,7 +199,7 @@
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: '10px',
-          color: 'neutral.0',
+          color: logo ? 'neutral.0' : 'neutral.60',
           backgroundColor: 'neutral.100/16',
           size: '64px',
           pointerEvents: 'none',
