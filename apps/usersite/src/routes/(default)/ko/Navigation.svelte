@@ -159,10 +159,8 @@
               <button
                 class={css({
                   position: 'absolute',
-                  right: '7px',
-                  top: '1/2',
-                  translate: 'auto',
-                  translateY: '-1/2',
+                  right: '12px',
+                  top: '9px',
                   width: '22px',
                   height: '22px',
                   padding: '3px',
