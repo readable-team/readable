@@ -155,8 +155,9 @@
         hideBelow: 'md',
         position: 'fixed',
         inset: '0',
-        backgroundColor: 'white/16',
-        backdropFilter: '[blur(12px)]',
+        backgroundColor: 'white/60',
+        backdropFilter: 'auto',
+        backdropBlur: '4px',
       })}
       aria-label="검색 모드 닫기"
       role="button"
