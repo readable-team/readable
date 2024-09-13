@@ -78,6 +78,12 @@
     },
     variants: {
       size: {
+        sm: {
+          borderRadius: '6px',
+          textStyle: '14r',
+          height: '32px',
+          paddingX: '12px',
+        },
         md: {
           borderRadius: '8px',
           textStyle: '14m',

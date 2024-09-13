@@ -49,8 +49,8 @@
   onMount(() => {
     cleanup = autoUpdate(referenceElement, floatingElement, async () => {
       const { x, y } = await computePosition(referenceElement, floatingElement, {
-        placement: 'bottom',
-        middleware: [offset(12)],
+        placement: 'bottom-start',
+        middleware: [offset(4)],
       });
 
       floatingElement.style.left = `${x}px`;
@@ -84,19 +84,27 @@
 >
   <form
     class={flex({
-      width: '460px',
-      flexDirection: 'column',
+      width: '300px',
       backgroundColor: 'background.overlay',
       borderRadius: '10px',
-      boxShadow: 'heavy',
-      gap: '14px',
-      padding: '20px',
+      boxShadow: 'strong',
+      gap: '4px',
+      padding: '4px',
     })}
     on:submit|preventDefault={updateLink}
   >
     <!-- FIXME: 유효한 링크인지 검사? -->
-    <TextInput name="link-draft" placeholder="https://..." bind:inputEl={inputElement} bind:value={linkDraft} />
-    <Button disabled={linkDraft === ''} size="lg" type="submit" variant="primary">
+    <TextInput
+      name="link-draft"
+      style={css.raw({
+        flex: '1',
+      })}
+      placeholder="https://..."
+      size="sm"
+      bind:inputEl={inputElement}
+      bind:value={linkDraft}
+    />
+    <Button disabled={linkDraft === ''} size="sm" type="submit" variant="primary">
       {#if !currentLink}
         확인
       {:else}
