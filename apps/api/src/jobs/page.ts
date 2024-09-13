@@ -1,5 +1,5 @@
 import { Node } from '@tiptap/pm/model';
-import { and, desc, eq, gt, inArray, notInArray } from 'drizzle-orm';
+import { and, desc, eq, gt, inArray, notInArray, sql } from 'drizzle-orm';
 import * as R from 'remeda';
 import { yXmlFragmentToProseMirrorRootNode } from 'y-prosemirror';
 import * as Y from 'yjs';
@@ -8,6 +8,7 @@ import {
   first,
   firstOrThrow,
   PageContentChunks,
+  PageContentContributors,
   PageContents,
   PageContentStates,
   PageContentUpdates,
@@ -36,7 +37,7 @@ export const PageContentStateUpdateJob = defineJob('page:content:state-update', 
       .then(firstOrThrow);
 
     const updates = await tx
-      .select({ update: PageContentUpdates.update, seq: PageContentUpdates.seq })
+      .select({ userId: PageContentUpdates.userId, update: PageContentUpdates.update, seq: PageContentUpdates.seq })
       .from(PageContentUpdates)
       .where(and(eq(PageContentUpdates.pageId, pageId), gt(PageContentUpdates.seq, state.seq)))
       .orderBy(desc(PageContentUpdates.seq));
@@ -75,6 +76,19 @@ export const PageContentStateUpdateJob = defineJob('page:content:state-update', 
       .where(and(eq(PageContentStates.pageId, pageId)));
 
     await enqueueJob(tx, 'page:search:index-update', pageId);
+
+    await tx
+      .insert(PageContentContributors)
+      .values(
+        R.uniqueBy(
+          updates.map(({ userId }) => ({ pageId, userId })),
+          (update) => update.userId,
+        ),
+      )
+      .onConflictDoUpdate({
+        target: [PageContentContributors.pageId, PageContentContributors.userId],
+        set: { updatedAt: sql`now()` },
+      });
 
     return update;
   });
