@@ -188,6 +188,7 @@ type Mutation {
   updatePagePosition(input: UpdatePagePositionInput!): Page!
   updatePageView(input: UpdatePageViewInput!): Boolean!
   updatePaymentMethod(input: UpdatePaymentMethodInput!): PaymentMethod!
+  updatePlan(input: UpdatePlanInput!): Team!
   updateSite(input: UpdateSiteInput!): Site!
   updateTeam(input: UpdateTeamInput!): Team!
   updateTeamMemberRole(input: UpdateTeamMemberRoleInput!): TeamMember!
@@ -287,6 +288,11 @@ type Plan {
   id: ID!
   name: String!
   rules: PlanRule!
+}
+
+enum PlanAvailability {
+  PRIVATE
+  PUBLIC
 }
 
 type PlanRule {
@@ -550,6 +556,11 @@ input UpdatePaymentMethodInput {
   cardNumber: String!
   expiry: String!
   passwordTwoDigits: String!
+  teamId: String!
+}
+
+input UpdatePlanInput {
+  planId: String!
   teamId: String!
 }
 

@@ -313,6 +313,7 @@ export const Plans = pgTable('plans', {
     .$defaultFn(() => createDbId('PLN')),
   name: text('name').notNull(),
   rules: jsonb('rules').notNull().$type<Partial<PlanRules>>(),
+  availability: E._PlanAvailability('availability').notNull().default('PRIVATE'),
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),

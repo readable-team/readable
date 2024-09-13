@@ -32,6 +32,12 @@ export const PaymentMethodState = {
   DEACTIVATED: 'DEACTIVATED',
 } as const;
 
+export type PlanAvailability = keyof typeof PlanAvailability;
+export const PlanAvailability = {
+  PUBLIC: 'PUBLIC',
+  PRIVATE: 'PRIVATE',
+} as const;
+
 export type SingleSignOnProvider = keyof typeof SingleSignOnProvider;
 export const SingleSignOnProvider = {
   GOOGLE: 'GOOGLE',
