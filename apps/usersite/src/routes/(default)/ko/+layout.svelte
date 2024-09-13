@@ -2,7 +2,10 @@
   import { css } from '@readable/styled-system/css';
   import { flex, visuallyHidden } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
+  import { setContext } from 'svelte';
+  import { writable } from 'svelte/store';
   import SearchIcon from '~icons/lucide/search';
+  import { browser } from '$app/environment';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
   import { searchBarOpen } from '$lib/stores/ui';
@@ -30,10 +33,17 @@
     }
   `);
 
+  const blurEffectThreshold = 100;
+  const blurEffect = writable(browser ? window.scrollY < blurEffectThreshold : true);
+
+  setContext('blurEffect', blurEffect);
+
   function openSearchBar() {
     searchBarOpen.set(true);
   }
 </script>
+
+<svelte:window on:scroll={() => ($blurEffect = window.scrollY < blurEffectThreshold)} />
 
 <a
   class={visuallyHidden({
@@ -68,7 +78,11 @@
     zIndex: '50',
     alignItems: 'center',
     height: '64px',
-    backgroundColor: 'surface.primary',
+    transition: 'background',
+    transitionDuration: '500ms',
+    backgroundColor: $blurEffect ? 'surface.primary/60' : 'surface.primary',
+    backdropFilter: 'auto',
+    backdropBlur: '8px',
     borderBottomColor: 'border.secondary',
     borderBottomWidth: {
       md: '1px',

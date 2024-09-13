@@ -3,12 +3,14 @@
   import { flex, grid } from '@readable/styled-system/patterns';
   import { Helmet, Icon } from '@readable/ui/components';
   import { TiptapRenderer } from '@readable/ui/tiptap';
+  import { getContext } from 'svelte';
   import MenuIcon from '~icons/lucide/menu';
   import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
   import { mobileNavOpen } from '$lib/stores/ui';
   import Breadcrumb from './Breadcrumb.svelte';
   import Toc from './Toc.svelte';
+  import type { Writable } from 'svelte/store';
 
   $: query = graphql(`
     query PagePage_Query($slug: String!) {
@@ -34,6 +36,8 @@
   `);
 
   let headings: { level: number; text: string; scrollTop: number }[] = [];
+
+  const blurEffect = getContext<Writable<boolean>>('blurEffect');
 </script>
 
 <Helmet
@@ -57,7 +61,11 @@
       gap: '8px',
       paddingX: '20px',
       paddingBottom: '12px',
-      backgroundColor: 'surface.primary',
+      transition: 'background',
+      transitionDuration: '500ms',
+      backgroundColor: $blurEffect ? 'surface.primary/60' : 'surface.primary',
+      backdropFilter: 'auto',
+      backdropBlur: '8px',
       borderBottomWidth: '1px',
       borderBottomColor: 'border.secondary',
     })}
