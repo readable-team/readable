@@ -171,19 +171,18 @@
       align: 'center',
       justify: 'center',
       borderWidth: '1px',
-      borderColor: 'border.primary',
+      borderColor: 'border.secondary',
       borderRadius: '12px',
       padding: '12px',
       backgroundColor: 'surface.primary',
-      width: '340px',
-      boxShadow: 'strong',
+      width: '380px',
+      boxShadow: 'heavy',
     })}
     use:floating
   >
-    <p class={css({ marginBottom: '2px', textStyle: '14b' })}>파일 업로드</p>
     <span class={css({ textStyle: '13r', color: 'text.tertiary' })}>아래 버튼을 클릭해 파일을 선택하세요</span>
-    <Button style={css.raw({ marginTop: '12px', width: 'full' })} size="sm" on:click={handleUpload}>
-      파일 선택하기...
+    <Button style={css.raw({ marginTop: '12px', width: 'full' })} size="sm" variant="secondary" on:click={handleUpload}>
+      파일 선택
     </Button>
   </div>
 {/if}

@@ -8,6 +8,7 @@
   import FileUpIcon from '~icons/lucide/file-up';
   import Trash2Icon from '~icons/lucide/trash-2';
   import { Button, Icon, Menu, MenuItem, RingSpinner, TextInput } from '../../../components';
+  import { toast } from '../../../notification';
   import type { NodeViewProps } from '@readable/ui/tiptap';
 
   type $$Props = NodeViewProps;
@@ -48,6 +49,12 @@
     try {
       const attrs = await extension.options.handleEmbed(url);
       updateAttributes(attrs);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      } else {
+        toast.error('알 수 없는 오류가 발생했습니다.');
+      }
     } finally {
       inflight = false;
     }
@@ -185,23 +192,28 @@
       direction: 'column',
       align: 'center',
       borderWidth: '1px',
-      borderColor: 'border.primary',
+      borderColor: 'border.secondary',
       borderRadius: '12px',
       padding: '12px',
       backgroundColor: 'surface.primary',
-      width: '340px',
-      boxShadow: 'strong',
+      width: '380px',
+      boxShadow: 'heavy',
     })}
     on:submit|preventDefault={handleInsert}
     use:floating
   >
-    <p class={css({ marginBottom: '2px', textStyle: '14b' })}>URL을 입력해주세요</p>
     <span class={css({ marginBottom: '12px', textStyle: '13r', color: 'text.tertiary' })}>
       Youtube, Google Drive, 일반 링크 등
       <br />
       다양한 콘텐츠를 임베드할 수 있어요
     </span>
-    <TextInput style={css.raw({ width: 'full' })} placeholder="https://..." bind:value={url} bind:inputEl />
-    <Button style={css.raw({ marginTop: '27px', width: 'full' })} size="lg" type="submit">확인</Button>
+    <TextInput
+      style={css.raw({ textStyle: '14r', width: 'full', height: '[32px!]' })}
+      placeholder="https://..."
+      size="md"
+      bind:value={url}
+      bind:inputEl
+    />
+    <Button style={css.raw({ marginTop: '8px', width: 'full' })} size="sm" type="submit">확인</Button>
   </form>
 {/if}
