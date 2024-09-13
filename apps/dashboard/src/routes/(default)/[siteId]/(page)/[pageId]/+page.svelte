@@ -338,11 +338,12 @@
             class={flex({
               alignItems: 'center',
               justifyContent: 'center',
+              marginBottom: '2px',
               borderRadius: '4px',
-              paddingX: '4px',
+              paddingX: '6px',
               paddingY: '2px',
               color: 'text.secondary',
-              textStyle: '11b',
+              textStyle: '13sb',
               backgroundColor: 'neutral.30',
               width: 'fit',
             })}
@@ -368,8 +369,14 @@
                     backgroundColor: 'white',
                   })}
                   message={contributor.user.name}
-                  offset={8}
-                  tooltipStyle={css.raw({ maxWidth: '100px', truncate: true })}
+                  offset={6}
+                  tooltipStyle={css.raw({
+                    paddingX: '10px',
+                    paddingY: '4px',
+                    textStyle: '12m',
+                    maxWidth: '100px',
+                    truncate: true,
+                  })}
                 >
                   <Img
                     style={css.raw({
