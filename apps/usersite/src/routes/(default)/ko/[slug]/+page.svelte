@@ -125,10 +125,12 @@
     </div>
 
     <div class={css({ gridArea: 'content', paddingBottom: '120px', maxWidth: '720px' })}>
-      <TiptapRenderer
-        content={$query.publicPage.content.content}
-        on:tocUpdate={(e) => (headings = e.detail.headings)}
-      />
+      {#key $query.publicPage.id}
+        <TiptapRenderer
+          content={$query.publicPage.content.content}
+          on:tocUpdate={(e) => (headings = e.detail.headings)}
+        />
+      {/key}
     </div>
   </div>
 </div>
