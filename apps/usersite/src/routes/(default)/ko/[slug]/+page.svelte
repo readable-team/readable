@@ -131,7 +131,7 @@
         marginTop: { base: '32px', md: '16px' },
         textStyle: '34b',
         lineHeight: '[1.3]',
-        marginBottom: '20px',
+        marginBottom: '32px',
         gridArea: 'title',
         maxWidth: '720px',
       })}

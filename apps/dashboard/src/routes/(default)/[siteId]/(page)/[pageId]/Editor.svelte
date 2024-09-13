@@ -228,7 +228,7 @@
         gap: '8px',
         marginX: 'auto',
         marginTop: '34px',
-        marginBottom: '14px',
+        marginBottom: '32px',
         width: '720px',
         color: 'text.primary',
       })}
