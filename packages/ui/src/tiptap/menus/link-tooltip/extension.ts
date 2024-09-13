@@ -104,14 +104,16 @@ export const LinkTooltip = Extension.create({
                 });
               };
 
+              const unsetLink = () => {
+                this.editor.chain().focus().setTextSelection(selection).unsetLink().run();
+              };
+
               if (!tooltipComponent) {
                 tooltipComponent = new Component({
                   target: dom,
                   props: {
                     hide: hideTooltip,
-                    unsetLink: () => {
-                      this.editor.chain().setTextSelection(selection).unsetLink().run();
-                    },
+                    unsetLink,
                     linkHref,
                     openLinkEditPopover,
                   },
@@ -128,7 +130,7 @@ export const LinkTooltip = Extension.create({
                 document.body.append(dom);
               }
 
-              tooltipComponent.$set({ linkHref, openLinkEditPopover });
+              tooltipComponent.$set({ linkHref, unsetLink, openLinkEditPopover });
 
               cleanup?.();
               cleanup = autoUpdate(element, dom, async () => {
