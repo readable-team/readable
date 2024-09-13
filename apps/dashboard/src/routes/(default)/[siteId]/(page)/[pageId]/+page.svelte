@@ -357,32 +357,35 @@
           <p class={css({ marginBottom: '8px', textStyle: '14sb', color: 'text.secondary' })}>편집자</p>
 
           <div class={flex({ align: 'center', wrap: 'wrap', paddingLeft: '4px' })}>
-            {#each $query.page.contentContributor as contributor (contributor.id)}
-              <Tooltip
-                style={css.raw({
-                  borderRadius: 'full',
-                  marginLeft: '-4px',
-                  marginBottom: '4px',
-                  size: '28px',
-                })}
-                message={contributor.user.name}
-                offset={8}
-                tooltipStyle={css.raw({ maxWidth: '100px', truncate: true })}
-              >
-                <Img
+            {#each $query.page.contentContributor as contributor, index (contributor.id)}
+              <div style:z-index={$query.page.contentContributor.length - index}>
+                <Tooltip
                   style={css.raw({
-                    flex: 'none',
-                    ringWidth: '1px',
-                    ringColor: 'border.image',
                     borderRadius: 'full',
+                    marginLeft: '-4px',
+                    marginBottom: '4px',
                     size: '28px',
-                    _hover: { ringWidth: '2px', ringColor: { base: 'gray.800', _dark: 'darkgray.500' } },
+                    backgroundColor: 'white',
                   })}
-                  $image={contributor.user.avatar}
-                  alt={contributor.user.name}
-                  size={32}
-                />
-              </Tooltip>
+                  message={contributor.user.name}
+                  offset={8}
+                  tooltipStyle={css.raw({ maxWidth: '100px', truncate: true })}
+                >
+                  <Img
+                    style={css.raw({
+                      flex: 'none',
+                      ringWidth: '1px',
+                      ringColor: 'border.image',
+                      borderRadius: 'full',
+                      size: '28px',
+                      _hover: { ringWidth: '2px', ringColor: { base: 'gray.800', _dark: 'darkgray.500' } },
+                    })}
+                    $image={contributor.user.avatar}
+                    alt={contributor.user.name}
+                    size={32}
+                  />
+                </Tooltip>
+              </div>
             {/each}
           </div>
         </div>
