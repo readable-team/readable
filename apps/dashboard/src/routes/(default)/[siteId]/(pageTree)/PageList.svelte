@@ -487,7 +487,7 @@
           width: 'full',
           height: '3px',
           borderRadius: '6px',
-          backgroundColor: 'neutral.30',
+          backgroundColor: 'accent.60/40',
           display: 'none',
           pointerEvents: 'none',
         }),
