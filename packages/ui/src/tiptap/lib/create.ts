@@ -15,12 +15,16 @@ export const createNodeView = <Options = any, Storage = any>(
     ...options,
 
     parseHTML() {
-      return [{ tag: 'node-view' }];
+      return [{ tag: `node-view[data-node-view-type=${options.name}]` }];
     },
 
     renderHTML({ node, HTMLAttributes }) {
+      const attributes = mergeAttributes(HTMLAttributes, {
+        'data-node-view-type': options.name,
+      });
+
       if (browser) {
-        return node.isLeaf ? ['node-view', HTMLAttributes] : ['node-view', HTMLAttributes, 0];
+        return node.isLeaf ? ['node-view', attributes] : ['node-view', attributes, 0];
       } else {
         // @ts-expect-error svelte internal
         const { html } = component.render({
@@ -33,14 +37,11 @@ export const createNodeView = <Options = any, Storage = any>(
         // html attribute에 들어간 값을 innerHTML에 그대로 렌더링함. 아래 코드는 해당 동작에 의존함 (문서화되지 않은 기능 / 편법에 가까움)
         // https://github.com/holtwick/zeed-dom/blob/6a2d6694ed879da9444d9b7c1826cef4b23c8a17/src/html.ts#L139-L140
         if (node.isLeaf) {
-          return [
-            'node-view',
-            mergeAttributes(HTMLAttributes, { html, style: 'display: block; white-space: normal;' }),
-          ];
+          return ['node-view', mergeAttributes(attributes, { html, style: 'display: block; white-space: normal;' })];
         } else {
           return [
             'node-view',
-            mergeAttributes(HTMLAttributes, { html, style: 'display: block; white-space: normal;' }),
+            mergeAttributes(attributes, { html, style: 'display: block; white-space: normal;' }),
             ['node-view-content-editable', { style: 'display: block; white-space: normal;' }, 0],
           ];
         }
