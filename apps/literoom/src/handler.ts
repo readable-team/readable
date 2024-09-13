@@ -19,7 +19,7 @@ export const handler = async (event: Event) => {
   const url = new URL(event.userRequest.url);
 
   const size = Number(url.searchParams.get('s')) || null;
-  const format = url.searchParams.get('f') || 'webp';
+  let format = url.searchParams.get('f') || 'auto';
 
   if (size !== null && size <= 0) {
     await S3.send(
@@ -53,6 +53,24 @@ export const handler = async (event: Event) => {
 
   const input = await resp.arrayBuffer();
   let image = sharp(input, { failOn: 'none', animated: true });
+  const metadata = await image.metadata();
+
+  if (metadata.format === 'svg' && format === 'auto') {
+    await S3.send(
+      new WriteGetObjectResponseCommand({
+        RequestRoute: event.getObjectContext.outputRoute,
+        RequestToken: event.getObjectContext.outputToken,
+        Body: Buffer.from(input),
+        ContentType: `image/svg+xml`,
+        CacheControl: 'public, max-age=31536000, immutable',
+        Metadata: {
+          Bypass: 'true',
+        },
+      }),
+    );
+
+    return new Response(null, { status: 200 });
+  }
 
   if (size) {
     image = image.resize({
@@ -63,11 +81,14 @@ export const handler = async (event: Event) => {
     });
   }
 
-  // eslint-disable-next-line unicorn/prefer-ternary
-  if (format === 'png') {
-    image = image.png();
-  } else {
+  // eslint-disable-next-line unicorn/prefer-switch
+  if (format === 'auto') {
     image = image.webp();
+    format = 'webp';
+  } else if (format === 'webp') {
+    image = image.webp();
+  } else if (format === 'png') {
+    image = image.png();
   }
 
   const output = await image.toBuffer();

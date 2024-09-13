@@ -152,8 +152,20 @@ builder.mutationFields((t) => ({
         }
       }
 
-      const res = await img.toBuffer({ resolveWithObject: true });
-      const mimetype = `image/${res.info.format}`;
+      let data;
+      let info;
+
+      if (input.modification) {
+        const res = await img.toBuffer({ resolveWithObject: true });
+        data = res.data;
+        info = res.info;
+      } else {
+        const res = await img.metadata();
+        data = buffer;
+        info = res;
+      }
+
+      const mimetype = info.format === 'svg' ? 'image/svg+xml' : `image/${info.format}`;
 
       const raw = await img
         .clone()
@@ -170,10 +182,10 @@ builder.mutationFields((t) => ({
           .values({
             userId: ctx.session.userId,
             name: decodeURIComponent(object.Metadata!.name),
-            size: res.info.size,
+            size: data.length,
             format: mimetype,
-            width: res.info.width,
-            height: res.info.height,
+            width: info.width!,
+            height: info.height!,
             path: input.path,
             placeholder: base64.stringify(placeholder),
           })
@@ -185,7 +197,7 @@ builder.mutationFields((t) => ({
           new PutObjectCommand({
             Bucket: 'readable-usercontents',
             Key: `images/${input.path}`,
-            Body: res.data,
+            Body: data,
             ContentType: mimetype,
             Metadata: {
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
