@@ -1,6 +1,11 @@
 .ProseMirror {
   line-height: 1.6;
 
+  & p {
+    /* gray.1000 */
+    caret-color: #09090b;
+  }
+
   & > * + * {
     margin-top: 4px;
   }
