@@ -10,6 +10,7 @@ import {
   PageContentChunks,
   PageContentContributors,
   PageContents,
+  PageContentSnapshots,
   PageContentStates,
   PageContentUpdates,
   Pages,
@@ -51,7 +52,27 @@ export const PageContentStateUpdateJob = defineJob('page:content:state-update', 
     const doc = new Y.Doc();
 
     Y.applyUpdateV2(doc, state.update);
+    const prevSnapshot = Y.snapshot(doc);
     Y.applyUpdateV2(doc, update);
+    const snapshot = Y.snapshot(doc);
+
+    if (!Y.equalSnapshots(prevSnapshot, snapshot)) {
+      const uniqueContributorUserIds = R.unique(updates.map((update) => update.userId));
+
+      await Promise.all([
+        tx.insert(PageContentSnapshots).values({
+          pageId,
+          snapshot: Y.encodeSnapshotV2(snapshot),
+        }),
+        tx
+          .insert(PageContentContributors)
+          .values(uniqueContributorUserIds.map((userId) => ({ pageId, userId })))
+          .onConflictDoUpdate({
+            target: [PageContentContributors.pageId, PageContentContributors.userId],
+            set: { updatedAt: sql`now()` },
+          }),
+      ]);
+    }
 
     const title = doc.getText('title').toString() || null;
     const subtitle = doc.getText('subtitle').toString() || null;
@@ -76,19 +97,6 @@ export const PageContentStateUpdateJob = defineJob('page:content:state-update', 
       .where(and(eq(PageContentStates.pageId, pageId)));
 
     await enqueueJob(tx, 'page:search:index-update', pageId);
-
-    await tx
-      .insert(PageContentContributors)
-      .values(
-        R.uniqueBy(
-          updates.map(({ userId }) => ({ pageId, userId })),
-          (update) => update.userId,
-        ),
-      )
-      .onConflictDoUpdate({
-        target: [PageContentContributors.pageId, PageContentContributors.userId],
-        set: { updatedAt: sql`now()` },
-      });
 
     return update;
   });

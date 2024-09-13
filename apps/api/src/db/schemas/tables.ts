@@ -203,6 +203,25 @@ export const PageContentContributors = pgTable(
   }),
 );
 
+export const PageContentSnapshots = pgTable(
+  'page_content_snapshots',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId('PCSN')),
+    pageId: text('page_id')
+      .notNull()
+      .references(() => Pages.id),
+    snapshot: bytea('snapshot').notNull(),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    pageIdCreatedAtIdx: index().on(t.pageId, t.createdAt),
+  }),
+);
+
 export const PageContentStates = pgTable('page_content_states', {
   id: text('id')
     .primaryKey()
