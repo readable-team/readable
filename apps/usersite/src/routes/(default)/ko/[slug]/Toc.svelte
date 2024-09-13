@@ -8,7 +8,7 @@
 
   export let headings: { level: number; text: string; scrollTop: number }[] = [];
 
-  let scrollMarginTop = 102; /* 헤더 높이 + 37px */
+  let scrollMarginTop = 101; /* 헤더 높이 + 37px */
   let boundary = scrollMarginTop;
   let boundaryLock = false;
 
@@ -118,7 +118,7 @@
 <div
   class={flex({
     position: 'sticky',
-    top: '65px',
+    top: '64px',
     flexDirection: 'column',
     gap: '8px',
     width: '220px',

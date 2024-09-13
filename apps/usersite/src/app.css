@@ -3,7 +3,7 @@
 @import url(@readable/ui/styles.css) layer(ui);
 
 html {
-  scroll-margin-top: 102px; /* 헤더 높이 + 37px */
+  scroll-margin-top: 101px; /* 헤더 높이 + 37px */
 }
 
 /* for accessibility */

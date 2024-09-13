@@ -78,11 +78,6 @@
     zIndex: '50',
     alignItems: 'center',
     height: '64px',
-    transition: 'background',
-    transitionDuration: '500ms',
-    backgroundColor: $blurEffect ? 'surface.primary/60' : 'surface.primary',
-    backdropFilter: 'auto',
-    backdropBlur: '8px',
     borderBottomColor: 'border.secondary',
     borderBottomWidth: {
       md: '1px',
@@ -90,6 +85,19 @@
     },
   })}
 >
+  <div
+    class={css({
+      hideBelow: 'md',
+      position: 'absolute',
+      inset: '0',
+      transition: 'background',
+      transitionDuration: '500ms',
+      backgroundColor: $blurEffect ? 'surface.primary/60' : 'surface.primary',
+      backdropFilter: 'auto',
+      backdropBlur: '8px',
+    })}
+    aria-hidden="true"
+  />
   <div
     class={flex({
       position: 'relative',
@@ -179,9 +187,9 @@
       class={css({
         hideBelow: 'md',
         position: 'sticky',
-        top: '65px',
+        top: '64px',
         width: '260px',
-        height: '[calc(100vh - 65px)]',
+        height: '[calc(100vh - 64px)]',
         flexShrink: 0,
         paddingTop: '32px',
         paddingX: '20px',

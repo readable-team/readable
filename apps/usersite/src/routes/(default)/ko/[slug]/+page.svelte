@@ -53,23 +53,34 @@
 <div class={flex({ flex: '1', direction: 'column' })}>
   <div
     class={flex({
+      hideFrom: 'md',
       position: 'sticky',
       top: '64px',
       zIndex: '1',
-      hideFrom: 'md',
       alignItems: 'center',
       gap: '8px',
       paddingX: '20px',
       paddingBottom: '12px',
-      transition: 'background',
-      transitionDuration: '500ms',
-      backgroundColor: $blurEffect ? 'surface.primary/60' : 'surface.primary',
-      backdropFilter: 'auto',
-      backdropBlur: '8px',
       borderBottomWidth: '1px',
       borderBottomColor: 'border.secondary',
     })}
   >
+    <div
+      class={css({
+        position: 'absolute',
+        top: '-64px',
+        left: '0',
+        right: '0',
+        bottom: '0',
+        zIndex: '-1',
+        transition: 'background',
+        transitionDuration: '500ms',
+        backgroundColor: $blurEffect ? 'surface.primary/60' : 'surface.primary',
+        backdropFilter: 'auto',
+        backdropBlur: '8px',
+      })}
+      aria-hidden="true"
+    />
     <button type="button" on:click={() => mobileNavOpen.set(true)}>
       <Icon style={css.raw({ color: 'text.secondary' })} icon={MenuIcon} size={20} />
     </button>
