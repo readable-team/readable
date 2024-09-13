@@ -319,7 +319,7 @@
             top: '0',
             left: '0',
             size: 'full',
-            borderRadius: '10px',
+            borderRadius: '8px',
             bgGradient: 'to-r',
             gradientFrom: 'white/20',
             gradientTo: 'white/0',
