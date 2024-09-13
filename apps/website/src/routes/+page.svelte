@@ -2,13 +2,11 @@
   import { css } from '@readable/styled-system/css';
   import { center, flex, grid, gridItem } from '@readable/styled-system/patterns';
   import { Helmet, Icon } from '@readable/ui/components';
-  import { createClient } from '@supabase/supabase-js';
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import CheckIcon from '~icons/lucide/check';
   import XIcon from '~icons/lucide/x';
   import IconGithub from '~icons/simple-icons/github';
-  import { page } from '$app/stores';
   import BrowserHero from '$assets/hero/browser.svg?component';
   import TableCheckIcon from '$assets/icons/table-check.svg?component';
   import FullLogo from '$assets/logos/full.svg?component';
@@ -104,29 +102,29 @@
     },
   ];
 
-  const supabase = createClient(env.PUBLIC_SUPABASE_URL, env.PUBLIC_SUPABASE_KEY);
+  // const supabase = createClient(env.PUBLIC_SUPABASE_URL, env.PUBLIC_SUPABASE_KEY);
 
-  const handleSubmit = async (event: SubmitEvent) => {
-    const formData = new FormData(event.target as HTMLFormElement);
+  // const handleSubmit = async (event: SubmitEvent) => {
+  //   const formData = new FormData(event.target as HTMLFormElement);
 
-    const email = formData.get('email') as string;
+  //   const email = formData.get('email') as string;
 
-    const { error } = await supabase.from('waitlist').insert([
-      {
-        company_name: '',
-        name: '',
-        phone_number: '',
-        email,
-        referrer: $page.url.searchParams.get('utm_source'),
-      },
-    ]);
+  //   const { error } = await supabase.from('waitlist').insert([
+  //     {
+  //       company_name: '',
+  //       name: '',
+  //       phone_number: '',
+  //       email,
+  //       referrer: $page.url.searchParams.get('utm_source'),
+  //     },
+  //   ]);
 
-    if (error) {
-      console.error(error);
-    } else {
-      alert('신청이 완료되었습니다.\n출시 소식을 기다려주세요!');
-    }
-  };
+  //   if (error) {
+  //     console.error(error);
+  //   } else {
+  //     alert('신청이 완료되었습니다.\n출시 소식을 기다려주세요!');
+  //   }
+  // };
 
   onMount(() => {
     const interval = setInterval(() => {
@@ -199,9 +197,9 @@
           color: 'white',
           backgroundColor: 'neutral.100',
         })}
-        href="#contact"
+        href={env.PUBLIC_DASHBOARD_URL}
       >
-        지금 신청하기
+        지금 써보러 가기
       </a>
     </div>
 
@@ -783,70 +781,27 @@
     <div class={css({ height: '1/2', backgroundGradient: 'to-t', gradientFrom: 'transparent', gradientTo: 'white' })} />
   </div>
 
-  <div class={css({ fontSize: '[36px]', fontWeight: '[800]', lineHeight: '[1.6]', zIndex: '0' })}>지금 신청하기</div>
-  <div
-    class={css({
-      marginTop: '12px',
-      fontSize: '[16px]',
-      fontWeight: 'bold',
-      color: 'neutral.70',
-      lineHeight: '[1.6]',
-      zIndex: '0',
-      textAlign: 'center',
-    })}
-  >
-    출시 알림을 받을 이메일을 입력해 주세요.
-    <br class={css({ hideFrom: 'md' })} />
-    가장 빠르게 알려드릴게요!
+  <div class={css({ fontSize: '[36px]', fontWeight: '[800]', lineHeight: '[1.6]', textAlign: 'center', zIndex: '0' })}>
+    빠른 팀을 위한 가이드 문서 도구, 리더블
   </div>
 
-  <form
+  <a
     class={css({
-      marginTop: '72px',
-      width: 'full',
-      maxWidth: '512px',
-      zIndex: '0',
+      display: 'inline-block',
+      marginTop: '24px',
+      borderRadius: 'full',
+      paddingX: '46px',
+      paddingY: '16px',
+      fontSize: '18px',
+      fontWeight: '[900]',
+      color: 'white',
+      backgroundColor: 'neutral.100',
+      zIndex: '1',
     })}
-    on:submit|preventDefault={handleSubmit}
+    href={env.PUBLIC_DASHBOARD_URL}
   >
-    <div class={flex({ gap: '12px' })}>
-      <input
-        id="email"
-        name="email"
-        class={css({
-          flexGrow: '1',
-          borderWidth: '1px',
-          borderColor: 'neutral.30',
-          borderRadius: '8px',
-          paddingX: '12px',
-          paddingY: '11px',
-          width: 'full',
-          fontSize: '16px',
-          fontWeight: '[500]',
-          backgroundColor: 'neutral.0',
-        })}
-        placeholder="you@example.com"
-        required
-        type="email"
-      />
-
-      <button
-        class={css({
-          flex: 'none',
-          borderRadius: '8px',
-          fontSize: '16px',
-          fontWeight: 'bold',
-          color: 'neutral.0',
-          backgroundColor: 'neutral.100',
-          paddingX: '30px',
-          paddingY: '12px',
-        })}
-        type="submit"
-      >
-        신청
-      </button>
-    </div>
-  </form>
+    지금 써보러 가기
+  </a>
 </div>
 
 <footer
