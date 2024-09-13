@@ -120,11 +120,14 @@ export const Collaboration = Extension.create<CollaborationOptions>({
           position: 'absolute',
           top: '0',
           left: '-1px',
-          paddingX: '4px',
-          paddingY: '2px',
+          borderTopLeftRadius: '4px',
+          borderTopRightRadius: '4px',
+          borderBottomRightRadius: '4px',
+          paddingX: '6px',
+          paddingY: '4px',
           width: 'max',
           fontFamily: 'ui',
-          fontSize: '13px',
+          textStyle: '13m',
           lineHeight: 'none',
           textIndent: '0',
           color: 'gray.100',
@@ -140,7 +143,7 @@ export const Collaboration = Extension.create<CollaborationOptions>({
 
     const selectionBuilder = (user: User) => {
       return {
-        style: `--user-color: color-mix(in srgb, ${user.color} 50%, transparent);`,
+        style: `--user-color: color-mix(in srgb, ${user.color} 20%, transparent);`,
         class: css({ backgroundColor: '[var(--user-color)]' }),
       };
     };
