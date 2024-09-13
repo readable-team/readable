@@ -61,7 +61,7 @@
   {#if node.attrs.id}
     <div class={css({ position: 'relative', _hover: { '& > button': { display: 'flex' } } })}>
       <Img
-        style={css.raw({ width: 'screen' })}
+        style={css.raw({ width: 'screen', borderRadius: '4px' })}
         alt=""
         placeholder={node.attrs.placeholder}
         progressive

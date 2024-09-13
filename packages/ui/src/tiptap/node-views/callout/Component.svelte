@@ -51,6 +51,7 @@
       paddingLeft: '14px',
       paddingRight: '16px',
       paddingY: '16px',
+      borderRightRadius: '4px',
     })}
   >
     <button
