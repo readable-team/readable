@@ -177,6 +177,7 @@
       backgroundColor: 'surface.primary',
       width: '380px',
       boxShadow: 'heavy',
+      zIndex: '1',
     })}
     use:floating
   >

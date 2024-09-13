@@ -198,6 +198,7 @@
       backgroundColor: 'surface.primary',
       width: '380px',
       boxShadow: 'heavy',
+      zIndex: '1',
     })}
     on:submit|preventDefault={handleInsert}
     use:floating
