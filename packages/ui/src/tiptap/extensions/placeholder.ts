@@ -81,7 +81,7 @@ const createDecoration = (from: number, to: number, placeholder: string) => {
         content: 'attr(data-placeholder)',
         float: '[left]',
         height: '0',
-        color: 'text.tertiary',
+        color: 'neutral.50',
         pointerEvents: 'none',
       },
     }),

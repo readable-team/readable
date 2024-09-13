@@ -204,41 +204,38 @@
         </button>
         <label
           class={flex({
-            'position': 'relative',
-            'width': 'full',
-            'borderRadius': '14px',
-            'smOnly': {
+            position: 'relative',
+            width: 'full',
+            borderRadius: '14px',
+            smOnly: {
               borderRadius: '10px',
             },
-            'textStyle': '16m',
-            'alignItems': 'center',
-            'borderWidth': '1px',
-            'borderColor': { base: 'gray.300', _dark: 'darkgray.700' },
-            'paddingX': '18px',
-            'color': { base: 'gray.500', _dark: 'darkgray.400' },
-            'backgroundColor': { base: 'white', _dark: 'darkgray.1000' },
-            'transition': 'common',
-            '& input::placeholder': {
-              color: { base: 'gray.600', _dark: 'darkgray.400' },
-            },
-            '_hover': {
+            textStyle: '16m',
+            alignItems: 'center',
+            borderWidth: '1px',
+            borderColor: { base: 'gray.300', _dark: 'darkgray.700' },
+            paddingX: '18px',
+            color: { base: 'gray.500', _dark: 'darkgray.400' },
+            backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
+            transition: 'common',
+            _hover: {
               borderColor: 'var(--usersite-theme-color)/46',
             },
-            '_hasFocusedInput': {
+            _hasFocusedInput: {
               borderColor: 'var(--usersite-theme-color)',
               outlineWidth: '1px',
               outlineColor: 'var(--usersite-theme-color)',
             },
-            '_hasFilledInput': {
+            _hasFilledInput: {
               color: { base: 'gray.1000', _dark: 'darkgray.100' },
               borderColor: { base: 'gray.300', _dark: 'darkgray.700' },
             },
-            '_hasDisabledInput': {
+            _hasDisabledInput: {
               color: { base: 'gray.500', _dark: 'darkgray.600' },
               backgroundColor: { base: 'gray.200', _dark: 'darkgray.900' },
               borderColor: { base: 'gray.200', _dark: 'darkgray.700' },
             },
-            '_hasInvalidInput': {
+            _hasInvalidInput: {
               borderColor: { base: 'red.600', _dark: 'red.500' },
               _hasFocusedInput: {
                 borderColor: { base: 'red.600', _dark: 'red.500' },
