@@ -109,6 +109,9 @@ export const LinkTooltip = Extension.create({
                   target: dom,
                   props: {
                     hide: hideTooltip,
+                    unsetLink: () => {
+                      this.editor.chain().setTextSelection(selection).unsetLink().run();
+                    },
                     linkHref,
                     openLinkEditPopover,
                   },

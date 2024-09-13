@@ -2,10 +2,11 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
-  import { toast } from '@readable/ui/notification';
-  import CopyIcon from '~icons/lucide/copy';
+  // import { toast } from '@readable/ui/notification';
   import PencilIcon from '~icons/lucide/pencil';
+  import Trash2Icon from '~icons/lucide/trash-2';
 
+  export let unsetLink: () => void;
   export let hide: () => void;
   export let linkHref: string;
   export let openLinkEditPopover: () => void;
@@ -30,13 +31,18 @@
     },
   });
 
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(linkHref);
-      toast.success('링크가 복사되었습니다');
-    } catch {
-      toast.error('링크 복사에 실패했습니다'); // FIXME: 임시 문구
-    }
+  // const copyLink = async () => {
+  //   try {
+  //     await navigator.clipboard.writeText(linkHref);
+  //     toast.success('링크가 복사되었습니다');
+  //   } catch {
+  //     toast.error('링크 복사에 실패했습니다'); // FIXME: 임시 문구
+  //   }
+  //   hide();
+  // };
+
+  const unlink = () => {
+    unsetLink();
     hide();
   };
 </script>
@@ -74,8 +80,8 @@
         gap: '4px',
       })}
     >
-      <button class={menuButtonStyle} type="button" on:click={() => copyLink()}>
-        <Icon icon={CopyIcon} size={12} />
+      <button class={menuButtonStyle} type="button" on:click={() => unlink()}>
+        <Icon icon={Trash2Icon} size={12} />
       </button>
       <button
         class={menuButtonStyle}
