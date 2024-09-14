@@ -25,8 +25,8 @@ const site = new readable.Site('api', {
   },
 
   resources: {
-    cpu: '200m',
-    memory: '500Mi',
+    cpu: '1',
+    memory: '2Gi',
   },
 
   autoscale: {
