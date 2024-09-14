@@ -43,7 +43,7 @@
         top: '0',
         left: '0',
         width: '[90%]',
-        height: 'screen',
+        bottom: '0',
         backgroundColor: 'surface.secondary',
         zIndex: '[200]',
         paddingBottom: '0',
