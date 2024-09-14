@@ -212,6 +212,10 @@
 
     return () => {
       unsubscribe();
+      YAwareness.removeAwarenessStates(awareness, [doc.clientID], 'local');
+
+      awareness.destroy();
+      doc.destroy();
     };
   });
 </script>
