@@ -292,6 +292,7 @@
                 toast.success('발행이 완료되었습니다');
                 mixpanel.track('page:publish', {
                   state: PageState.DRAFT,
+                  url: pageUrl($query.page),
                 });
               },
             });
@@ -300,6 +301,7 @@
             toast.success('발행이 완료되었습니다');
             mixpanel.track('page:publish', {
               state: PageState.PUBLISHED,
+              url: pageUrl($query.page),
             });
           }
         }}
