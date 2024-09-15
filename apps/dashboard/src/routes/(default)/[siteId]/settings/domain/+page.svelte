@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Helmet, HorizontalDivider, Icon, Menu, MenuItem, Modal, TextInput } from '@readable/ui/components';
+  import { Button, Helmet, HorizontalDivider, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
@@ -15,11 +15,11 @@
   import SearchCheckIcon from '~icons/lucide/search-check';
   import Trash2Icon from '~icons/lucide/trash-2';
   import TriangleAlertIcon from '~icons/lucide/triangle-alert';
-  import XIcon from '~icons/lucide/x';
   import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
   import { invokeAlert } from '$lib/components/invoke-alert';
+  import TitledModal from '$lib/components/TitledModal.svelte';
 
   let open = false;
 
@@ -259,19 +259,11 @@
   {/if}
 </div>
 
-<Modal style={css.raw({ width: '600px' })} close={() => (open = false)} bind:open>
-  <div
-    class={flex({
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingX: '32px',
-      paddingY: '20px',
-      borderBottomWidth: '1px',
-      borderColor: 'border.secondary',
-    })}
-  >
+<TitledModal bind:open>
+  <svelte:fragment slot="title">
     <div class={flex({ alignItems: 'center', gap: '8px' })}>
       {#if $query.site.logo}
+        <!-- FIXME: 사이트 로고인데 동그라미? -->
         <Img
           style={css.raw({
             borderWidth: '1px',
@@ -284,14 +276,11 @@
           size={24}
         />
       {/if}
-      <h2 class={css({ textStyle: '16sb' })}>DNS 레코드를 추가해주세요</h2>
+      DNS 레코드를 추가해주세요
     </div>
-    <button type="button" on:click={() => (open = false)}>
-      <Icon icon={XIcon} size={20} />
-    </button>
-  </div>
+  </svelte:fragment>
 
-  <div class={flex({ direction: 'column', gap: '20px', paddingX: '32px', paddingY: '24px' })}>
+  <div class={flex({ direction: 'column', gap: '20px' })}>
     <div class={css({ textStyle: '13r', color: 'text.secondary' })}>
       <p>사용중인 도메인 관리 페이지에서 아래 DNS 레코드를 추가해 주세요.</p>
       <p>- Cloudflare DNS를 이용 중인 경우 프록시 상태를 DNS 전용으로 설정해 주세요.</p>
@@ -380,4 +369,4 @@
 
     <Button loading={verifying} size="lg" type="button" on:click={verifyStream}>DNS 레코드 확인</Button>
   </div>
-</Modal>
+</TitledModal>

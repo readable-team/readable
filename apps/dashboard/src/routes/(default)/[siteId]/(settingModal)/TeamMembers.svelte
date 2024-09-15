@@ -1,16 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
-  import {
-    Button,
-    FormField,
-    HorizontalDivider,
-    Icon,
-    Menu,
-    MenuItem,
-    Modal,
-    TextInput,
-  } from '@readable/ui/components';
+  import { Button, FormField, HorizontalDivider, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import { GraphQLError } from 'graphql';
@@ -23,11 +14,11 @@
   import MailOpenIcon from '~icons/lucide/mail-open';
   import UserRoundMinusIcon from '~icons/lucide/user-round-minus';
   import UserXIcon from '~icons/lucide/user-x';
-  import XIcon from '~icons/lucide/x';
   import { goto, invalidateAll } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
   import { invokeAlert } from '$lib/components/invoke-alert';
+  import TitledModal from '$lib/components/TitledModal.svelte';
   import type { TeamMembers_team } from '$graphql';
 
   let isInviteModalOpen = false;
@@ -473,18 +464,9 @@
   </ul>
 </div>
 
-<Modal style={css.raw({ width: '600px' })} close={() => (isInviteModalOpen = false)} bind:open={isInviteModalOpen}>
-  <div
-    class={flex({
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingX: '32px',
-      paddingY: '20px',
-      borderBottomWidth: '1px',
-      borderColor: 'border.secondary',
-    })}
-  >
-    <div class={flex({ alignItems: 'center', gap: '8px' })}>
+<TitledModal bind:open={isInviteModalOpen}>
+  <svelte:fragment slot="title">
+    <div class={flex({ alignItems: 'center', gap: '10px' })}>
       <Img
         style={css.raw({
           borderWidth: '1px',
@@ -496,14 +478,11 @@
         alt={`${$team.name}의 아바타`}
         size={24}
       />
-      <h2 class={css({ textStyle: '16b' })}>팀에 초대하기</h2>
+      팀에 초대하기
     </div>
-    <button type="button" on:click={() => (isInviteModalOpen = false)}>
-      <Icon icon={XIcon} size={20} />
-    </button>
-  </div>
+  </svelte:fragment>
 
-  <form class={flex({ flexDirection: 'column', gap: '16px', paddingX: '32px', paddingY: '24px' })} use:form>
+  <form class={flex({ flexDirection: 'column', gap: '16px' })} use:form>
     <input name="teamId" type="hidden" value={$team.id} />
 
     <FormField name="email" label="이메일">
@@ -512,4 +491,4 @@
 
     <Button style={css.raw({ marginLeft: 'auto' })} size="md" type="submit">초대하기</Button>
   </form>
-</Modal>
+</TitledModal>
