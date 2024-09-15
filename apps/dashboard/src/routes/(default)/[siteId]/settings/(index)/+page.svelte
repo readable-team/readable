@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
-  import { Alert, Button, FormField, FormValidationMessage, Helmet, Icon, TextInput } from '@readable/ui/components';
+  import { Button, FormField, FormValidationMessage, Helmet, Icon, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
@@ -9,12 +9,14 @@
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import InfoIcon from '~icons/lucide/info';
+  import TriangleAlertIcon from '~icons/lucide/triangle-alert';
   import UploadIcon from '~icons/lucide/upload';
   import { goto } from '$app/navigation';
   import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
   import { invokeAlert } from '$lib/components/invoke-alert';
+  import TitledModal from '$lib/components/TitledModal.svelte';
   import { lastVisitedPage } from '$lib/stores';
   import { uploadBlobAsImage } from '$lib/utils/blob.svelte';
   import type { Img_image } from '$graphql';
@@ -121,6 +123,18 @@
     },
   });
 
+  const { form: deleteForm, data: deleteFormData } = createMutationForm({
+    schema: z.object({
+      siteId: z.string(),
+      siteName: z.string(),
+    }),
+    mutation: async ({ siteId }) => {
+      await deleteSite({ siteId });
+      $lastVisitedPage = null;
+      await goto('/');
+    },
+  });
+
   $: setInitialValues({
     siteId: $query.site.id,
     name: $query.site.name,
@@ -145,7 +159,6 @@
 
   <form
     class={css({
-      marginBottom: '8px',
       borderWidth: '1px',
       borderColor: 'border.primary',
       borderRadius: '10px',
@@ -240,6 +253,7 @@
 
   <form
     class={css({
+      marginTop: '8px',
       borderWidth: '1px',
       borderColor: 'border.primary',
       borderRadius: '10px',
@@ -309,19 +323,106 @@
 
     <Button style={css.raw({ marginTop: '8px', marginLeft: 'auto' })} size="lg" type="submit">변경</Button>
   </form>
+
+  <div
+    class={css({
+      marginTop: '8px',
+      borderWidth: '1px',
+      borderColor: 'border.primary',
+      borderRadius: '10px',
+      padding: '32px',
+      width: 'full',
+      maxWidth: '720px',
+      backgroundColor: 'surface.primary',
+    })}
+  >
+    <label
+      class={css({
+        display: 'block',
+        marginBottom: '8px',
+        textStyle: '14sb',
+        color: 'text.danger',
+      })}
+      for="slug"
+    >
+      사이트 삭제
+    </label>
+
+    <p
+      class={css({
+        color: 'text.tertiary',
+        marginTop: '6px',
+        textStyle: '13r',
+      })}
+    >
+      사이트 삭제시 모든 데이터가 영구적으로 삭제되며, 삭제된 데이터는 복구할 수 없습니다.
+    </p>
+
+    <Button
+      style={css.raw({ marginTop: '8px', marginLeft: 'auto' })}
+      size="lg"
+      type="submit"
+      variant="danger-fill"
+      on:click={() => {
+        deleteSiteOpen = true;
+      }}
+    >
+      삭제
+    </Button>
+  </div>
 </div>
 
-<Alert
-  onAction={async () => {
-    await deleteSite({ siteId: $query.site.id });
-    $lastVisitedPage = null;
-    await goto('/');
-  }}
-  bind:open={deleteSiteOpen}
->
-  <svelte:fragment slot="title">사이트를 삭제할까요?</svelte:fragment>
-  <svelte:fragment slot="content">사이트를 삭제하면 복구할 수 없어요</svelte:fragment>
+<TitledModal bind:open={deleteSiteOpen}>
+  <svelte:fragment slot="title">사이트 삭제</svelte:fragment>
 
-  <svelte:fragment slot="action">사이트 삭제</svelte:fragment>
-  <svelte:fragment slot="cancel">삭제하지 않을래요</svelte:fragment>
-</Alert>
+  <p
+    class={css({
+      color: 'text.tertiary',
+      textStyle: '13r',
+    })}
+  >
+    사이트 삭제시 모든 데이터가 영구적으로 삭제되며, 삭제된 데이터는 복구할 수 없습니다. <br />
+    삭제를 진행하시려면 아래 사이트 이름을 입력해 주세요.
+  </p>
+
+  <div
+    class={flex({
+      'align': 'center',
+      'gap': '6px',
+      'marginTop': '10px',
+      'borderRadius': '8px',
+      'paddingX': '10px',
+      'paddingY': '8px',
+      'textStyle': '13m',
+      'color': 'text.danger',
+      'backgroundColor': 'danger.10',
+      '& b': {
+        textStyle: '13b',
+      },
+    })}
+  >
+    <Icon icon={TriangleAlertIcon} />
+    <p>
+      삭제를 진행하시려면 아래에 다음 문구를 입력해주세요:
+      <b>{$query.site.name}</b>
+    </p>
+  </div>
+
+  <form use:deleteForm>
+    <input name="siteId" type="hidden" value={$query.site.id} />
+
+    <FormField name="siteName" style={css.raw({ marginTop: '20px' })} label="사이트 이름">
+      <TextInput name="siteName" placeholder={$query.site.name} />
+    </FormField>
+
+    <Button
+      style={css.raw({ width: 'full', marginTop: '20px' })}
+      disabled={$deleteFormData.siteName !== $query.site.name}
+      size="lg"
+      type="submit"
+      variant="danger-fill"
+    >
+      삭제
+    </Button>
+  </form>
+</TitledModal>
