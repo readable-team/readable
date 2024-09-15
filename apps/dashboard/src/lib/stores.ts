@@ -1,4 +1,4 @@
 import { persisted } from './svelte/stores/persisted';
 
-export const currentTeamId = persisted<string>('currentTeamId');
-export const lastVisitedPage = persisted<string>('lastVisitedPage');
+export const lastTeamIdStore = persisted<string>('lastTeamId');
+export const lastPageIdMapStore = persisted<Record<string, string>>('lastPageIdMap');

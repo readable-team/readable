@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import { ReadableError } from '@/errors';
-import { lastVisitedPage } from '$lib/stores';
+import { lastPageIdMapStore } from '$lib/stores';
 import type { SitePage_Query_AfterLoad, SitePage_Query_OnError, SitePage_Query_Variables } from './$graphql';
 
 export const _SitePage_Query_Variables: SitePage_Query_Variables = ({ params }) => ({
@@ -9,15 +9,15 @@ export const _SitePage_Query_Variables: SitePage_Query_Variables = ({ params }) 
 });
 
 export const _SitePage_Query_AfterLoad: SitePage_Query_AfterLoad = async (query) => {
-  const visitedPage = get(lastVisitedPage);
+  const lastPageIdMap = get(lastPageIdMapStore);
 
-  if (visitedPage) {
-    redirect(302, `/${query.site.id}/${visitedPage}`);
+  if (lastPageIdMap?.[query.site.id]) {
+    redirect(302, `/${query.site.team.id}/${query.site.id}/${lastPageIdMap[query.site.id]}`);
   }
 };
 
 export const _SitePage_Query_OnError: SitePage_Query_OnError = async (error) => {
   if (error instanceof ReadableError && error.message === 'forbidden') {
-    redirect(302, `/`);
+    redirect(302, '/');
   }
 };

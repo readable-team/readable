@@ -15,7 +15,6 @@
   import { graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
   import { accessToken } from '$lib/graphql';
-  import { currentTeamId } from '$lib/stores';
 
   $: query = graphql(`
     query NewPage_Query {
@@ -55,6 +54,10 @@
     mutation NewPage_CreateSite_Mutation($input: CreateSiteInput!) {
       createSite(input: $input) {
         id
+
+        team {
+          id
+        }
       }
     }
   `);
@@ -62,11 +65,10 @@
   const { form } = createMutationForm({
     mutation: async ({ name }) => {
       const team = await createDefaultTeam();
-      $currentTeamId = team.id;
 
       mixpanel.track('team:create');
       mixpanel.register({
-        team_id: $currentTeamId,
+        team_id: team.id,
       });
 
       return await createSite({ teamId: team.id, name });
@@ -82,7 +84,7 @@
         role: jobRole,
       });
 
-      await goto(`/${resp.id}`);
+      await goto(`/${resp.team.id}/${resp.id}`);
     },
   });
 

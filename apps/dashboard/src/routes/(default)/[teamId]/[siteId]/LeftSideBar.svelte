@@ -18,6 +18,10 @@
       fragment LeftSideBar_site on Site {
         id
 
+        team {
+          id
+        }
+
         # NOTE: maxDepth = 2
         categories {
           id
@@ -93,7 +97,7 @@
       depth: parent.__typename === 'Category' ? 1 : 2,
     });
 
-    await goto(`/${$site.id}/${page.id}`);
+    await goto(`/${$site.team.id}/${$site.id}/${page.id}`);
   }
 
   async function onDropPage(target: {
@@ -177,7 +181,7 @@
       role="tree"
     >
       <PageList
-        getPageUrl={(page) => `/${$site.id}/${page.id}`}
+        getPageUrl={(page) => `/${$site.team.id}/${$site.id}/${page.id}`}
         items={$site.categories}
         onCreate={onCreatePage}
         onCreateCategory={async () => {

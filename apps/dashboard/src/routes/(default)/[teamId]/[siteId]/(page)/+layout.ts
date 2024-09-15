@@ -8,6 +8,6 @@ export const _SitePageLayout_Query_Variables: SitePageLayout_Query_Variables = (
 
 export const _SitePageLayout_Query_OnError: SitePageLayout_Query_OnError = async (error) => {
   if (error instanceof ReadableError && error.message === 'forbidden') {
-    redirect(302, `/`);
+    redirect(302, '/');
   }
 };

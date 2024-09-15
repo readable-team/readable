@@ -37,6 +37,10 @@
 
           site {
             id
+
+            team {
+              id
+            }
           }
         }
       }
@@ -71,7 +75,10 @@
       <li class={css({ color: 'neutral.50' })} aria-hidden="true">/</li>
       {@const current = i === breadcrumbs.length - 1}
       <li class={css({ color: 'text.secondary', truncate: true })}>
-        <a aria-current={current ? 'page' : undefined} href={`/${$query.page.site.id}/${page.id}`}>
+        <a
+          aria-current={current ? 'page' : undefined}
+          href={`/${$query.page.site.team.id}/${$query.page.site.id}/${page.id}`}
+        >
           {page.content.title}
         </a>
       </li>

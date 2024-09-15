@@ -151,17 +151,17 @@
       tabs={[
         {
           title: '페이지',
-          path: `/${$query.site.id}`,
+          path: `/${$query.site.team.id}/${$query.site.id}`,
           selected:
-            $page.url.pathname.startsWith(`/${$query.site.id}`) &&
-            !$page.url.pathname.startsWith(`/${$query.site.id}/settings`),
+            $page.url.pathname.startsWith(`/${$query.site.team.id}/${$query.site.id}`) &&
+            !$page.url.pathname.startsWith(`/${$query.site.team.id}/${$query.site.id}/settings`),
         },
         ...($query.site.team.meAsMember?.role === 'ADMIN'
           ? [
               {
                 title: '사이트 설정',
-                path: `/${$query.site.id}/settings`,
-                selected: $page.url.pathname.startsWith(`/${$query.site.id}/settings`),
+                path: `/${$query.site.team.id}/${$query.site.id}/settings`,
+                selected: $page.url.pathname.startsWith(`/${$query.site.team.id}/${$query.site.id}/settings`),
               },
             ]
           : []),

@@ -17,7 +17,6 @@
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
   import { invokeAlert } from '$lib/components/invoke-alert';
-  import { lastVisitedPage } from '$lib/stores';
   import { treeOpenState } from '$lib/svelte/stores/ui';
   import { pageUrl } from '$lib/utils/url';
   import Editor from './Editor.svelte';
@@ -29,6 +28,10 @@
     query PagePage_Query($siteId: ID!, $pageId: ID!) {
       site(siteId: $siteId) {
         id
+
+        team {
+          id
+        }
       }
 
       page(pageId: $pageId) {
@@ -118,7 +121,6 @@
   `);
 
   afterNavigate(() => {
-    $lastVisitedPage = $query.page.state === 'DELETED' ? null : $query.page.id;
     $treeOpenState[$query.page.id] = true;
     if ($query.page.parent) {
       $treeOpenState[$query.page.parent.id] = true;
@@ -434,12 +436,9 @@
     mixpanel.track('page:delete', {
       via: 'panel',
     });
-    if ($query.page.parent?.id) {
-      goto(`/${$query.page.site.id}/${$query.page.parent.id}`);
-    } else {
-      $lastVisitedPage = null;
-      goto(`/${$query.page.site.id}`);
-    }
+    await ($query.page.parent?.id
+      ? goto(`/${$query.site.team.id}/${$query.site.id}/${$query.page.parent.id}`)
+      : goto(`/${$query.site.team.id}/${$query.site.id}`));
   }}
   bind:open={deletePageOpen}
 >

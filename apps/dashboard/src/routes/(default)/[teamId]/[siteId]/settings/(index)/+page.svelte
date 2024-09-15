@@ -17,7 +17,7 @@
   import { Img } from '$lib/components';
   import { invokeAlert } from '$lib/components/invoke-alert';
   import TitledModal from '$lib/components/TitledModal.svelte';
-  import { lastVisitedPage } from '$lib/stores';
+  import { lastPageIdMapStore } from '$lib/stores';
   import { uploadBlobAsImage } from '$lib/utils/blob.svelte';
   import type { Img_image } from '$graphql';
 
@@ -130,7 +130,7 @@
     }),
     mutation: async ({ siteId }) => {
       await deleteSite({ siteId });
-      $lastVisitedPage = null;
+      $lastPageIdMapStore = null;
       await goto('/');
     },
   });

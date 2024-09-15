@@ -14,7 +14,6 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
-  import { lastVisitedPage } from '$lib/stores';
   import { editingCategoryId } from '$lib/svelte/stores/ui';
   import { maxDepth } from './const';
   import PageList from './PageList.svelte';
@@ -355,12 +354,9 @@
       });
 
       if (item.id === $page.params.pageId) {
-        if (item.parent?.id) {
-          await goto(`/${$page.params.siteId}/${item.parent.id}`);
-        } else {
-          $lastVisitedPage = null;
-          await goto(`/${$page.params.siteId}`);
-        }
+        await (item.parent?.id
+          ? goto(`/${$page.params.teamId}/${$page.params.siteId}/${item.parent.id}`)
+          : goto(`/${$page.params.teamId}/${$page.params.siteId}`));
       }
     }}
     bind:open={deletePageOpen}

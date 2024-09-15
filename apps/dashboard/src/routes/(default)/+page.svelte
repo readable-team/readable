@@ -2,17 +2,14 @@
   import { graphql } from '$graphql';
 
   $: graphql(`
-    query TeamPage_Query($teamId: ID!) {
-      team(teamId: $teamId) {
+    query IndexPage_Query {
+      me {
         id
 
-        sites {
+        teams {
           id
-          name
         }
       }
     }
   `);
 </script>
-
-<div>FIXME: 팀 페이지</div>

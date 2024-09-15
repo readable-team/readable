@@ -11,6 +11,10 @@
       site(siteId: $siteId) {
         id
         hasPage
+
+        team {
+          id
+        }
       }
     }
   `);
