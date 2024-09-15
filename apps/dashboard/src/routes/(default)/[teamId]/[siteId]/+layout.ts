@@ -7,7 +7,7 @@ export const _SiteLayout_Query_Variables: SiteLayout_Query_Variables = ({ params
 });
 
 export const _SiteLayout_Query_OnError: SiteLayout_Query_OnError = async (error) => {
-  if (error instanceof ReadableError && error.message === 'forbidden') {
+  if (error instanceof ReadableError && error.code === 'forbidden') {
     redirect(302, '/');
   }
 };

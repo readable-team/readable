@@ -12,7 +12,7 @@ export const _TeamLayout_Query_AfterLoad: TeamLayout_Query_AfterLoad = async (qu
 };
 
 export const _TeamLayout_Query_OnError: TeamLayout_Query_OnError = async (error) => {
-  if (error instanceof ReadableError && error.message === 'forbidden') {
+  if (error instanceof ReadableError && error.code === 'forbidden') {
     lastTeamIdStore.set(null);
     redirect(302, '/');
   }
