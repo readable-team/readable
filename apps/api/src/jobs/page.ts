@@ -1,4 +1,5 @@
 import { Node } from '@tiptap/pm/model';
+import dayjs from 'dayjs';
 import { and, desc, eq, gt, inArray, notInArray, sql } from 'drizzle-orm';
 import * as R from 'remeda';
 import { yXmlFragmentToProseMirrorRootNode } from 'y-prosemirror';
@@ -25,7 +26,7 @@ import { enqueueJob } from './index';
 import { defineJob } from './types';
 
 export const PageContentStateUpdateJob = defineJob('page:content:state-update', async (pageId: string) => {
-  const update = await db.transaction(async (tx) => {
+  const updated = await db.transaction(async (tx) => {
     const state = await tx
       .select({
         update: PageContentStates.update,
@@ -44,35 +45,35 @@ export const PageContentStateUpdateJob = defineJob('page:content:state-update', 
       .orderBy(desc(PageContentUpdates.seq));
 
     if (updates.length === 0) {
-      return;
+      return false;
     }
 
     const update = Y.mergeUpdatesV2(updates.map(({ update }) => update));
-
     const doc = new Y.Doc();
 
     Y.applyUpdateV2(doc, state.update);
     const prevSnapshot = Y.snapshot(doc);
+
     Y.applyUpdateV2(doc, update);
     const snapshot = Y.snapshot(doc);
 
-    if (!Y.equalSnapshots(prevSnapshot, snapshot)) {
-      const uniqueContributorUserIds = R.unique(updates.map((update) => update.userId));
+    await tx
+      .update(PageContentStates)
+      .set({
+        update: Y.encodeStateAsUpdateV2(doc),
+        vector: Y.encodeStateVector(doc),
+        seq: updates[0].seq,
+      })
+      .where(and(eq(PageContentStates.pageId, pageId)));
 
-      await Promise.all([
-        tx.insert(PageContentSnapshots).values({
-          pageId,
-          snapshot: Y.encodeSnapshotV2(snapshot),
-        }),
-        tx
-          .insert(PageContentContributors)
-          .values(uniqueContributorUserIds.map((userId) => ({ pageId, userId })))
-          .onConflictDoUpdate({
-            target: [PageContentContributors.pageId, PageContentContributors.userId],
-            set: { updatedAt: sql`now()` },
-          }),
-      ]);
+    if (Y.equalSnapshots(prevSnapshot, snapshot)) {
+      return false;
     }
+
+    await tx.insert(PageContentSnapshots).values({
+      pageId,
+      snapshot: Y.encodeSnapshotV2(snapshot),
+    });
 
     const title = doc.getText('title').toString() || null;
     const subtitle = doc.getText('subtitle').toString() || null;
@@ -89,19 +90,26 @@ export const PageContentStateUpdateJob = defineJob('page:content:state-update', 
         subtitle,
         content,
         text,
-        update: Y.encodeStateAsUpdateV2(doc),
-        vector: Y.encodeStateVector(doc),
-        seq: updates[0].seq,
         hash: hashPageContent({ title, subtitle, content }),
+        updatedAt: dayjs(),
       })
       .where(and(eq(PageContentStates.pageId, pageId)));
 
+    const uniqueContributorUserIds = R.unique(updates.map((update) => update.userId));
+    await tx
+      .insert(PageContentContributors)
+      .values(uniqueContributorUserIds.map((userId) => ({ pageId, userId })))
+      .onConflictDoUpdate({
+        target: [PageContentContributors.pageId, PageContentContributors.userId],
+        set: { updatedAt: sql`now()` },
+      });
+
     await enqueueJob(tx, 'page:search:index-update', pageId);
 
-    return update;
+    return true;
   });
 
-  if (update) {
+  if (updated) {
     const page = await db.select({ siteId: Pages.siteId }).from(Pages).where(eq(Pages.id, pageId)).then(firstOrThrow);
     pubsub.publish('site:update', page.siteId, { scope: 'page', pageId });
   }
