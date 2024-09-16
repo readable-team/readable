@@ -3,8 +3,9 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
   import mixpanel from 'mixpanel-browser';
-  import { onMount } from 'svelte';
+  import { onDestroy } from 'svelte';
   import MousePointerClickIcon from '~icons/lucide/mouse-pointer-click';
+  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
   import { Tabs } from '$lib/components';
@@ -60,20 +61,23 @@
     }
   `);
 
-  onMount(() => {
-    mixpanel.register({
-      site_id: $query.site.id,
-    });
+  let unsubscribe: (() => void) | null = null;
 
-    const unsubscribe = siteUpdateStream.subscribe({
+  $: if (browser) {
+    unsubscribe?.();
+
+    unsubscribe = siteUpdateStream.subscribe({
       siteId: $query.site.id,
     });
 
-    return () => {
-      mixpanel.unregister('site_id');
+    mixpanel.register({
+      site_id: $query.site.id,
+    });
+  }
 
-      unsubscribe();
-    };
+  onDestroy(() => {
+    mixpanel.unregister('site_id');
+    unsubscribe?.();
   });
 </script>
 
