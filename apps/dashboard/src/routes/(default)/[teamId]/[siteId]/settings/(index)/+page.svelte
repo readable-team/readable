@@ -17,7 +17,6 @@
   import { Img } from '$lib/components';
   import { invokeAlert } from '$lib/components/invoke-alert';
   import TitledModal from '$lib/components/TitledModal.svelte';
-  import { lastPageIdMapStore } from '$lib/stores';
   import { uploadBlobAsImage } from '$lib/utils/blob.svelte';
   import type { Img_image } from '$graphql';
 
@@ -141,7 +140,7 @@
     }),
     mutation: async ({ siteId }) => {
       await deleteSite({ siteId });
-      $lastPageIdMapStore = null;
+      mixpanel.track('site:delete');
       await goto('/');
     },
   });
