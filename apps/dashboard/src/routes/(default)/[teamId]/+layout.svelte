@@ -1,7 +1,8 @@
 <script lang="ts">
   import { flex } from '@readable/styled-system/patterns';
   import mixpanel from 'mixpanel-browser';
-  import { onMount } from 'svelte';
+  import { onDestroy } from 'svelte';
+  import { browser } from '$app/environment';
   import { graphql } from '$graphql';
   import Header from './@header/Header.svelte';
 
@@ -32,20 +33,23 @@
     }
   `);
 
-  onMount(() => {
-    mixpanel.register({
-      team_id: $query.team.id,
-    });
+  let unsubscribe: (() => void) | null = null;
 
-    const unsubscribe = teamUpdateStream.subscribe({
+  $: if (browser) {
+    unsubscribe?.();
+
+    unsubscribe = teamUpdateStream.subscribe({
       teamId: $query.team.id,
     });
 
-    return () => {
-      mixpanel.unregister('team_id');
+    mixpanel.register({
+      team_id: $query.team.id,
+    });
+  }
 
-      unsubscribe();
-    };
+  onDestroy(() => {
+    mixpanel.unregister('team_id');
+    unsubscribe?.();
   });
 </script>
 
