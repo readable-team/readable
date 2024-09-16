@@ -1,7 +1,16 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Helmet, HorizontalDivider, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
+  import {
+    Button,
+    FormField,
+    Helmet,
+    HorizontalDivider,
+    Icon,
+    Menu,
+    MenuItem,
+    TextInput,
+  } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
@@ -55,7 +64,7 @@
     };
   });
 
-  const { form, setInitialValues } = createMutationForm({
+  const { form, isValid, setInitialValues } = createMutationForm({
     mutation: graphql(`
       mutation SiteSettingsDomainPage_SetSiteCustomDomain_Mutation($input: SetSiteCustomDomainInput!) {
         setSiteCustomDomain(input: $input) {
@@ -240,21 +249,13 @@
       use:form
     >
       <input name="siteId" type="hidden" />
-      <label
-        class={css({
-          display: 'block',
-          marginBottom: '8px',
-          textStyle: '14sb',
-          color: { base: 'gray.700', _dark: 'gray.300' },
-        })}
-        for="domain"
-      >
-        커스텀 도메인 URL
-      </label>
+      <FormField name="domain" label="커스텀 도메인 URL">
+        <TextInput name="domain" disabled={!!$query.site.customDomain} placeholder="docs.example.com" />
+      </FormField>
 
-      <TextInput name="domain" disabled={!!$query.site.customDomain} placeholder="docs.example.com" />
-
-      <Button style={css.raw({ marginTop: '29px', marginLeft: 'auto' })} size="lg" type="submit">설정</Button>
+      <Button style={css.raw({ marginTop: '29px', marginLeft: 'auto' })} disabled={!$isValid} size="lg" type="submit">
+        설정
+      </Button>
     </form>
   {/if}
 </div>

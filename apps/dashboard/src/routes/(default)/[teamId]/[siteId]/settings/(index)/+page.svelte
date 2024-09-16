@@ -69,7 +69,7 @@
     }
   `);
 
-  const { form, data, setInitialValues } = createMutationForm({
+  const { form, data, isDirty, setIsDirty, setInitialValues } = createMutationForm({
     schema: z.object({
       siteId: z.string(),
       name: dataSchemas.site.name,
@@ -85,6 +85,9 @@
         themeColor: $query.site.themeColor,
         logoId,
       });
+    },
+    onSuccess: () => {
+      setIsDirty(false);
       toast.success('사이트 설정이 변경되었습니다');
       mixpanel.track('site:update', {
         fields: ['name', 'logo'],
@@ -92,7 +95,12 @@
     },
   });
 
-  const { form: slugForm, setInitialValues: setSlugInitialValues } = createMutationForm({
+  const {
+    form: slugForm,
+    isDirty: slugFormIsDirty,
+    setIsDirty: setSlugFormIsDirty,
+    setInitialValues: setSlugInitialValues,
+  } = createMutationForm({
     schema: z.object({
       siteId: z.string(),
       name: dataSchemas.site.name,
@@ -113,12 +121,15 @@
             themeColor: $query.site.themeColor,
             logoId: $query.site.logo?.id,
           });
-          toast.success('사이트 주소가 변경되었습니다');
-          mixpanel.track('site:update', {
-            fields: ['slug'],
-          });
         },
         variant: 'primary',
+      });
+    },
+    onSuccess: () => {
+      setSlugFormIsDirty(false);
+      toast.success('사이트 주소가 변경되었습니다');
+      mixpanel.track('site:update', {
+        fields: ['slug'],
       });
     },
   });
@@ -248,7 +259,12 @@
       <TextInput placeholder="ACME 도움센터" />
     </FormField>
 
-    <Button style={css.raw({ marginTop: '8px', marginLeft: 'auto' })} size="lg" type="submit">변경</Button>
+    <div class={flex({ marginTop: '8px', gap: '8px', justifyContent: 'flex-end' })}>
+      {#if $isDirty}
+        <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
+      {/if}
+      <Button disabled={!$isDirty} size="lg" type="submit">변경</Button>
+    </div>
   </form>
 
   <form
@@ -321,7 +337,12 @@
       </div>
     </div>
 
-    <Button style={css.raw({ marginTop: '8px', marginLeft: 'auto' })} size="lg" type="submit">변경</Button>
+    <div class={flex({ marginTop: '8px', gap: '8px', justifyContent: 'flex-end' })}>
+      {#if $slugFormIsDirty}
+        <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
+      {/if}
+      <Button disabled={!$slugFormIsDirty} size="lg" type="submit">변경</Button>
+    </div>
   </form>
 
   <div
