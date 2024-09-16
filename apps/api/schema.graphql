@@ -329,6 +329,7 @@ input PublishPageInput {
 }
 
 type Query {
+  image(id: ID!): Image!
   me: User
   page(pageId: ID!): Page!
   publicPage(slug: String!): PublicPage!

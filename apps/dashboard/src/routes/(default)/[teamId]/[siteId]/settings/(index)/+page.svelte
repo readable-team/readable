@@ -5,7 +5,6 @@
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
-  import { onMount } from 'svelte';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import InfoIcon from '~icons/lucide/info';
@@ -14,15 +13,13 @@
   import { goto } from '$app/navigation';
   import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
-  import { Img } from '$lib/components';
+  import { LoadableImg } from '$lib/components';
   import { invokeAlert } from '$lib/components/invoke-alert';
   import TitledModal from '$lib/components/TitledModal.svelte';
   import { uploadBlobAsImage } from '$lib/utils/blob.svelte';
-  import type { Img_image } from '$graphql';
 
   let deleteSiteOpen = false;
 
-  let logo: Img_image | null | undefined;
   let inputEl: HTMLInputElement;
 
   $: query = graphql(`
@@ -40,10 +37,6 @@
       }
     }
   `);
-
-  onMount(() => {
-    logo = $query.site.logo;
-  });
 
   const updateSite = graphql(`
     mutation SiteSettingsIndexPage_UpdateSite_Mutation($input: UpdateSiteInput!) {
@@ -190,10 +183,10 @@
           inputEl.click();
         }}
       >
-        {#if logo}
-          <Img
+        {#if $data.logoId}
+          <LoadableImg
+            id={$data.logoId}
             style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '10px' })}
-            $image={logo}
             alt="사이트 로고"
             size={64}
           />
@@ -222,7 +215,7 @@
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: '10px',
-          color: logo ? 'neutral.0' : 'neutral.60',
+          color: $data.logoId ? 'neutral.0' : 'neutral.60',
           backgroundColor: 'neutral.100/16',
           size: '64px',
           pointerEvents: 'none',
@@ -239,6 +232,7 @@
       type="file"
       on:change={async (event) => {
         const file = event.currentTarget.files?.[0];
+        event.currentTarget.value = '';
         if (!file) {
           return;
         }
@@ -249,8 +243,8 @@
           format: 'png',
         });
 
-        logo = resp;
         $data.logoId = resp.id;
+        setIsDirty(true);
       }}
     />
 

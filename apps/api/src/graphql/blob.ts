@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { CopyObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
+import { eq } from 'drizzle-orm';
 import { base64 } from 'rfc4648';
 import sharp from 'sharp';
 import { rgbaToThumbHash } from 'thumbhash';
@@ -39,6 +40,20 @@ Image.implement({
     url: t.string({ resolve: (blob) => `${env.PUBLIC_USERCONTENTS_URL}/images/${blob.path}` }),
   }),
 });
+
+/**
+ * * Queries
+ */
+
+builder.queryFields((t) => ({
+  image: t.field({
+    type: Image,
+    args: { id: t.arg.id() },
+    resolve: async (_, args) => {
+      return await db.select().from(Images).where(eq(Images.id, args.id)).then(firstOrThrow);
+    },
+  }),
+}));
 
 /**
  * * Mutations
