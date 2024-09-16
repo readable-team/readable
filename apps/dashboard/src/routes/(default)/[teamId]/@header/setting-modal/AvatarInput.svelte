@@ -1,23 +1,19 @@
 <script lang="ts">
   import { css, cx } from '@readable/styled-system/css';
   import { Icon } from '@readable/ui/components';
-  import { getFormContext } from '@readable/ui/forms';
+  import { createEventDispatcher } from 'svelte';
   import UploadIcon from '~icons/lucide/upload';
-  import Img from '$lib/components/Img.svelte';
-  import type { Img_image } from '$graphql';
+  import { LoadableImg } from '$lib/components';
+  import { uploadBlobAsImage } from '$lib/utils/blob.svelte';
 
-  export let avatar: Img_image;
-  export let name: string;
-  export let canEdit = true;
+  const dispatch = createEventDispatcher<{ change: undefined }>();
 
-  const { data } = getFormContext().form ?? {};
-
-  // NOTE: file input에 바인딩해서 쓰면 form reset 시에도 파일이 유지되는 문제가 있어서 form data를 참조해서 사용
-  $: file = $data?.[name] as File | undefined;
+  export let id: string;
+  export let editable = true;
 </script>
 
 <svelte:element
-  this={canEdit ? 'label' : 'div'}
+  this={editable ? 'label' : 'div'}
   class={cx(
     css(
       {
@@ -31,20 +27,18 @@
         borderRadius: 'full',
         overflow: 'hidden',
       },
-      canEdit && {
+      editable && {
         cursor: 'pointer',
       },
     ),
     'group',
   )}
 >
-  {#if file}
-    <img alt="아바타" src={URL.createObjectURL(file)} />
-  {:else}
-    <Img style={css.raw({ size: 'full' })} $image={avatar} alt="아바타" size={64} />
+  {#if id}
+    <LoadableImg {id} style={css.raw({ size: 'full' })} alt="아바타" size={64} />
   {/if}
 
-  {#if canEdit}
+  {#if editable}
     <div
       class={css({
         display: 'none',
@@ -67,6 +61,26 @@
       <Icon icon={UploadIcon} size={28} />
     </div>
 
-    <input {name} accept="image/*" hidden type="file" />
+    <input
+      accept="image/*"
+      hidden
+      type="file"
+      on:change={async (event) => {
+        const file = event.currentTarget.files?.[0];
+        event.currentTarget.value = '';
+        if (!file) {
+          return;
+        }
+
+        const resp = await uploadBlobAsImage(file, {
+          ensureAlpha: true,
+          resize: { width: 512, height: 512, fit: 'contain', background: '#00000000' },
+          format: 'png',
+        });
+
+        id = resp.id;
+        dispatch('change');
+      }}
+    />
   {/if}
 </svelte:element>

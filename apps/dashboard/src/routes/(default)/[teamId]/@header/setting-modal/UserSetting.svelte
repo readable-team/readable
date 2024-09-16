@@ -8,7 +8,6 @@
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import { fragment, graphql } from '$graphql';
-  import { uploadBlobAsImage } from '$lib/utils/blob.svelte';
   import AvatarInput from './AvatarInput.svelte';
   import type { UserSetting_user } from '$graphql';
 
@@ -26,48 +25,28 @@
 
         avatar {
           id
-          ...Img_image
         }
       }
     `),
   );
 
-  const updateUser = graphql(`
-    mutation UserSetting_UpdateUser_Mutation($input: UpdateUserInput!) {
-      updateUser(input: $input) {
-        id
-        avatar {
-          id
-          ...Img_image
-        }
-        name
-      }
-    }
-  `);
-
-  const { form, setInitialValues, isDirty, setIsDirty } = createMutationForm({
+  const { form, data, setInitialValues, isDirty, setIsDirty } = createMutationForm({
     schema: z.object({
       avatarId: z.string(),
-      avatarDraftFile: z.any(),
       name: dataSchemas.user.name,
     }),
-    mutation: async (fields) => {
-      let { avatarId, name, avatarDraftFile } = fields;
+    mutation: graphql(`
+      mutation UserSetting_UpdateUser_Mutation($input: UpdateUserInput!) {
+        updateUser(input: $input) {
+          id
+          name
 
-      if (avatarDraftFile) {
-        const avatar = await uploadBlobAsImage(avatarDraftFile, {
-          ensureAlpha: true,
-          resize: { width: 512, height: 512, fit: 'contain', background: '#00000000' },
-          format: 'png',
-        });
-        avatarId = avatar.id;
+          avatar {
+            id
+          }
+        }
       }
-
-      return await updateUser({
-        avatarId,
-        name,
-      });
-    },
+    `),
     onSuccess: () => {
       setIsDirty(false);
       toast.success('개인 설정이 변경되었습니다');
@@ -89,11 +68,9 @@
 <HorizontalDivider style={css.raw({ marginTop: '20px', marginBottom: '40px' })} />
 
 <form use:form>
-  <input name="avatarId" type="hidden" />
-
   <div class={flex({ flexDirection: 'column', gap: '24px' })}>
     <FormField name="avatar" label="이미지" noMessage>
-      <AvatarInput name="avatarDraftFile" avatar={$user.avatar} />
+      <AvatarInput bind:id={$data.avatarId} on:change={() => setIsDirty(true)} />
     </FormField>
     <FormField name="name" label="이름">
       <TextInput name="name" placeholder="이름" />

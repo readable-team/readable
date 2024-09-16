@@ -11,7 +11,6 @@
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
   import { TitledModal } from '$lib/components';
-  import { uploadBlobAsImage } from '$lib/utils/blob.svelte';
   import AvatarInput from './AvatarInput.svelte';
   import type { TeamSetting_team } from '$graphql';
 
@@ -33,7 +32,6 @@
 
         avatar {
           id
-          ...Img_image
         }
 
         sites {
@@ -43,19 +41,6 @@
     `),
   );
 
-  const updateTeam = graphql(`
-    mutation TeamSetting_UpdateTeam_Mutation($input: UpdateTeamInput!) {
-      updateTeam(input: $input) {
-        id
-        avatar {
-          id
-          ...Img_image
-        }
-        name
-      }
-    }
-  `);
-
   const deleteTeam = graphql(`
     mutation TeamSetting_DeleteTeam_Mutation($input: DeleteTeamInput!) {
       deleteTeam(input: $input) {
@@ -64,30 +49,24 @@
     }
   `);
 
-  const { form, setInitialValues, isDirty, setIsDirty } = createMutationForm({
+  const { form, data, setInitialValues, isDirty, setIsDirty } = createMutationForm({
     schema: z.object({
       teamId: z.string(),
       avatarId: z.string(),
-      avatarDraftFile: z.any(),
       name: dataSchemas.team.name,
     }),
-    mutation: async (fields) => {
-      let { avatarId, avatarDraftFile, ...rest } = fields;
+    mutation: graphql(`
+      mutation TeamSetting_UpdateTeam_Mutation($input: UpdateTeamInput!) {
+        updateTeam(input: $input) {
+          id
+          name
 
-      if (avatarDraftFile) {
-        const avatar = await uploadBlobAsImage(avatarDraftFile, {
-          ensureAlpha: true,
-          resize: { width: 512, height: 512, fit: 'contain', background: '#00000000' },
-          format: 'png',
-        });
-        avatarId = avatar.id;
+          avatar {
+            id
+          }
+        }
       }
-
-      return await updateTeam({
-        avatarId,
-        ...rest,
-      });
-    },
+    `),
     onSuccess: () => {
       setIsDirty(false);
       toast.success('팀 설정이 변경되었습니다');
@@ -124,11 +103,14 @@
 
 <form use:form>
   <input name="teamId" type="hidden" />
-  <input name="avatarId" type="hidden" />
 
   <div class={flex({ flexDirection: 'column', gap: '24px' })}>
     <FormField name="avatar" label="팀 로고" noMessage>
-      <AvatarInput name="avatarDraftFile" avatar={$team.avatar} canEdit={$team.meAsMember?.role !== 'MEMBER'} />
+      <AvatarInput
+        editable={$team.meAsMember?.role !== 'MEMBER'}
+        bind:id={$data.avatarId}
+        on:change={() => setIsDirty(true)}
+      />
     </FormField>
     <FormField name="name" label="팀 이름">
       <TextInput name="name" disabled={$team.meAsMember?.role === 'MEMBER'} placeholder="ACME Inc." />
