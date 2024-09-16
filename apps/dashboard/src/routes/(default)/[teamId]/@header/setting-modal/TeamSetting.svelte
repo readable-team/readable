@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, HorizontalDivider, Icon, TextInput } from '@readable/ui/components';
+  import { Button, FormField, HorizontalDivider, Icon, TextInput, Tooltip } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
@@ -138,17 +138,23 @@
   {/if}
 </div>
 
-<Button
+<Tooltip
   style={css.raw({ marginTop: '8px', marginLeft: 'auto' })}
-  disabled={$team.sites.length > 0}
-  size="lg"
-  variant="danger-fill"
-  on:click={() => {
-    deleteTeamOpen = true;
-  }}
+  enabled={$team.sites.length > 0}
+  message="사이트 삭제 후 팀 삭제가 가능해요"
+  placement="top"
 >
-  삭제
-</Button>
+  <Button
+    disabled={$team.sites.length > 0}
+    size="lg"
+    variant="danger-fill"
+    on:click={() => {
+      deleteTeamOpen = true;
+    }}
+  >
+    삭제
+  </Button>
+</Tooltip>
 
 <TitledModal bind:open={deleteTeamOpen}>
   <svelte:fragment slot="title">팀 삭제</svelte:fragment>
