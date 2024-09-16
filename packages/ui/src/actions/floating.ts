@@ -1,6 +1,6 @@
 import { arrow, autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
 import { match } from 'ts-pattern';
-import type { FloatingElement, Middleware, Placement, ReferenceElement } from '@floating-ui/dom';
+import type { FloatingElement, Middleware, OffsetOptions, Placement, ReferenceElement } from '@floating-ui/dom';
 import type { Action } from 'svelte/action';
 
 type ReferenceAction = Action<ReferenceElement>;
@@ -10,7 +10,7 @@ type UpdatePosition = () => Promise<void>;
 
 type CreateFloatingActionsOptions = {
   placement: Placement;
-  offset?: number;
+  offset?: OffsetOptions;
   arrow?: boolean;
   middleware?: Middleware[];
   disableAutoUpdate?: boolean;

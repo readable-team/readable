@@ -17,11 +17,11 @@
   import TeamSetting from './(settingModal)/TeamSetting.svelte';
   import UserSetting from './(settingModal)/UserSetting.svelte';
   import SettingTabItem from './SettingTabItem.svelte';
-  import type { UserSettingModal_site, UserSettingModal_user } from '$graphql';
+  import type { UserSettingModal_team, UserSettingModal_user } from '$graphql';
 
   let _user: UserSettingModal_user;
-  let _site: UserSettingModal_site;
-  export { _site as $site, _user as $user };
+  let _team: UserSettingModal_team;
+  export { _team as $team, _user as $user };
 
   export let open = false;
 
@@ -44,31 +44,19 @@
     `),
   );
 
-  $: site = fragment(
-    _site,
+  $: team = fragment(
+    _team,
     graphql(`
-      fragment UserSettingModal_site on Site {
+      fragment UserSettingModal_team on Team {
         id
         name
-        url
-        slug
-
-        logo {
+        avatar {
           id
           ...Img_image
         }
 
-        team {
-          id
-          name
-          avatar {
-            id
-            ...Img_image
-          }
-
-          ...TeamSetting_team
-          ...TeamMembers_team
-        }
+        ...TeamSetting_team
+        ...TeamMembers_team
       }
     `),
   );
@@ -171,12 +159,12 @@
               borderRadius: 'full',
               size: '18px',
             })}
-            $image={$site.team.avatar}
-            alt={`${$site.team.name}의 아바타`}
+            $image={$team.avatar}
+            alt={`${$team.name}의 아바타`}
             size={24}
           />
 
-          <p class={css({ textStyle: '13sb', truncate: true, color: 'text.secondary' })}>{$site.team.name}</p>
+          <p class={css({ textStyle: '13sb', truncate: true, color: 'text.secondary' })}>{$team.name}</p>
         </div>
 
         <dl class={flex({ direction: 'column', gap: '2px', paddingTop: '1px' })}>
@@ -237,9 +225,9 @@
         })}
       >
         {#if selectedTab === 'settings/team'}
-          <TeamSetting $team={$site.team} />
+          <TeamSetting {$team} />
         {:else if selectedTab === 'settings/team/members'}
-          <TeamMembers $team={$site.team} />
+          <TeamMembers {$team} />
           <!-- {:else if selectedTab === 'settings/team/subscription'}
           <Subscription /> -->
         {:else if selectedTab === 'settings/personal'}

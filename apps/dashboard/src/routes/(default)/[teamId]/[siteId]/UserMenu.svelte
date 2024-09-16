@@ -41,19 +41,9 @@
           }
         }
 
-        site(siteId: $siteId) {
+        team(teamId: $teamId) {
           id
-          ...UserSettingModal_site
-
-          team {
-            id
-            name
-
-            avatar {
-              id
-              ...Img_image
-            }
-          }
+          ...UserSettingModal_team
         }
       }
     `),
@@ -153,4 +143,4 @@
   </MenuItem>
 </Menu>
 
-<UserSettingModal $site={$query.site} $user={$query.me} bind:open={openUserSettingModal} />
+<UserSettingModal $team={$query.team} $user={$query.me} bind:open={openUserSettingModal} />

@@ -3,12 +3,12 @@
   import { setContext } from 'svelte';
   import { afterNavigate } from '$app/navigation';
   import { createFloatingActions } from '../actions/index';
-  import type { Placement } from '@floating-ui/dom';
+  import type { OffsetOptions, Placement } from '@floating-ui/dom';
   import type { SystemStyleObject } from '@readable/styled-system/types';
 
   export let open = false;
   export let placement: Placement = 'bottom';
-  export let offset = 6;
+  export let offset: OffsetOptions = 6;
   export let style: SystemStyleObject | undefined = undefined;
   export let listStyle: SystemStyleObject | undefined = undefined;
   export let setFullWidth = false;

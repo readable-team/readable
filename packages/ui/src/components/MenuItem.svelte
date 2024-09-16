@@ -3,14 +3,16 @@
   import { flex } from '@readable/styled-system/patterns';
   import { getContext } from 'svelte';
   import type { SystemStyleObject } from '@readable/styled-system/types';
-  import type { HTMLButtonAttributes } from 'svelte/elements';
+  import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
 
   type $$Props = {
     type?: T;
     style?: SystemStyleObject;
     disabled?: boolean;
     variant?: 'default' | 'danger';
-  } & (T extends 'link' ? { href: string; external?: boolean } : unknown) &
+  } & (T extends 'link'
+    ? Omit<HTMLAnchorAttributes, 'type' | 'style' | 'disabled'> & { external?: boolean }
+    : unknown) &
     (T extends 'button' ? Omit<HTMLButtonAttributes, 'type' | 'style' | 'disabled'> : unknown);
 
   type $$Events = T extends 'link' ? unknown : { click: MouseEvent };

@@ -5,17 +5,12 @@
   import mixpanel from 'mixpanel-browser';
   import { onMount } from 'svelte';
   import MousePointerClickIcon from '~icons/lucide/mouse-pointer-click';
-  import ReadableIcon from '~icons/rdbl/readable';
-  import SlashDividerIcon from '~icons/rdbl/slash-divider';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
-  import { Img, Tabs } from '$lib/components';
-  import UserMenu from './UserMenu.svelte';
+  import { Tabs } from '$lib/components';
 
   $: query = graphql(`
     query SiteLayout_Query($siteId: ID!) {
-      ...UserMenu_query
-
       me @required {
         id
       }
@@ -65,21 +60,6 @@
     }
   `);
 
-  const teamUpdateStream = graphql(`
-    subscription SiteLayout_TeamUpdateStream_Subscription($teamId: ID!) {
-      teamUpdateStream(teamId: $teamId) {
-        ... on Team {
-          id
-          ...TeamMembers_team
-        }
-
-        ... on TeamMember {
-          id
-        }
-      }
-    }
-  `);
-
   onMount(() => {
     mixpanel.register({
       site_id: $query.site.id,
@@ -89,54 +69,15 @@
       siteId: $query.site.id,
     });
 
-    const unsubscribe2 = teamUpdateStream.subscribe({
-      teamId: $query.site.team.id,
-    });
-
     return () => {
       mixpanel.unregister('site_id');
 
       unsubscribe();
-      unsubscribe2();
     };
   });
 </script>
 
-<div style:--usersite-theme-color={$query.site.themeColor} class={flex({ flexDirection: 'column', height: 'screen' })}>
-  <header
-    class={flex({
-      justifyContent: 'space-between',
-      height: '48px',
-      paddingLeft: '20px',
-      paddingRight: '16px',
-      paddingY: '10px',
-      backgroundColor: 'surface.primary',
-    })}
-  >
-    <div
-      class={flex({
-        alignItems: 'center',
-        paddingX: '8px',
-        paddingY: '6px',
-      })}
-    >
-      <Icon icon={ReadableIcon} size={20} />
-      <Icon style={css.raw({ marginLeft: '2px', marginRight: '4px' })} icon={SlashDividerIcon} size={18} />
-      {#if $query.site.logo}
-        <Img
-          style={css.raw({ marginRight: '6px', borderRadius: '4px', size: '18px' })}
-          $image={$query.site.logo}
-          alt={`${$query.site.name}의 로고`}
-          size={24}
-        />
-      {/if}
-      <h1 class={css({ textStyle: '14sb' })}>
-        {$query.site.name}
-      </h1>
-    </div>
-    <UserMenu {$query} />
-  </header>
-
+<div style:--usersite-theme-color={$query.site.themeColor} class={css({ display: 'contents' })}>
   <nav
     class={flex({
       align: 'center',
