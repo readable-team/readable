@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { and, asc, count, eq, getTableColumns, isNull, ne } from 'drizzle-orm';
+import { and, asc, count, desc, eq, getTableColumns, isNull, ne } from 'drizzle-orm';
 import { Repeater } from 'graphql-yoga';
 import { match } from 'ts-pattern';
 import * as Y from 'yjs';
@@ -88,11 +88,37 @@ Site.implement({
       },
     }),
 
-    hasPage: t.field({
-      type: 'Boolean',
+    pageCount: t.int({
       resolve: async (site) => {
         return await db
-          .select({ count: count(Pages.id) })
+          .select({ count: count() })
+          .from(Pages)
+          .where(and(eq(Pages.siteId, site.id), ne(Pages.state, PageState.DELETED)))
+          .then((rows) => rows[0].count);
+      },
+    }),
+
+    pageUpdatedAt: t.field({
+      type: 'DateTime',
+      nullable: true,
+      resolve: async (site) => {
+        const page = await db
+          .select({ updatedAt: PageContentStates.updatedAt })
+          .from(Pages)
+          .innerJoin(PageContentStates, eq(Pages.id, PageContentStates.pageId))
+          .where(and(eq(Pages.siteId, site.id), ne(Pages.state, PageState.DELETED)))
+          .orderBy(desc(PageContentStates.updatedAt))
+          .limit(1)
+          .then(first);
+
+        return page?.updatedAt;
+      },
+    }),
+
+    hasPage: t.boolean({
+      resolve: async (site) => {
+        return await db
+          .select({ count: count() })
           .from(Pages)
           .where(and(eq(Pages.siteId, site.id), ne(Pages.state, PageState.DELETED)))
           .then((rows) => rows[0].count > 0);

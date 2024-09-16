@@ -392,6 +392,8 @@ type Site implements ISite {
   id: ID!
   logo: Image
   name: String!
+  pageCount: Int!
+  pageUpdatedAt: DateTime
   slug: String!
   team: Team!
   themeColor: String!
