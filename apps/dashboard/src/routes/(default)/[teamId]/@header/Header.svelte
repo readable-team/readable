@@ -8,6 +8,7 @@
   import { fragment, graphql } from '$graphql';
   import { Img } from '$lib/components';
   import SiteSwitcher from './SiteSwitcher.svelte';
+  import TeamSwitcher from './TeamSwitcher.svelte';
   import UserMenu from './UserMenu.svelte';
   import type { Header_query } from '$graphql';
 
@@ -20,6 +21,11 @@
       fragment Header_query on Query {
         ...UserMenu_query
 
+        me @required {
+          id
+          ...TeamSwitcher_user
+        }
+
         team(teamId: $teamId) {
           id
           name
@@ -28,11 +34,23 @@
             ...Img_image
           }
 
+          sites {
+            id
+            name
+            logo {
+              id
+              ...Img_image
+            }
+          }
+
           ...SiteSwitcher_team
         }
       }
     `),
   );
+
+  $: currentSiteId = $page.params.siteId;
+  $: currentSite = $query.team.sites.find((site) => site.id === currentSiteId);
 </script>
 
 <header
@@ -53,7 +71,7 @@
     <Icon icon={ReadableIcon} size={24} />
     <Icon icon={SlashDividerIcon} size={18} />
     <a
-      class={flex({ alignItems: 'center', padding: '4px' })}
+      class={flex({ alignItems: 'center', padding: '4px', gap: '8px' })}
       aria-current={$page.url.pathname === `/${$query.team.id}` ? 'page' : undefined}
       href={`/${$query.team.id}`}
     >
@@ -63,11 +81,37 @@
         alt={`${$query.team.name}의 로고`}
         size={24}
       />
-      <h1 class={css({ marginLeft: '8px', textStyle: '14sb', truncate: true })}>
+      <h1 class={css({ textStyle: '14sb', truncate: true })}>
         {$query.team.name}
       </h1>
     </a>
-    <SiteSwitcher $team={$query.team} />
+    <TeamSwitcher $user={$query.me} />
+
+    {#if currentSite}
+      <Icon icon={SlashDividerIcon} size={18} />
+      <a
+        class={flex({
+          alignItems: 'center',
+          padding: '4px',
+          gap: '8px',
+        })}
+        aria-current="page"
+        href={`/${$query.team.id}/${currentSite.id}`}
+      >
+        {#if currentSite.logo}
+          <Img
+            style={css.raw({ size: '20px' })}
+            $image={currentSite.logo}
+            alt={`${currentSite.name}의 로고`}
+            size={24}
+          />
+        {/if}
+        <span class={css({ textStyle: '14sb', truncate: true })}>
+          {currentSite.name}
+        </span>
+      </a>
+      <SiteSwitcher $team={$query.team} />
+    {/if}
   </div>
   <UserMenu {$query} />
 </header>
