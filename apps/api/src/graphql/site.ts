@@ -380,7 +380,13 @@ builder.mutationFields((t) => ({
       const existingDomain = await db
         .select({ id: SiteCustomDomains.id })
         .from(SiteCustomDomains)
-        .where(and(eq(SiteCustomDomains.domain, input.domain), ne(SiteCustomDomains.siteId, input.siteId)))
+        .where(
+          and(
+            eq(SiteCustomDomains.domain, input.domain),
+            ne(SiteCustomDomains.siteId, input.siteId),
+            eq(SiteCustomDomains.state, SiteCustomDomainState.ACTIVE),
+          ),
+        )
         .then(first);
 
       if (existingDomain) {
