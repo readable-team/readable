@@ -116,8 +116,7 @@ builder.mutationFields((t) => ({
 
         const teamIds = new Set(invitations.map((invitation) => invitation.teamId));
 
-        // TODO: 지금은 임시로 한 유저가 여러 팀에 속할 수 없음 (팀 변경 기능이 없어서)
-        if (teamIds.size > 0 && teamIds.size === 1) {
+        if (teamIds.size > 0) {
           await tx.insert(TeamMembers).values(
             [...teamIds].map((teamId) => ({
               teamId,

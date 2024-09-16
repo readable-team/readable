@@ -305,10 +305,7 @@ builder.mutationFields((t) => ({
         const existingMember = await db
           .select({ id: TeamMembers.id })
           .from(TeamMembers)
-          // TODO: 지금은 임시로 한 유저가 여러 팀에 속할 수 없음 (팀 변경 기능이 없어서)
-          .innerJoin(Teams, eq(TeamMembers.teamId, Teams.id))
-          .where(and(eq(TeamMembers.userId, invitedUser.id), eq(Teams.state, TeamState.ACTIVE)))
-          // .where(and(eq(TeamMembers.teamId, input.teamId), eq(TeamMembers.userId, invitedUser.id)))
+          .where(and(eq(TeamMembers.teamId, input.teamId), eq(TeamMembers.userId, invitedUser.id)))
           .then(first);
 
         if (existingMember) {
