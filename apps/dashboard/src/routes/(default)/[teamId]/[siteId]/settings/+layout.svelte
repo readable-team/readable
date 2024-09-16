@@ -5,7 +5,7 @@
   import IconPaintbrushVertical from '~icons/lucide/paintbrush-vertical';
   import IconSettings from '~icons/lucide/settings';
   import { page } from '$app/stores';
-  import SettingTabItem from '../SettingTabItem.svelte';
+  import { SettingTabItem } from '$lib/components';
 
   export let data;
 

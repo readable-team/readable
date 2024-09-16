@@ -11,12 +11,11 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
-  import { Img } from '$lib/components';
+  import { Img, SettingTabItem } from '$lib/components';
   // import Subscription from './(settingModal)/Subscription.svelte';
-  import TeamMembers from './(settingModal)/TeamMembers.svelte';
-  import TeamSetting from './(settingModal)/TeamSetting.svelte';
-  import UserSetting from './(settingModal)/UserSetting.svelte';
-  import SettingTabItem from './SettingTabItem.svelte';
+  import TeamMembers from './setting-modal/TeamMembers.svelte';
+  import TeamSetting from './setting-modal/TeamSetting.svelte';
+  import UserSetting from './setting-modal/UserSetting.svelte';
   import type { UserSettingModal_team, UserSettingModal_user } from '$graphql';
 
   let _user: UserSettingModal_user;

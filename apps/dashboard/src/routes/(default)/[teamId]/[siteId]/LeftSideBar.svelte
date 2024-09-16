@@ -5,9 +5,9 @@
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
   import { editingCategoryId, treeOpenState } from '$lib/svelte/stores/ui';
-  import { PageList } from './(pageTree)';
+  import { PageList } from './@page-tree';
   import type { LeftSideBar_site } from '$graphql';
-  import type { CategoryData, PageData } from './(pageTree)/types';
+  import type { CategoryData, PageData } from './@page-tree/types';
 
   let _site: LeftSideBar_site;
   export { _site as $site };
