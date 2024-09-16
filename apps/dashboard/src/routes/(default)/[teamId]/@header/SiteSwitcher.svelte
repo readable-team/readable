@@ -111,7 +111,12 @@
       type="link"
     >
       {#if site.logo}
-        <Img style={css.raw({ size: '20px' })} $image={site.logo} alt={`${site.name}의 로고`} size={24} />
+        <Img
+          style={css.raw({ size: '20px', borderRadius: '4px' })}
+          $image={site.logo}
+          alt={`${site.name}의 로고`}
+          size={24}
+        />
       {:else}
         <div
           class={flex({

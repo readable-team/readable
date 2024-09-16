@@ -68,7 +68,9 @@
       alignItems: 'center',
     })}
   >
-    <Icon icon={ReadableIcon} size={24} />
+    <a href="/">
+      <Icon icon={ReadableIcon} size={24} />
+    </a>
     <Icon icon={SlashDividerIcon} size={18} />
     <a
       class={flex({ alignItems: 'center', padding: '4px', gap: '8px' })}
@@ -76,7 +78,7 @@
       href={`/${$query.team.id}`}
     >
       <Img
-        style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '20px' })}
+        style={css.raw({ borderRadius: 'full', size: '20px' })}
         $image={$query.team.avatar}
         alt={`${$query.team.name}의 로고`}
         size={24}
@@ -100,7 +102,7 @@
       >
         {#if currentSite.logo}
           <Img
-            style={css.raw({ size: '20px' })}
+            style={css.raw({ borderRadius: '4px', size: '20px' })}
             $image={currentSite.logo}
             alt={`${currentSite.name}의 로고`}
             size={24}
