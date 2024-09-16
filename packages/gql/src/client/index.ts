@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { connectable, filter, finalize, Observable, share, Subject } from 'rxjs';
+import { connectable, defer, filter, finalize, Observable, share, Subject } from 'rxjs';
 import { Cache } from '../cache/cache';
 import { cacheExchange } from '../exchange/cache';
 import { composeExchanges } from '../exchange/compose';
@@ -99,7 +99,12 @@ class Client {
   }
 
   executeOperation<T extends $StoreSchema>(operation: Operation<T>): Observable<OperationResult<T>> {
-    const result$ = this.result$.pipe(
+    const observable = defer(() => {
+      this.operation$.next(operation);
+      return this.result$;
+    });
+
+    const result$ = observable.pipe(
       filter((result) => result.operation.key === operation.key),
       finalize(() => {
         this.operation$.next({
@@ -109,8 +114,6 @@ class Client {
       }),
       share(),
     );
-
-    this.operation$.next(operation);
 
     return result$ as Observable<OperationResult<T>>;
   }

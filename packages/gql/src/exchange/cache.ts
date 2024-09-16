@@ -11,10 +11,10 @@ export const cacheExchange =
         mergeMap((operation) => {
           const teardown$ = ops$.pipe(filter((op) => op.type === 'teardown' && op.key === operation.key));
 
-          const observable = cache
-            .observe(operation.schema, operation.variables)
-            .pipe(map((v) => ({ operation, ...v })));
-          return observable.pipe(takeUntil(teardown$));
+          return cache.observe(operation.schema, operation.variables).pipe(
+            map((v) => ({ operation, ...v })),
+            takeUntil(teardown$),
+          );
         }),
         share(),
       );
