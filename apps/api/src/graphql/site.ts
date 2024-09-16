@@ -325,6 +325,8 @@ builder.mutationFields((t) => ({
           }
         }
 
+        pubsub.publish('team:update', input.teamId, { scope: 'team' });
+
         return site;
       });
     },
@@ -460,6 +462,8 @@ builder.mutationFields((t) => ({
 
         return site;
       });
+
+      pubsub.publish('team:update', site.teamId, { scope: 'team' });
 
       return site;
     },
