@@ -22,11 +22,11 @@
     "@readable/lintconfig": "workspace:*",
     "cspell": "^8.14.2",
     "eslint": "^8.57.0",
-    "husky": "^9.1.5",
+    "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "syncpack": "^13.0.0",
-    "turbo": "^2.1.1",
+    "turbo": "^2.1.2",
     "typescript": "^5.6.2"
   },
   "packageManager": "bun@1.0.0"

@@ -23,7 +23,7 @@
   "dependencies": {
     "@felte/core": "^1.4.3",
     "@felte/validator-zod": "^1.0.17",
-    "@floating-ui/dom": "^1.6.10",
+    "@floating-ui/dom": "^1.6.11",
     "@readable/styled-system": "workspace:*",
     "@tiptap/core": "^2.6.6",
     "@tiptap/extension-blockquote": "^2.6.6",
@@ -65,9 +65,9 @@
   },
   "devDependencies": {
     "@readable/tsconfig": "workspace:*",
-    "@sveltejs/kit": "^2.5.26",
+    "@sveltejs/kit": "^2.5.27",
     "@types/body-scroll-lock": "^3.1.2",
-    "svelte-check": "^4.0.1",
+    "svelte-check": "^4.0.2",
     "svelte-preprocess": "^6.0.2",
     "typescript": "^5.6.2",
     "unplugin-icons": "^0.19.3",
