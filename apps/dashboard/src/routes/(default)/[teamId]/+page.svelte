@@ -98,107 +98,108 @@
 {#if $query.team.sites.length > 0}
   <div
     class={css({
-      paddingTop: '40px',
-      paddingX: '20px',
-      paddingBottom: '120px',
       backgroundColor: 'surface.secondary',
       height: 'full',
     })}
   >
-    <div class={flex({ align: 'center', justify: 'space-between', marginBottom: '24px' })}>
-      <h1 class={css({ textStyle: '28b' })}>
-        사이트
-        <span class={css({ color: 'text.tertiary' })}>{$query.team.sites.length}</span>
-      </h1>
-
-      <Button style={css.raw({ gap: '6px' })} size="sm" on:click={() => (createSiteOpen = true)}>
-        <Icon icon={PlusIcon} size={16} />
-        <span>만들기</span>
-      </Button>
-    </div>
-
-    <ul class={grid({ columns: 3, gap: '16px' })}>
-      {#each $query.team.sites as site (site.id)}
-        <li
-          class={flex({
-            align: 'flex-start',
-            justify: 'space-between',
-            borderWidth: '1px',
-            borderColor: 'border.primary',
-            borderRadius: '10px',
-            padding: '16px',
-            backgroundColor: 'surface.primary',
-          })}
-        >
-          <a
-            class={flex({ align: 'flex-start', gap: '12px', grow: '1', truncate: true })}
-            href={`/${$query.team.id}/${site.id}`}
+    <div
+      class={flex({
+        direction: 'column',
+        maxWidth: '1280px',
+        marginX: 'auto',
+        paddingTop: '40px',
+        paddingX: '20px',
+        paddingBottom: '120px',
+      })}
+    >
+      <div class={flex({ align: 'center', justify: 'space-between', marginBottom: '24px' })}>
+        <h1 class={css({ textStyle: '28b' })}>
+          사이트
+          <span class={css({ color: 'text.tertiary' })}>{$query.team.sites.length}</span>
+        </h1>
+        <Button style={css.raw({ gap: '6px' })} size="sm" on:click={() => (createSiteOpen = true)}>
+          <Icon icon={PlusIcon} size={16} />
+          <span>만들기</span>
+        </Button>
+      </div>
+      <ul class={grid({ columns: 3, gap: '16px' })}>
+        {#each $query.team.sites as site (site.id)}
+          <li
+            class={flex({
+              align: 'flex-start',
+              justify: 'space-between',
+              borderWidth: '1px',
+              borderColor: 'border.primary',
+              borderRadius: '10px',
+              padding: '16px',
+              backgroundColor: 'surface.primary',
+            })}
           >
-            {#if site.logo}
-              <Img
-                style={css.raw({ flex: 'none', marginTop: '4px', borderRadius: '6px' })}
-                $image={site.logo}
-                alt={`${site.name}의 로고`}
-                size={32}
-              />
-            {:else}
-              <div
-                class={css({
-                  flex: 'none',
-                  marginTop: '4px',
-                  borderWidth: '1px',
-                  borderColor: 'border.primary',
-                  borderStyle: 'dashed',
-                  borderRadius: '6px',
-                  size: '32px',
-                })}
-              />
-            {/if}
-
-            <div class={css({ truncate: true })}>
-              <p class={css({ marginBottom: '1px', textStyle: '15sb', truncate: true })}>{site.name}</p>
-              <p class={css({ marginBottom: '24px', textStyle: '13r', color: 'text.tertiary', truncate: true })}>
-                {site.url}
-              </p>
-
-              <dl class={css({ textStyle: '13r', color: 'text.tertiary' })}>
-                <div class={flex({ align: 'center', gap: '6px' })}>
-                  <dt>페이지 수</dt>
-                  <dd>{site.pageCount}</dd>
-                </div>
-
-                <div class={flex({ align: 'center', gap: '6px' })}>
-                  <dt>마지막 페이지 수정일</dt>
-                  <dd>{dayjs(site.pageUpdatedAt).formatAsDate()}</dd>
-                </div>
-              </dl>
-            </div>
-          </a>
-
-          <Menu placement="bottom-start">
-            <div
-              slot="button"
-              class={css({ borderRadius: '6px', padding: '4px', _hover: { backgroundColor: 'neutral.20' } })}
+            <a
+              class={flex({ align: 'flex-start', gap: '12px', grow: '1', truncate: true })}
+              href={`/${$query.team.id}/${site.id}`}
             >
-              <Icon icon={EllipsisIcon} size={16} />
-            </div>
-
-            <MenuItem href={`/${$query.team.id}/${site.id}`} type="link">
-              <Icon icon={AppWindowIcon} size={14} />
-              <span>대시보드 이동</span>
-            </MenuItem>
-            <MenuItem href={site.url} type="link">
-              <Icon icon={EarthIcon} size={14} />
-              <span>사이트 바로가기</span>
-            </MenuItem>
-            <MenuItem href={`/${$query.team.id}/${site.id}/settings`} type="link">
-              <Icon icon={SettingsIcon} size={14} />
-              <span>사이트 설정</span>
-            </MenuItem>
-          </Menu>
-        </li>
-      {/each}
-    </ul>
+              {#if site.logo}
+                <Img
+                  style={css.raw({ flex: 'none', marginTop: '4px', borderRadius: '6px' })}
+                  $image={site.logo}
+                  alt={`${site.name}의 로고`}
+                  size={32}
+                />
+              {:else}
+                <div
+                  class={css({
+                    flex: 'none',
+                    marginTop: '4px',
+                    borderWidth: '1px',
+                    borderColor: 'border.primary',
+                    borderStyle: 'dashed',
+                    borderRadius: '6px',
+                    size: '32px',
+                  })}
+                />
+              {/if}
+              <div class={css({ truncate: true })}>
+                <p class={css({ marginBottom: '1px', textStyle: '15sb', truncate: true })}>{site.name}</p>
+                <p class={css({ marginBottom: '24px', textStyle: '13r', color: 'text.tertiary', truncate: true })}>
+                  {site.url}
+                </p>
+                <dl class={css({ textStyle: '13r', color: 'text.tertiary' })}>
+                  <div class={flex({ align: 'center', gap: '6px' })}>
+                    <dt>페이지 수</dt>
+                    <dd>{site.pageCount}</dd>
+                  </div>
+                  <div class={flex({ align: 'center', gap: '6px' })}>
+                    <dt>마지막 페이지 수정일</dt>
+                    <dd>{dayjs(site.pageUpdatedAt).formatAsDate()}</dd>
+                  </div>
+                </dl>
+              </div>
+            </a>
+            <Menu placement="bottom-start">
+              <div
+                slot="button"
+                class={css({ borderRadius: '6px', padding: '4px', _hover: { backgroundColor: 'neutral.20' } })}
+              >
+                <Icon icon={EllipsisIcon} size={16} />
+              </div>
+              <MenuItem href={`/${$query.team.id}/${site.id}`} type="link">
+                <Icon icon={AppWindowIcon} size={14} />
+                <span>대시보드 이동</span>
+              </MenuItem>
+              <MenuItem href={site.url} type="link">
+                <Icon icon={EarthIcon} size={14} />
+                <span>사이트 바로가기</span>
+              </MenuItem>
+              <MenuItem href={`/${$query.team.id}/${site.id}/settings`} type="link">
+                <Icon icon={SettingsIcon} size={14} />
+                <span>사이트 설정</span>
+              </MenuItem>
+            </Menu>
+          </li>
+        {/each}
+      </ul>
+    </div>
   </div>
 {:else}
   <div
