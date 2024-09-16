@@ -57,7 +57,7 @@
     cva({
       base: flex.raw({
         alignItems: 'center',
-        gap: '10px',
+        gap: '10px', // NOTE: override 하는 workaround: style에 columnGap을 넘기기
         borderRadius: '6px',
         marginX: '6px',
         paddingX: '12px',

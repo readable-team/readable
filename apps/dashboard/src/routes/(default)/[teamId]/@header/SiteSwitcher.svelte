@@ -100,7 +100,7 @@
     <MenuItem
       style={css.raw({
         padding: '8px',
-        gap: '8px',
+        columnGap: '8px',
         _currentPage: {
           backgroundColor: 'neutral.20',
           pointerEvents: 'none',

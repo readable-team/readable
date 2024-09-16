@@ -1,13 +1,18 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon, Menu, MenuItem } from '@readable/ui/components';
+  import { Button, FormField, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
+  import { createMutationForm } from '@readable/ui/forms';
+  import mixpanel from 'mixpanel-browser';
+  import { z } from 'zod';
+  import { dataSchemas } from '@/schemas';
   import CheckIcon from '~icons/lucide/check';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
+  import CirclePlusIcon from '~icons/lucide/circle-plus';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
-  import { Img } from '$lib/components';
+  import { Img, TitledModal } from '$lib/components';
   import type { TeamSwitcher_user } from '$graphql';
 
   let _user: TeamSwitcher_user;
@@ -32,6 +37,29 @@
   );
 
   $: currentTeamId = $page.params.teamId;
+
+  const createTeam = graphql(`
+    mutation TeamSwitcher_CreateTeam_Mutation($input: CreateTeamInput!) {
+      createTeam(input: $input) {
+        id
+      }
+    }
+  `);
+
+  let newTeamModalOpen = false;
+
+  const { form: newTeamForm } = createMutationForm({
+    schema: z.object({
+      name: dataSchemas.team.name,
+    }),
+    mutation: async ({ name }) => {
+      const result = await createTeam({ name });
+      mixpanel.track('team:create');
+
+      await goto(`/${result.id}`);
+      newTeamModalOpen = false;
+    },
+  });
 </script>
 
 <Menu
@@ -72,7 +100,7 @@
     <MenuItem
       style={css.raw({
         padding: '8px',
-        gap: '8px',
+        columnGap: '8px',
         _currentPage: {
           backgroundColor: 'neutral.20',
           pointerEvents: 'none',
@@ -93,4 +121,24 @@
       {/if}
     </MenuItem>
   {/each}
+
+  <MenuItem
+    style={flex.raw({ paddingX: '10px', color: 'text.tertiary', gap: '10px' })}
+    on:click={() => (newTeamModalOpen = true)}
+  >
+    <Icon icon={CirclePlusIcon} size={16} />
+    <span>새 팀 만들기</span>
+  </MenuItem>
 </Menu>
+
+<TitledModal bind:open={newTeamModalOpen}>
+  <svelte:fragment slot="title">새 팀 만들기</svelte:fragment>
+
+  <form use:newTeamForm>
+    <FormField name="name" label="팀 이름">
+      <TextInput name="name" placeholder="ACME Inc." />
+    </FormField>
+
+    <Button style={css.raw({ marginTop: '16px', marginLeft: 'auto' })} type="submit">만들기</Button>
+  </form>
+</TitledModal>
