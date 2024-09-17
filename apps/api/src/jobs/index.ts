@@ -1,6 +1,7 @@
 import './cron';
 
 import os from 'node:os';
+import { logger } from '@readable/lib';
 import { Semaphore } from 'async-mutex';
 import dayjs from 'dayjs';
 import { and, asc, eq, sql } from 'drizzle-orm';
@@ -71,7 +72,9 @@ const work = async (tx: Transaction, job: Pick<typeof Jobs.$inferSelect, 'id' | 
         updatedAt: dayjs(),
       })
       .where(eq(Jobs.id, job.id));
-  } catch {
+  } catch (err) {
+    logger.error(err, `${job.name} failed`);
+
     if (job.retries < 3) {
       await tx
         .update(Jobs)

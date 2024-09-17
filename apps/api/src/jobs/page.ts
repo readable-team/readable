@@ -161,10 +161,9 @@ export const PageSearchIndexUpdateJob = defineJob('page:search:index-update', as
 export const PageSummarizeJob = defineJob('page:summarize', async (pageId: string) => {
   const page = await db
     .select({
-      contentId: PageContents.id,
-      content: PageContents.content,
       title: PageContents.title,
       subtitle: PageContents.subtitle,
+      content: PageContents.content,
       text: PageContents.text,
     })
     .from(Pages)
@@ -179,11 +178,7 @@ export const PageSummarizeJob = defineJob('page:summarize', async (pageId: strin
 
   const content = Node.fromJSON(schema, page.content);
 
-  const PREFER_CHUNK_SIZE = 1;
-
   const chunks: { str: string; hash: string }[] = [];
-  let currentChunkSize = 0;
-  let chunkIndex = 0;
 
   if (page.title) {
     chunks.push({ str: page.title, hash: Bun.hash(page.title).toString() });
@@ -195,13 +190,10 @@ export const PageSummarizeJob = defineJob('page:summarize', async (pageId: strin
 
   // 이건 Array의 forEach가 아니라구 ESLint 너가 몰알아???
   // eslint-disable-next-line unicorn/no-array-for-each
-  content.forEach((node, _, i) => {
-    currentChunkSize += node.textContent.length;
-    if (currentChunkSize >= PREFER_CHUNK_SIZE || i === content.childCount - 1) {
-      const chunk = node.textBetween(chunkIndex, i + 1, '\n');
-      chunks.push({ str: chunk, hash: Bun.hash(chunk).toString() });
-      currentChunkSize = 0;
-      chunkIndex = i + 1;
+  content.forEach((node) => {
+    const text = node.textBetween(0, node.content.size, '\n');
+    if (text.length > 0) {
+      chunks.push({ str: text, hash: Bun.hash(text).toString() });
     }
   });
 
