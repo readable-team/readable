@@ -123,7 +123,7 @@
             flexShrink: 0,
             size: '20px',
             borderWidth: '[1.5px]',
-            borderColor: 'border.primary',
+            borderColor: 'neutral.30',
             borderStyle: 'dashed',
             borderRadius: '4px',
           })}
