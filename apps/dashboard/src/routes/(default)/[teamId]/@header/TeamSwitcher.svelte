@@ -110,7 +110,7 @@
       on:click={() => goto(`/${team.id}`)}
     >
       <Img
-        style={css.raw({ size: '20px', borderRadius: 'full' })}
+        style={css.raw({ borderWidth: '1px', borderColor: 'border.image', size: '20px', borderRadius: 'full' })}
         $image={team.avatar}
         alt={`${team.name}의 로고`}
         size={24}

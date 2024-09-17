@@ -78,7 +78,7 @@
       href={`/${$query.team.id}`}
     >
       <Img
-        style={css.raw({ borderRadius: 'full', size: '20px' })}
+        style={css.raw({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '20px' })}
         $image={$query.team.avatar}
         alt={`${$query.team.name}의 로고`}
         size={24}
