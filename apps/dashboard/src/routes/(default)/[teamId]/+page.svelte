@@ -246,6 +246,6 @@
       <TextInput placeholder="ACME 도움센터" />
     </FormField>
 
-    <Button style={css.raw({ width: 'full' })} size="lg" type="submit">만들기</Button>
+    <Button style={css.raw({ marginTop: '20px', width: 'full' })} glossy size="lg" type="submit">만들기</Button>
   </form>
 </TitledModal>

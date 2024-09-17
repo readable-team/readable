@@ -281,6 +281,7 @@
         style={css.raw({ width: 'full' })}
         disabled={$query.page.hasUnpublishedParents ||
           ($query.page.state === PageState.PUBLISHED && !$query.page.hasUnpublishedChanges)}
+        glossy
         size="md"
         on:click={async () => {
           if ($query.page.state === PageState.DRAFT) {
@@ -316,21 +317,6 @@
           발행
         {/if}
       </Button>
-      {#if !($query.page.hasUnpublishedParents || ($query.page.state === PageState.PUBLISHED && !$query.page.hasUnpublishedChanges))}
-        <div
-          class={css({
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            size: 'full',
-            borderRadius: '8px',
-            bgGradient: 'to-r',
-            gradientFrom: 'white/20',
-            gradientTo: 'white/0',
-            pointerEvents: 'none',
-          })}
-        />
-      {/if}
     </Tooltip>
 
     <div class={flex({ direction: 'column', gap: '20px' })}>

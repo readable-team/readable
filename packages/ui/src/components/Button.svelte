@@ -12,6 +12,7 @@
     loading?: boolean;
     style?: SystemStyleObject;
     disabled?: boolean;
+    glossy?: boolean;
   } & Omit<
       T extends 'link'
         ? HTMLAnchorAttributes & { external?: boolean }
@@ -29,6 +30,7 @@
   export let loading = false;
   export let variant: Variants['variant'] = 'primary';
   export let size: Variants['size'] = 'md';
+  export let glossy = false;
 
   export let external = false;
 
@@ -148,7 +150,7 @@
 
 <svelte:element
   this={element}
-  class={css(recipe.raw({ variant, size }), showSpinner && { position: 'relative' }, style)}
+  class={css(recipe.raw({ variant, size }), (showSpinner || glossy) && { position: 'relative' }, style)}
   aria-busy={showSpinner}
   role="button"
   tabindex="0"
@@ -168,4 +170,27 @@
   <div class={css({ display: 'contents' }, showSpinner && { visibility: 'hidden' })}>
     <slot />
   </div>
+  {#if glossy && !disabled}
+    <div
+      class={cva({
+        base: {
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          size: 'full',
+          bgGradient: 'to-r',
+          gradientFrom: 'white/20',
+          gradientTo: 'white/0',
+          pointerEvents: 'none',
+        },
+        variants: {
+          size: {
+            sm: { borderRadius: '6px' },
+            md: { borderRadius: '8px' },
+            lg: { borderRadius: '10px' },
+          },
+        },
+      })({ size })}
+    />
+  {/if}
 </svelte:element>

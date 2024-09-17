@@ -282,20 +282,7 @@
         marginTop: '20px',
       })}
     >
-      <Button style={css.raw({ width: 'full' })} size="lg" type="submit">시작하기</Button>
-      <div
-        class={css({
-          position: 'absolute',
-          top: '0',
-          left: '0',
-          size: 'full',
-          borderRadius: '10px',
-          bgGradient: 'to-r',
-          gradientFrom: 'white/20',
-          gradientTo: 'white/0',
-          pointerEvents: 'none',
-        })}
-      />
+      <Button style={css.raw({ width: 'full' })} glossy size="lg" type="submit">시작하기</Button>
     </div>
   </form>
 </div>
