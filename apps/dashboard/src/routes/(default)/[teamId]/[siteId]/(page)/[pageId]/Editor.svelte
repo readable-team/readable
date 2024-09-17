@@ -162,6 +162,20 @@
     return path;
   };
 
+  const handleFiles = async (pos: number, files: File[]) => {
+    for (const file of files) {
+      const path = await uploadBlob(file);
+
+      if (file.type.startsWith('image/')) {
+        const image = await persistBlobAsImage({ path });
+        editor?.commands.insertContentAt(pos, { type: 'image', attrs: image });
+      } else {
+        const file = await persistBlobAsFile({ path });
+        editor?.commands.insertContentAt(pos, { type: 'file', attrs: file });
+      }
+    }
+  };
+
   const doc = new Y.Doc();
   const awareness = new YAwareness.Awareness(doc);
 
@@ -294,6 +308,7 @@
         return await persistBlobAsImage({ path });
       }}
       bind:editor
+      on:file={(e) => handleFiles(e.detail.pos, e.detail.files)}
     />
   </div>
 </div>
