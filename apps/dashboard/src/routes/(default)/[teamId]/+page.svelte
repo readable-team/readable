@@ -126,17 +126,24 @@
         {#each $query.team.sites as site (site.id)}
           <li
             class={flex({
+              position: 'relative',
               align: 'flex-start',
               justify: 'space-between',
               borderWidth: '1px',
               borderColor: 'border.primary',
               borderRadius: '10px',
-              padding: '16px',
               backgroundColor: 'surface.primary',
             })}
           >
             <a
-              class={flex({ align: 'flex-start', gap: '12px', grow: '1', truncate: true })}
+              class={flex({
+                align: 'flex-start',
+                padding: '16px',
+                paddingRight: '50px',
+                gap: '12px',
+                grow: '1',
+                truncate: true,
+              })}
               href={`/${$query.team.id}/${site.id}`}
             >
               {#if site.logo}
@@ -176,10 +183,15 @@
                 </dl>
               </div>
             </a>
-            <Menu placement="bottom-start">
+            <Menu style={css.raw({ position: 'absolute', right: '16px', top: '16px' })} placement="bottom-start">
               <div
                 slot="button"
-                class={css({ borderRadius: '6px', padding: '4px', _hover: { backgroundColor: 'neutral.20' } })}
+                class={css({
+                  borderRadius: '6px',
+                  padding: '4px',
+                  color: 'neutral.50',
+                  _hover: { backgroundColor: 'neutral.20' },
+                })}
               >
                 <Icon icon={EllipsisIcon} size={16} />
               </div>
