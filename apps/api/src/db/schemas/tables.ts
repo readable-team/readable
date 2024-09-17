@@ -183,7 +183,7 @@ export const PageContentContributors = pgTable(
   {
     id: text('id')
       .primaryKey()
-      .$defaultFn(() => createDbId('PCED')),
+      .$defaultFn(() => createDbId('PCCB')),
     pageId: text('page_id')
       .notNull()
       .references(() => Pages.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
