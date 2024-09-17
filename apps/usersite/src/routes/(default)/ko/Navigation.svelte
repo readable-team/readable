@@ -91,7 +91,10 @@
     const currentEl = navEl.querySelector('[aria-current="page"]');
 
     if (currentEl) {
-      currentEl.scrollIntoView({ block: 'center' });
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const navRect = navEl.parentElement!.getBoundingClientRect();
+      const currentRect = currentEl.getBoundingClientRect();
+      navEl.parentElement?.scrollTo({ top: currentRect.top - navRect.height / 2 });
     }
   }
 
