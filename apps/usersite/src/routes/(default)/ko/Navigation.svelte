@@ -103,7 +103,7 @@
   });
 </script>
 
-<nav bind:this={navEl} class={flex({ direction: 'column', gap: '40px' })}>
+<nav bind:this={navEl} class={flex({ direction: 'column', gap: '40px', mdDown: { marginBottom: '80px' } })}>
   {#each $publicSite.categories as category (category.id)}
     <div>
       <h2

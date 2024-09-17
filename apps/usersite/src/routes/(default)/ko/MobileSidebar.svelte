@@ -58,9 +58,9 @@
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          paddingLeft: '32px',
-          paddingRight: '28px',
-          paddingY: '18px',
+          paddingLeft: '28px',
+          paddingRight: '24px',
+          paddingY: '17px',
           borderBottomWidth: '1px',
           borderBottomColor: 'border.primary',
         })}
@@ -74,19 +74,22 @@
         class={flex({
           flexDirection: 'column',
           justifyContent: 'space-between',
-          padding: '20px',
-          paddingTop: '16px',
+          padding: '16px',
+          paddingBottom: '32px',
           flex: '1',
           overflow: 'auto',
         })}
         data-scroll-lock-ignore
       >
         <slot name="navigation" />
+
         <div
           class={css({
             marginTop: 'auto',
             width: 'full',
-            padding: '20px',
+            paddingTop: '20px',
+            paddingX: '28px',
+            paddingBottom: '32px',
           })}
         >
           <a
