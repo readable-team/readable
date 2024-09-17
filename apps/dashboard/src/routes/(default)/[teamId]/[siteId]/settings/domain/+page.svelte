@@ -253,7 +253,7 @@
         <TextInput name="domain" disabled={!!$query.site.customDomain} placeholder="docs.example.com" />
       </FormField>
 
-      <Button style={css.raw({ marginTop: '29px', marginLeft: 'auto' })} disabled={!$isValid} size="lg" type="submit">
+      <Button style={css.raw({ marginTop: '8px', marginLeft: 'auto' })} disabled={!$isValid} size="lg" type="submit">
         설정
       </Button>
     </form>
