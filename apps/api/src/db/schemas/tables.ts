@@ -18,7 +18,7 @@ export const Categories = pgTable(
       .$defaultFn(() => createDbId('CTG')),
     siteId: text('site_id')
       .notNull()
-      .references(() => Sites.id),
+      .references(() => Sites.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     name: text('name').notNull(),
     state: E._CategoryState('state').notNull().default('ACTIVE'),
     order: bytea('order').notNull(),
@@ -50,7 +50,7 @@ export const Files = pgTable('files', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => createDbId('FILE')),
-  userId: text('user_id').references(() => Users.id),
+  userId: text('user_id').references(() => Users.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
   name: text('name').notNull(),
   format: text('format').notNull(),
   size: integer('size').notNull(),
@@ -64,7 +64,7 @@ export const Images = pgTable('images', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => createDbId('IMG')),
-  userId: text('user_id').references((): AnyPgColumn => Users.id),
+  userId: text('user_id').references((): AnyPgColumn => Users.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
   name: text('name').notNull(),
   format: text('format').notNull(),
   size: integer('size').notNull(),
@@ -109,11 +109,11 @@ export const Pages = pgTable(
       .$defaultFn(() => createDbId('P', { length: 'short' })),
     siteId: text('site_id')
       .notNull()
-      .references(() => Sites.id),
+      .references(() => Sites.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     categoryId: text('category_id')
       .notNull()
-      .references(() => Categories.id),
-    parentId: text('parent_id').references((): AnyPgColumn => Pages.id),
+      .references(() => Categories.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+    parentId: text('parent_id').references((): AnyPgColumn => Pages.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     slug: text('slug')
       .notNull()
       .$defaultFn(() => createPageSlug()),
@@ -139,7 +139,7 @@ export const PageContents = pgTable(
     pageId: text('page_id')
       .notNull()
       .unique()
-      .references(() => Pages.id),
+      .references(() => Pages.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     title: text('title'),
     subtitle: text('subtitle'),
     content: jsonb('content').notNull().$type<JSONContent>(),
@@ -166,7 +166,7 @@ export const PageContentChunks = pgTable(
       .$defaultFn(() => createDbId('PCCH')),
     pageId: text('page_id')
       .notNull()
-      .references(() => Pages.id),
+      .references(() => Pages.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     hash: text('hash').notNull(),
     vector: vector('vector', { dimensions: 1536 }).notNull(),
     createdAt: datetime('created_at')
@@ -186,10 +186,10 @@ export const PageContentContributors = pgTable(
       .$defaultFn(() => createDbId('PCED')),
     pageId: text('page_id')
       .notNull()
-      .references(() => Pages.id),
+      .references(() => Pages.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     userId: text('user_id')
       .notNull()
-      .references(() => Users.id),
+      .references(() => Users.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     createdAt: datetime('created_at')
       .notNull()
       .default(sql`now()`),
@@ -211,7 +211,7 @@ export const PageContentSnapshots = pgTable(
       .$defaultFn(() => createDbId('PCSN')),
     pageId: text('page_id')
       .notNull()
-      .references(() => Pages.id),
+      .references(() => Pages.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     snapshot: bytea('snapshot').notNull(),
     createdAt: datetime('created_at')
       .notNull()
@@ -229,7 +229,7 @@ export const PageContentStates = pgTable('page_content_states', {
   pageId: text('page_id')
     .notNull()
     .unique()
-    .references(() => Pages.id),
+    .references(() => Pages.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
   title: text('title'),
   subtitle: text('subtitle'),
   content: jsonb('content').notNull().$type<JSONContent>(),
@@ -254,10 +254,10 @@ export const PageContentUpdates = pgTable('page_content_updates', {
     .$defaultFn(() => createDbId('PCUP')),
   userId: text('user_id')
     .notNull()
-    .references(() => Users.id),
+    .references(() => Users.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
   pageId: text('page_id')
     .notNull()
-    .references(() => Pages.id),
+    .references(() => Pages.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
   update: bytea('update').notNull(),
   seq: bigint('seq', { mode: 'bigint' }).notNull().generatedAlwaysAsIdentity(),
   createdAt: datetime('created_at')
@@ -295,11 +295,11 @@ export const Sites = pgTable(
       .$defaultFn(() => createDbId('S', { length: 'short' })),
     teamId: text('team_id')
       .notNull()
-      .references(() => Teams.id),
+      .references(() => Teams.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     slug: text('slug').notNull(),
     name: text('name').notNull(),
     state: E._SiteState('state').notNull().default('ACTIVE'),
-    logoId: text('logo_id').references(() => Images.id),
+    logoId: text('logo_id').references(() => Images.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     themeColor: text('theme_color').notNull(),
     createdAt: datetime('created_at')
       .notNull()
@@ -322,7 +322,7 @@ export const SiteCustomDomains = pgTable(
       .$defaultFn(() => createDbId('SCD')),
     siteId: text('site_id')
       .notNull()
-      .references(() => Sites.id),
+      .references(() => Sites.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     domain: text('domain').notNull(),
     state: E._SiteCustomDomainState('state').notNull(),
     createdAt: datetime('created_at')
@@ -347,10 +347,10 @@ export const Teams = pgTable(
     state: E._TeamState('state').notNull().default('ACTIVE'),
     planId: text('plan_id')
       .notNull()
-      .references(() => Plans.id),
+      .references(() => Plans.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     avatarId: text('avatar_id')
       .notNull()
-      .references(() => Images.id),
+      .references(() => Images.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     createdAt: datetime('created_at')
       .notNull()
       .default(sql`now()`),
@@ -368,10 +368,10 @@ export const TeamMembers = pgTable(
       .$defaultFn(() => createDbId('TM')),
     teamId: text('team_id')
       .notNull()
-      .references(() => Teams.id),
+      .references(() => Teams.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     userId: text('user_id')
       .notNull()
-      .references(() => Users.id),
+      .references(() => Users.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     role: E._TeamMemberRole('role').notNull(),
     createdAt: datetime('created_at')
       .notNull()
@@ -391,7 +391,7 @@ export const TeamMemberInvitations = pgTable(
       .$defaultFn(() => createDbId('TMIV')),
     teamId: text('team_id')
       .notNull()
-      .references(() => Teams.id),
+      .references(() => Teams.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     email: text('email').notNull(),
     createdAt: datetime('created_at')
       .notNull()
@@ -411,7 +411,7 @@ export const PaymentMethods = pgTable(
       .$defaultFn(() => createDbId('PYMT')),
     teamId: text('team_id')
       .notNull()
-      .references(() => Teams.id),
+      .references(() => Teams.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     name: text('name').notNull(),
     billingKey: text('billing_key').notNull(),
     state: E._PaymentMethodState('state').notNull().default('ACTIVE'),
@@ -436,7 +436,7 @@ export const Users = pgTable(
     name: text('name').notNull(),
     avatarId: text('avatar_id')
       .notNull()
-      .references(() => Images.id),
+      .references(() => Images.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     state: E._UserState('state').notNull().default('ACTIVE'),
     createdAt: datetime('created_at')
       .notNull()
@@ -458,7 +458,7 @@ export const UserSessions = pgTable(
       .$defaultFn(() => createDbId('USES')),
     userId: text('user_id')
       .notNull()
-      .references(() => Users.id),
+      .references(() => Users.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     createdAt: datetime('created_at')
       .notNull()
       .default(sql`now()`),
@@ -477,7 +477,7 @@ export const UserSingleSignOns = pgTable(
     userId: text('user_id')
       .notNull()
       .unique()
-      .references(() => Users.id),
+      .references(() => Users.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     provider: E._SingleSignOnProvider('provider').notNull(),
     principal: text('principal').notNull(),
     email: text('email').notNull(),
