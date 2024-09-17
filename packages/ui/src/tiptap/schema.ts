@@ -68,7 +68,11 @@ export const basicExtensions = [
       const id = createAnchorId(node.textContent);
       const textStyle = node.attrs.level === 1 ? '26b' : node.attrs.level === 2 ? '22b' : '18b';
 
-      return [`h${level}`, { ...HTMLAttributes, id, class: css({ textStyle }) }, 0];
+      return [
+        `h${level}`,
+        mergeAttributes(HTMLAttributes, { id, class: css({ textStyle }) }),
+        !this.editor?.isEditable && node.content.size === 0 ? ['br'] : 0,
+      ];
     },
   }),
   HardBreak,
@@ -135,6 +139,14 @@ export const basicExtensions = [
   }),
   ListItem.extend({
     content: 'paragraph (paragraph | bulletList | orderedList)*',
+  }).configure({
+    HTMLAttributes: {
+      class: css({
+        '& br.ProseMirror-trailingBreak': {
+          display: 'none',
+        },
+      }),
+    },
   }),
 
   // marks
