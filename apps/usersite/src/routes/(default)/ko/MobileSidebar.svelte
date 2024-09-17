@@ -74,14 +74,14 @@
         class={flex({
           flexDirection: 'column',
           justifyContent: 'space-between',
-          padding: '16px',
-          paddingBottom: '32px',
           flex: '1',
           overflow: 'auto',
         })}
         data-scroll-lock-ignore
       >
-        <slot name="navigation" />
+        <div class={css({ padding: '16px', paddingBottom: '80px' })}>
+          <slot name="navigation" />
+        </div>
 
         <div
           class={css({
