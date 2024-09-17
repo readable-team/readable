@@ -264,13 +264,12 @@
   <svelte:fragment slot="title">
     <div class={flex({ alignItems: 'center', gap: '8px' })}>
       {#if $query.site.logo}
-        <!-- FIXME: 사이트 로고인데 동그라미? -->
         <Img
           style={css.raw({
             borderWidth: '1px',
             borderColor: 'border.image',
-            borderRadius: 'full',
-            size: '20px',
+            borderRadius: '4px',
+            size: '24px',
           })}
           $image={$query.site.logo}
           alt={`${$query.site.name}의 아바타`}
