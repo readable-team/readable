@@ -10,6 +10,7 @@ import {
   extractTableCode,
   first,
   firstOrThrow,
+  PageContents,
   PageContentStates,
   Pages,
   SiteCustomDomains,
@@ -295,7 +296,7 @@ builder.mutationFields((t) => ({
               .where(
                 and(
                   eq(Pages.categoryId, templateCategory.id),
-                  ne(Pages.state, PageState.DELETED),
+                  eq(Pages.state, PageState.PUBLISHED),
                   templatePageParentId === null ? isNull(Pages.parentId) : eq(Pages.parentId, templatePageParentId),
                 ),
               )
@@ -304,24 +305,24 @@ builder.mutationFields((t) => ({
             for (const templatePage of templatePages) {
               templatePageParentIds.push(templatePage.id);
 
-              const templatePageContentState = await tx
+              const templatePageContent = await tx
                 .select({
-                  title: PageContentStates.title,
-                  subtitle: PageContentStates.subtitle,
-                  content: PageContentStates.content,
-                  text: PageContentStates.text,
-                  hash: PageContentStates.hash,
+                  title: PageContents.title,
+                  subtitle: PageContents.subtitle,
+                  content: PageContents.content,
+                  text: PageContents.text,
+                  hash: PageContents.hash,
                 })
-                .from(PageContentStates)
-                .where(eq(PageContentStates.pageId, templatePage.id))
+                .from(PageContents)
+                .where(eq(PageContents.pageId, templatePage.id))
                 .then(firstOrThrow);
 
-              const title = templatePageContentState.title?.replaceAll('{siteName}', input.name);
+              const title = templatePageContent.title?.replaceAll('{siteName}', input.name);
 
               const doc = makeYDoc({
                 title: title ?? null,
-                subtitle: templatePageContentState.subtitle,
-                content: templatePageContentState.content,
+                subtitle: templatePageContent.subtitle,
+                content: templatePageContent.content,
               });
 
               const page = await tx
@@ -340,13 +341,15 @@ builder.mutationFields((t) => ({
               await tx.insert(PageContentStates).values({
                 pageId: page.id,
                 title: title ?? null,
-                subtitle: templatePageContentState.subtitle,
-                content: templatePageContentState.content,
-                text: templatePageContentState.text,
+                subtitle: templatePageContent.subtitle,
+                content: templatePageContent.content,
+                text: templatePageContent.text,
                 update: Y.encodeStateAsUpdateV2(doc),
                 vector: Y.encodeStateVector(doc),
-                hash: templatePageContentState.hash,
+                hash: templatePageContent.hash,
               });
+
+              await enqueueJob(tx, 'page:search:index-update', page.id);
             }
           }
         }
