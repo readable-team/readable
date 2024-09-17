@@ -113,15 +113,14 @@
             themeColor: $query.site.themeColor,
             logoId: $query.site.logo?.id,
           });
+
+          setSlugFormIsDirty(false);
+          toast.success('사이트 주소가 변경되었습니다');
+          mixpanel.track('site:update', {
+            fields: ['slug'],
+          });
         },
         variant: 'primary',
-      });
-    },
-    onSuccess: () => {
-      setSlugFormIsDirty(false);
-      toast.success('사이트 주소가 변경되었습니다');
-      mixpanel.track('site:update', {
-        fields: ['slug'],
       });
     },
   });
