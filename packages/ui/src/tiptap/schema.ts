@@ -139,14 +139,6 @@ export const basicExtensions = [
   }),
   ListItem.extend({
     content: 'paragraph (paragraph | bulletList | orderedList)*',
-  }).configure({
-    HTMLAttributes: {
-      class: css({
-        '& br.ProseMirror-trailingBreak': {
-          display: 'none',
-        },
-      }),
-    },
   }),
 
   // marks
