@@ -5,11 +5,13 @@
   // import { toast } from '@readable/ui/notification';
   import PencilLineIcon from '~icons/lucide/pencil-line';
   import Trash2Icon from '~icons/lucide/trash-2';
+  import RingSpinner from '../../../components/RingSpinner.svelte';
 
   export let unsetLink: () => void;
   export let hide: () => void;
   export let linkHref: string;
   export let openLinkEditPopover: () => void;
+  export let handleLink: (url: string) => Promise<Record<string, unknown>>;
 
   const menuButtonStyle = flex({
     width: '22px',
@@ -37,6 +39,23 @@
   //   hide();
   // };
 
+  const loadLink = async (url: string) => {
+    if (url.startsWith('page://slug/')) {
+      const resp = await handleLink(url);
+      return {
+        type: 'internal' as const,
+        title: resp.name as string,
+        href: resp.url as string,
+      };
+    } else {
+      return {
+        type: 'external' as const,
+        title: url,
+        href: url,
+      };
+    }
+  };
+
   const unlink = () => {
     unsetLink();
     hide();
@@ -61,21 +80,27 @@
       boxShadow: 'strong',
     })}
   >
-    <a
-      class={css({
-        color: 'text.tertiary',
-        textStyle: '14r',
-        truncate: true,
-        _hover: {
-          textDecoration: 'underline',
-        },
-      })}
-      href={linkHref}
-      rel="noopener noreferrer"
-      target="_blank"
-    >
-      {linkHref}
-    </a>
+    {#await loadLink(linkHref)}
+      <RingSpinner style={css.raw({ size: '14px', color: 'text.tertiary' })} />
+    {:then link}
+      <a
+        class={css({
+          color: 'text.tertiary',
+          textStyle: '14r',
+          truncate: true,
+          _hover: {
+            textDecoration: 'underline',
+          },
+        })}
+        href={link.href}
+        {...link.type === 'external' && {
+          rel: 'noopener noreferrer',
+          target: '_blank',
+        }}
+      >
+        {link.title}
+      </a>
+    {/await}
     <div
       class={flex({
         gap: '8px',

@@ -180,6 +180,7 @@ type Mutation {
   setSiteCustomDomain(input: SetSiteCustomDomainInput!): SiteCustomDomain!
   syncPageContent(input: SyncPageContentInput!): Boolean!
   unfurlEmbed(input: UnfurlEmbedInput!): Embed!
+  unfurlLink(input: UnfurlLinkInput!): UnfurlLinkResult!
   unpublishPage(input: UnpublishPageInput!): Page!
   unsetSiteCustomDomain(input: UnsetSiteCustomDomainInput!): SiteCustomDomain!
   updateCategory(input: UpdateCategoryInput!): Category!
@@ -469,6 +470,17 @@ enum TeamState {
 union TeamUpdateStreamPayload = Team | TeamMember
 
 input UnfurlEmbedInput {
+  url: String!
+}
+
+input UnfurlLinkInput {
+  siteId: ID!
+  url: String!
+}
+
+union UnfurlLinkResult = Page | UnfurlLinkUrl
+
+type UnfurlLinkUrl {
   url: String!
 }
 

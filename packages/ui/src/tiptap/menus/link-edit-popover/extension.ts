@@ -19,8 +19,18 @@ declare module '@tiptap/core' {
   }
 }
 
-export const LinkEditPopover = Extension.create({
+type Options = {
+  handleLink: (url: string) => Promise<Record<string, unknown>>;
+};
+
+export const LinkEditPopover = Extension.create<Options>({
   name: 'linkEditPopover',
+
+  addOptions() {
+    return {
+      handleLink: async () => ({}),
+    };
+  },
 
   addStorage() {
     return {
@@ -108,6 +118,7 @@ export const LinkEditPopover = Extension.create({
             target: modalDom,
             props: {
               editor: this.editor,
+              handleLink: this.options.handleLink,
               from,
               to,
               referenceElement: element,

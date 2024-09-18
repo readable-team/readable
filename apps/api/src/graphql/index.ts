@@ -2,12 +2,12 @@ import './objects';
 import './enums';
 import './auth';
 import './blob';
-import './embed';
 import './page';
 import './payment';
 import './search';
 import './site';
 import './team';
+import './unfurl';
 import './user';
 
 import { builder } from '@/builder';

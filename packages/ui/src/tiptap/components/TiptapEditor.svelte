@@ -4,6 +4,8 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import { Collaboration } from '../extensions/collaboration';
   import { Freeze } from '../extensions/freeze';
+  import { LinkEditPopover } from '../menus/link-edit-popover';
+  import { LinkTooltip } from '../menus/link-tooltip';
   import { Embed } from '../node-views/embed';
   import { File } from '../node-views/file';
   import { Image } from '../node-views/image';
@@ -28,6 +30,7 @@
   export let handleImageUpload: (file: File) => Promise<Record<string, unknown>>;
   export let handleFileUpload: (file: File) => Promise<Record<string, unknown>>;
   export let handleEmbed: (url: string) => Promise<Record<string, unknown>>;
+  export let handleLink: (url: string) => Promise<Record<string, unknown>>;
 
   let element: HTMLDivElement;
 
@@ -40,6 +43,8 @@
         Embed.configure({ handleEmbed }),
         Image.configure({ handleImageUpload }),
         File.configure({ handleFileUpload }),
+        LinkEditPopover.configure({ handleLink }),
+        LinkTooltip.configure({ handleLink }),
         Collaboration.configure({ doc, awareness }),
         ...(frozen ? [Freeze] : []),
       ],

@@ -28,8 +28,6 @@ import { BlockSelectionHelper } from './extensions/block-selection';
 import { Placeholder } from './extensions/placeholder';
 import { BubbleMenu } from './menus/bubble';
 import { FloatingMenu } from './menus/floating';
-import { LinkEditPopover } from './menus/link-edit-popover';
-import { LinkTooltip } from './menus/link-tooltip';
 import { SlashMenu } from './menus/slash';
 import { Callout } from './node-views';
 import { Embed } from './node-views/embed';
@@ -161,6 +159,7 @@ export const basicExtensions = [
   }),
   Link.configure({
     openOnClick: false,
+    protocols: ['page'],
     HTMLAttributes: {
       class: css({
         color: 'var(--usersite-theme-color)',
@@ -175,6 +174,19 @@ export const basicExtensions = [
           textDecorationThickness: '2px',
         },
       }),
+    },
+  }).extend({
+    renderHTML({ HTMLAttributes }) {
+      let attrs = HTMLAttributes;
+      if (attrs.href?.startsWith('page://slug/')) {
+        attrs = {
+          target: this.editor?.isEditable ? '_blank' : null,
+          rel: null,
+          href: attrs.href.replace('page://slug/', '/ko/'),
+        };
+      }
+
+      return ['a', mergeAttributes(this.options.HTMLAttributes, attrs), 0];
     },
   }),
 
@@ -197,8 +209,6 @@ export const editorExtensions = [
   BubbleMenu,
   FloatingMenu,
   SlashMenu,
-  LinkTooltip,
-  LinkEditPopover,
 ];
 
 export const schema = getSchema([...basicExtensions, Embed, Image, File]);

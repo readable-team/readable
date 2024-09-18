@@ -11,10 +11,20 @@ type State = {
   anchorNode: Node | null;
 };
 
+type Options = {
+  handleLink: (url: string) => Promise<Record<string, unknown>>;
+};
+
 const key = new PluginKey<State>('linkTooltip');
 
-export const LinkTooltip = Extension.create({
+export const LinkTooltip = Extension.create<Options>({
   name: 'linkTooltip',
+
+  addOptions() {
+    return {
+      handleLink: async () => ({}),
+    };
+  },
 
   addProseMirrorPlugins() {
     return [
@@ -113,6 +123,7 @@ export const LinkTooltip = Extension.create({
                   target: dom,
                   props: {
                     hide: hideTooltip,
+                    handleLink: this.options.handleLink,
                     unsetLink,
                     linkHref,
                     openLinkEditPopover,

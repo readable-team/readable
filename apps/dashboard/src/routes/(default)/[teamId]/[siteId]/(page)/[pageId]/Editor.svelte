@@ -8,6 +8,7 @@
   import * as YAwareness from 'y-protocols/awareness';
   import * as Y from 'yjs';
   import { PageContentSyncKind } from '@/enums';
+  import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
   import Breadcrumb from './Breadcrumb.svelte';
   import type { Editor } from '@tiptap/core';
@@ -27,6 +28,14 @@
 
         page(pageId: $pageId) {
           id
+
+          site {
+            id
+
+            team {
+              id
+            }
+          }
 
           content {
             id
@@ -96,6 +105,28 @@
         description
         thumbnailUrl
         html
+      }
+    }
+  `);
+
+  const unfurlLink = graphql(`
+    mutation PagePage_UnfurlLink_Mutation($input: UnfurlLinkInput!) {
+      unfurlLink(input: $input) {
+        __typename
+
+        ... on Page {
+          id
+          slug
+
+          content {
+            id
+            title
+          }
+        }
+
+        ... on UnfurlLinkUrl {
+          url
+        }
       }
     }
   `);
@@ -306,6 +337,17 @@
       handleImageUpload={async (file) => {
         const path = await uploadBlob(file);
         return await persistBlobAsImage({ path });
+      }}
+      handleLink={async (url) => {
+        const resp = await unfurlLink({ siteId: $query.page.site.id, url });
+        return resp.__typename === 'Page'
+          ? {
+              name: resp.content.title,
+              href: `page://slug/${resp.slug}`,
+              host: $page.url.origin,
+              url: `/${$query.page.site.team.id}/${$query.page.site.id}/${resp.id}`,
+            }
+          : { href: resp.url };
       }}
       bind:editor
       on:file={(e) => handleFiles(e.detail.pos, e.detail.files)}

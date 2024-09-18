@@ -14,8 +14,9 @@
   export let currentLink: string | null;
   export let defaultLink = '';
   export let onClose: () => void;
+  export let handleLink: (url: string) => Promise<Record<string, unknown>>;
 
-  let linkDraft = defaultLink;
+  let linkDraft = '';
   let floatingElement: HTMLElement;
   let inputElement: HTMLInputElement;
   let cleanup: (() => void) | null = null;
@@ -27,16 +28,23 @@
     return url;
   };
 
-  const updateLink = () => {
+  const loadLink = async (href: string) => {
+    const resp = await handleLink(href);
+    linkDraft = resp.url ? `${resp.host}${resp.url}` : href;
+  };
+
+  $: loadLink(defaultLink);
+
+  const updateLink = async () => {
     linkDraft = linkDraft.trim();
     linkDraft = addHttpScheme(linkDraft);
 
-    const { state, dispatch } = editor.view;
-    let { tr } = state;
+    const attrs = await handleLink(linkDraft);
 
-    tr.addMark(from, to, editor.schema.marks.link.create({ href: linkDraft }));
+    const { tr } = editor.view.state;
+    tr.addMark(from, to, editor.schema.marks.link.create({ ...attrs }));
+    editor.view.dispatch(tr);
 
-    dispatch(tr);
     onClose();
   };
 
