@@ -140,9 +140,7 @@
           },
         },
         item.__typename === 'Page' ? { height: '34px' } : { height: '30px' },
-        depth === maxDepth
-          ? { borderTopLeftRadius: '0', borderBottomLeftRadius: '0', marginLeft: '14px' }
-          : { paddingLeft: '4px' },
+        depth === maxDepth ? { borderTopLeftRadius: '0', borderBottomLeftRadius: '0' } : { paddingLeft: '4px' },
       ),
     )}
   >
@@ -181,6 +179,7 @@
     {#if item.__typename === 'Page'}
       <a
         class={flex({
+          alignSelf: 'stretch',
           alignItems: 'center',
           gap: '4px',
           flex: '1',

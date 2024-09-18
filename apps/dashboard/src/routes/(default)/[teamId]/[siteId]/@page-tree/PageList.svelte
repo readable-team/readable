@@ -461,6 +461,7 @@
 
 <ul
   bind:this={listElem}
+  style:margin-left={`${(depth - 1) * 14}px`}
   class={cx(
     'dnd-list',
     css(
@@ -468,6 +469,7 @@
         display: 'flex',
         flexDirection: 'column',
         userSelect: 'none',
+        gap: '1px',
       },
       parent === null ? { gap: '16px' } : {},
     ),
@@ -547,7 +549,7 @@
           },
         },
         depth === maxDepth
-          ? { borderTopLeftRadius: '0', borderBottomLeftRadius: '0', marginLeft: '14px' }
+          ? { borderTopLeftRadius: '0', borderBottomLeftRadius: '0' }
           : { marginTop: '1px', paddingLeft: '4px' },
       )}
       aria-selected="false"
