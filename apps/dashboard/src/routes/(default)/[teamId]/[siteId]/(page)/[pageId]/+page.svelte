@@ -53,6 +53,10 @@
           id
         }
 
+        children {
+          id
+        }
+
         site {
           id
           name
@@ -121,7 +125,10 @@
   `);
 
   afterNavigate(() => {
-    $treeOpenState[$query.page.id] = true;
+    // NOTE: maxDepth = 2
+    if ($query.page.children.length > 0) {
+      $treeOpenState[$query.page.id] = true;
+    }
     if ($query.page.parent) {
       $treeOpenState[$query.page.parent.id] = true;
     }
