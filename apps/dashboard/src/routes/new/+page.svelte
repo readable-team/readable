@@ -58,6 +58,10 @@
         team {
           id
         }
+
+        firstPage {
+          id
+        }
       }
     }
   `);
@@ -84,7 +88,7 @@
         role: jobRole,
       });
 
-      await goto(`/${resp.team.id}/${resp.id}`);
+      await goto(`/${resp.team.id}/${resp.id}/${resp.firstPage?.id ?? ''}`);
     },
   });
 

@@ -45,6 +45,10 @@
     mutation TeamPage_CreateSite_Mutation($input: CreateSiteInput!) {
       createSite(input: $input) {
         id
+
+        firstPage {
+          id
+        }
       }
     }
   `);
@@ -60,7 +64,7 @@
     onSuccess: async (res) => {
       mixpanel.track('site:create');
 
-      await goto(`/${$query.team.id}/${res.id}`);
+      await goto(`/${$query.team.id}/${res.id}/${res.firstPage?.id ?? ''}`);
       createSiteOpen = false;
     },
   });

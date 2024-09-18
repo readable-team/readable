@@ -42,6 +42,10 @@
     mutation TeamLayout_CreateSite_Mutation($input: CreateSiteInput!) {
       createSite(input: $input) {
         id
+
+        firstPage {
+          id
+        }
       }
     }
   `);
@@ -57,7 +61,7 @@
       const result = await createSite({ teamId, name });
       mixpanel.track('site:create');
 
-      await goto(`/${teamId}/${result.id}`);
+      await goto(`/${teamId}/${result.id}/${result.firstPage?.id ?? ''}`);
       newSiteModalOpen = false;
     },
   });
