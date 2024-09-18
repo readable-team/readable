@@ -131,7 +131,7 @@
       target="_blank"
     >
       <Icon icon={MousePointerClickIcon} />
-      {$query.site.url}
+      사이트 바로가기
     </a>
   </nav>
 
