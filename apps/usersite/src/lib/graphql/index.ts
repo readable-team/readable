@@ -1,10 +1,11 @@
 import { createClient, errorExchange } from '@readable/gql';
 import { ReadableError } from '@/errors';
+import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
 
 // eslint-disable-next-line import/no-default-export
 export default createClient({
-  url: `${env.PUBLIC_API_URL}/graphql`,
+  url: () => `${browser ? env.PUBLIC_API_URL : env.PUBLIC_API_INTERNAL_URL}/graphql`,
   headers: () => ({
     'x-rdbl-svc': 'usersite',
   }),

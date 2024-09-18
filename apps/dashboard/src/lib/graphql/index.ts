@@ -8,7 +8,7 @@ export const accessToken = persisted<string | null>('at');
 
 // eslint-disable-next-line import/no-default-export
 export default createClient({
-  url: `${env.PUBLIC_API_URL}/graphql`,
+  url: () => `${env.PUBLIC_API_URL}/graphql`,
   headers: () => {
     const token = get(accessToken);
 
