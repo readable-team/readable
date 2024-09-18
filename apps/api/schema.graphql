@@ -1,3 +1,13 @@
+type Answer {
+  sources: [AnswerSource!]!
+  text: String!
+}
+
+type AnswerSource {
+  pageId: String!
+  title: String
+}
+
 input AuthorizeSingleSignOnInput {
   params: JSON!
   provider: SingleSignOnProvider!
@@ -336,6 +346,7 @@ type Query {
   publicPage(slug: String!): PublicPage!
   publicSite: PublicSite!
   searchPage(query: String!, siteId: String!): SearchPageResult!
+  searchPageAndAnswer(query: String!, siteId: String!): SearchPageAndAnswerResult!
   searchPageByChange(query: String!, siteId: String!): [SearchPageByChangeHit!]!
   searchPublicPage(query: String!): SearchPublicPageResult!
   site(siteId: ID!): Site!
@@ -353,6 +364,11 @@ input ResendInvitationEmailInput {
 
 input RevokeInvitationInput {
   invitationId: String!
+}
+
+type SearchPageAndAnswerResult {
+  answer: Answer!
+  pages: [Page!]!
 }
 
 type SearchPageByChangeFix {

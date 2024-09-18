@@ -118,6 +118,49 @@ SearchPageByChangeHit.implement({
   }),
 });
 
+type SearchPageAndAnswerResult = {
+  pages: {
+    id: string;
+    title: string | null;
+    subtitle: string | null;
+    text: string;
+  }[];
+  answer: {
+    text: string;
+    sources: {
+      pageId: string;
+      title: string | null;
+    }[];
+  };
+};
+
+const SearchPageAndAnswerResult = builder.objectRef<SearchPageAndAnswerResult>('SearchPageAndAnswerResult');
+SearchPageAndAnswerResult.implement({
+  fields: (t) => ({
+    pages: t.field({
+      type: [Page],
+      resolve: (result) => result.pages.map((page) => page.id),
+    }),
+    answer: t.field({
+      type: builder.objectRef('Answer').implement({
+        fields: (t) => ({
+          text: t.string(),
+          sources: t.field({
+            type: [
+              builder.objectRef('AnswerSource').implement({
+                fields: (t) => ({
+                  pageId: t.string(),
+                  title: t.string({ nullable: true }),
+                }),
+              }),
+            ],
+          }),
+        }),
+      }),
+    }),
+  }),
+});
+
 builder.queryFields((t) => ({
   searchPage: t.withAuth({ session: true }).field({
     type: SearchPageResult,
@@ -235,6 +278,94 @@ builder.queryFields((t) => ({
       });
 
       return result;
+    },
+  }),
+
+  searchPageAndAnswer: t.withAuth({ session: true }).field({
+    type: SearchPageAndAnswerResult,
+    args: {
+      siteId: t.arg.string(),
+      query: t.arg.string(),
+    },
+    resolve: async (_, args, ctx) => {
+      await assertSitePermission({
+        siteId: args.siteId,
+        userId: ctx.session.userId,
+      });
+
+      const queryVector = await openai.client.embeddings
+        .create({
+          model: 'text-embedding-3-small',
+          input: args.query,
+        })
+        .then((response) => response.data[0].embedding);
+
+      const similarity = sql<number>`1 - (${cosineDistance(PageContentChunks.vector, queryVector)})`;
+
+      const result = await db
+        .select({
+          id: Pages.id,
+          title: PageContents.title,
+          subtitle: PageContents.subtitle,
+          text: PageContents.text,
+          similarity,
+        })
+        .from(PageContentChunks)
+        .innerJoin(Pages, eq(Pages.id, PageContentChunks.pageId))
+        .innerJoin(PageContents, eq(PageContents.pageId, PageContentChunks.pageId))
+        .where(and(eq(Pages.siteId, args.siteId), eq(Pages.state, PageState.PUBLISHED), gt(similarity, 0.35)))
+        .orderBy(desc(similarity))
+        .limit(5);
+
+      const context = result.map((page) => `pageId: ${page.id}\n제목: ${page.title}\n내용: ${page.text}`).join('\n\n');
+
+      const llmResult = await openai.client.beta.chat.completions
+        .parse({
+          model: 'gpt-4o-2024-08-06',
+          temperature: 0.7,
+          max_tokens: 1000,
+          response_format: zodResponseFormat(
+            z.object({
+              answer: z.string(),
+              sources: z.array(
+                z.object({
+                  pageId: z.string(),
+                  title: z.string().nullable(),
+                }),
+              ),
+            }),
+            'answer',
+          ),
+          messages: [
+            {
+              role: 'system',
+              content:
+                '당신은 도움말 센터의 AI 어시스턴트입니다. 주어진 문서들을 바탕으로 사용자의 질문에 답변해주세요. 답변 시 관련된 문서의 제목을 언급해주세요.',
+            },
+            {
+              role: 'user',
+              content: JSON.stringify({
+                context,
+                query: args.query,
+              }),
+            },
+          ],
+        })
+        .then(
+          (response) =>
+            response.choices[0].message.parsed ?? {
+              answer: '죄송합니다. 답변을 생성하는 데 문제가 발생했습니다.',
+              sources: [],
+            },
+        );
+
+      return {
+        pages: result,
+        answer: {
+          text: llmResult.answer,
+          sources: llmResult.sources,
+        },
+      };
     },
   }),
 }));

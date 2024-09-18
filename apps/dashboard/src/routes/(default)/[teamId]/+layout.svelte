@@ -5,6 +5,8 @@
   import { browser } from '$app/environment';
   import { graphql } from '$graphql';
   import Header from './@header/Header.svelte';
+  import AiFix from './AiFix.svelte';
+  import AiSearch from './AiSearch.svelte';
 
   $: query = graphql(`
     query TeamLayout_Query($teamId: ID!) {
@@ -57,4 +59,6 @@
   <Header {$query} />
 
   <slot />
+
+  <AiSearch />
 </div>
