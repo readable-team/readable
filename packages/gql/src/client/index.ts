@@ -26,7 +26,7 @@ export const createClient = ({ url, headers, exchanges }: CreateClientParams) =>
 };
 
 type CreateClientParams = {
-  url: () => string;
+  url: string;
   headers?: () => Record<string, string>;
   exchanges?: Exchange[];
 };
@@ -41,7 +41,7 @@ type CreateOperationParams<T extends $StoreSchema> = {
 };
 
 class Client {
-  private url: () => string;
+  private url: string;
   private headers?: () => Record<string, string>;
 
   private forward: ExchangeIO;
@@ -64,7 +64,7 @@ class Client {
       ...(exchanges ?? []),
       cacheExchange(this._cache),
       fetchExchange,
-      sseExchange(url(), headers),
+      sseExchange(url, headers),
     ]);
 
     this.forward = composedExchange({
@@ -88,7 +88,7 @@ class Client {
       schema,
       variables,
       context: {
-        url: this.url(),
+        url: this.url,
         requestPolicy: context?.requestPolicy ?? 'network-only',
         fetch: context?.fetch,
         fetchOpts: {
