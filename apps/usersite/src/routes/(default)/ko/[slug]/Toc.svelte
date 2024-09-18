@@ -126,6 +126,7 @@
     paddingX: '20px',
     paddingBottom: '120px',
   })}
+  hidden={headings.length <= 1}
 >
   <nav role="doc-toc">
     <ul
