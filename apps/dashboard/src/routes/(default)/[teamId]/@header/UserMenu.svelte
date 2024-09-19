@@ -17,6 +17,7 @@
 
   let _query: UserMenu_query;
   export { _query as $query };
+  export let teamId: string | undefined = undefined;
 
   let openUserSettingModal = false;
 
@@ -39,11 +40,6 @@
             id
             ...Img_image
           }
-        }
-
-        team(teamId: $teamId) {
-          id
-          ...UserSettingModal_team
         }
       }
     `),
@@ -102,10 +98,12 @@
     </div>
   </li>
 
-  <MenuItem external={false} href="?tab=settings/team" type="link">
-    <Icon icon={Building2Icon} size={14} />
-    <span>팀 설정</span>
-  </MenuItem>
+  {#if teamId}
+    <MenuItem external={false} href="/{teamId}/settings" type="link">
+      <Icon icon={Building2Icon} size={14} />
+      <span>팀 설정</span>
+    </MenuItem>
+  {/if}
   <MenuItem external={false} href="?tab=settings/personal" type="link">
     <Icon icon={CircleUserRoundIcon} size={14} />
     <span>개인 설정</span>
@@ -143,4 +141,4 @@
   </MenuItem>
 </Menu>
 
-<UserSettingModal $team={$query.team} $user={$query.me} bind:open={openUserSettingModal} />
+<UserSettingModal $user={$query.me} bind:open={openUserSettingModal} />

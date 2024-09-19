@@ -9,15 +9,14 @@
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
-  import LogOutIcon from '~icons/lucide/log-out';
   import { goto } from '$app/navigation';
-  import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
-  import Img from '$lib/components/Img.svelte';
-  import { accessToken } from '$lib/graphql';
+  import UserMenu from '../(default)/[teamId]/@header/UserMenu.svelte';
 
   $: query = graphql(`
     query NewPage_Query {
+      ...UserMenu_query
+
       me @required {
         id
         name
@@ -33,12 +32,6 @@
           id
         }
       }
-    }
-  `);
-
-  const logout = graphql(`
-    mutation NewPage_Logout_Mutation {
-      logout
     }
   `);
 
@@ -108,45 +101,8 @@
   });
 </script>
 
-<header
-  class={flex({ align: 'center', justify: 'space-between', paddingTop: '24px', paddingX: '24px', height: '64px' })}
->
-  <Button
-    style={flex.raw({ align: 'center', gap: '6px', paddingLeft: '10px', textStyle: '14b' })}
-    size="sm"
-    variant="secondary"
-    on:click={async () => {
-      await logout();
-      $accessToken = null;
-
-      mixpanel.track('user:logout', {
-        via: 'onboarding',
-      });
-      mixpanel.reset();
-
-      location.href = env.PUBLIC_WEBSITE_URL;
-    }}
-  >
-    <Icon icon={LogOutIcon} />
-    <span>로그아웃</span>
-  </Button>
-
-  <div class={flex({ align: 'center', gap: '10px' })}>
-    <div
-      class={css({ flex: 'none', borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '34px' })}
-    >
-      <Img
-        style={css.raw({ borderRadius: 'full', size: '34px' })}
-        $image={$query.me.avatar}
-        alt="{$query.me.name}의 아바타"
-        size={48}
-      />
-    </div>
-    <div>
-      <p class={css({ textStyle: '14m', color: 'text.secondary' })}>{$query.me.name}</p>
-      <p class={css({ textStyle: '13r', color: 'text.tertiary' })}>{$query.me.email}</p>
-    </div>
-  </div>
+<header class={flex({ align: 'center', justify: 'flex-end', paddingTop: '24px', paddingX: '24px', height: '64px' })}>
+  <UserMenu {$query} />
 </header>
 
 <div

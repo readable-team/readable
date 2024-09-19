@@ -2,25 +2,20 @@
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
   import { scrollLock } from '@readable/ui/actions';
-  import { Dialog, HorizontalDivider, Icon } from '@readable/ui/components';
-  import Building2Icon from '~icons/lucide/building-2';
+  import { Dialog, Icon } from '@readable/ui/components';
   import CircleUserIcon from '~icons/lucide/circle-user';
   // import CreditCardIcon from '~icons/lucide/credit-card';
-  import UsersRoundIcon from '~icons/lucide/users-round';
   import XIcon from '~icons/lucide/x';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
   import { Img, SettingTabItem } from '$lib/components';
   // import Subscription from './(settingModal)/Subscription.svelte';
-  import TeamMembers from './setting-modal/TeamMembers.svelte';
-  import TeamSetting from './setting-modal/TeamSetting.svelte';
   import UserSetting from './setting-modal/UserSetting.svelte';
-  import type { UserSettingModal_team, UserSettingModal_user } from '$graphql';
+  import type { UserSettingModal_user } from '$graphql';
 
   let _user: UserSettingModal_user;
-  let _team: UserSettingModal_team;
-  export { _team as $team, _user as $user };
+  export { _user as $user };
 
   export let open = false;
 
@@ -43,23 +38,6 @@
     `),
   );
 
-  $: team = fragment(
-    _team,
-    graphql(`
-      fragment UserSettingModal_team on Team {
-        id
-        name
-        avatar {
-          id
-          ...Img_image
-        }
-
-        ...TeamSetting_team
-        ...TeamMembers_team
-      }
-    `),
-  );
-
   $: personalSettings = [
     {
       icon: CircleUserIcon,
@@ -69,26 +47,26 @@
     },
   ];
 
-  $: teamSettings = [
-    {
-      icon: Building2Icon,
-      name: '팀 설정',
-      href: '?tab=settings/team',
-      selected: selectedTab === 'settings/team',
-    },
-    {
-      icon: UsersRoundIcon,
-      name: '멤버 관리',
-      href: '?tab=settings/team/members',
-      selected: selectedTab === 'settings/team/members',
-    },
-    // {
-    //   icon: CreditCardIcon,
-    //   name: '구독 및 결제',
-    //   href: '?tab=settings/team/subscription',
-    //   selected: selectedTab === 'settings/team/subscription',
-    // },
-  ];
+  // $: teamSettings = [
+  //   {
+  //     icon: Building2Icon,
+  //     name: '팀 설정',
+  //     href: '?tab=settings/team',
+  //     selected: selectedTab === 'settings/team',
+  //   },
+  //   {
+  //     icon: UsersRoundIcon,
+  //     name: '멤버 관리',
+  //     href: '?tab=settings/team/members',
+  //     selected: selectedTab === 'settings/team/members',
+  //   },
+  //   // {
+  //   //   icon: CreditCardIcon,
+  //   //   name: '구독 및 결제',
+  //   //   href: '?tab=settings/team/subscription',
+  //   //   selected: selectedTab === 'settings/team/subscription',
+  //   // },
+  // ];
 
   const closeModal = () => {
     const currentPath = $page.url.pathname;
@@ -139,7 +117,7 @@
           overflow: 'auto',
         })}
       >
-        <div
+        <!-- <div
           class={flex({
             align: 'center',
             gap: '10px',
@@ -164,9 +142,9 @@
           />
 
           <p class={css({ textStyle: '13sb', truncate: true, color: 'text.secondary' })}>{$team.name}</p>
-        </div>
+        </div> -->
 
-        <dl class={flex({ direction: 'column', gap: '2px', paddingTop: '1px' })}>
+        <!-- <dl class={flex({ direction: 'column', gap: '2px', paddingTop: '1px' })}>
           {#each teamSettings as setting (setting.name)}
             <dd>
               <SettingTabItem {setting} />
@@ -174,7 +152,7 @@
           {/each}
         </dl>
 
-        <HorizontalDivider style={css.raw({ marginY: '16px' })} />
+        <HorizontalDivider style={css.raw({ marginY: '16px' })} /> -->
 
         <div
           class={flex({
@@ -223,13 +201,13 @@
           overflow: 'auto',
         })}
       >
-        {#if selectedTab === 'settings/team'}
+        <!-- {#if selectedTab === 'settings/team'}
           <TeamSetting {$team} />
         {:else if selectedTab === 'settings/team/members'}
           <TeamMembers {$team} />
-          <!-- {:else if selectedTab === 'settings/team/subscription'}
+          {:else if selectedTab === 'settings/team/subscription'}
           <Subscription /> -->
-        {:else if selectedTab === 'settings/personal'}
+        {#if selectedTab === 'settings/personal'}
           <UserSetting {$user} />
         {/if}
       </div>

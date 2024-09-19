@@ -115,5 +115,5 @@
       <SiteSwitcher $team={$query.team} />
     {/if}
   </div>
-  <UserMenu {$query} />
+  <UserMenu {$query} teamId={$query.team.id} />
 </header>

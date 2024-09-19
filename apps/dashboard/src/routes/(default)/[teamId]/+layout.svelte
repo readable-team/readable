@@ -23,7 +23,6 @@
           id
           name
           ...SiteSwitcher_team
-          ...UserSettingModal_team
         }
 
         ... on TeamMember {
