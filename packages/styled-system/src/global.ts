@@ -17,6 +17,7 @@ export const globalCss = defineGlobalStyles({
 
   'html': {
     fontFamily: 'ui',
+    fontFeatureSettings: '"ss18" 1',
     textSizeAdjust: '100%',
 
     WebkitFontSmoothing: 'antialiased',
