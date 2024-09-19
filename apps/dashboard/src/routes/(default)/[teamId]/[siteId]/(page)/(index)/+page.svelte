@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon } from '@readable/ui/components';
+  import { Helmet, Icon } from '@readable/ui/components';
   import FilePenIcon from '~icons/lucide/file-pen';
   import FileTextIcon from '~icons/lucide/file-text';
   import { graphql } from '$graphql';
@@ -10,6 +10,7 @@
     query SitePage_Query($siteId: ID!) {
       site(siteId: $siteId) {
         id
+        name
         hasPage
 
         team {
@@ -19,6 +20,8 @@
     }
   `);
 </script>
+
+<Helmet title={$query.site.name} />
 
 <div class={flex({ direction: 'column', align: 'center', justify: 'center', gap: '24px', width: 'full' })}>
   <Icon style={css.raw({ size: '60px' })} icon={$query.site.hasPage ? FileTextIcon : FilePenIcon} />

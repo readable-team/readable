@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex, grid } from '@readable/styled-system/patterns';
-  import { Button, FormField, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
+  import { Button, FormField, Helmet, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import dayjs from 'dayjs';
   import mixpanel from 'mixpanel-browser';
@@ -24,6 +24,7 @@
     query TeamPage_Query($teamId: ID!) {
       team(teamId: $teamId) {
         id
+        name
 
         sites {
           id
@@ -69,6 +70,8 @@
     },
   });
 </script>
+
+<Helmet title={$query.team.name} />
 
 <nav
   class={flex({
