@@ -141,7 +141,10 @@ Site.implement({
         return await db
           .select(getTableColumns(Pages))
           .from(Categories)
-          .innerJoin(Pages, and(eq(Categories.id, Pages.categoryId), ne(Pages.state, PageState.DELETED)))
+          .innerJoin(
+            Pages,
+            and(eq(Categories.id, Pages.categoryId), ne(Pages.state, PageState.DELETED), isNull(Pages.parentId)),
+          )
           .where(and(eq(Categories.siteId, site.id), eq(Categories.state, CategoryState.ACTIVE)))
           .orderBy(asc(Categories.order), asc(Pages.order))
           .limit(1)
