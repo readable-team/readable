@@ -170,6 +170,17 @@ PublicSite.implement({
       },
     }),
 
+    pages: t.field({
+      type: [PublicPage],
+      resolve: async (site) => {
+        return await db
+          .select()
+          .from(Pages)
+          .where(and(eq(Pages.siteId, site.id), eq(Pages.state, PageState.PUBLISHED)))
+          .orderBy(asc(Pages.id));
+      },
+    }),
+
     firstPage: t.field({
       type: PublicPage,
       nullable: true,

@@ -320,6 +320,7 @@ type PublicSite implements ISite {
   id: ID!
   logo: Image
   name: String!
+  pages: [PublicPage!]!
   slug: String!
   themeColor: String!
   url: String!
