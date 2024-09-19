@@ -18,13 +18,14 @@ import {
 import { sendEmail } from '@/email';
 import TeamMemberAddedEmail from '@/email/templates/TeamMemberAdded.tsx';
 import TeamMemberInvitedEmail from '@/email/templates/TeamMemberInvited.tsx';
-import { PaymentMethodState, SiteState, TeamMemberRole, TeamState, UserState } from '@/enums';
+import { PaymentMethodState, SiteState, TeamMemberRole, TeamRestrictionType, TeamState, UserState } from '@/enums';
 import { env } from '@/env';
 import { ReadableError } from '@/errors';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { generateRandomAvatar } from '@/utils/image-generation';
 import { assertTeamPermission, throwableToBoolean } from '@/utils/permissions';
+import { assertTeamRestriction } from '@/utils/restrictions';
 import { persistBlobAsImage } from '@/utils/user-contents';
 import { Image, PaymentMethod, Site, Team, TeamMember, TeamMemberInvitation, User } from './objects';
 
@@ -225,6 +226,11 @@ builder.mutationFields((t) => ({
         role: 'ADMIN',
       });
 
+      await assertTeamRestriction({
+        teamId: input.teamId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
       const team = await db
         .update(Teams)
         .set({
@@ -249,6 +255,11 @@ builder.mutationFields((t) => ({
         teamId: input.teamId,
         userId: ctx.session.userId,
         role: 'ADMIN',
+      });
+
+      await assertTeamRestriction({
+        teamId: input.teamId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       const sites = await db
@@ -280,6 +291,11 @@ builder.mutationFields((t) => ({
         teamId: input.teamId,
         userId: ctx.session.userId,
         role: TeamMemberRole.ADMIN,
+      });
+
+      await assertTeamRestriction({
+        teamId: input.teamId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       const me = await db
@@ -387,18 +403,23 @@ builder.mutationFields((t) => ({
         .where(eq(TeamMemberInvitations.id, input.invitationId))
         .then(firstOrThrow);
 
+      await assertTeamPermission({
+        teamId: invitation.teamId,
+        userId: ctx.session.userId,
+        role: TeamMemberRole.ADMIN,
+      });
+
+      await assertTeamRestriction({
+        teamId: invitation.teamId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
       const me = await db
         .select({ name: Users.name, avatarPath: Images.path })
         .from(Users)
         .leftJoin(Images, eq(Users.avatarId, Images.id))
         .where(and(eq(Users.id, ctx.session.userId), eq(Users.state, UserState.ACTIVE)))
         .then(firstOrThrow);
-
-      await assertTeamPermission({
-        teamId: invitation.teamId,
-        userId: ctx.session.userId,
-        role: TeamMemberRole.ADMIN,
-      });
 
       await sendEmail({
         recipient: invitation.email,
@@ -445,6 +466,11 @@ builder.mutationFields((t) => ({
         role: TeamMemberRole.ADMIN,
       });
 
+      await assertTeamRestriction({
+        teamId: invitation.teamId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
       pubsub.publish('team:update', invitation.teamId, { scope: 'team' });
 
       return await db
@@ -463,6 +489,11 @@ builder.mutationFields((t) => ({
         teamId: input.teamId,
         userId: ctx.session.userId,
         role: input.userId == ctx.session.userId ? TeamMemberRole.MEMBER : TeamMemberRole.ADMIN,
+      });
+
+      await assertTeamRestriction({
+        teamId: input.teamId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       return await db.transaction(async (tx) => {
@@ -501,6 +532,11 @@ builder.mutationFields((t) => ({
         teamId: input.teamId,
         userId: ctx.session.userId,
         role: TeamMemberRole.ADMIN,
+      });
+
+      await assertTeamRestriction({
+        teamId: input.teamId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       return await db.transaction(async (tx) => {

@@ -265,6 +265,29 @@ export const PageContentUpdates = pgTable('page_content_updates', {
     .default(sql`now()`),
 });
 
+export const PaymentMethods = pgTable(
+  'payment_methods',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId('PYMT')),
+    teamId: text('team_id')
+      .notNull()
+      .references(() => Teams.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+    name: text('name').notNull(),
+    billingKey: text('billing_key').notNull(),
+    state: E._PaymentMethodState('state').notNull().default('ACTIVE'),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    teamIdUniqIdx: uniqueIndex()
+      .on(t.teamId)
+      .where(sql`${t.state} = 'ACTIVE'`),
+  }),
+);
+
 export const Plans = pgTable('plans', {
   id: text('id')
     .primaryKey()
@@ -403,28 +426,20 @@ export const TeamMemberInvitations = pgTable(
   }),
 );
 
-export const PaymentMethods = pgTable(
-  'payment_methods',
-  {
-    id: text('id')
-      .primaryKey()
-      .$defaultFn(() => createDbId('PYMT')),
-    teamId: text('team_id')
-      .notNull()
-      .references(() => Teams.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
-    name: text('name').notNull(),
-    billingKey: text('billing_key').notNull(),
-    state: E._PaymentMethodState('state').notNull().default('ACTIVE'),
-    createdAt: datetime('created_at')
-      .notNull()
-      .default(sql`now()`),
-  },
-  (t) => ({
-    teamIdUniqIdx: uniqueIndex()
-      .on(t.teamId)
-      .where(sql`${t.state} = 'ACTIVE'`),
-  }),
-);
+export const TeamRestrictions = pgTable('team_restrictions', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('TRST')),
+  teamId: text('team_id')
+    .notNull()
+    .references(() => Teams.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+  type: E._TeamRestrictionType('type').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+  effectiveAt: datetime('effective_at').notNull(),
+  expiresAt: datetime('expires_at'),
+});
 
 export const Users = pgTable(
   'users',

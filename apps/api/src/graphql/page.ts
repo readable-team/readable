@@ -16,12 +16,13 @@ import {
   PageContentUpdates,
   Pages,
 } from '@/db';
-import { CategoryState, PageContentSyncKind, PageState } from '@/enums';
+import { CategoryState, PageContentSyncKind, PageState, TeamRestrictionType } from '@/enums';
 import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { hashPageContent, makeYDoc } from '@/utils/page';
 import { assertCategoryPermission, assertPagePermission, assertSitePermission } from '@/utils/permissions';
+import { assertTeamRestriction } from '@/utils/restrictions';
 import {
   Category,
   ICategory,
@@ -430,11 +431,18 @@ builder.queryFields((t) => ({
     type: PublicPage,
     args: { slug: t.arg.string() },
     resolve: async (_, args, ctx) => {
-      return await db
+      const page = await db
         .select()
         .from(Pages)
         .where(and(eq(Pages.siteId, ctx.site.id), eq(Pages.slug, args.slug), eq(Pages.state, PageState.PUBLISHED)))
         .then(firstOrThrow);
+
+      await assertTeamRestriction({
+        pageId: page.id,
+        type: TeamRestrictionType.USERSITE_READ,
+      });
+
+      return page;
     },
   }),
 }));
@@ -451,6 +459,11 @@ builder.mutationFields((t) => ({
       await assertSitePermission({
         siteId: input.siteId,
         userId: ctx.session.userId,
+      });
+
+      await assertTeamRestriction({
+        siteId: input.siteId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       const category = await db
@@ -476,6 +489,11 @@ builder.mutationFields((t) => ({
       await assertCategoryPermission({
         categoryId: input.categoryId,
         userId: ctx.session.userId,
+      });
+
+      await assertTeamRestriction({
+        categoryId: input.categoryId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       const category = await db
@@ -504,6 +522,11 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
       });
 
+      await assertTeamRestriction({
+        categoryId: input.categoryId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
       const category = await db
         .update(Categories)
         .set({ order: encoder.encode(generateJitteredKeyBetween(input.lower ?? null, input.upper ?? null)) })
@@ -524,6 +547,11 @@ builder.mutationFields((t) => ({
       await assertCategoryPermission({
         categoryId: input.categoryId,
         userId: ctx.session.userId,
+      });
+
+      await assertTeamRestriction({
+        categoryId: input.categoryId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       let deletedPageIds: string[] = [];
@@ -560,6 +588,11 @@ builder.mutationFields((t) => ({
       await assertSitePermission({
         siteId: input.siteId,
         userId: ctx.session.userId,
+      });
+
+      await assertTeamRestriction({
+        siteId: input.siteId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -634,6 +667,11 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
       });
 
+      await assertTeamRestriction({
+        pageId: input.pageId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
       const deletedPageIds = [input.pageId];
 
       const page = await db.transaction(async (tx) => {
@@ -687,6 +725,11 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
       });
 
+      await assertTeamRestriction({
+        pageId: input.pageId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
       const page = await db
         .update(Pages)
         .set({
@@ -711,6 +754,11 @@ builder.mutationFields((t) => ({
       await assertPagePermission({
         pageId: input.pageId,
         userId: ctx.session.userId,
+      });
+
+      await assertTeamRestriction({
+        pageId: input.pageId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       const state = await db
@@ -807,6 +855,11 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
       });
 
+      await assertTeamRestriction({
+        pageId: input.pageId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
       const unpublishedPageIds = [input.pageId];
 
       const page = await db.transaction(async (tx) => {
@@ -855,6 +908,11 @@ builder.mutationFields((t) => ({
         userId: ctx.session.userId,
       });
 
+      await assertTeamRestriction({
+        pageId: input.pageId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
       pubsub.publish('page:content:sync', input.pageId, {
         kind: input.kind,
         data: base64.stringify(input.data),
@@ -883,6 +941,11 @@ builder.mutationFields((t) => ({
       await assertPagePermission({
         pageId: input.pageId,
         userId: ctx.session.userId,
+      });
+
+      await assertTeamRestriction({
+        pageId: input.pageId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       const page = await db.select().from(Pages).where(eq(Pages.id, input.pageId)).then(firstOrThrow);

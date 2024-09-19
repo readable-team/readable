@@ -16,7 +16,14 @@ import {
   SiteCustomDomains,
   Sites,
 } from '@/db';
-import { CategoryState, PageState, SiteCustomDomainState, SiteState, TeamMemberRole } from '@/enums';
+import {
+  CategoryState,
+  PageState,
+  SiteCustomDomainState,
+  SiteState,
+  TeamMemberRole,
+  TeamRestrictionType,
+} from '@/enums';
 import { env } from '@/env';
 import { ReadableError } from '@/errors';
 import * as dns from '@/external/dns';
@@ -25,6 +32,7 @@ import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { makeYDoc } from '@/utils/page';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
+import { assertTeamRestriction } from '@/utils/restrictions';
 import {
   Category,
   Image,
@@ -205,7 +213,18 @@ builder.queryFields((t) => ({
   publicSite: t.withAuth({ site: true }).field({
     type: PublicSite,
     resolve: async (_, __, ctx) => {
-      return ctx.site.id;
+      const site = await db
+        .select()
+        .from(Sites)
+        .where(and(eq(Sites.id, ctx.site.id), eq(Sites.state, SiteState.ACTIVE)))
+        .then(firstOrThrow);
+
+      await assertTeamRestriction({
+        siteId: site.id,
+        type: TeamRestrictionType.USERSITE_READ,
+      });
+
+      return site;
     },
   }),
 }));
@@ -226,6 +245,11 @@ builder.mutationFields((t) => ({
         teamId: input.teamId,
         userId: ctx.session.userId,
         role: TeamMemberRole.ADMIN,
+      });
+
+      await assertTeamRestriction({
+        teamId: input.teamId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       return await db.transaction(async (tx) => {
@@ -377,6 +401,11 @@ builder.mutationFields((t) => ({
         role: TeamMemberRole.ADMIN,
       });
 
+      await assertTeamRestriction({
+        siteId: input.siteId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
       const existingSite = await db
         .select({ id: Sites.id })
         .from(Sites)
@@ -404,6 +433,11 @@ builder.mutationFields((t) => ({
         siteId: input.siteId,
         userId: ctx.session.userId,
         role: TeamMemberRole.ADMIN,
+      });
+
+      await assertTeamRestriction({
+        siteId: input.siteId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       const existingDomain = await db
@@ -458,6 +492,11 @@ builder.mutationFields((t) => ({
         role: TeamMemberRole.ADMIN,
       });
 
+      await assertTeamRestriction({
+        siteId: customDomain.siteId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
       return await db
         .delete(SiteCustomDomains)
         .where(eq(SiteCustomDomains.id, input.siteCustomDomainId))
@@ -474,6 +513,11 @@ builder.mutationFields((t) => ({
         siteId: input.siteId,
         userId: ctx.session.userId,
         role: TeamMemberRole.ADMIN,
+      });
+
+      await assertTeamRestriction({
+        siteId: input.siteId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       const site = await db.transaction(async (tx) => {
@@ -560,6 +604,11 @@ builder.subscriptionFields((t) => ({
         siteId: customDomain.siteId,
         userId: ctx.session.userId,
         role: TeamMemberRole.ADMIN,
+      });
+
+      await assertTeamRestriction({
+        siteId: customDomain.siteId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
       const repeater = new Repeater<string>(async (push, stop) => {

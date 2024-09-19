@@ -55,6 +55,12 @@ export const TeamMemberRole = {
   MEMBER: 'MEMBER',
 } as const;
 
+export type TeamRestrictionType = keyof typeof TeamRestrictionType;
+export const TeamRestrictionType = {
+  DASHBOARD_WRITE: 'DASHBOARD_WRITE',
+  USERSITE_READ: 'USERSITE_READ',
+} as const;
+
 export type TeamState = keyof typeof TeamState;
 export const TeamState = {
   ACTIVE: 'ACTIVE',

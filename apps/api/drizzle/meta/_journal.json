@@ -29,6 +29,13 @@
       "when": 1726540830930,
       "tag": "0003_amused_gamora",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1726734623343,
+      "tag": "0004_naive_steel_serpent",
+      "breakpoints": true
     }
   ]
 }

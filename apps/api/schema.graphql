@@ -462,6 +462,11 @@ enum TeamMemberRole {
   MEMBER
 }
 
+enum TeamRestrictionType {
+  DASHBOARD_WRITE
+  USERSITE_READ
+}
+
 enum TeamState {
   ACTIVE
   DELETED
