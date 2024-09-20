@@ -3,6 +3,7 @@ import Elysia from 'elysia';
 import { createYoga, useExecutionCancellation } from 'graphql-yoga';
 import { createContext } from '@/context';
 import { schema } from '@/graphql';
+import { useError } from './plugins/error';
 import { useLogger } from './plugins/logger';
 
 export const yoga = new Elysia({ prefix: '/graphql' });
@@ -14,7 +15,7 @@ const app = createYoga({
   batching: true,
   maskedErrors: false,
   landingPage: false,
-  plugins: [useExecutionCancellation(), useLogger()],
+  plugins: [useExecutionCancellation(), useLogger(), useError()],
 });
 
 yoga.all('/', (ctx) => app(ctx.request, { ip: getClientAddress(ctx.request, ctx.server) }));

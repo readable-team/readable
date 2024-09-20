@@ -2,6 +2,7 @@ import './cron';
 
 import os from 'node:os';
 import { logger } from '@readable/lib';
+import * as Sentry from '@sentry/bun';
 import { Semaphore } from 'async-mutex';
 import dayjs from 'dayjs';
 import { and, asc, eq, sql } from 'drizzle-orm';
@@ -74,6 +75,7 @@ const work = async (tx: Transaction, job: Pick<typeof Jobs.$inferSelect, 'id' | 
       .where(eq(Jobs.id, job.id));
   } catch (err) {
     logger.error(err, `${job.name} failed`);
+    Sentry.captureException(err, { extra: { job_id: job.id, job_name: job.name } });
 
     if (job.retries < 3) {
       await tx
