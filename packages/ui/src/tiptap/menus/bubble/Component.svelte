@@ -61,13 +61,13 @@
 
   // TODO: dark mode 지원
   const colors = [
-    { name: 'black', label: '검정', hex: null },
-    { name: 'gray', label: '회색', hex: '#71717a' },
-    { name: 'red', label: '빨간색', hex: '#dc2626' },
-    { name: 'yellow', label: '노란색', hex: '#eab308' },
-    { name: 'orange', label: '주황색', hex: '#f97316' },
-    { name: 'green', label: '초록색', hex: '#22c55e' },
-    { name: 'blue', label: '파란색', hex: '#3b82f6' },
+    { name: 'black', label: '검정' },
+    { name: 'gray', label: '회색' },
+    { name: 'red', label: '빨간색' },
+    { name: 'yellow', label: '노란색' },
+    { name: 'orange', label: '주황색' },
+    { name: 'green', label: '초록색' },
+    { name: 'blue', label: '파란색' },
   ];
 
   let activeMarks: string[] = [];
@@ -99,7 +99,7 @@
   const updateSelectedNodeAndMarks = () => {
     activeMarks = marks.map(({ name }) => name).filter((name) => editor.isActive(name));
     activeNode = editor.state.selection.$head.parent;
-    activeColor = editor.getAttributes('textStyle').color;
+    activeColor = editor.getAttributes('textStyle').class;
 
     selectedBlocks = [];
     if (from !== null && to !== null) {
@@ -290,7 +290,7 @@
     use:colorPickerAnchor
   >
     <div
-      style={activeColor && `background-color: ${activeColor}`}
+      style:background-color={activeColor && `var(--prosemirror-color-${activeColor})`}
       class={css({
         borderRadius: 'full',
         backgroundColor: 'text.primary',
@@ -315,7 +315,7 @@
       })}
       use:colorPickerFloating
     >
-      {#each colors as { name, label, hex } (name)}
+      {#each colors as { name, label } (name)}
         <button
           class={flex({
             align: 'center',
@@ -331,19 +331,19 @@
               backgroundColor: 'neutral.30',
             },
           })}
-          aria-pressed={activeColor === hex || (!activeColor && hex === null)}
+          aria-pressed={activeColor === name || (!activeColor && name === 'black')}
           type="button"
           on:click={() => {
-            if (hex === null) {
+            if (name === 'black') {
               editor.chain().focus().unsetColor().run();
             } else {
-              editor.chain().focus().setColor(hex).run();
+              editor.chain().focus().setColor(name).run();
             }
             colorPickerOpened = false;
           }}
         >
           <div
-            style:color={hex}
+            style:color={name && `var(--prosemirror-color-${name})`}
             class={css({ borderWidth: '1px', borderColor: 'border.secondary', borderRadius: '4px', padding: '2px' })}
           >
             <Icon icon={TypeIcon} size={14} />
@@ -353,7 +353,7 @@
             {label}
           </div>
 
-          {#if activeColor === hex || (!activeColor && hex === null)}
+          {#if activeColor === name || (!activeColor && name === 'black')}
             <Icon
               style={css.raw({ 'marginLeft': 'auto', 'color': 'text.accent', '& *': { strokeWidth: '[2.5]' } })}
               icon={CheckIcon}

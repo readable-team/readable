@@ -1,8 +1,41 @@
+:root {
+  --prosemirror-color-gray: #71717a;
+  --prosemirror-color-red: #dc2626;
+  --prosemirror-color-orange: #f97316;
+  --prosemirror-color-yellow: #eab308;
+  --prosemirror-color-green: #22c55e;
+  --prosemirror-color-blue: #3b82f6;
+}
+
 .ProseMirror {
   line-height: 1.6;
 
   /* gray.1000 */
   caret-color: #09090b;
+
+  .gray {
+    color: var(--prosemirror-color-gray);
+  }
+
+  .red {
+    color: var(--prosemirror-color-red);
+  }
+
+  .orange {
+    color: var(--prosemirror-color-orange);
+  }
+
+  .yellow {
+    color: var(--prosemirror-color-yellow);
+  }
+
+  .green {
+    color: var(--prosemirror-color-green);
+  }
+
+  .blue {
+    color: var(--prosemirror-color-blue);
+  }
 
   & > * + * {
     margin-top: 4px;

@@ -144,7 +144,42 @@ export const basicExtensions = [
   Italic.configure({ HTMLAttributes: { class: css({ fontStyle: 'italic' }) } }),
   Strike.configure({ HTMLAttributes: { class: css({ textDecorationLine: 'line-through' }) } }),
   Underline.configure({ HTMLAttributes: { class: css({ textDecorationLine: 'underline' }) } }),
-  Color,
+  Color.extend({
+    addGlobalAttributes() {
+      return [
+        {
+          types: this.options.types,
+          attributes: {
+            class: {
+              parseHTML: (element) => element.getAttribute('class'),
+              renderHTML: (attributes) => {
+                if (!attributes.class) {
+                  return {};
+                }
+
+                return { class: attributes.class };
+              },
+            },
+          },
+        },
+      ];
+    },
+
+    addCommands() {
+      return {
+        setColor:
+          (className) =>
+          ({ chain }) => {
+            return chain().setMark('textStyle', { class: className }).run();
+          },
+        unsetColor:
+          () =>
+          ({ chain }) => {
+            return chain().setMark('textStyle', { color: null, class: null }).removeEmptyTextStyle().run();
+          },
+      };
+    },
+  }),
   Code.configure({
     HTMLAttributes: {
       class: css({
