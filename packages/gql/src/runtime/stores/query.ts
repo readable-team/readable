@@ -33,12 +33,15 @@ export const createQueryStore = <T extends $StoreSchema<Kind>>(schema: StoreSche
     });
 
     return Object.assign(store, {
-      refetch: async (variables?: T['$input'], context?: RequestContext) => {
+      refetch: async (variablesOrContext?: T['$input'] | RequestContext, context?: RequestContext) => {
+        const effectiveVariables = schema.meta.inputless === 'true' ? {} : ((variablesOrContext as T['$input']) ?? {});
+        const effectiveContext = schema.meta.inputless === 'true' ? (variablesOrContext as RequestContext) : context;
+
         const operation = client.createOperation({
           schema,
-          variables: variables ?? {},
+          variables: effectiveVariables,
           context: {
-            fetch: context?.fetch,
+            fetch: effectiveContext?.fetch,
             requestPolicy: 'network-only',
           },
         });
@@ -106,12 +109,17 @@ export const createQueryStore = <T extends $StoreSchema<Kind>>(schema: StoreSche
       }
 
       return Object.assign(store, {
-        refetch: async (newVariables?: T['$input'], context?: RequestContext) => {
+        refetch: async (newVariablesOrContext?: T['$input'] | RequestContext, context?: RequestContext) => {
+          const effectiveVariables =
+            schema.meta.inputless === 'true' ? {} : ((newVariablesOrContext as T['$input']) ?? variables ?? {});
+          const effectiveContext =
+            schema.meta.inputless === 'true' ? (newVariablesOrContext as RequestContext) : context;
+
           const operation = client.createOperation({
             schema,
-            variables: newVariables ?? variables ?? {},
+            variables: effectiveVariables,
             context: {
-              fetch: context?.fetch,
+              fetch: effectiveContext?.fetch,
               requestPolicy: 'network-only',
             },
           });

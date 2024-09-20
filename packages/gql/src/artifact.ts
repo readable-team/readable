@@ -77,6 +77,10 @@ export const collectArtifacts = async (root: string) => {
                     meta.mode = 'manual';
                   }
 
+                  if (!definition.variableDefinitions?.length) {
+                    meta.inputless = 'true';
+                  }
+
                   operations.push({
                     name: definition.name.value,
                     file,
