@@ -36,6 +36,13 @@
       "when": 1726734623343,
       "tag": "0004_naive_steel_serpent",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1726811955775,
+      "tag": "0005_romantic_living_mummy",
+      "breakpoints": true
     }
   ]
 }

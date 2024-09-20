@@ -186,6 +186,7 @@ type Mutation {
   updateCategory(input: UpdateCategoryInput!): Category!
   updateCategoryPosition(input: UpdateCategoryPositionInput!): Category!
   updatePagePosition(input: UpdatePagePositionInput!): Page!
+  updatePageView(input: UpdatePageViewInput!): Boolean!
   updatePaymentMethod(input: UpdatePaymentMethodInput!): PaymentMethod!
   updateSite(input: UpdateSiteInput!): Site!
   updateTeam(input: UpdateTeamInput!): Team!
@@ -521,6 +522,11 @@ input UpdatePagePositionInput {
   pageId: String!
   parentId: String
   upper: String
+}
+
+input UpdatePageViewInput {
+  deviceId: String!
+  pageId: ID!
 }
 
 input UpdatePaymentMethodInput {

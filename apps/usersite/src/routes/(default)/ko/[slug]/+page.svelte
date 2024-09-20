@@ -5,6 +5,7 @@
   import { TiptapRenderer } from '@readable/ui/tiptap';
   import { getContext } from 'svelte';
   import MenuIcon from '~icons/lucide/menu';
+  import { browser } from '$app/environment';
   import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
   import { mobileNavOpen } from '$lib/stores/ui';
@@ -35,9 +36,26 @@
     }
   `);
 
+  const updatePageView = graphql(`
+    mutation PagePage_UpdatePageView_Mutation($input: UpdatePageViewInput!) {
+      updatePageView(input: $input)
+    }
+  `);
+
   let headings: { level: number; text: string; scrollTop: number }[] = [];
 
   const blurEffect = getContext<Writable<boolean>>('blurEffect');
+
+  $: if (browser) {
+    const deviceId = sessionStorage?.getItem('readable-did');
+
+    if (deviceId) {
+      updatePageView({
+        pageId: $query.publicPage.id,
+        deviceId,
+      });
+    }
+  }
 </script>
 
 <Helmet

@@ -265,6 +265,25 @@ export const PageContentUpdates = pgTable('page_content_updates', {
     .default(sql`now()`),
 });
 
+export const PageViews = pgTable(
+  'page_views',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId('PV')),
+    pageId: text('page_id')
+      .notNull()
+      .references(() => Pages.id),
+    deviceId: text('device_id').notNull(),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    pageIdDeviceIdCreatedAtIdx: index().on(t.pageId, t.deviceId, t.createdAt),
+  }),
+);
+
 export const PaymentMethods = pgTable(
   'payment_methods',
   {

@@ -15,6 +15,7 @@ import {
   PageContentStates,
   PageContentUpdates,
   Pages,
+  PageViews,
 } from '@/db';
 import { CategoryState, PageContentSyncKind, PageState, TeamRestrictionType } from '@/enums';
 import { enqueueJob } from '@/jobs';
@@ -1015,6 +1016,38 @@ builder.mutationFields((t) => ({
       pubsub.publish('site:update', page.siteId, { scope: 'site' });
 
       return newPage;
+    },
+  }),
+
+  updatePageView: t.withAuth({ site: true }).fieldWithInput({
+    type: 'Boolean',
+    input: { pageId: t.input.id(), deviceId: t.input.string() },
+    resolve: async (_, { input }) => {
+      try {
+        const pageView = await db
+          .select({ id: PageViews.id })
+          .from(PageViews)
+          .where(
+            and(
+              eq(PageViews.pageId, input.pageId),
+              eq(PageViews.deviceId, input.deviceId),
+              gt(PageViews.createdAt, dayjs().subtract(1, 'day')),
+            ),
+          )
+          .limit(1)
+          .then(first);
+
+        if (!pageView) {
+          await db.insert(PageViews).values({
+            pageId: input.pageId,
+            deviceId: input.deviceId,
+          });
+        }
+      } catch {
+        /* empty */
+      }
+
+      return true;
     },
   }),
 }));
