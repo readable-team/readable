@@ -1,7 +1,15 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, FormValidationMessage, Helmet, Icon, TextInput } from '@readable/ui/components';
+  import {
+    Button,
+    FormField,
+    FormProvider,
+    FormValidationMessage,
+    Helmet,
+    Icon,
+    TextInput,
+  } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
@@ -61,7 +69,7 @@
     }
   `);
 
-  const { form, data, isDirty, setIsDirty, setInitialValues } = createMutationForm({
+  const { form, data, isDirty, setIsDirty, setInitialValues, context } = createMutationForm({
     schema: z.object({
       siteId: z.string(),
       name: dataSchemas.site.name,
@@ -92,6 +100,7 @@
     isDirty: slugFormIsDirty,
     setIsDirty: setSlugFormIsDirty,
     setInitialValues: setSlugInitialValues,
+    context: slugFormContext,
   } = createMutationForm({
     schema: z.object({
       siteId: z.string(),
@@ -125,7 +134,11 @@
     },
   });
 
-  const { form: deleteForm, data: deleteFormData } = createMutationForm({
+  const {
+    form: deleteForm,
+    data: deleteFormData,
+    context: deleteFormContext,
+  } = createMutationForm({
     schema: z.object({
       siteId: z.string(),
       siteName: z.string(),
@@ -158,7 +171,7 @@
 
 <h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>일반</h1>
 
-<form
+<FormProvider
   class={css({
     borderWidth: '1px',
     borderColor: 'border.primary',
@@ -168,7 +181,8 @@
     maxWidth: '720px',
     backgroundColor: 'surface.primary',
   })}
-  use:form
+  {context}
+  {form}
 >
   <p class={css({ marginBottom: '8px', textStyle: '14sb', color: { base: 'gray.700', _dark: 'gray.300' } })}>
     사이트 로고
@@ -256,9 +270,9 @@
     {/if}
     <Button disabled={!$isDirty} size="lg" type="submit">변경</Button>
   </div>
-</form>
+</FormProvider>
 
-<form
+<FormProvider
   class={css({
     marginTop: '8px',
     borderWidth: '1px',
@@ -269,7 +283,8 @@
     maxWidth: '720px',
     backgroundColor: 'surface.primary',
   })}
-  use:slugForm
+  context={slugFormContext}
+  form={slugForm}
 >
   <label
     class={css({
@@ -334,7 +349,7 @@
     {/if}
     <Button disabled={!$slugFormIsDirty} size="lg" type="submit">변경</Button>
   </div>
-</form>
+</FormProvider>
 
 <div
   class={css({
@@ -419,7 +434,7 @@
     </p>
   </div>
 
-  <form use:deleteForm>
+  <FormProvider context={deleteFormContext} form={deleteForm}>
     <input name="siteId" type="hidden" value={$query.site.id} />
 
     <FormField name="siteName" style={css.raw({ marginTop: '20px' })} label="사이트 이름">
@@ -435,5 +450,5 @@
     >
       삭제
     </Button>
-  </form>
+  </FormProvider>
 </TitledModal>

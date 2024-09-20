@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, Helmet, Icon, TextInput, Tooltip } from '@readable/ui/components';
+  import { Button, FormField, FormProvider, Helmet, Icon, TextInput, Tooltip } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
@@ -42,7 +42,7 @@
     }
   `);
 
-  const { form, data, setInitialValues, isDirty, setIsDirty } = createMutationForm({
+  const { form, data, setInitialValues, isDirty, setIsDirty, context } = createMutationForm({
     schema: z.object({
       teamId: z.string(),
       avatarId: z.string(),
@@ -75,7 +75,11 @@
 
   let deleteTeamOpen = false;
 
-  const { form: deleteForm, data: deleteFormData } = createMutationForm({
+  const {
+    form: deleteForm,
+    data: deleteFormData,
+    context: deleteFormContext,
+  } = createMutationForm({
     schema: z.object({
       teamId: z.string(),
       teamName: z.string(),
@@ -92,7 +96,7 @@
 
 <h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>일반</h1>
 
-<form
+<FormProvider
   class={css({
     borderWidth: '1px',
     borderColor: 'border.primary',
@@ -100,7 +104,8 @@
     padding: '32px',
     backgroundColor: 'surface.primary',
   })}
-  use:form
+  {context}
+  {form}
 >
   <input name="teamId" type="hidden" />
 
@@ -123,7 +128,7 @@
     {/if}
     <Button disabled={!$isDirty} size="lg" type="submit">변경</Button>
   </div>
-</form>
+</FormProvider>
 
 <div class={css({ marginY: '40px', height: '1px', backgroundColor: 'border.primary' })} />
 
@@ -203,7 +208,7 @@
     </p>
   </div>
 
-  <form use:deleteForm>
+  <FormProvider context={deleteFormContext} form={deleteForm}>
     <input name="teamId" type="hidden" value={$query.team.id} />
 
     <FormField name="teamName" style={css.raw({ marginTop: '20px' })} label="팀 이름">
@@ -219,5 +224,5 @@
     >
       삭제
     </Button>
-  </form>
+  </FormProvider>
 </TitledModal>

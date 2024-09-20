@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, Helmet, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
+  import { Button, FormField, FormProvider, Helmet, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import { GraphQLError } from 'graphql';
@@ -63,7 +63,7 @@
     }
   `);
 
-  const { form, reset, setErrors } = createMutationForm({
+  const { form, reset, setErrors, context } = createMutationForm({
     mutation: graphql(`
       mutation TeamMembersPage_InviteTeamMember_Mutation($input: InviteTeamMemberInput!) {
         inviteTeamMember(input: $input) {
@@ -487,7 +487,7 @@
     </div>
   </svelte:fragment>
 
-  <form class={flex({ flexDirection: 'column', gap: '16px' })} use:form>
+  <FormProvider class={flex({ flexDirection: 'column', gap: '16px' })} {context} {form}>
     <input name="teamId" type="hidden" value={$query.team.id} />
 
     <FormField name="email" label="이메일">
@@ -495,5 +495,5 @@
     </FormField>
 
     <Button style={css.raw({ marginLeft: 'auto' })} size="md" type="submit">초대하기</Button>
-  </form>
+  </FormProvider>
 </TitledModal>

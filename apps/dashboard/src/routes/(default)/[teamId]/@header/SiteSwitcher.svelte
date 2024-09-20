@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
+  import { Button, FormField, FormProvider, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import mixpanel from 'mixpanel-browser';
   import { z } from 'zod';
@@ -52,7 +52,7 @@
 
   let newSiteModalOpen = false;
 
-  const { form: newSiteForm } = createMutationForm({
+  const { form: newSiteForm, context: newSiteFormContext } = createMutationForm({
     schema: z.object({
       teamId: dataSchemas.team.id,
       name: dataSchemas.site.name,
@@ -153,12 +153,12 @@
 <TitledModal bind:open={newSiteModalOpen}>
   <svelte:fragment slot="title">새 사이트 만들기</svelte:fragment>
 
-  <form use:newSiteForm>
+  <FormProvider context={newSiteFormContext} form={newSiteForm}>
     <input name="teamId" type="hidden" value={$team.id} />
     <FormField name="name" description="설정에서 언제든지 변경할 수 있어요" label="사이트 이름">
       <TextInput placeholder="ACME 도움센터" />
     </FormField>
 
     <Button style={css.raw({ marginTop: '16px', marginLeft: 'auto' })} type="submit">만들기</Button>
-  </form>
+  </FormProvider>
 </TitledModal>

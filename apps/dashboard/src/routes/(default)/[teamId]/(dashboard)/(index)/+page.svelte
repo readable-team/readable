@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex, grid } from '@readable/styled-system/patterns';
-  import { Button, FormField, Helmet, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
+  import { Button, FormField, FormProvider, Helmet, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import dayjs from 'dayjs';
   import mixpanel from 'mixpanel-browser';
@@ -53,7 +53,7 @@
     }
   `);
 
-  const { form } = createMutationForm({
+  const { form, context } = createMutationForm({
     schema: z.object({
       teamId: dataSchemas.team.id,
       name: dataSchemas.site.name,
@@ -208,7 +208,7 @@
 <TitledModal bind:open={createSiteOpen}>
   <svelte:fragment slot="title">새 사이트 만들기</svelte:fragment>
 
-  <form use:form>
+  <FormProvider {context} {form}>
     <input name="teamId" type="hidden" value={$query.team.id} />
 
     <FormField name="name" description="설정에서 언제든지 변경할 수 있어요" label="사이트 이름">
@@ -216,5 +216,5 @@
     </FormField>
 
     <Button style={css.raw({ marginTop: '16px', marginLeft: 'auto' })} type="submit">만들기</Button>
-  </form>
+  </FormProvider>
 </TitledModal>

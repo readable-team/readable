@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
+  import { Button, FormField, FormProvider, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import mixpanel from 'mixpanel-browser';
   import { z } from 'zod';
@@ -48,7 +48,7 @@
 
   let newTeamModalOpen = false;
 
-  const { form: newTeamForm } = createMutationForm({
+  const { form: newTeamForm, context: newTeamFormContext } = createMutationForm({
     schema: z.object({
       name: dataSchemas.team.name,
     }),
@@ -134,11 +134,11 @@
 <TitledModal bind:open={newTeamModalOpen}>
   <svelte:fragment slot="title">새 팀 만들기</svelte:fragment>
 
-  <form use:newTeamForm>
+  <FormProvider context={newTeamFormContext} form={newTeamForm}>
     <FormField name="name" label="팀 이름">
       <TextInput name="name" placeholder="ACME Inc." />
     </FormField>
 
     <Button style={css.raw({ marginTop: '16px', marginLeft: 'auto' })} type="submit">만들기</Button>
-  </form>
+  </FormProvider>
 </TitledModal>

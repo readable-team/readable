@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, HorizontalDivider, Icon, TextInput } from '@readable/ui/components';
+  import { Button, FormField, FormProvider, HorizontalDivider, Icon, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
@@ -38,7 +38,7 @@
     `),
   );
 
-  const { form, data, setInitialValues, isDirty, setIsDirty } = createMutationForm({
+  const { form, data, setInitialValues, isDirty, setIsDirty, context } = createMutationForm({
     schema: z.object({
       avatarId: z.string(),
       name: dataSchemas.user.name,
@@ -66,7 +66,11 @@
     },
   });
 
-  const { form: deactivateForm, data: deactivateFormData } = createMutationForm({
+  const {
+    form: deactivateForm,
+    data: deactivateFormData,
+    context: deactivateFormContext,
+  } = createMutationForm({
     schema: z.object({
       email: dataSchemas.email,
     }),
@@ -93,7 +97,7 @@
 
 <HorizontalDivider style={css.raw({ marginTop: '20px', marginBottom: '40px' })} />
 
-<form use:form>
+<FormProvider {context} {form}>
   <div class={flex({ flexDirection: 'column', gap: '24px' })}>
     <FormField name="avatar" label="이미지" noMessage>
       <AvatarInput bind:id={$data.avatarId} on:change={() => setIsDirty(true)} />
@@ -112,7 +116,7 @@
     {/if}
     <Button disabled={!$isDirty} size="lg" type="submit">변경</Button>
   </div>
-</form>
+</FormProvider>
 
 <HorizontalDivider style={css.raw({ marginY: '40px' })} />
 
@@ -170,7 +174,7 @@
     <p>삭제를 진행하시려면 아래에 다음 문구를 입력해주세요: {$user.email}</p>
   </div>
 
-  <form use:deactivateForm>
+  <FormProvider context={deactivateFormContext} form={deactivateForm}>
     <FormField name="email" label="이메일">
       <TextInput placeholder={$user.email} />
     </FormField>
@@ -184,5 +188,5 @@
     >
       계정 삭제
     </Button>
-  </form>
+  </FormProvider>
 </TitledModal>

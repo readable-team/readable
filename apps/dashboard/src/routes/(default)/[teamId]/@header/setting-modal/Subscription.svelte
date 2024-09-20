@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, HorizontalDivider, Icon, Modal, TextInput } from '@readable/ui/components';
+  import { Button, FormField, FormProvider, HorizontalDivider, Icon, Modal, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import dayjs from 'dayjs';
   import { z } from 'zod';
@@ -30,7 +30,11 @@
     },
   ];
 
-  const { form: businessForm, isValid: businessFormIsValid } = createMutationForm({
+  const {
+    form: businessForm,
+    isValid: businessFormIsValid,
+    context: businessFormContext,
+  } = createMutationForm({
     schema: z.object({
       birthOrBusinessRegistrationNumber: z.string().min(12),
       cardNumber: z.string().min(19),
@@ -44,7 +48,11 @@
     },
   });
 
-  const { form: personalForm, isValid: personalFormIsValid } = createMutationForm({
+  const {
+    form: personalForm,
+    isValid: personalFormIsValid,
+    context: personalFormContext,
+  } = createMutationForm({
     schema: z.object({
       birthOrBusinessRegistrationNumber: z.string().min(6),
       cardNumber: z.string().min(19),
@@ -337,7 +345,11 @@
     </div>
 
     {#if cardType === 'corporate'}
-      <form class={flex({ flexDirection: 'column', gap: '8px' })} use:businessForm>
+      <FormProvider
+        class={flex({ flexDirection: 'column', gap: '8px' })}
+        context={businessFormContext}
+        form={businessForm}
+      >
         <FormField name="birthOrBusinessRegistrationNumber" label="사업자등록번호">
           <TextInput
             inputmode="numeric"
@@ -433,9 +445,13 @@
         </div>
 
         <Button disabled={!allChecked || !$businessFormIsValid} type="submit">카드 추가하기</Button>
-      </form>
+      </FormProvider>
     {:else}
-      <form class={flex({ flexDirection: 'column', gap: '8px' })} use:personalForm>
+      <FormProvider
+        class={flex({ flexDirection: 'column', gap: '8px' })}
+        context={personalFormContext}
+        form={personalForm}
+      >
         <FormField name="birthOrBusinessRegistrationNumber" label="생년월일">
           <TextInput inputmode="numeric" maxlength={6} pattern="[0-9]{6}" placeholder="990101" required />
         </FormField>
@@ -524,7 +540,7 @@
         </div>
 
         <Button disabled={!allChecked || !$personalFormIsValid} type="submit">등록하기</Button>
-      </form>
+      </FormProvider>
     {/if}
   </div>
 </Modal>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, Helmet, TextInput } from '@readable/ui/components';
+  import { Button, FormField, FormProvider, Helmet, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
@@ -38,7 +38,7 @@
     }
   `);
 
-  const { form, data, isDirty, setIsDirty, setInitialValues } = createMutationForm({
+  const { form, data, isDirty, setIsDirty, setInitialValues, context } = createMutationForm({
     schema: z.object({
       siteId: z.string(),
       name: dataSchemas.site.name,
@@ -77,7 +77,7 @@
 
 <h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>테마 색상</h1>
 
-<form
+<FormProvider
   class={css({
     marginBottom: '8px',
     borderWidth: '1px',
@@ -88,7 +88,8 @@
     maxWidth: '720px',
     backgroundColor: 'surface.primary',
   })}
-  use:form
+  {context}
+  {form}
 >
   <FormField name="themeColor" label="색상">
     <TextInput
@@ -112,4 +113,4 @@
     {/if}
     <Button disabled={!$isDirty} size="lg" type="submit">변경</Button>
   </div>
-</form>
+</FormProvider>

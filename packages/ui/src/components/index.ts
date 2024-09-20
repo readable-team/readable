@@ -4,6 +4,7 @@ export { default as Checkbox } from './Checkbox.svelte';
 export { default as Chip } from './Chip.svelte';
 export { Dialog, dialogStore } from './dialog';
 export { default as FormField } from './FormField.svelte';
+export { default as FormProvider } from './FormProvider.svelte';
 export { default as FormValidationMessage } from './FormValidationMessage.svelte';
 export { default as Helmet } from './Helmet.svelte';
 export { default as HorizontalDivider } from './HorizontalDivider.svelte';

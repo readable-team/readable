@@ -4,6 +4,7 @@
   import {
     Button,
     FormField,
+    FormProvider,
     Helmet,
     HorizontalDivider,
     Icon,
@@ -64,7 +65,7 @@
     };
   });
 
-  const { form, isValid, setInitialValues } = createMutationForm({
+  const { form, isValid, setInitialValues, context } = createMutationForm({
     mutation: graphql(`
       mutation SiteSettingsDomainPage_SetSiteCustomDomain_Mutation($input: SetSiteCustomDomainInput!) {
         setSiteCustomDomain(input: $input) {
@@ -235,7 +236,7 @@
     </div>
   </div>
 {:else}
-  <form
+  <FormProvider
     class={css({
       marginBottom: '8px',
       borderWidth: '1px',
@@ -246,7 +247,8 @@
       maxWidth: '720px',
       backgroundColor: 'surface.primary',
     })}
-    use:form
+    {context}
+    {form}
   >
     <input name="siteId" type="hidden" />
     <FormField name="domain" label="커스텀 도메인 URL">
@@ -256,7 +258,7 @@
     <Button style={css.raw({ marginTop: '8px', marginLeft: 'auto' })} disabled={!$isValid} size="lg" type="submit">
       설정
     </Button>
-  </form>
+  </FormProvider>
 {/if}
 
 <TitledModal bind:open>

@@ -1,7 +1,16 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, HorizontalDivider, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
+  import {
+    Button,
+    FormField,
+    FormProvider,
+    HorizontalDivider,
+    Icon,
+    Menu,
+    MenuItem,
+    TextInput,
+  } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import mixpanel from 'mixpanel-browser';
   import qs from 'query-string';
@@ -59,7 +68,7 @@
     }
   `);
 
-  const { form } = createMutationForm({
+  const { form, context } = createMutationForm({
     mutation: async ({ name }) => {
       const team = await createDefaultTeam();
 
@@ -123,7 +132,7 @@
     </p>
   </div>
 
-  <form class={css({ width: 'full' })} use:form>
+  <FormProvider class={css({ width: 'full' })} {context} {form}>
     <div
       class={flex({
         direction: 'column',
@@ -244,5 +253,5 @@
     >
       <Button style={css.raw({ width: 'full' })} glossy size="lg" type="submit">시작하기</Button>
     </div>
-  </form>
+  </FormProvider>
 </div>

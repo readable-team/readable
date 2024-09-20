@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import type { Extender, MountedCurrentForm, Obj, SetupCurrentForm } from '@felte/core';
+import type { MountedCurrentForm, Obj, SetupCurrentForm } from '@felte/core';
 
 const formKey = Symbol();
 const fieldKey = Symbol();
@@ -23,16 +23,13 @@ type FieldContext = {
   name: string;
 };
 
-export const context = <T extends Obj>(): Extender<T> => {
-  return (currentForm) => {
-    const context = Object.fromEntries(
-      Object.entries(currentForm).filter(([key]) => contextKeys.includes(key as never)),
-    );
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const setFormContext = (form: any) => {
+  const context = Object.fromEntries(Object.entries(form).filter(([key]) => contextKeys.includes(key as never)));
 
-    setContext(formKey, context);
+  setContext(formKey, context);
 
-    return {};
-  };
+  return {};
 };
 
 export const setFormField = (context: FieldContext) => {
