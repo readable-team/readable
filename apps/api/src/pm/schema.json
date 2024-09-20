@@ -17,12 +17,17 @@
     },
     "hardBreak": { "group": "inline", "inline": true, "selectable": false, "parseDOM": [{ "tag": "br" }] },
     "horizontalRule": { "group": "block", "parseDOM": [{ "tag": "hr" }] },
-    "blockquote": { "content": "paragraph", "group": "block", "defining": true, "parseDOM": [{ "tag": "blockquote" }] },
+    "blockquote": {
+      "content": "paragraph+",
+      "group": "block",
+      "defining": true,
+      "parseDOM": [{ "tag": "blockquote" }]
+    },
     "bulletList": { "content": "listItem+", "group": "block list", "parseDOM": [{ "tag": "ul" }] },
     "orderedList": {
       "content": "listItem+",
       "group": "block list",
-      "attrs": { "start": { "default": 1 }, "type": { "default": null } },
+      "attrs": { "start": { "default": 1 }, "type": {} },
       "parseDOM": [{ "tag": "ol" }]
     },
     "listItem": {
@@ -35,10 +40,11 @@
       "group": "block",
       "defining": true,
       "attrs": { "emoji": { "default": "alert" } },
-      "parseDOM": [{ "tag": "node-view" }]
+      "parseDOM": [{ "tag": "node-view[data-node-view-type=callout]" }]
     },
     "embed": {
       "group": "block",
+      "draggable": true,
       "attrs": {
         "id": { "default": null },
         "url": { "default": null },
@@ -47,27 +53,29 @@
         "thumbnailUrl": { "default": null },
         "html": { "default": null }
       },
-      "parseDOM": [{ "tag": "node-view" }]
+      "parseDOM": [{ "tag": "node-view[data-node-view-type=embed]" }]
     },
     "image": {
       "group": "block",
+      "draggable": true,
       "attrs": {
         "id": { "default": null },
         "url": { "default": null },
         "ratio": { "default": null },
         "placeholder": { "default": null }
       },
-      "parseDOM": [{ "tag": "node-view" }]
+      "parseDOM": [{ "tag": "node-view[data-node-view-type=image]" }]
     },
     "file": {
       "group": "block",
+      "draggable": true,
       "attrs": {
         "id": { "default": null },
         "name": { "default": null },
         "size": { "default": null },
         "url": { "default": null }
       },
-      "parseDOM": [{ "tag": "node-view" }]
+      "parseDOM": [{ "tag": "node-view[data-node-view-type=file]" }]
     }
   },
   "marks": {
@@ -77,7 +85,9 @@
         "href": { "default": null },
         "target": { "default": "_blank" },
         "rel": { "default": "noopener noreferrer nofollow" },
-        "class": { "default": "c-text.secondary text-decoration-line-underline cursor-pointer" }
+        "class": {
+          "default": "c-var(--usersite-theme-color) fw-[500] text-decoration-line-underline td-c-var(--usersite-theme-color)/40 tu-o-2px cursor-pointer hover:td-c-var(--usersite-theme-color)/80 hover:td-t-2px"
+        }
       },
       "parseDOM": [{ "tag": "a[href]" }]
     },
