@@ -3,7 +3,7 @@ import { pageUrl } from '$lib/utils/url';
 import { sitemapQuery } from './query.svelte';
 
 export const GET = async (event) => {
-  const query = await sitemapQuery.refetch();
+  const query = await sitemapQuery.refetch({ fetch: event.fetch });
 
   const pages = ['/'];
   for (const page of query.publicSite.pages) {

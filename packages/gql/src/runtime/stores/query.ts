@@ -9,11 +9,15 @@ type StoreOutput<T extends $StoreSchema<Kind>> =
   | T['$output']
   | (T['$meta'] extends { mode: 'manual' } ? undefined : never);
 
+type RequestContext = Partial<{
+  fetch: typeof globalThis.fetch;
+}>;
+
 type Kind = 'query';
 export type QueryStore<T extends $StoreSchema<Kind>> = Readable<StoreOutput<T>> &
   (T['$input'] extends Record<string, never>
-    ? { refetch: () => Promise<T['$output']> }
-    : { refetch: (newVariables?: T['$input']) => Promise<T['$output']> });
+    ? { refetch: (context?: RequestContext) => Promise<T['$output']> }
+    : { refetch: (newVariables?: T['$input'], context?: RequestContext) => Promise<T['$output']> });
 
 export const createQueryStore = <T extends $StoreSchema<Kind>>(schema: StoreSchema<T>) => {
   const { client } = getClient();
@@ -29,11 +33,12 @@ export const createQueryStore = <T extends $StoreSchema<Kind>>(schema: StoreSche
     });
 
     return Object.assign(store, {
-      refetch: async (variables?: T['$input']) => {
+      refetch: async (variables?: T['$input'], context?: RequestContext) => {
         const operation = client.createOperation({
           schema,
           variables: variables ?? {},
           context: {
+            fetch: context?.fetch,
             requestPolicy: 'network-only',
           },
         });
@@ -101,10 +106,14 @@ export const createQueryStore = <T extends $StoreSchema<Kind>>(schema: StoreSche
       }
 
       return Object.assign(store, {
-        refetch: async (newVariables?: T['$input']) => {
+        refetch: async (newVariables?: T['$input'], context?: RequestContext) => {
           const operation = client.createOperation({
             schema,
             variables: newVariables ?? variables ?? {},
+            context: {
+              fetch: context?.fetch,
+              requestPolicy: 'network-only',
+            },
           });
 
           const result$ = client.executeOperation(operation);
