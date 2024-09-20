@@ -5,7 +5,6 @@ import { NodeSelection, Plugin, PluginKey, TextSelection } from '@tiptap/pm/stat
 import { BlockSelection } from '../../extensions/block-selection';
 import Component from './Component.svelte';
 import type { VirtualElement } from '@floating-ui/dom';
-import type { EditorView } from '@tiptap/pm/view';
 
 type State = {
   pos: number;
@@ -65,7 +64,7 @@ export const BubbleMenu = Extension.create({
                     const node = view.nodeDOM(selection.from) as HTMLElement;
                     return node.getBoundingClientRect();
                   } else {
-                    return posToDOMRect(view as unknown as EditorView, selection.from, selection.to);
+                    return posToDOMRect(view, selection.from, selection.to);
                   }
                 },
                 getClientRects: () => {
@@ -76,7 +75,7 @@ export const BubbleMenu = Extension.create({
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     return window.getSelection()!.getRangeAt(0).getClientRects();
                   } else {
-                    return [posToDOMRect(view as unknown as EditorView, selection.from, selection.to)];
+                    return [posToDOMRect(view, selection.from, selection.to)];
                   }
                 },
                 contextElement: view.dom,

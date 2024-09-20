@@ -20,8 +20,8 @@
   },
   "devDependencies": {
     "@readable/lintconfig": "workspace:*",
-    "cspell": "^8.14.4",
-    "eslint": "^8.57.1",
+    "cspell": "^8.14.2",
+    "eslint": "^8.57.0",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",

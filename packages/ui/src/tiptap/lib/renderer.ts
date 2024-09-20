@@ -1,5 +1,4 @@
 import { NodeView } from '@tiptap/core';
-import { DecorationSet } from '@tiptap/pm/view';
 import type {
   DecorationWithType,
   NodeViewProps,
@@ -53,11 +52,8 @@ class SvelteNodeView extends NodeView<NodeViewComponentType> implements ProseMir
       target,
       props: {
         editor: this.editor,
-        view: this.editor.view,
         node: this.node,
-        decorations: this.decorations as DecorationWithType[],
-        innerDecorations: DecorationSet.empty,
-        HTMLAttributes: {},
+        decorations: this.decorations,
         extension: this.extension,
         selected: false,
 
@@ -151,5 +147,5 @@ export const SvelteNodeViewRenderer = (
   component: NodeViewComponentType,
   options?: Partial<NodeViewRendererOptions>,
 ): NodeViewRenderer => {
-  return (props) => new SvelteNodeView(component, props, options) as unknown as ProseMirrorNodeView;
+  return (props) => new SvelteNodeView(component, props, options);
 };

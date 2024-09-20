@@ -5,7 +5,6 @@ import { Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
 import Component from './Component.svelte';
 import type { VirtualElement } from '@floating-ui/dom';
 import type { Node } from '@tiptap/pm/model';
-import type { EditorView } from '@tiptap/pm/view';
 
 type State = {
   pos: number;
@@ -95,7 +94,7 @@ export const LinkTooltip = Extension.create<Options>({
               const selection = TextSelection.create(view.state.doc, pos, pos + anchorNode.nodeSize);
               const element: VirtualElement = {
                 getBoundingClientRect: () => {
-                  return posToDOMRect(view as unknown as EditorView, selection.from, selection.to);
+                  return posToDOMRect(view, selection.from, selection.to);
                 },
                 getClientRects: () => {
                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
