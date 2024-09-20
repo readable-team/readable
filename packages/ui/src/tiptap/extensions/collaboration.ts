@@ -1,7 +1,6 @@
 import { css } from '@readable/styled-system/css';
 import { Extension } from '@tiptap/core';
 import { redo, undo, yCursorPlugin, ySyncPlugin, yUndoPlugin, yUndoPluginKey } from 'y-prosemirror';
-import type { EditorView } from '@tiptap/pm/view';
 import type * as YAwareness from 'y-protocols/awareness';
 import type * as Y from 'yjs';
 
@@ -67,7 +66,7 @@ export const Collaboration = Extension.create<CollaborationOptions>({
     const yUndoPluginInstance = yUndoPlugin();
     const originalUndoPluginView = yUndoPluginInstance.spec.view;
 
-    yUndoPluginInstance.spec.view = (view: EditorView) => {
+    yUndoPluginInstance.spec.view = (view) => {
       const { undoManager } = yUndoPluginKey.getState(view.state);
 
       if (undoManager.restore) {
