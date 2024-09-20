@@ -29,8 +29,12 @@
   };
 
   const loadLink = async (href: string) => {
-    const resp = await handleLink(href);
-    linkDraft = resp.url ? `${resp.host}${resp.url}` : href;
+    if (currentLink) {
+      const resp = await handleLink(href);
+      linkDraft = resp.url ? `${resp.host}${resp.url}` : href;
+    } else {
+      linkDraft = href;
+    }
   };
 
   $: loadLink(defaultLink);
