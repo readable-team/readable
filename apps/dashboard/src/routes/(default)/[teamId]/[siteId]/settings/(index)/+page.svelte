@@ -156,233 +156,231 @@
 
 <Helmet title="사이트 설정" trailing={$query.site.name} />
 
-<div class={css({ paddingTop: '40px', paddingX: '34px', paddingBottom: '120px', width: 'full' })}>
-  <h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>일반</h1>
+<h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>일반</h1>
 
-  <form
-    class={css({
-      borderWidth: '1px',
-      borderColor: 'border.primary',
-      borderRadius: '10px',
-      padding: '32px',
-      width: 'full',
-      maxWidth: '720px',
-      backgroundColor: 'surface.primary',
-    })}
-    use:form
-  >
-    <p class={css({ marginBottom: '8px', textStyle: '14sb', color: { base: 'gray.700', _dark: 'gray.300' } })}>
-      사이트 로고
-    </p>
+<form
+  class={css({
+    borderWidth: '1px',
+    borderColor: 'border.primary',
+    borderRadius: '10px',
+    padding: '32px',
+    width: 'full',
+    maxWidth: '720px',
+    backgroundColor: 'surface.primary',
+  })}
+  use:form
+>
+  <p class={css({ marginBottom: '8px', textStyle: '14sb', color: { base: 'gray.700', _dark: 'gray.300' } })}>
+    사이트 로고
+  </p>
 
-    <div class={css({ position: 'relative', size: '64px', _hover: { '& > div': { display: 'flex' } } })}>
-      <button
-        type="button"
-        on:click={() => {
-          inputEl.click();
-        }}
-      >
-        {#if $data.logoId}
-          <LoadableImg
-            id={$data.logoId}
-            style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '10px' })}
-            alt="사이트 로고"
-            size={64}
-          />
-        {:else}
-          <div
-            class={center({
-              size: '64px',
-              borderWidth: '1px',
-              borderColor: 'border.image',
-              borderRadius: '10px',
-              color: 'neutral.60',
-              backgroundColor: 'neutral.20',
-            })}
-          >
-            <Icon icon={UploadIcon} size={28} />
-          </div>
-        {/if}
-      </button>
-
-      <div
-        class={css({
-          position: 'absolute',
-          top: '0',
-          left: '0',
-          display: 'none',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: '10px',
-          color: $data.logoId ? 'neutral.0' : 'neutral.60',
-          backgroundColor: 'neutral.100/16',
-          size: '64px',
-          pointerEvents: 'none',
-        })}
-      >
-        <Icon icon={UploadIcon} size={28} />
-      </div>
-    </div>
-
-    <input
-      bind:this={inputEl}
-      class={css({ display: 'none' })}
-      accept="image/*"
-      type="file"
-      on:change={async (event) => {
-        const file = event.currentTarget.files?.[0];
-        event.currentTarget.value = '';
-        if (!file) {
-          return;
-        }
-
-        const resp = await uploadBlobAsImage(file, {
-          ensureAlpha: true,
-          resize: { width: 512, height: 512, fit: 'contain', background: '#00000000' },
-          format: 'png',
-        });
-
-        $data.logoId = resp.id;
-        setIsDirty(true);
+  <div class={css({ position: 'relative', size: '64px', _hover: { '& > div': { display: 'flex' } } })}>
+    <button
+      type="button"
+      on:click={() => {
+        inputEl.click();
       }}
-    />
-
-    <FormField name="name" style={css.raw({ marginTop: '24px' })} label="사이트 이름">
-      <TextInput placeholder="ACME 도움센터" />
-    </FormField>
-
-    <div class={flex({ marginTop: '8px', gap: '8px', justifyContent: 'flex-end' })}>
-      {#if $isDirty}
-        <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
-      {/if}
-      <Button disabled={!$isDirty} size="lg" type="submit">변경</Button>
-    </div>
-  </form>
-
-  <form
-    class={css({
-      marginTop: '8px',
-      borderWidth: '1px',
-      borderColor: 'border.primary',
-      borderRadius: '10px',
-      padding: '32px',
-      width: 'full',
-      maxWidth: '720px',
-      backgroundColor: 'surface.primary',
-    })}
-    use:slugForm
-  >
-    <label
-      class={css({
-        display: 'block',
-        marginBottom: '8px',
-        textStyle: '14sb',
-        color: { base: 'gray.700', _dark: 'gray.300' },
-      })}
-      for="slug"
     >
-      사이트 주소
-    </label>
-
-    <div class={flex({ align: 'center' })}>
-      <TextInput
-        name="slug"
-        style={css.raw({ borderTopRightRadius: '0', borderBottomRightRadius: '0', width: 'full' })}
-        placeholder="acme-docs"
-      />
-
-      <div
-        class={css({
-          borderWidth: '1px',
-          borderLeftWidth: '0',
-          borderColor: 'border.primary',
-          borderTopRightRadius: '10px',
-          borderBottomRightRadius: '10px',
-          paddingX: '20px',
-          paddingY: '10px',
-          textStyle: '16m',
-          color: 'text.tertiary',
-          height: '43px',
-          backgroundColor: 'surface.secondary',
-        })}
-      >
-        .{env.PUBLIC_USERSITE_DEFAULT_HOST}
-      </div>
-    </div>
+      {#if $data.logoId}
+        <LoadableImg
+          id={$data.logoId}
+          style={css.raw({ size: '64px', borderWidth: '1px', borderColor: 'border.image', borderRadius: '10px' })}
+          alt="사이트 로고"
+          size={64}
+        />
+      {:else}
+        <div
+          class={center({
+            size: '64px',
+            borderWidth: '1px',
+            borderColor: 'border.image',
+            borderRadius: '10px',
+            color: 'neutral.60',
+            backgroundColor: 'neutral.20',
+          })}
+        >
+          <Icon icon={UploadIcon} size={28} />
+        </div>
+      {/if}
+    </button>
 
     <div
-      class={flex({
-        align: 'center',
-        justify: 'space-between',
-        gap: '4px',
-        height: '17px',
-        textStyle: '12r',
-        marginTop: '4px',
-        color: { base: 'red.600', _dark: 'red.500' },
+      class={css({
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        display: 'none',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '10px',
+        color: $data.logoId ? 'neutral.0' : 'neutral.60',
+        backgroundColor: 'neutral.100/16',
+        size: '64px',
+        pointerEvents: 'none',
       })}
     >
-      <div class={flex({ align: 'center', gap: '4px' })}>
-        <FormValidationMessage for="slug" let:message>
-          <Icon icon={InfoIcon} size={12} />
-          {message}
-        </FormValidationMessage>
-      </div>
+      <Icon icon={UploadIcon} size={28} />
     </div>
+  </div>
 
-    <div class={flex({ marginTop: '8px', gap: '8px', justifyContent: 'flex-end' })}>
-      {#if $slugFormIsDirty}
-        <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
-      {/if}
-      <Button disabled={!$slugFormIsDirty} size="lg" type="submit">변경</Button>
+  <input
+    bind:this={inputEl}
+    class={css({ display: 'none' })}
+    accept="image/*"
+    type="file"
+    on:change={async (event) => {
+      const file = event.currentTarget.files?.[0];
+      event.currentTarget.value = '';
+      if (!file) {
+        return;
+      }
+
+      const resp = await uploadBlobAsImage(file, {
+        ensureAlpha: true,
+        resize: { width: 512, height: 512, fit: 'contain', background: '#00000000' },
+        format: 'png',
+      });
+
+      $data.logoId = resp.id;
+      setIsDirty(true);
+    }}
+  />
+
+  <FormField name="name" style={css.raw({ marginTop: '24px' })} label="사이트 이름">
+    <TextInput placeholder="ACME 도움센터" />
+  </FormField>
+
+  <div class={flex({ marginTop: '8px', gap: '8px', justifyContent: 'flex-end' })}>
+    {#if $isDirty}
+      <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
+    {/if}
+    <Button disabled={!$isDirty} size="lg" type="submit">변경</Button>
+  </div>
+</form>
+
+<form
+  class={css({
+    marginTop: '8px',
+    borderWidth: '1px',
+    borderColor: 'border.primary',
+    borderRadius: '10px',
+    padding: '32px',
+    width: 'full',
+    maxWidth: '720px',
+    backgroundColor: 'surface.primary',
+  })}
+  use:slugForm
+>
+  <label
+    class={css({
+      display: 'block',
+      marginBottom: '8px',
+      textStyle: '14sb',
+      color: { base: 'gray.700', _dark: 'gray.300' },
+    })}
+    for="slug"
+  >
+    사이트 주소
+  </label>
+
+  <div class={flex({ align: 'center' })}>
+    <TextInput
+      name="slug"
+      style={css.raw({ borderTopRightRadius: '0', borderBottomRightRadius: '0', width: 'full' })}
+      placeholder="acme-docs"
+    />
+
+    <div
+      class={css({
+        borderWidth: '1px',
+        borderLeftWidth: '0',
+        borderColor: 'border.primary',
+        borderTopRightRadius: '10px',
+        borderBottomRightRadius: '10px',
+        paddingX: '20px',
+        paddingY: '10px',
+        textStyle: '16m',
+        color: 'text.tertiary',
+        height: '43px',
+        backgroundColor: 'surface.secondary',
+      })}
+    >
+      .{env.PUBLIC_USERSITE_DEFAULT_HOST}
     </div>
-  </form>
+  </div>
 
   <div
-    class={css({
-      marginTop: '8px',
-      borderWidth: '1px',
-      borderColor: 'border.primary',
-      borderRadius: '10px',
-      padding: '32px',
-      width: 'full',
-      maxWidth: '720px',
-      backgroundColor: 'surface.primary',
+    class={flex({
+      align: 'center',
+      justify: 'space-between',
+      gap: '4px',
+      height: '17px',
+      textStyle: '12r',
+      marginTop: '4px',
+      color: { base: 'red.600', _dark: 'red.500' },
     })}
   >
-    <label
-      class={css({
-        display: 'block',
-        marginBottom: '8px',
-        textStyle: '14sb',
-        color: 'text.danger',
-      })}
-      for="slug"
-    >
-      사이트 삭제
-    </label>
-
-    <p
-      class={css({
-        color: 'text.tertiary',
-        marginTop: '6px',
-        textStyle: '13r',
-      })}
-    >
-      사이트 삭제시 모든 데이터가 영구적으로 삭제되며, 삭제된 데이터는 복구할 수 없습니다.
-    </p>
-
-    <Button
-      style={css.raw({ marginTop: '8px', marginLeft: 'auto' })}
-      size="lg"
-      type="submit"
-      variant="danger-fill"
-      on:click={() => {
-        deleteSiteOpen = true;
-      }}
-    >
-      삭제
-    </Button>
+    <div class={flex({ align: 'center', gap: '4px' })}>
+      <FormValidationMessage for="slug" let:message>
+        <Icon icon={InfoIcon} size={12} />
+        {message}
+      </FormValidationMessage>
+    </div>
   </div>
+
+  <div class={flex({ marginTop: '8px', gap: '8px', justifyContent: 'flex-end' })}>
+    {#if $slugFormIsDirty}
+      <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
+    {/if}
+    <Button disabled={!$slugFormIsDirty} size="lg" type="submit">변경</Button>
+  </div>
+</form>
+
+<div
+  class={css({
+    marginTop: '8px',
+    borderWidth: '1px',
+    borderColor: 'border.primary',
+    borderRadius: '10px',
+    padding: '32px',
+    width: 'full',
+    maxWidth: '720px',
+    backgroundColor: 'surface.primary',
+  })}
+>
+  <label
+    class={css({
+      display: 'block',
+      marginBottom: '8px',
+      textStyle: '14sb',
+      color: 'text.danger',
+    })}
+    for="slug"
+  >
+    사이트 삭제
+  </label>
+
+  <p
+    class={css({
+      color: 'text.tertiary',
+      marginTop: '6px',
+      textStyle: '13r',
+    })}
+  >
+    사이트 삭제시 모든 데이터가 영구적으로 삭제되며, 삭제된 데이터는 복구할 수 없습니다.
+  </p>
+
+  <Button
+    style={css.raw({ marginTop: '8px', marginLeft: 'auto' })}
+    size="lg"
+    type="submit"
+    variant="danger-fill"
+    on:click={() => {
+      deleteSiteOpen = true;
+    }}
+  >
+    삭제
+  </Button>
 </div>
 
 <TitledModal bind:open={deleteSiteOpen}>

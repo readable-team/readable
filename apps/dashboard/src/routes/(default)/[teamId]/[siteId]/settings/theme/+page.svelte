@@ -75,43 +75,41 @@
 
 <Helmet title="테마 설정" trailing={$query.site.name} />
 
-<div class={css({ paddingTop: '40px', paddingX: '34px', paddingBottom: '120px', width: 'full' })}>
-  <h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>테마 색상</h1>
+<h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>테마 색상</h1>
 
-  <form
-    class={css({
-      marginBottom: '8px',
-      borderWidth: '1px',
-      borderColor: 'border.primary',
-      borderRadius: '10px',
-      padding: '32px',
-      width: 'full',
-      maxWidth: '720px',
-      backgroundColor: 'surface.primary',
-    })}
-    use:form
-  >
-    <FormField name="themeColor" label="색상">
-      <TextInput
-        on:input={(e) => {
-          if (e.currentTarget.value[0] !== '#') {
-            e.currentTarget.value = `#${e.currentTarget.value}`;
-          }
-        }}
-      >
-        <div
-          slot="left-item"
-          style:background={$data.themeColor}
-          class={css({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '20px' })}
-        />
-      </TextInput>
-    </FormField>
+<form
+  class={css({
+    marginBottom: '8px',
+    borderWidth: '1px',
+    borderColor: 'border.primary',
+    borderRadius: '10px',
+    padding: '32px',
+    width: 'full',
+    maxWidth: '720px',
+    backgroundColor: 'surface.primary',
+  })}
+  use:form
+>
+  <FormField name="themeColor" label="색상">
+    <TextInput
+      on:input={(e) => {
+        if (e.currentTarget.value[0] !== '#') {
+          e.currentTarget.value = `#${e.currentTarget.value}`;
+        }
+      }}
+    >
+      <div
+        slot="left-item"
+        style:background={$data.themeColor}
+        class={css({ borderWidth: '1px', borderColor: 'border.image', borderRadius: 'full', size: '20px' })}
+      />
+    </TextInput>
+  </FormField>
 
-    <div class={flex({ marginTop: '8px', gap: '8px', justifyContent: 'flex-end' })}>
-      {#if $isDirty}
-        <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
-      {/if}
-      <Button disabled={!$isDirty} size="lg" type="submit">변경</Button>
-    </div>
-  </form>
-</div>
+  <div class={flex({ marginTop: '8px', gap: '8px', justifyContent: 'flex-end' })}>
+    {#if $isDirty}
+      <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
+    {/if}
+    <Button disabled={!$isDirty} size="lg" type="submit">변경</Button>
+  </div>
+</form>

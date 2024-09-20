@@ -10,9 +10,8 @@
   import TriangleAlertIcon from '~icons/lucide/triangle-alert';
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
-  import { TitledModal } from '$lib/components';
+  import { AvatarInput, TitledModal } from '$lib/components';
   import { accessToken } from '$lib/graphql';
-  import AvatarInput from './AvatarInput.svelte';
   import type { UserSetting_user } from '$graphql';
 
   let _user: UserSetting_user;
@@ -126,8 +125,7 @@
       <!-- prettier-ignore -->
       <span>
         팀 떠나기는 팀 대시보드의
-        <!-- TODO: 팀 멤버 관리 페이지로 이동 -->
-        &lbrack;<a class={css({ textDecoration: 'underline' })} href="/{$user.teams[0].id}/settings">멤버 관리</a>&rbrack;에서
+        &lbrack;<a class={css({ textDecoration: 'underline' })} href="/{$user.teams[0].id}/members">멤버 관리</a>&rbrack;에서
         할 수 있습니다
       </span>
     {:else}

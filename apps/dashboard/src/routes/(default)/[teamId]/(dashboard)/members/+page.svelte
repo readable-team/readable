@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, HorizontalDivider, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
+  import { Button, FormField, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import { GraphQLError } from 'graphql';
@@ -15,21 +15,16 @@
   import UserRoundMinusIcon from '~icons/lucide/user-round-minus';
   import UserXIcon from '~icons/lucide/user-x';
   import { goto, invalidateAll } from '$app/navigation';
-  import { fragment, graphql } from '$graphql';
+  import { graphql } from '$graphql';
   import Img from '$lib/components/Img.svelte';
   import { invokeAlert } from '$lib/components/invoke-alert';
   import TitledModal from '$lib/components/TitledModal.svelte';
-  import type { TeamMembers_team } from '$graphql';
 
   let isInviteModalOpen = false;
 
-  let _team: TeamMembers_team;
-  export { _team as $team };
-
-  $: team = fragment(
-    _team,
-    graphql(`
-      fragment TeamMembers_team on Team {
+  $: query = graphql(`
+    query TeamMembersPage_Query($teamId: ID!) {
+      team(teamId: $teamId) {
         id
         name
 
@@ -37,6 +32,7 @@
           id
           ...Img_image
         }
+
         meAsMember {
           id
           role
@@ -64,12 +60,12 @@
           email
         }
       }
-    `),
-  );
+    }
+  `);
 
   const { form, reset, setErrors } = createMutationForm({
     mutation: graphql(`
-      mutation TeamMembers_InviteTeamMember_Mutation($input: InviteTeamMemberInput!) {
+      mutation TeamMembersPage_InviteTeamMember_Mutation($input: InviteTeamMemberInput!) {
         inviteTeamMember(input: $input) {
           ... on TeamMember {
             id
@@ -104,7 +100,7 @@
   });
 
   const resendInvitationEmail = graphql(`
-    mutation TeamMembers_ResendInvitationEmail_Mutation($input: ResendInvitationEmailInput!) {
+    mutation TeamMembersPage_ResendInvitationEmail_Mutation($input: ResendInvitationEmailInput!) {
       resendInvitationEmail(input: $input) {
         id
       }
@@ -112,7 +108,7 @@
   `);
 
   const revokeInvitation = graphql(`
-    mutation TeamMembers_RevokeInvitation_Mutation($input: RevokeInvitationInput!) {
+    mutation TeamMembersPage_RevokeInvitation_Mutation($input: RevokeInvitationInput!) {
       revokeInvitation(input: $input) {
         id
       }
@@ -120,7 +116,7 @@
   `);
 
   const updateTeamMemberRole = graphql(`
-    mutation TeamMembers_UpdateTeamMemberRole_Mutation($input: UpdateTeamMemberRoleInput!) {
+    mutation TeamMembersPage_UpdateTeamMemberRole_Mutation($input: UpdateTeamMemberRoleInput!) {
       updateTeamMemberRole(input: $input) {
         id
         role
@@ -129,7 +125,7 @@
   `);
 
   const removeTeamMember = graphql(`
-    mutation TeamMembers_RemoveTeamMember_Mutation($input: RemoveTeamMemberInput!) {
+    mutation TeamMembersPage_RemoveTeamMember_Mutation($input: RemoveTeamMemberInput!) {
       removeTeamMember(input: $input) {
         id
       }
@@ -149,25 +145,32 @@
   };
 </script>
 
-<div class={flex({ justifyContent: 'space-between', alignItems: 'center' })}>
-  <h1 class={css({ textStyle: '28eb' })}>멤버 관리</h1>
+<div class={css({ marginX: 'auto', paddingTop: '40px', paddingBottom: '120px', width: 'full', maxWidth: '920px' })}>
+  <div class={flex({ justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' })}>
+    <h1 class={css({ textStyle: '28b' })}>
+      멤버
+      <span class={css({ color: 'text.tertiary' })}>{$query.team.members.length}</span>
+    </h1>
 
-  {#if $team.meAsMember?.role === 'ADMIN'}
-    <Button size="sm" type="button" on:click={() => (isInviteModalOpen = true)}>멤버 초대</Button>
-  {/if}
-</div>
-
-<HorizontalDivider style={css.raw({ marginTop: '20px' })} />
-
-<div class={flex({ flexDirection: 'column', paddingY: '40px', gap: '16px' })}>
-  <div class={css({ textStyle: '14sb', color: 'text.secondary' })}>
-    {$team.members.length}명의 멤버
+    {#if $query.team.meAsMember?.role === 'ADMIN'}
+      <Button size="sm" type="button" on:click={() => (isInviteModalOpen = true)}>멤버 초대</Button>
+    {/if}
   </div>
 
-  <ul class={flex({ flexDirection: 'column', gap: '12px' })}>
-    {#each $team.invitations as invitation (invitation.id)}
+  <ul
+    class={flex({
+      flexDirection: 'column',
+      borderWidth: '1px',
+      borderColor: 'border.primary',
+      borderRadius: '10px',
+      paddingX: '34px',
+      paddingY: '18px',
+      backgroundColor: 'surface.primary',
+    })}
+  >
+    {#each $query.team.invitations as invitation (invitation.id)}
       <li class={flex({ alignItems: 'center', gap: '16px' })}>
-        <div class={flex({ align: 'center', gap: '8px', grow: 1 })}>
+        <div class={flex({ align: 'center', gap: '12px', grow: 1 })}>
           <div
             class={center({
               borderWidth: '1px',
@@ -177,7 +180,7 @@
               textStyle: '16b',
               color: 'neutral.40',
               backgroundColor: 'surface.secondary',
-              size: '32px',
+              size: '40px',
             })}
           >
             {invitation.email[0].toUpperCase()}
@@ -186,7 +189,7 @@
           <p class={css({ textStyle: '14r', color: 'text.tertiary' })}>{invitation.email}</p>
         </div>
 
-        <div class={css({ padding: '16px' })}>
+        <div class={css({ paddingX: '16px', paddingY: '22px' })}>
           <p
             class={css({
               paddingX: '8px',
@@ -250,28 +253,28 @@
       </li>
     {/each}
 
-    {#each $team.members as member (member.id)}
+    {#each $query.team.members as member (member.id)}
       <li class={flex({ alignItems: 'center', gap: '16px' })}>
-        <div class={flex({ flex: '1', alignItems: 'center', gap: '8px', truncate: true })}>
+        <div class={flex({ flex: '1', alignItems: 'center', gap: '12px', truncate: true })}>
           <Img
             style={css.raw({
               borderWidth: '1px',
               borderColor: 'border.image',
               borderRadius: 'full',
-              size: '32px',
+              size: '40px',
             })}
             $image={member.user.avatar}
             alt={`${member.user.name}의 아바타`}
-            size={32}
+            size={48}
           />
           <div class={flex({ flexDirection: 'column', truncate: true })}>
-            <p class={css({ textStyle: '16m', color: 'text.secondary', truncate: true })}>{member.user.name}</p>
+            <p class={css({ textStyle: '16sb', color: 'text.secondary', truncate: true })}>{member.user.name}</p>
             <p class={css({ textStyle: '14r', color: 'text.tertiary', truncate: true })}>{member.user.email}</p>
           </div>
         </div>
 
-        <div class={css({ flexShrink: 0, padding: '16px' })}>
-          {#if $team.meAsMember?.role === 'ADMIN'}
+        <div class={css({ flexShrink: 0, paddingX: '16px', paddingY: '22px' })}>
+          {#if $query.team.meAsMember?.role === 'ADMIN'}
             <Menu
               listStyle={css.raw({ borderRadius: '[18px]', paddingY: '8px', paddingX: '2px' })}
               offset={6}
@@ -304,7 +307,7 @@
                   await updateTeamMemberRole({
                     role: 'ADMIN',
                     userId: member.user.id,
-                    teamId: $team.id,
+                    teamId: $query.team.id,
                   });
 
                   mixpanel.track('team:member:role:update', {
@@ -342,17 +345,17 @@
                 aria-checked={member.role === 'MEMBER'}
                 disabled={member.role === 'ADMIN' && member.isSoleAdmin}
                 on:click={async () => {
-                  if (member.id === $team.meAsMember?.id) {
+                  if (member.id === $query.team.meAsMember?.id) {
                     invokeAlert({
                       title: '스스로의 역할을 편집자로 변경하시겠어요?',
                       content: '이 작업은 되돌릴 수 없으며, 더 이상 설정을 변경할 수 없게 됩니다',
                       actionText: '변경',
                       action: async () => {
-                        setRoleToMember(member.user.id, $team.id);
+                        setRoleToMember(member.user.id, $query.team.id);
                       },
                     });
                   } else {
-                    setRoleToMember(member.user.id, $team.id);
+                    setRoleToMember(member.user.id, $query.team.id);
                   }
                 }}
               >
@@ -382,7 +385,7 @@
         </div>
 
         <div class={flex({ width: '60px', justifyContent: 'center', alignItems: 'center' })}>
-          {#if member.id === $team.meAsMember?.id && !member.isSoleAdmin}
+          {#if member.id === $query.team.meAsMember?.id && !member.isSoleAdmin}
             <Menu offset={2} placement="bottom-start">
               <div
                 slot="button"
@@ -405,11 +408,11 @@
                     content: '더 이상 팀 대시보드에 접근할 수 없습니다',
                     actionText: '떠나기',
                     action: async () => {
-                      await removeTeamMember({ userId: member.user.id, teamId: $team.id });
+                      await removeTeamMember({ userId: member.user.id, teamId: $query.team.id });
 
                       mixpanel.track('team:member:remove:self');
 
-                      if (member.id === $team.meAsMember?.id) {
+                      if (member.id === $query.team.meAsMember?.id) {
                         await invalidateAll();
                         await goto('/');
                       }
@@ -421,7 +424,7 @@
                 <span>팀에서 떠나기</span>
               </MenuItem>
             </Menu>
-          {:else if $team.meAsMember?.role === 'ADMIN' && !(member.id === $team.meAsMember?.id && member.isSoleAdmin)}
+          {:else if $query.team.meAsMember?.role === 'ADMIN' && !(member.id === $query.team.meAsMember?.id && member.isSoleAdmin)}
             <Menu offset={2} placement="bottom-start">
               <div
                 slot="button"
@@ -444,7 +447,7 @@
                     content: '제거된 멤버는 더 이상 팀 대시보드에 접근할 수 없습니다',
                     actionText: '제거',
                     action: async () => {
-                      await removeTeamMember({ userId: member.user.id, teamId: $team.id });
+                      await removeTeamMember({ userId: member.user.id, teamId: $query.team.id });
 
                       toast.success(`${member.user.name}님을 팀에서 제거했습니다`);
 
@@ -474,8 +477,8 @@
           borderRadius: 'full',
           size: '24px',
         })}
-        $image={$team.avatar}
-        alt={`${$team.name}의 아바타`}
+        $image={$query.team.avatar}
+        alt={`${$query.team.name}의 아바타`}
         size={24}
       />
       팀에 초대하기
@@ -483,7 +486,7 @@
   </svelte:fragment>
 
   <form class={flex({ flexDirection: 'column', gap: '16px' })} use:form>
-    <input name="teamId" type="hidden" value={$team.id} />
+    <input name="teamId" type="hidden" value={$query.team.id} />
 
     <FormField name="email" label="이메일">
       <TextInput placeholder="me@example.com" />

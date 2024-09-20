@@ -4,13 +4,11 @@
   import { scrollLock } from '@readable/ui/actions';
   import { Dialog, Icon } from '@readable/ui/components';
   import CircleUserIcon from '~icons/lucide/circle-user';
-  // import CreditCardIcon from '~icons/lucide/credit-card';
   import XIcon from '~icons/lucide/x';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
   import { Img, SettingTabItem } from '$lib/components';
-  // import Subscription from './(settingModal)/Subscription.svelte';
   import UserSetting from './setting-modal/UserSetting.svelte';
   import type { UserSettingModal_user } from '$graphql';
 
@@ -46,27 +44,6 @@
       selected: selectedTab === 'settings/personal',
     },
   ];
-
-  // $: teamSettings = [
-  //   {
-  //     icon: Building2Icon,
-  //     name: '팀 설정',
-  //     href: '?tab=settings/team',
-  //     selected: selectedTab === 'settings/team',
-  //   },
-  //   {
-  //     icon: UsersRoundIcon,
-  //     name: '멤버 관리',
-  //     href: '?tab=settings/team/members',
-  //     selected: selectedTab === 'settings/team/members',
-  //   },
-  //   // {
-  //   //   icon: CreditCardIcon,
-  //   //   name: '구독 및 결제',
-  //   //   href: '?tab=settings/team/subscription',
-  //   //   selected: selectedTab === 'settings/team/subscription',
-  //   // },
-  // ];
 
   const closeModal = () => {
     const currentPath = $page.url.pathname;
@@ -117,43 +94,6 @@
           overflow: 'auto',
         })}
       >
-        <!-- <div
-          class={flex({
-            align: 'center',
-            gap: '10px',
-            marginBottom: '2px',
-            paddingLeft: '12px',
-            paddingRight: '10px',
-            paddingY: '5px',
-            alignItems: 'center',
-          })}
-        >
-          <Img
-            style={css.raw({
-              flex: 'none',
-              borderWidth: '1px',
-              borderColor: 'border.image',
-              borderRadius: 'full',
-              size: '18px',
-            })}
-            $image={$team.avatar}
-            alt={`${$team.name}의 아바타`}
-            size={24}
-          />
-
-          <p class={css({ textStyle: '13sb', truncate: true, color: 'text.secondary' })}>{$team.name}</p>
-        </div> -->
-
-        <!-- <dl class={flex({ direction: 'column', gap: '2px', paddingTop: '1px' })}>
-          {#each teamSettings as setting (setting.name)}
-            <dd>
-              <SettingTabItem {setting} />
-            </dd>
-          {/each}
-        </dl>
-
-        <HorizontalDivider style={css.raw({ marginY: '16px' })} /> -->
-
         <div
           class={flex({
             align: 'center',
@@ -201,12 +141,6 @@
           overflow: 'auto',
         })}
       >
-        <!-- {#if selectedTab === 'settings/team'}
-          <TeamSetting {$team} />
-        {:else if selectedTab === 'settings/team/members'}
-          <TeamMembers {$team} />
-          {:else if selectedTab === 'settings/team/subscription'}
-          <Subscription /> -->
         {#if selectedTab === 'settings/personal'}
           <UserSetting {$user} />
         {/if}

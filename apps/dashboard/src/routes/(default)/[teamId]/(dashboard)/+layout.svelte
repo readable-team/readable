@@ -1,0 +1,60 @@
+<script lang="ts">
+  import { flex } from '@readable/styled-system/patterns';
+  import { page } from '$app/stores';
+  import { graphql } from '$graphql';
+  import { Tabs } from '$lib/components';
+
+  $: query = graphql(`
+    query TeamDashboardLayout_Query($teamId: ID!) {
+      team(teamId: $teamId) {
+        id
+        name
+
+        sites {
+          id
+        }
+      }
+    }
+  `);
+</script>
+
+<nav
+  class={flex({
+    align: 'center',
+    borderBottomWidth: '1px',
+    borderColor: 'border.secondary',
+    paddingX: '20px',
+    height: '46px',
+  })}
+>
+  <Tabs
+    tabs={[
+      {
+        title: '사이트',
+        path: `/${$query.team.id}`,
+        selected: $page.url.pathname === `/${$query.team.id}`,
+      },
+      {
+        title: '멤버',
+        path: `/${$query.team.id}/members`,
+        selected: $page.url.pathname === `/${$query.team.id}/members`,
+      },
+      {
+        title: '팀 설정',
+        path: `/${$query.team.id}/settings`,
+        selected: $page.url.pathname.startsWith(`/${$query.team.id}/settings`),
+      },
+    ]}
+  />
+</nav>
+
+<div
+  class={flex({
+    direction: 'column',
+    grow: '1',
+    paddingX: '20px',
+    backgroundColor: 'surface.secondary',
+  })}
+>
+  <slot />
+</div>

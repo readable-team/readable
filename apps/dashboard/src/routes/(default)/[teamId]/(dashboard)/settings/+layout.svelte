@@ -1,32 +1,16 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import IconLink2 from '~icons/lucide/link-2';
-  import IconPaintbrushVertical from '~icons/lucide/paintbrush-vertical';
   import IconSettings from '~icons/lucide/settings';
   import { page } from '$app/stores';
   import { SettingTabItem } from '$lib/components';
 
-  export let data;
-
   $: settings = [
     {
       name: '일반',
-      href: `/${data.props.teamId}/${data.props.siteId}/settings`,
+      href: `/${$page.params.teamId}/settings`,
       icon: IconSettings,
-      selected: $page.url.pathname === `/${data.props.teamId}/${data.props.siteId}/settings`,
-    },
-    {
-      name: '테마 색상',
-      href: `/${data.props.teamId}/${data.props.siteId}/settings/theme`,
-      icon: IconPaintbrushVertical,
-      selected: $page.url.pathname === `/${data.props.teamId}/${data.props.siteId}/settings/theme`,
-    },
-    {
-      name: '커스텀 도메인',
-      href: `/${data.props.teamId}/${data.props.siteId}/settings/domain`,
-      icon: IconLink2,
-      selected: $page.url.pathname === `/${data.props.teamId}/${data.props.siteId}/settings/domain`,
+      selected: $page.url.pathname === `/${$page.params.teamId}/settings`,
     },
   ];
 </script>
@@ -34,7 +18,6 @@
 <div
   class={flex({
     direction: 'column',
-    backgroundColor: 'surface.secondary',
     width: 'full',
     minHeight: 'full',
     height: 'fit',
@@ -51,7 +34,7 @@
         minWidth: '218px',
       })}
     >
-      <nav class={flex({ direction: 'column', gap: '1px' })}>
+      <nav class={flex({ direction: 'column', gap: '2px' })}>
         {#each settings as setting (setting.href)}
           <SettingTabItem {setting} />
         {/each}

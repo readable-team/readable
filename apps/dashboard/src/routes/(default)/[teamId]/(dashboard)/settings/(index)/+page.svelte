@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, HorizontalDivider, Icon, TextInput, Tooltip } from '@readable/ui/components';
+  import { Button, FormField, Icon, TextInput, Tooltip } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
@@ -9,19 +9,12 @@
   import { dataSchemas } from '@/schemas';
   import TriangleAlertIcon from '~icons/lucide/triangle-alert';
   import { goto } from '$app/navigation';
-  import { fragment, graphql } from '$graphql';
-  import { TitledModal } from '$lib/components';
-  import AvatarInput from './AvatarInput.svelte';
-  import type { TeamSetting_team } from '$graphql';
+  import { graphql } from '$graphql';
+  import { AvatarInput, TitledModal } from '$lib/components';
 
-  let _team: TeamSetting_team;
-
-  export { _team as $team };
-
-  $: team = fragment(
-    _team,
-    graphql(`
-      fragment TeamSetting_team on Team {
+  $: query = graphql(`
+    query TeamSettingsPage_Query($teamId: ID!) {
+      team(teamId: $teamId) {
         id
         name
 
@@ -38,11 +31,11 @@
           id
         }
       }
-    `),
-  );
+    }
+  `);
 
   const deleteTeam = graphql(`
-    mutation TeamSetting_DeleteTeam_Mutation($input: DeleteTeamInput!) {
+    mutation TeamSettingsPage_DeleteTeam_Mutation($input: DeleteTeamInput!) {
       deleteTeam(input: $input) {
         id
       }
@@ -56,7 +49,7 @@
       name: dataSchemas.team.name,
     }),
     mutation: graphql(`
-      mutation TeamSetting_UpdateTeam_Mutation($input: UpdateTeamInput!) {
+      mutation TeamSettingPage_UpdateTeam_Mutation($input: UpdateTeamInput!) {
         updateTeam(input: $input) {
           id
           name
@@ -78,9 +71,7 @@
     },
   });
 
-  $: if ($team) {
-    setInitialValues({ avatarId: $team.avatar.id, name: $team.name, teamId: $team.id });
-  }
+  $: setInitialValues({ avatarId: $query.team.avatar.id, name: $query.team.name, teamId: $query.team.id });
 
   let deleteTeamOpen = false;
 
@@ -97,23 +88,30 @@
   });
 </script>
 
-<h1 class={css({ textStyle: '28eb' })}>팀 설정</h1>
+<h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>일반</h1>
 
-<HorizontalDivider style={css.raw({ marginTop: '20px', marginBottom: '40px' })} />
-
-<form use:form>
+<form
+  class={css({
+    borderWidth: '1px',
+    borderColor: 'border.primary',
+    borderRadius: '[20px]',
+    padding: '32px',
+    backgroundColor: 'surface.primary',
+  })}
+  use:form
+>
   <input name="teamId" type="hidden" />
 
   <div class={flex({ flexDirection: 'column', gap: '24px' })}>
     <FormField name="avatar" label="팀 로고" noMessage>
       <AvatarInput
-        editable={$team.meAsMember?.role !== 'MEMBER'}
+        editable={$query.team.meAsMember?.role !== 'MEMBER'}
         bind:id={$data.avatarId}
         on:change={() => setIsDirty(true)}
       />
     </FormField>
     <FormField name="name" label="팀 이름">
-      <TextInput name="name" disabled={$team.meAsMember?.role === 'MEMBER'} placeholder="ACME Inc." />
+      <TextInput name="name" disabled={$query.team.meAsMember?.role === 'MEMBER'} placeholder="ACME Inc." />
     </FormField>
   </div>
 
@@ -127,34 +125,44 @@
 
 <div class={css({ marginY: '40px', height: '1px', backgroundColor: 'border.primary' })} />
 
-<div class={css({ textStyle: '14sb', color: 'text.danger' })}>팀 삭제</div>
-<div class={css({ marginTop: '6px', textStyle: '14r', color: 'text.tertiary' })}>
-  {#if $team.sites.length > 0}
-    사이트 삭제 후 팀 삭제가 가능합니다.
-    <br />
-    사이트 삭제는 [사이트 설정] - [일반] 메뉴에서 할 수 있습니다
-  {:else}
-    팀 삭제 시 모든 멤버 및 관리자 정보가 영구적으로 제거되며, 되돌릴 수 없습니다.
-  {/if}
-</div>
-
-<Tooltip
-  style={css.raw({ marginTop: '8px', marginLeft: 'auto' })}
-  enabled={$team.sites.length > 0}
-  message="사이트 삭제 후 팀 삭제가 가능해요"
-  placement="top"
+<div
+  class={css({
+    borderWidth: '1px',
+    borderColor: 'border.primary',
+    borderRadius: '[20px]',
+    padding: '32px',
+    backgroundColor: 'surface.primary',
+  })}
 >
-  <Button
-    disabled={$team.sites.length > 0}
-    size="lg"
-    variant="danger-fill"
-    on:click={() => {
-      deleteTeamOpen = true;
-    }}
+  <div class={css({ textStyle: '14sb', color: 'text.danger' })}>팀 삭제</div>
+  <div class={css({ marginTop: '6px', textStyle: '14r', color: 'text.tertiary' })}>
+    {#if $query.team.sites.length > 0}
+      사이트 삭제 후 팀 삭제가 가능합니다.
+      <br />
+      사이트 삭제는 [사이트 설정] - [일반] 메뉴에서 할 수 있습니다
+    {:else}
+      팀 삭제 시 모든 멤버 및 관리자 정보가 영구적으로 제거되며, 되돌릴 수 없습니다.
+    {/if}
+  </div>
+
+  <Tooltip
+    style={css.raw({ marginTop: '8px', marginLeft: 'auto', width: 'fit' })}
+    enabled={$query.team.sites.length > 0}
+    message="사이트 삭제 후 팀 삭제가 가능해요"
+    placement="top"
   >
-    삭제
-  </Button>
-</Tooltip>
+    <Button
+      disabled={$query.team.sites.length > 0}
+      size="lg"
+      variant="danger-fill"
+      on:click={() => {
+        deleteTeamOpen = true;
+      }}
+    >
+      삭제
+    </Button>
+  </Tooltip>
+</div>
 
 <TitledModal bind:open={deleteTeamOpen}>
   <svelte:fragment slot="title">팀 삭제</svelte:fragment>
@@ -189,20 +197,20 @@
     <Icon icon={TriangleAlertIcon} />
     <p>
       삭제를 진행하시려면 아래에 다음 문구를 입력해주세요:
-      <b>{$team.name}</b>
+      <b>{$query.team.name}</b>
     </p>
   </div>
 
   <form use:deleteForm>
-    <input name="teamId" type="hidden" value={$team.id} />
+    <input name="teamId" type="hidden" value={$query.team.id} />
 
     <FormField name="teamName" style={css.raw({ marginTop: '20px' })} label="팀 이름">
-      <TextInput name="teamName" placeholder={$team.name} />
+      <TextInput name="teamName" placeholder={$query.team.name} />
     </FormField>
 
     <Button
       style={css.raw({ width: 'full', marginTop: '20px' })}
-      disabled={$deleteFormData.teamName !== $team.name}
+      disabled={$deleteFormData.teamName !== $query.team.name}
       size="lg"
       type="submit"
       variant="danger-fill"

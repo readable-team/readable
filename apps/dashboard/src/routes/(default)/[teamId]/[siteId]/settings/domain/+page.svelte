@@ -133,132 +133,131 @@
 
 <Helmet title="커스텀 도메인 설정" trailing={$query.site.name} />
 
-<div class={css({ paddingTop: '40px', paddingX: '34px', paddingBottom: '120px', width: 'full' })}>
-  <h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>커스텀 도메인</h1>
-  {#if $query.site.customDomain}
-    <div
+<h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>커스텀 도메인</h1>
+
+{#if $query.site.customDomain}
+  <div
+    class={css({
+      marginBottom: '8px',
+      borderWidth: '1px',
+      borderColor: 'border.primary',
+      borderRadius: '10px',
+      padding: '32px',
+      width: 'full',
+      maxWidth: '720px',
+      backgroundColor: 'surface.primary',
+    })}
+  >
+    <h2
       class={css({
+        display: 'block',
         marginBottom: '8px',
-        borderWidth: '1px',
-        borderColor: 'border.primary',
-        borderRadius: '10px',
-        padding: '32px',
-        width: 'full',
-        maxWidth: '720px',
-        backgroundColor: 'surface.primary',
+        textStyle: '14sb',
+        color: { base: 'gray.700', _dark: 'gray.300' },
       })}
     >
-      <h2
+      연결된 도메인
+    </h2>
+    <div class={flex({ alignItems: 'center', borderBottomWidth: '1px', borderColor: 'divider.primary' })}>
+      <p
         class={css({
-          display: 'block',
-          marginBottom: '8px',
-          textStyle: '14sb',
-          color: { base: 'gray.700', _dark: 'gray.300' },
+          flex: '1',
+          marginRight: '16px',
+          textStyle: '16r',
+          color: 'text.secondary',
+          truncate: true,
         })}
       >
-        연결된 도메인
-      </h2>
-      <div class={flex({ alignItems: 'center', borderBottomWidth: '1px', borderColor: 'divider.primary' })}>
-        <p
-          class={css({
-            flex: '1',
-            marginRight: '16px',
-            textStyle: '16r',
-            color: 'text.secondary',
-            truncate: true,
-          })}
-        >
-          {$query.site.customDomain.domain}
-        </p>
+        {$query.site.customDomain.domain}
+      </p>
+      <div
+        class={flex({
+          width: '114px',
+          height: '54px',
+          gap: '6px',
+          alignItems: 'center',
+          color: $query.site.customDomain.state === 'ACTIVE' ? '[#6CB425]' : '[#E9A137]',
+        })}
+      >
+        {#if $query.site.customDomain.state === 'ACTIVE'}
+          <Icon icon={CircleCheckIcon} size={16} />
+          <span class={css({ textStyle: '14sb' })}>확인됨</span>
+        {:else}
+          <Icon icon={TriangleAlertIcon} size={16} />
+          <span class={css({ textStyle: '14sb' })}>확인되지 않음</span>
+        {/if}
+      </div>
+      <Menu style={css.raw({ marginX: '10px' })} placement="bottom-start">
         <div
-          class={flex({
-            width: '114px',
-            height: '54px',
-            gap: '6px',
-            alignItems: 'center',
-            color: $query.site.customDomain.state === 'ACTIVE' ? '[#6CB425]' : '[#E9A137]',
+          slot="button"
+          class={css({
+            borderRadius: '4px',
+            padding: '4px',
+            color: 'text.secondary',
+            _hover: { backgroundColor: 'neutral.20' },
           })}
         >
-          {#if $query.site.customDomain.state === 'ACTIVE'}
-            <Icon icon={CircleCheckIcon} size={16} />
-            <span class={css({ textStyle: '14sb' })}>확인됨</span>
-          {:else}
-            <Icon icon={TriangleAlertIcon} size={16} />
-            <span class={css({ textStyle: '14sb' })}>확인되지 않음</span>
-          {/if}
+          <Icon icon={EllipsisIcon} size={20} />
         </div>
-        <Menu style={css.raw({ marginX: '10px' })} placement="bottom-start">
-          <div
-            slot="button"
-            class={css({
-              borderRadius: '4px',
-              padding: '4px',
-              color: 'text.secondary',
-              _hover: { backgroundColor: 'neutral.20' },
-            })}
-          >
-            <Icon icon={EllipsisIcon} size={20} />
-          </div>
-          {#if $query.site.customDomain.state !== 'ACTIVE'}
-            <MenuItem
-              variant="default"
-              on:click={() => {
-                open = true;
-                verifyStream();
-              }}
-            >
-              <Icon icon={SearchCheckIcon} size={14} />
-              <span>재확인</span>
-            </MenuItem>
-          {/if}
+        {#if $query.site.customDomain.state !== 'ACTIVE'}
           <MenuItem
-            variant="danger"
+            variant="default"
             on:click={() => {
-              invokeAlert({
-                title: '커스텀 도메인을 제거하시겠어요?',
-                content: '커스텀 도메인을 제거하면 기존 주소로는 접근할 수 없습니다',
-                actionText: '제거',
-                action: async () => {
-                  if ($query.site.customDomain) {
-                    await unsetSiteCustomDomain({ siteCustomDomainId: $query.site.customDomain.id });
-                    mixpanel.track('site:custom-domain:unset');
-                    location.reload();
-                  }
-                },
-              });
+              open = true;
+              verifyStream();
             }}
           >
-            <Icon icon={Trash2Icon} size={14} />
-            <span>제거</span>
+            <Icon icon={SearchCheckIcon} size={14} />
+            <span>재확인</span>
           </MenuItem>
-        </Menu>
-      </div>
+        {/if}
+        <MenuItem
+          variant="danger"
+          on:click={() => {
+            invokeAlert({
+              title: '커스텀 도메인을 제거하시겠어요?',
+              content: '커스텀 도메인을 제거하면 기존 주소로는 접근할 수 없습니다',
+              actionText: '제거',
+              action: async () => {
+                if ($query.site.customDomain) {
+                  await unsetSiteCustomDomain({ siteCustomDomainId: $query.site.customDomain.id });
+                  mixpanel.track('site:custom-domain:unset');
+                  location.reload();
+                }
+              },
+            });
+          }}
+        >
+          <Icon icon={Trash2Icon} size={14} />
+          <span>제거</span>
+        </MenuItem>
+      </Menu>
     </div>
-  {:else}
-    <form
-      class={css({
-        marginBottom: '8px',
-        borderWidth: '1px',
-        borderColor: 'border.primary',
-        borderRadius: '10px',
-        padding: '32px',
-        width: 'full',
-        maxWidth: '720px',
-        backgroundColor: 'surface.primary',
-      })}
-      use:form
-    >
-      <input name="siteId" type="hidden" />
-      <FormField name="domain" label="커스텀 도메인 URL">
-        <TextInput name="domain" disabled={!!$query.site.customDomain} placeholder="docs.example.com" />
-      </FormField>
+  </div>
+{:else}
+  <form
+    class={css({
+      marginBottom: '8px',
+      borderWidth: '1px',
+      borderColor: 'border.primary',
+      borderRadius: '10px',
+      padding: '32px',
+      width: 'full',
+      maxWidth: '720px',
+      backgroundColor: 'surface.primary',
+    })}
+    use:form
+  >
+    <input name="siteId" type="hidden" />
+    <FormField name="domain" label="커스텀 도메인 URL">
+      <TextInput name="domain" disabled={!!$query.site.customDomain} placeholder="docs.example.com" />
+    </FormField>
 
-      <Button style={css.raw({ marginTop: '8px', marginLeft: 'auto' })} disabled={!$isValid} size="lg" type="submit">
-        설정
-      </Button>
-    </form>
-  {/if}
-</div>
+    <Button style={css.raw({ marginTop: '8px', marginLeft: 'auto' })} disabled={!$isValid} size="lg" type="submit">
+      설정
+    </Button>
+  </form>
+{/if}
 
 <TitledModal bind:open>
   <svelte:fragment slot="title">

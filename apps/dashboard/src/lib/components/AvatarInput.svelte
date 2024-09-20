@@ -3,8 +3,8 @@
   import { Icon } from '@readable/ui/components';
   import { createEventDispatcher } from 'svelte';
   import UploadIcon from '~icons/lucide/upload';
-  import { LoadableImg } from '$lib/components';
   import { uploadBlobAsImage } from '$lib/utils/blob.svelte';
+  import LoadableImg from './LoadableImg.svelte';
 
   const dispatch = createEventDispatcher<{ change: undefined }>();
 
