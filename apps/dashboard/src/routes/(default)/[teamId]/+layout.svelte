@@ -23,6 +23,21 @@
           id
           name
           ...SiteSwitcher_team
+
+          meAsMember {
+            id
+            role
+          }
+
+          members {
+            id
+            role
+            isSoleAdmin
+          }
+
+          invitations {
+            id
+          }
         }
 
         ... on TeamMember {
