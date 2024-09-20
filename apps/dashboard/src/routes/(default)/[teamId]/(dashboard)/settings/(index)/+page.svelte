@@ -1,7 +1,16 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, FormProvider, Helmet, Icon, TextInput, Tooltip } from '@readable/ui/components';
+  import {
+    Button,
+    FormField,
+    FormProvider,
+    Helmet,
+    HorizontalDivider,
+    Icon,
+    TextInput,
+    Tooltip,
+  } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
@@ -96,42 +105,6 @@
 
 <h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>일반</h1>
 
-<FormProvider
-  class={css({
-    borderWidth: '1px',
-    borderColor: 'border.primary',
-    borderRadius: '[20px]',
-    padding: '32px',
-    backgroundColor: 'surface.primary',
-  })}
-  {context}
-  {form}
->
-  <input name="teamId" type="hidden" />
-
-  <div class={flex({ flexDirection: 'column', gap: '24px' })}>
-    <FormField name="avatar" label="팀 로고" noMessage>
-      <AvatarInput
-        editable={$query.team.meAsMember?.role !== 'MEMBER'}
-        bind:id={$data.avatarId}
-        on:change={() => setIsDirty(true)}
-      />
-    </FormField>
-    <FormField name="name" label="팀 이름">
-      <TextInput name="name" disabled={$query.team.meAsMember?.role === 'MEMBER'} placeholder="ACME Inc." />
-    </FormField>
-  </div>
-
-  <div class={flex({ marginTop: '8px', gap: '8px', justify: 'flex-end' })}>
-    {#if $isDirty}
-      <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
-    {/if}
-    <Button disabled={!$isDirty} size="lg" type="submit">변경</Button>
-  </div>
-</FormProvider>
-
-<div class={css({ marginY: '40px', height: '1px', backgroundColor: 'border.primary' })} />
-
 <div
   class={css({
     borderWidth: '1px',
@@ -141,7 +114,34 @@
     backgroundColor: 'surface.primary',
   })}
 >
+  <FormProvider {context} {form}>
+    <input name="teamId" type="hidden" />
+
+    <div class={flex({ flexDirection: 'column', gap: '24px' })}>
+      <FormField name="avatar" label="팀 로고" noMessage>
+        <AvatarInput
+          editable={$query.team.meAsMember?.role !== 'MEMBER'}
+          bind:id={$data.avatarId}
+          on:change={() => setIsDirty(true)}
+        />
+      </FormField>
+      <FormField name="name" label="팀 이름">
+        <TextInput name="name" disabled={$query.team.meAsMember?.role === 'MEMBER'} placeholder="ACME Inc." />
+      </FormField>
+    </div>
+
+    <div class={flex({ marginTop: '8px', gap: '8px', justify: 'flex-end' })}>
+      {#if $isDirty}
+        <Button size="lg" type="reset" variant="secondary">되돌리기</Button>
+      {/if}
+      <Button disabled={!$isDirty} size="lg" type="submit">변경</Button>
+    </div>
+  </FormProvider>
+
+  <HorizontalDivider style={css.raw({ marginY: '40px' })} />
+
   <div class={css({ textStyle: '14sb', color: 'text.danger' })}>팀 삭제</div>
+
   <div class={css({ marginTop: '6px', textStyle: '14r', color: 'text.tertiary' })}>
     {#if $query.team.sites.length > 0}
       사이트 삭제 후 팀 삭제가 가능합니다.
