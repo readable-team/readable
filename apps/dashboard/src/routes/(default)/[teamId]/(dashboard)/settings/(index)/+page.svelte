@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, Icon, TextInput, Tooltip } from '@readable/ui/components';
+  import { Button, FormField, Helmet, Icon, TextInput, Tooltip } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
@@ -87,6 +87,8 @@
     },
   });
 </script>
+
+<Helmet title="팀 설정" trailing={$query.team.name} />
 
 <h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>일반</h1>
 

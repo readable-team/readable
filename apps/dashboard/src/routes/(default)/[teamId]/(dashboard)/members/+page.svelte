@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
+  import { Button, FormField, Helmet, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import { GraphQLError } from 'graphql';
@@ -144,6 +144,8 @@
     });
   };
 </script>
+
+<Helmet title="멤버 관리" trailing={$query.team.name} />
 
 <div class={css({ marginX: 'auto', paddingTop: '40px', paddingBottom: '120px', width: 'full', maxWidth: '920px' })}>
   <div class={flex({ justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' })}>
