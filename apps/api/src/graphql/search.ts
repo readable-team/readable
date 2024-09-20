@@ -5,8 +5,10 @@ import { z } from 'zod';
 import { builder } from '@/builder';
 import { db, PageContentChunks, PageContents, Pages } from '@/db';
 import { PageState } from '@/enums';
+import { ReadableError } from '@/errors';
 import * as openai from '@/external/openai';
 import { fixByChangePrompt } from '@/prompt/fix-by-change';
+import { keywordExtractionPrompt, naturalLanguageSearchPrompt } from '@/prompt/natural-language-search';
 import { searchIndex } from '@/search';
 import { assertSitePermission } from '@/utils/permissions';
 import { Page, PublicPage } from './objects';
@@ -24,6 +26,39 @@ const sanitizeHtmlOnlyEm = (dirty: string | undefined) => {
         ALLOWED_TAGS: ['em'],
       })
     : undefined;
+};
+
+type VectorSearchParams = {
+  query: string;
+  siteId: string;
+};
+
+const vectorSearch = async ({ query, siteId }: VectorSearchParams) => {
+  console.log('vectorSearch', query);
+
+  const queryVector = await openai.client.embeddings
+    .create({
+      model: 'text-embedding-3-small',
+      input: query,
+    })
+    .then((response) => response.data[0].embedding);
+
+  const similarity = sql<number>`1 - (${cosineDistance(PageContentChunks.vector, queryVector)})`;
+
+  return await db
+    .select({
+      pageId: PageContentChunks.pageId,
+      similarity,
+      title: PageContents.title,
+      subtitle: PageContents.subtitle,
+      text: PageContents.text,
+    })
+    .from(PageContentChunks)
+    .innerJoin(Pages, eq(Pages.id, PageContentChunks.pageId))
+    .innerJoin(PageContents, eq(PageContents.pageId, PageContentChunks.pageId))
+    .where(and(eq(Pages.siteId, siteId), eq(Pages.state, PageState.PUBLISHED), gt(similarity, 0.35)))
+    .orderBy(desc(similarity))
+    .limit(10);
 };
 
 const PageSearchHighlight = builder.objectRef<Partial<PageSearchData>>('PageSearchHighlight');
@@ -114,6 +149,24 @@ SearchPageByChangeHit.implement({
         }),
       ],
       resolve: (hit) => hit.fixes,
+    }),
+  }),
+});
+
+type SearchPublicPageByNaturalLanguageResult = {
+  answer: string;
+  pageIds: string[];
+};
+
+const SearchPublicPageByNaturalLanguageResult = builder.objectRef<SearchPublicPageByNaturalLanguageResult>(
+  'SearchPublicPageByNaturalLanguageResult',
+);
+SearchPublicPageByNaturalLanguageResult.implement({
+  fields: (t) => ({
+    answer: t.exposeString('answer'),
+    pages: t.field({
+      type: [PublicPage],
+      resolve: (result) => result.pageIds,
     }),
   }),
 });
@@ -235,6 +288,81 @@ builder.queryFields((t) => ({
       });
 
       return result;
+    },
+  }),
+
+  searchPublicPageByNaturalLanguage: t.withAuth({ site: true }).field({
+    type: SearchPublicPageByNaturalLanguageResult,
+    args: { query: t.arg.string() },
+    resolve: async (_, args, ctx) => {
+      const keyword = await openai.client.beta.chat.completions
+        .parse({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: keywordExtractionPrompt,
+            },
+            {
+              role: 'user',
+              content: args.query,
+            },
+          ],
+
+          response_format: zodResponseFormat(
+            z.object({
+              keyword: z.string(),
+            }),
+            'keyword',
+          ),
+        })
+        .then((response) => response.choices[0].message.parsed?.keyword);
+
+      if (!keyword) {
+        throw new ReadableError({
+          code: 'NOT_FOUND',
+        });
+      }
+
+      const pages = await vectorSearch({ query: keyword, siteId: ctx.site.id });
+
+      const result = await openai.client.beta.chat.completions
+        .parse({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: naturalLanguageSearchPrompt,
+            },
+            {
+              role: 'user',
+              content: JSON.stringify({
+                keyword,
+                pages,
+              }),
+            },
+          ],
+
+          response_format: zodResponseFormat(
+            z.object({
+              answer: z.string(),
+              references: z.array(z.string()),
+            }),
+            'search-public-page-by-natural-language-result',
+          ),
+        })
+        .then((response) => response.choices[0].message.parsed);
+
+      if (!result) {
+        throw new ReadableError({
+          code: 'NOT_FOUND',
+        });
+      }
+
+      return {
+        answer: result.answer,
+        pageIds: result.references,
+      };
     },
   }),
 }));

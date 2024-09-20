@@ -339,6 +339,7 @@ type Query {
   searchPage(query: String!, siteId: String!): SearchPageResult!
   searchPageByChange(query: String!, siteId: String!): [SearchPageByChangeHit!]!
   searchPublicPage(query: String!): SearchPublicPageResult!
+  searchPublicPageByNaturalLanguage(query: String!): SearchPublicPageByNaturalLanguageResult!
   site(siteId: ID!): Site!
   team(teamId: ID!): Team!
 }
@@ -371,6 +372,11 @@ type SearchPageByChangeHit {
 type SearchPageResult {
   estimatedTotalHits: Int!
   hits: [PageSearchHit!]!
+}
+
+type SearchPublicPageByNaturalLanguageResult {
+  answer: String!
+  pages: [PublicPage!]!
 }
 
 type SearchPublicPageResult {
