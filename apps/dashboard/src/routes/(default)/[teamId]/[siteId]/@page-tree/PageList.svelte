@@ -461,7 +461,6 @@
 
 <ul
   bind:this={listElem}
-  style:margin-left={`${(depth - 1) * 14}px`}
   class={cx(
     'dnd-list',
     css(
@@ -472,6 +471,7 @@
         gap: '1px',
       },
       parent === null ? { gap: '16px' } : {},
+      depth === maxDepth && { marginLeft: '14px' },
     ),
   )}
   role="group"
