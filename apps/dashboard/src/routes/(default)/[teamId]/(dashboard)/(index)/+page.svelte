@@ -206,7 +206,7 @@
 {/if}
 
 <TitledModal bind:open={createSiteOpen}>
-  <svelte:fragment slot="title">사이트 만들기</svelte:fragment>
+  <svelte:fragment slot="title">새 사이트 만들기</svelte:fragment>
 
   <form use:form>
     <input name="teamId" type="hidden" value={$query.team.id} />
@@ -215,6 +215,6 @@
       <TextInput placeholder="ACME 도움센터" />
     </FormField>
 
-    <Button style={css.raw({ marginTop: '20px', width: 'full' })} glossy size="lg" type="submit">만들기</Button>
+    <Button style={css.raw({ marginTop: '16px', marginLeft: 'auto' })} type="submit">만들기</Button>
   </form>
 </TitledModal>

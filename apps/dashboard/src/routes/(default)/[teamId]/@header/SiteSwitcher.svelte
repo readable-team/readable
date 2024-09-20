@@ -155,7 +155,7 @@
 
   <form use:newSiteForm>
     <input name="teamId" type="hidden" value={$team.id} />
-    <FormField name="name" label="사이트 이름">
+    <FormField name="name" description="설정에서 언제든지 변경할 수 있어요" label="사이트 이름">
       <TextInput placeholder="ACME 도움센터" />
     </FormField>
 
