@@ -10,7 +10,7 @@ await db.transaction(async (tx) => {
   const plan = await tx
     .insert(Plans)
     .values({
-      id: 'PLN0FREE',
+      id: 'PLAN0000000FREE',
       name: '무료',
       rules: {},
     })
@@ -20,7 +20,7 @@ await db.transaction(async (tx) => {
   const team = await tx
     .insert(Teams)
     .values({
-      id: 'T0PENXLE',
+      id: 'T00000PENXLE',
       name: 'PENXLE',
       planId: plan.id,
       avatarId: avatar.id,
@@ -29,7 +29,7 @@ await db.transaction(async (tx) => {
     .then(firstOrThrow);
 
   await tx.insert(Sites).values({
-    id: 'S0TEMPLATE',
+    id: 'S000TEMPLATE',
     teamId: team.id,
     name: 'TEMPLATE',
     slug: 'template',

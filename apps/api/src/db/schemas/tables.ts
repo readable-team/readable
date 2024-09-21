@@ -310,7 +310,7 @@ export const PaymentMethods = pgTable(
 export const Plans = pgTable('plans', {
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => createDbId('PLN')),
+    .$defaultFn(() => createDbId('PLAN', { length: 'short' })),
   name: text('name').notNull(),
   rules: jsonb('rules').notNull().$type<Partial<PlanRules>>(),
   createdAt: datetime('created_at')

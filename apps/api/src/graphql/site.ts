@@ -282,7 +282,7 @@ builder.mutationFields((t) => ({
             themeColor: Sites.themeColor,
           })
           .from(Sites)
-          .where(eq(Sites.id, 'S0TEMPLATE'))
+          .where(eq(Sites.id, 'S000TEMPLATE'))
           .then(firstOrThrow);
 
         const site = await tx

@@ -621,7 +621,7 @@ const createTeam = async (userId: string, teamName: string) => {
 
     const team = await tx
       .insert(Teams)
-      .values({ name: teamName, avatarId: avatar.id, planId: 'PLN0FREE' })
+      .values({ name: teamName, avatarId: avatar.id, planId: 'PLAN0000000FREE' })
       .returning()
       .then(firstOrThrow);
 
