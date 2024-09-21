@@ -9,7 +9,7 @@
   }[] = [];
 </script>
 
-<div class={flex({ gap: '4px', position: 'relative', paddingTop: '6px' })}>
+<div class={flex({ gap: '4px', position: 'relative', paddingTop: '6px' })} role="tablist">
   {#each tabs as { title, path, selected }, i (i)}
     <a
       class={css({

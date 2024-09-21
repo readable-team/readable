@@ -68,7 +68,7 @@
       alignItems: 'center',
     })}
   >
-    <a href="/">
+    <a aria-label="홈" href="/">
       <Icon icon={ReadableIcon} size={24} />
     </a>
     <Icon icon={SlashDividerIcon} size={18} />

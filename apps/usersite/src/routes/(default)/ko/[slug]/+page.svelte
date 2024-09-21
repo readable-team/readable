@@ -99,7 +99,7 @@
       })}
       aria-hidden="true"
     />
-    <button type="button" on:click={() => mobileNavOpen.set(true)}>
+    <button aria-label="메뉴 열기" type="button" on:click={() => mobileNavOpen.set(true)}>
       <Icon style={css.raw({ color: 'text.secondary' })} icon={MenuIcon} size={20} />
     </button>
     <Breadcrumb _publicPage={$query.publicPage} />

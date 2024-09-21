@@ -154,7 +154,7 @@
           borderWidth: '1px',
           borderColor: 'border.secondary',
           backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
-          color: { base: 'gray.500', _dark: 'darkgray.400' },
+          color: 'text.tertiary',
           textStyle: '14r',
         })}
         aria-label="검색"

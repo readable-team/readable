@@ -163,10 +163,9 @@
                 class={css({
                   position: 'absolute',
                   right: '12px',
-                  top: '9px',
-                  width: '22px',
-                  height: '22px',
-                  padding: '3px',
+                  top: '8px',
+                  size: '24px',
+                  padding: '4px',
                   borderRadius: '4px',
                   color: 'neutral.50',
                   _hover: {
@@ -175,6 +174,7 @@
                   },
                 })}
                 aria-expanded={$treeOpenState[page.slug] ? 'true' : 'false'}
+                aria-label={$treeOpenState[page.slug] ? '하위 메뉴 닫기' : '하위 메뉴 열기'}
                 type="button"
                 on:click={() => {
                   $treeOpenState[page.slug] = !$treeOpenState[page.slug];
@@ -189,33 +189,35 @@
             {/if}
           </li>
           {#if page.children.length > 0 && $treeOpenState[page.slug]}
-            <ul class={flex({ direction: 'column', listStyle: 'none', gap: '2px' })}>
-              {#each page.children as childPage (childPage.id)}
-                <li class={css({ display: 'contents' })}>
-                  <a
-                    class={css({
-                      padding: '7px',
-                      paddingLeft: '32px',
-                      textStyle: '15r',
-                      color: 'text.primary',
-                      borderRadius: '6px',
-                      _hover: {
-                        backgroundColor: 'var(--usersite-theme-color)/3',
-                      },
-                      _currentPage: {
-                        color: 'var(--usersite-theme-color)',
-                        textStyle: '15b',
-                        backgroundColor: 'var(--usersite-theme-color)/3',
-                      },
-                    })}
-                    aria-current={childPage.slug === currentSlug ? 'page' : undefined}
-                    href={`/ko/${childPage.slug}`}
-                  >
-                    {childPage.content.title}
-                  </a>
-                </li>
-              {/each}
-            </ul>
+            <li>
+              <ul class={flex({ direction: 'column', listStyle: 'none', gap: '2px' })}>
+                {#each page.children as childPage (childPage.id)}
+                  <li class={css({ display: 'contents' })}>
+                    <a
+                      class={css({
+                        padding: '7px',
+                        paddingLeft: '32px',
+                        textStyle: '15r',
+                        color: 'text.primary',
+                        borderRadius: '6px',
+                        _hover: {
+                          backgroundColor: 'var(--usersite-theme-color)/3',
+                        },
+                        _currentPage: {
+                          color: 'var(--usersite-theme-color)',
+                          textStyle: '15b',
+                          backgroundColor: 'var(--usersite-theme-color)/3',
+                        },
+                      })}
+                      aria-current={childPage.slug === currentSlug ? 'page' : undefined}
+                      href={`/ko/${childPage.slug}`}
+                    >
+                      {childPage.content.title}
+                    </a>
+                  </li>
+                {/each}
+              </ul>
+            </li>
           {/if}
         {/each}
       </ul>

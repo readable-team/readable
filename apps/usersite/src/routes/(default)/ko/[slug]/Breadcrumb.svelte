@@ -36,7 +36,7 @@
   );
 </script>
 
-<nav class={css({})} aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
   <ol
     class={css({
       '& > li': {
