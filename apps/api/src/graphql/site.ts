@@ -188,7 +188,10 @@ PublicSite.implement({
         return await db
           .select(getTableColumns(Pages))
           .from(Categories)
-          .innerJoin(Pages, and(eq(Categories.id, Pages.categoryId), eq(Pages.state, PageState.PUBLISHED)))
+          .innerJoin(
+            Pages,
+            and(eq(Categories.id, Pages.categoryId), eq(Pages.state, PageState.PUBLISHED), isNull(Pages.parentId)),
+          )
           .where(and(eq(Categories.siteId, site.id), eq(Categories.state, CategoryState.ACTIVE)))
           .orderBy(asc(Categories.order), asc(Pages.order))
           .limit(1)
