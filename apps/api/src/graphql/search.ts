@@ -326,6 +326,12 @@ builder.queryFields((t) => ({
 
       const pages = await vectorSearch({ query: keyword, siteId: ctx.site.id });
 
+      if (pages.length === 0) {
+        throw new ReadableError({
+          code: 'NOT_FOUND',
+        });
+      }
+
       const result = await openai.client.beta.chat.completions
         .parse({
           model: 'gpt-4o-mini',
@@ -345,6 +351,7 @@ builder.queryFields((t) => ({
 
           response_format: zodResponseFormat(
             z.object({
+              cannotAnswer: z.boolean(),
               answer: z.string(),
               references: z.array(z.string()),
             }),
@@ -353,7 +360,7 @@ builder.queryFields((t) => ({
         })
         .then((response) => response.choices[0].message.parsed);
 
-      if (!result) {
+      if (!result || result.cannotAnswer) {
         throw new ReadableError({
           code: 'NOT_FOUND',
         });
