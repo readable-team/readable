@@ -1,16 +1,17 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
+  import { center, flex } from '@readable/styled-system/patterns';
 
   export let tabs: {
     title: string;
     path: string;
     selected: boolean;
+    badge?: number | string;
   }[] = [];
 </script>
 
 <div class={flex({ gap: '4px', position: 'relative', paddingTop: '6px' })} role="tablist">
-  {#each tabs as { title, path, selected }, i (i)}
+  {#each tabs as { title, path, selected, badge }, i (i)}
     <a
       class={css({
         'zIndex': '10',
@@ -50,9 +51,25 @@
           paddingX: '16px',
           textStyle: '14sb',
           height: '34px',
+          alignItems: 'center',
+          gap: '6px',
         })}
       >
         {title}
+        {#if badge}
+          <span
+            class={center({
+              size: '17px',
+              borderRadius: 'full',
+              backgroundColor: 'neutral.30',
+              color: 'text.secondary',
+              textStyle: '12sb',
+              marginRight: '-2px',
+            })}
+          >
+            {badge}
+          </span>
+        {/if}
       </span>
     </a>
   {/each}

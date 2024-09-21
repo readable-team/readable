@@ -13,6 +13,10 @@
         sites {
           id
         }
+
+        members {
+          id
+        }
       }
     }
   `);
@@ -33,11 +37,13 @@
         title: '사이트',
         path: `/${$query.team.id}`,
         selected: $page.url.pathname === `/${$query.team.id}`,
+        badge: $query.team.sites.length,
       },
       {
         title: '멤버',
         path: `/${$query.team.id}/members`,
         selected: $page.url.pathname === `/${$query.team.id}/members`,
+        badge: $query.team.members.length,
       },
       {
         title: '팀 설정',
