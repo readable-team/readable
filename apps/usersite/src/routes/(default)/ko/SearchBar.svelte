@@ -63,7 +63,9 @@
     async (query: string) => {
       const result = await searchPublicPage.refetch({ query });
       searchResults = result.searchPublicPage.hits;
-      selectedResultIndex = null;
+      if (selectedResultIndex !== -1) {
+        selectedResultIndex = null;
+      }
     },
     {
       timing: 'trailing',
@@ -490,7 +492,7 @@
           >
             <AiIcon />
             <div class={flex({ flexDirection: 'column', gap: '12px' })}>
-              <p class={css({ textStyle: '14r' })}>{aiSearchResult.answer}</p>
+              <p class={css({ textStyle: '14r', whiteSpace: 'pre-wrap' })}>{aiSearchResult.answer}</p>
               {#if aiSearchResult.pages.length > 0}
                 <HorizontalDivider />
                 <div>
