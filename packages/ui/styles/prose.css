@@ -13,32 +13,32 @@
   /* gray.1000 */
   caret-color: #09090b;
 
-  .gray {
+  & > * + * {
+    margin-top: 4px;
+  }
+
+  & [data-color='gray'] {
     color: var(--prosemirror-color-gray);
   }
 
-  .red {
+  & [data-color='red'] {
     color: var(--prosemirror-color-red);
   }
 
-  .orange {
+  & [data-color='orange'] {
     color: var(--prosemirror-color-orange);
   }
 
-  .yellow {
+  & [data-color='yellow'] {
     color: var(--prosemirror-color-yellow);
   }
 
-  .green {
+  & [data-color='green'] {
     color: var(--prosemirror-color-green);
   }
 
-  .blue {
+  & [data-color='blue'] {
     color: var(--prosemirror-color-blue);
-  }
-
-  & > * + * {
-    margin-top: 4px;
   }
 
   &[contenteditable='true'] {

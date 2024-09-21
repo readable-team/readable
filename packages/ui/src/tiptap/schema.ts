@@ -150,14 +150,10 @@ export const basicExtensions = [
         {
           types: this.options.types,
           attributes: {
-            class: {
-              parseHTML: (element) => element.getAttribute('class'),
+            color: {
+              parseHTML: (element) => element.dataset.color,
               renderHTML: (attributes) => {
-                if (!attributes.class) {
-                  return {};
-                }
-
-                return { class: attributes.class };
+                return { 'data-color': attributes.color };
               },
             },
           },
@@ -170,12 +166,12 @@ export const basicExtensions = [
         setColor:
           (className) =>
           ({ chain }) => {
-            return chain().setMark('textStyle', { class: className }).run();
+            return chain().setMark('textStyle', { color: className }).run();
           },
         unsetColor:
           () =>
           ({ chain }) => {
-            return chain().setMark('textStyle', { color: null, class: null }).removeEmptyTextStyle().run();
+            return chain().setMark('textStyle', { color: null }).removeEmptyTextStyle().run();
           },
       };
     },
