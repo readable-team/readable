@@ -54,6 +54,7 @@
     }
   `);
 
+  let aiEnabled = true; // TODO: 플랜에 따라..
   let aiState: 'idle' | 'loading' | 'success' | 'error' = 'idle';
   let aiSearchResult:
     | Awaited<ReturnType<typeof searchPublicPageByNaturalLanguage.refetch>>['searchPublicPageByNaturalLanguage']
@@ -135,12 +136,16 @@
         return;
       }
 
-      if (event.key === 'Enter' && selectedResultIndex !== null) {
+      if (event.key === 'Enter') {
         event.preventDefault();
-        if (selectedResultIndex === -1) {
-          aiSearch();
+        if (selectedResultIndex === null) {
+          selectedResultIndex = aiEnabled ? -1 : 0;
         } else {
-          goto(`/ko/${searchResults[selectedResultIndex].page.slug}`);
+          if (selectedResultIndex === -1) {
+            aiSearch();
+          } else {
+            goto(`/ko/${searchResults[selectedResultIndex].page.slug}`);
+          }
         }
         return;
       }
@@ -149,16 +154,16 @@
         if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
           event.preventDefault();
           if (selectedResultIndex === null) {
-            selectedResultIndex = -1;
+            selectedResultIndex = aiEnabled ? -1 : 0;
           } else if (event.key === 'ArrowDown') {
             selectedResultIndex = selectedResultIndex + 1;
             if (selectedResultIndex >= searchResults.length) {
-              selectedResultIndex = -1;
+              selectedResultIndex = aiEnabled ? -1 : 0;
             }
           } else if (event.key === 'ArrowUp') {
             selectedResultIndex = selectedResultIndex - 1;
             if (selectedResultIndex < -1) {
-              selectedResultIndex = searchResults.length - 1;
+              selectedResultIndex = aiEnabled ? -1 : searchResults.length - 1;
             }
           }
         }
@@ -356,46 +361,48 @@
       </div>
       {#if searchQuery.length > 0}
         {#if aiState === 'idle'}
-          <ul bind:this={listEl} class={css({ paddingY: '12px', overflowY: 'auto', smOnly: { paddingX: '20px' } })}>
-            <div
-              class={flex({
-                gap: '16px',
-                alignItems: 'center',
-                paddingX: '18px',
-                paddingY: '16px',
-                cursor: 'pointer',
-                borderRadius: '10px',
-                _hover: {
-                  backgroundColor: 'var(--usersite-theme-color)/4',
-                },
-                _selected: {
-                  backgroundColor: 'var(--usersite-theme-color)/4',
-                },
-                _focus: {
-                  backgroundColor: 'var(--usersite-theme-color)/4',
-                },
-              })}
-              aria-selected={selectedResultIndex === -1}
-              role="option"
-              tabindex="0"
-              on:focus={() => {
-                selectedResultIndex = -1;
-              }}
-              on:click={aiSearch}
-              on:keydown={null}
-            >
-              <AiIcon />
+          <ul bind:this={listEl} class={css({ marginTop: '12px', overflowY: 'auto', smOnly: { paddingX: '20px' } })}>
+            {#if aiEnabled}
+              <div
+                class={flex({
+                  gap: '16px',
+                  alignItems: 'center',
+                  paddingX: '18px',
+                  paddingY: '16px',
+                  cursor: 'pointer',
+                  borderRadius: '10px',
+                  _hover: {
+                    backgroundColor: 'var(--usersite-theme-color)/4',
+                  },
+                  _selected: {
+                    backgroundColor: 'var(--usersite-theme-color)/4',
+                  },
+                  _focus: {
+                    backgroundColor: 'var(--usersite-theme-color)/4',
+                  },
+                })}
+                aria-selected={selectedResultIndex === -1}
+                role="option"
+                tabindex="0"
+                on:focus={() => {
+                  selectedResultIndex = -1;
+                }}
+                on:click={aiSearch}
+                on:keydown={null}
+              >
+                <AiIcon />
 
-              <div class={css({ flexDirection: 'column', truncate: true })}>
-                <p class={css({ fontSize: '0' })}>
-                  <em class={css({ textStyle: '16sb', color: 'var(--usersite-theme-color)' })}>{searchQuery}</em>
-                  <span class={css({ textStyle: '16sb' })}>를 AI에게 물어보세요</span>
-                </p>
-                <p class={css({ textStyle: '14r', truncate: true })}>
-                  도움센터에 있는 정보를 바탕으로 답변을 찾아보겠습니다
-                </p>
+                <div class={css({ flexDirection: 'column', truncate: true })}>
+                  <p class={css({ fontSize: '0' })}>
+                    <em class={css({ textStyle: '16sb', color: 'var(--usersite-theme-color)' })}>{searchQuery}</em>
+                    <span class={css({ textStyle: '16sb' })}>를 AI에게 물어보세요</span>
+                  </p>
+                  <p class={css({ textStyle: '14r', truncate: true })}>
+                    도움센터에 있는 정보를 바탕으로 답변을 찾아보겠습니다
+                  </p>
+                </div>
               </div>
-            </div>
+            {/if}
 
             {#if searchResults.length > 0}
               {#each searchResults as result, index (result.page.id)}
@@ -455,10 +462,9 @@
                   {/if}
                 </a>
               {/each}
-            {:else}
+            {:else if !aiEnabled}
               <div
                 class={flex({
-                  marginTop: '12px',
                   flexDirection: 'column',
                   paddingX: '18px',
                   smOnly: {
