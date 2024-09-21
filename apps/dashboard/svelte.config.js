@@ -34,6 +34,9 @@ export default {
 
   vitePlugin: {
     // see: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/inspector.md
-    inspector: true,
+    inspector: {
+      toggleKeyCombo: 'control-shift',
+      toggleButtonPos: 'bottom-right',
+    },
   },
 };
