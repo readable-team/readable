@@ -398,7 +398,7 @@
                     <span class={css({ textStyle: '16sb' })}>를 AI에게 물어보세요</span>
                   </p>
                   <p class={css({ textStyle: '14r', truncate: true })}>
-                    도움센터에 있는 정보를 바탕으로 답변을 찾아보겠습니다
+                    사이트의 내용을 기반으로 가장 도움이 되는 정보를 찾아드릴게요
                   </p>
                 </div>
               </div>
@@ -475,8 +475,8 @@
                   gap: '2px',
                 })}
               >
-                <p class={css({ textStyle: '16sb' })}>검색결과가 없어요</p>
-                <p class={css({ textStyle: '14r' })}>다른 검색어를 입력해주세요</p>
+                <p class={css({ textStyle: '16sb' })}>검색 결과가 없습니다</p>
+                <p class={css({ textStyle: '14r' })}>다른 검색어를 입력해보세요</p>
               </div>
             {/if}
           </ul>
@@ -547,7 +547,7 @@
             })}
           >
             <AiIcon variant="gray" />
-            <p class={css({ textStyle: '14m', color: 'text.tertiary' })}>검색 결과를 찾을 수 없습니다</p>
+            <p class={css({ textStyle: '14m', color: 'text.tertiary' })}>검색 결과가 없습니다</p>
           </div>
         {/if}
       {/if}
