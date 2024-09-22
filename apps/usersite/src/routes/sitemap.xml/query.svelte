@@ -8,12 +8,7 @@
 
         pages {
           id
-          slug
-
-          content {
-            id
-            title
-          }
+          ...PageUrl_publicPage
         }
       }
     }

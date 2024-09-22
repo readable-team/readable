@@ -1,15 +1,14 @@
 <script lang="ts">
   import { graphql } from '$graphql';
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  $: query = graphql(`
+  $: graphql(`
     query IndexPage_Query {
       publicSite {
         id
 
         firstPage {
           id
-          slug
+          ...PageUrl_publicPage
         }
       }
     }

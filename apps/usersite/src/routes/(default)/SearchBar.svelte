@@ -11,6 +11,7 @@
   import { beforeNavigate, goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import { searchBarOpen } from '$lib/stores/ui';
+  import { pageUrl } from '$lib/utils/url';
   import AiIcon from './@ai/AiIcon.svelte';
   import AiLoading from './@ai/AiLoading.svelte';
 
@@ -30,9 +31,12 @@
           page {
             id
             slug
+
             content {
               title
             }
+
+            ...PageUrl_publicPage
           }
         }
       }
@@ -46,9 +50,12 @@
         pages {
           id
           slug
+
           content {
             title
           }
+
+          ...PageUrl_publicPage
         }
       }
     }
@@ -144,7 +151,7 @@
           if (selectedResultIndex === -1) {
             aiSearch();
           } else {
-            goto(`/ko/${searchResults[selectedResultIndex].page.slug}`);
+            goto(pageUrl(searchResults[selectedResultIndex].page));
           }
         }
         return;
@@ -425,7 +432,7 @@
                     },
                   })}
                   aria-selected={selectedResultIndex === index}
-                  href={`/ko/${result.page.slug}`}
+                  href={pageUrl(result.page)}
                   role="option"
                   tabindex="0"
                   on:focus={() => {
@@ -506,7 +513,7 @@
                   <ul class={css({ marginTop: '8px' })}>
                     {#each aiSearchResult.pages as page, index (index)}
                       <li>
-                        <a class={flex({ gap: '6px', alignItems: 'center' })} href={`/ko/${page.slug}`}>
+                        <a class={flex({ gap: '6px', alignItems: 'center' })} href={pageUrl(page)}>
                           <div
                             class={center({
                               size: '17px',

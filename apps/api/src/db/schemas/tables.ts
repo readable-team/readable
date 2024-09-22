@@ -1,6 +1,6 @@
 // spell-checker:ignoreRegExp /createDbId\('[A-Z]{1,4}'/g
 
-import { init } from '@paralleldrive/cuid2';
+import { faker } from '@faker-js/faker';
 import { sql } from 'drizzle-orm';
 import { bigint, index, integer, pgTable, text, unique, uniqueIndex, vector } from 'drizzle-orm/pg-core';
 import * as E from './enums';
@@ -9,6 +9,8 @@ import { bytea, datetime, jsonb } from './types';
 import type { JSONContent } from '@tiptap/core';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 import type { PlanRules } from './json';
+
+const createCategoryAndPageSlug = () => faker.string.numeric(10);
 
 export const Categories = pgTable(
   'categories',
@@ -20,6 +22,9 @@ export const Categories = pgTable(
       .notNull()
       .references(() => Sites.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     name: text('name').notNull(),
+    slug: text('slug')
+      .notNull()
+      .$defaultFn(() => createCategoryAndPageSlug()),
     state: E._CategoryState('state').notNull().default('ACTIVE'),
     order: bytea('order').notNull(),
     createdAt: datetime('created_at')
@@ -27,6 +32,7 @@ export const Categories = pgTable(
       .default(sql`now()`),
   },
   (t) => ({
+    siteIdSlugUniq: unique().on(t.siteId, t.slug),
     siteIdOrderUniq: unique().on(t.siteId, t.order),
   }),
 );
@@ -100,7 +106,6 @@ export const Jobs = pgTable(
   }),
 );
 
-const createPageSlug = init({ length: 8 });
 export const Pages = pgTable(
   'pages',
   {
@@ -116,7 +121,7 @@ export const Pages = pgTable(
     parentId: text('parent_id').references((): AnyPgColumn => Pages.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     slug: text('slug')
       .notNull()
-      .$defaultFn(() => createPageSlug()),
+      .$defaultFn(() => createCategoryAndPageSlug()),
     state: E._PageState('state').notNull().default('DRAFT'),
     order: bytea('order').notNull(),
     createdAt: datetime('created_at')
@@ -125,8 +130,8 @@ export const Pages = pgTable(
   },
   (t) => ({
     siteIdStateIdx: index().on(t.siteId, t.state),
-    siteIdSlugUniq: unique().on(t.siteId, t.slug),
-    siteIdParentIdOrderUniq: unique().on(t.siteId, t.parentId, t.order).nullsNotDistinct(),
+    siteIdCategoryIdParentIdSlugUniq: unique().on(t.siteId, t.categoryId, t.parentId, t.slug).nullsNotDistinct(),
+    siteIdCategoryIdParentIdOrderUniq: unique().on(t.siteId, t.categoryId, t.parentId, t.order).nullsNotDistinct(),
   }),
 );
 

@@ -1,8 +1,12 @@
-type PartialPageSpec = {
+type PageUrlSpec = {
   slug: string;
 
-  content: {
-    title: string;
+  parent?: {
+    slug: string;
+  } | null;
+
+  category: {
+    slug: string;
   };
 
   site: {
@@ -10,5 +14,7 @@ type PartialPageSpec = {
   };
 };
 
-export const pageUrl = (page: PartialPageSpec): string =>
-  `${page.site.url}/ko/${page.slug}-${encodeURIComponent(page.content.title)}`;
+export const pageUrl = (spec: PageUrlSpec) => {
+  const fragments = [spec.category.slug, spec.parent?.slug, spec.slug].filter(Boolean);
+  return `${spec.site.url}/${fragments.join('/')}`;
+};

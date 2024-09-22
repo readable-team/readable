@@ -14,13 +14,13 @@
   import type { Writable } from 'svelte/store';
 
   $: query = graphql(`
-    query PagePage_Query($slug: String!) {
+    query PagePage_Query($path: String!) {
       publicSite {
         id
         name
       }
 
-      publicPage(slug: $slug) {
+      publicPage(path: $path) {
         id
         slug
 

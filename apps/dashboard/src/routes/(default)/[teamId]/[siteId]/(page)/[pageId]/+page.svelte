@@ -51,6 +51,12 @@
 
         parent {
           id
+          slug
+        }
+
+        category {
+          id
+          slug
         }
 
         children {

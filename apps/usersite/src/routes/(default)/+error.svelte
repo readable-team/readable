@@ -26,5 +26,5 @@
     </p>
   </div>
 
-  <Button href="/ko" size="lg" type="link" variant="secondary">홈으로 이동</Button>
+  <Button href="/" size="lg" type="link" variant="secondary">홈으로 이동</Button>
 </div>

@@ -15,6 +15,7 @@ type Category implements ICategory {
   order: String!
   pages: [Page!]!
   recursivePageCount: Int!
+  slug: String!
 }
 
 enum CategoryState {
@@ -95,6 +96,7 @@ interface ICategory {
   id: ID!
   name: String!
   order: String!
+  slug: String!
 }
 
 interface IPage {
@@ -288,6 +290,7 @@ type PublicCategory implements ICategory {
   name: String!
   order: String!
   pages: [PublicPage!]!
+  slug: String!
 }
 
 type PublicPage implements IPage {
@@ -335,7 +338,7 @@ type Query {
   image(id: ID!): Image!
   me: User
   page(pageId: ID!): Page!
-  publicPage(slug: String!): PublicPage!
+  publicPage(path: String!): PublicPage!
   publicSite: PublicSite!
   searchPage(query: String!, siteId: String!): SearchPageResult!
   searchPageByChange(query: String!, siteId: String!): [SearchPageByChangeHit!]!

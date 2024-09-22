@@ -8,6 +8,7 @@
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
   import { mobileNavOpen, treeOpenState } from '$lib/stores/ui';
+  import { pageUrl } from '$lib/utils/url';
   import type { Navigation_publicSite } from '$graphql';
 
   let _publicSite: Navigation_publicSite;
@@ -54,14 +55,18 @@
                 id
                 slug
               }
+
+              ...PageUrl_publicPage
             }
+
+            ...PageUrl_publicPage
           }
         }
       }
     `),
   );
 
-  $: currentSlug = $page.params.slug.split('-', 2)[0];
+  $: currentSlug = $page.params.slug.split('/').pop();
 
   function findPage(slug: string) {
     return [
@@ -151,7 +156,7 @@
                 },
               })}
               aria-current={page.slug === currentSlug ? 'page' : undefined}
-              href={`/ko/${page.slug}`}
+              href={pageUrl(page)}
               on:click={() => {
                 $treeOpenState[page.slug] = true;
               }}
@@ -210,7 +215,7 @@
                         },
                       })}
                       aria-current={childPage.slug === currentSlug ? 'page' : undefined}
-                      href={`/ko/${childPage.slug}`}
+                      href={pageUrl(childPage)}
                     >
                       {childPage.content.title}
                     </a>

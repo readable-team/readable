@@ -3,6 +3,7 @@ import { and, asc, count, desc, eq, gt, inArray, isNull, ne, sql } from 'drizzle
 import { alias } from 'drizzle-orm/pg-core';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { base64 } from 'rfc4648';
+import { match } from 'ts-pattern';
 import * as Y from 'yjs';
 import { builder } from '@/builder';
 import {
@@ -47,6 +48,7 @@ ICategory.implement({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
 
+    slug: t.exposeString('slug'),
     order: t.string({ resolve: (category) => decoder.decode(category.order) }),
   }),
 });
@@ -430,12 +432,31 @@ builder.queryFields((t) => ({
 
   publicPage: t.withAuth({ site: true }).field({
     type: PublicPage,
-    args: { slug: t.arg.string() },
+    args: { path: t.arg.string() },
     resolve: async (_, args, ctx) => {
+      const slugs = args.path.split('/');
+      const [categorySlug, parentSlug, pageSlug] = match(slugs.length)
+        .with(2, () => [slugs[0], null, slugs[1]] as const)
+        .with(3, () => [slugs[0], slugs[1], slugs[2]] as const)
+        .run();
+
+      const Pages2 = alias(Pages, 'p');
+
       const page = await db
-        .select()
+        .select({ id: Pages.id })
         .from(Pages)
-        .where(and(eq(Pages.siteId, ctx.site.id), eq(Pages.slug, args.slug), eq(Pages.state, PageState.PUBLISHED)))
+        .innerJoin(Categories, eq(Categories.id, Pages.categoryId))
+        .leftJoin(Pages2, eq(Pages2.id, Pages.parentId))
+        .where(
+          and(
+            eq(Pages.siteId, ctx.site.id),
+            eq(Categories.slug, categorySlug),
+            parentSlug ? eq(Pages2.slug, parentSlug) : isNull(Pages.parentId),
+            eq(Pages.slug, pageSlug),
+            eq(Categories.state, CategoryState.ACTIVE),
+            eq(Pages.state, PageState.PUBLISHED),
+          ),
+        )
         .then(firstOrThrow);
 
       await assertTeamRestriction({
@@ -443,7 +464,7 @@ builder.queryFields((t) => ({
         type: TeamRestrictionType.USERSITE_READ,
       });
 
-      return page;
+      return page.id;
     },
   }),
 }));

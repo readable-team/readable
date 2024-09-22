@@ -1,6 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { fragment, graphql } from '$graphql';
+  import { pageUrl } from '$lib/utils/url';
   import type { PagePage_Breadcrumb_publicPage } from '$graphql';
 
   export let _publicPage: PagePage_Breadcrumb_publicPage;
@@ -30,7 +31,11 @@
             id
             title
           }
+
+          ...PageUrl_publicPage
         }
+
+        ...PageUrl_publicPage
       }
     `),
   );
@@ -55,14 +60,14 @@
     </li>
     {#if $publicPage.parent}
       <li>
-        <a href={`/ko/${$publicPage.parent.slug}`}>
+        <a href={pageUrl($publicPage.parent)}>
           {$publicPage.parent.content.title}
         </a>
         <span class={css({ color: 'neutral.50' })} aria-hidden="true">/</span>
       </li>
     {/if}
     <li>
-      <a aria-current="page" href={`/ko/${$publicPage.slug}`}>
+      <a aria-current="page" href={pageUrl($publicPage)}>
         {$publicPage.content.title}
       </a>
     </li>
