@@ -94,11 +94,18 @@ builder.mutationFields((t) => ({
 
   unfurlEmbed: t.withAuth({ session: true }).fieldWithInput({
     type: Embed,
-    input: { url: t.input.string({ validate: { url: true } }) },
+    input: {
+      url: t.input.string({ validate: { url: true } }),
+      noCache: t.input.boolean(),
+    },
     resolve: async (_, { input }) => {
       const embed = await db.select().from(Embeds).where(eq(Embeds.url, input.url)).then(first);
       if (embed) {
-        return embed;
+        if (input.noCache) {
+          await db.delete(Embeds).where(eq(Embeds.id, embed.id));
+        } else {
+          return embed;
+        }
       }
 
       const meta = await iframely.unfurl(input.url);

@@ -327,8 +327,8 @@
       })}
       {awareness}
       {doc}
-      handleEmbed={async (url) => {
-        return await unfurlEmbed({ url });
+      handleEmbed={async (url, noCache = false) => {
+        return await unfurlEmbed({ url, noCache });
       }}
       handleFileUpload={async (file) => {
         const path = await uploadBlob(file);

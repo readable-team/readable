@@ -48,7 +48,7 @@
 
     inflight = true;
     try {
-      const attrs = await extension.options.handleEmbed(url);
+      const attrs = await extension.options.handleEmbed(url, true);
       updateAttributes(attrs);
     } catch (err: unknown) {
       if (err instanceof Error) {

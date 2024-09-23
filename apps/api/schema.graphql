@@ -486,6 +486,7 @@ enum TeamState {
 union TeamUpdateStreamPayload = Team | TeamMember
 
 input UnfurlEmbedInput {
+  noCache: Boolean!
   url: String!
 }
 
