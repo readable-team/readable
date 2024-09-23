@@ -62,7 +62,7 @@
     <div class={css({ position: 'relative', _hover: { '& > button': { display: 'flex' } } })}>
       <Img
         style={css.raw({ width: 'screen', borderRadius: '4px' })}
-        alt=""
+        alt="본문 이미지"
         placeholder={node.attrs.placeholder}
         progressive
         ratio={node.attrs.ratio}
