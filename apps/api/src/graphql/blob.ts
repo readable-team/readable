@@ -106,13 +106,16 @@ builder.mutationFields((t) => ({
         }),
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const fileName = head.Metadata!.name;
+
       return await db.transaction(async (tx) => {
         /* eslint-disable @typescript-eslint/no-non-null-assertion */
         const file = await tx
           .insert(Files)
           .values({
             userId: ctx.session.userId,
-            name: decodeURIComponent(head.Metadata!.name),
+            name: decodeURIComponent(fileName),
             size: head.ContentLength!,
             format: head.ContentType!,
             path: input.path,
@@ -124,8 +127,15 @@ builder.mutationFields((t) => ({
         await aws.s3.send(
           new CopyObjectCommand({
             Bucket: 'readable-usercontents',
-            CopySource: `readable-uploads/${input.path}`,
             Key: `files/${input.path}`,
+            CopySource: `readable-uploads/${input.path}`,
+            MetadataDirective: 'REPLACE',
+            ContentType: head.ContentType,
+            ContentDisposition: `attachment; filename="${fileName}"`,
+            Metadata: {
+              'name': fileName,
+              'user-id': ctx.session.userId,
+            },
           }),
         );
 
