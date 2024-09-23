@@ -187,7 +187,9 @@ type Mutation {
   unsetSiteCustomDomain(input: UnsetSiteCustomDomainInput!): SiteCustomDomain!
   updateCategory(input: UpdateCategoryInput!): Category!
   updateCategoryPosition(input: UpdateCategoryPositionInput!): Category!
+  updateCategorySlug(input: UpdateCategorySlugInput!): Category!
   updatePagePosition(input: UpdatePagePositionInput!): Page!
+  updatePageSlug(input: UpdatePageSlugInput!): Page!
   updatePageView(input: UpdatePageViewInput!): Boolean!
   updatePaymentMethod(input: UpdatePaymentMethodInput!): PaymentMethod!
   updateSite(input: UpdateSiteInput!): Site!
@@ -520,12 +522,22 @@ input UpdateCategoryPositionInput {
   upper: String
 }
 
+input UpdateCategorySlugInput {
+  categoryId: ID!
+  slug: String!
+}
+
 input UpdatePagePositionInput {
   categoryId: String!
   lower: String
   pageId: String!
   parentId: String
   upper: String
+}
+
+input UpdatePageSlugInput {
+  pageId: ID!
+  slug: String!
 }
 
 input UpdatePageViewInput {

@@ -22,6 +22,7 @@ import { CategoryState, PageContentSyncKind, PageState, TeamRestrictionType } fr
 import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
+import { dataSchemas } from '@/schemas';
 import { hashPageContent, makeYDoc } from '@/utils/page';
 import { assertCategoryPermission, assertPagePermission, assertSitePermission } from '@/utils/permissions';
 import { assertTeamRestriction } from '@/utils/restrictions';
@@ -531,6 +532,33 @@ builder.mutationFields((t) => ({
     },
   }),
 
+  updateCategorySlug: t.withAuth({ session: true }).fieldWithInput({
+    type: Category,
+    input: { categoryId: t.input.id(), slug: t.input.string({ validate: { schema: dataSchemas.page.slug } }) },
+    resolve: async (_, { input }, ctx) => {
+      await assertCategoryPermission({
+        categoryId: input.categoryId,
+        userId: ctx.session.userId,
+      });
+
+      await assertTeamRestriction({
+        categoryId: input.categoryId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
+      const category = await db
+        .update(Categories)
+        .set({ slug: input.slug })
+        .where(eq(Categories.id, input.categoryId))
+        .returning()
+        .then(firstOrThrow);
+
+      pubsub.publish('site:update', category.siteId, { scope: 'site' });
+
+      return category;
+    },
+  }),
+
   updateCategoryPosition: t.withAuth({ session: true }).fieldWithInput({
     type: Category,
     input: {
@@ -727,6 +755,33 @@ builder.mutationFields((t) => ({
       for (const pageId of deletedPageIds) {
         pubsub.publish('site:update', page.siteId, { scope: 'page', pageId });
       }
+
+      return page;
+    },
+  }),
+
+  updatePageSlug: t.withAuth({ session: true }).fieldWithInput({
+    type: Page,
+    input: { pageId: t.input.id(), slug: t.input.string({ validate: { schema: dataSchemas.page.slug } }) },
+    resolve: async (_, { input }, ctx) => {
+      await assertPagePermission({
+        pageId: input.pageId,
+        userId: ctx.session.userId,
+      });
+
+      await assertTeamRestriction({
+        pageId: input.pageId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
+      const page = await db
+        .update(Pages)
+        .set({ slug: input.slug })
+        .where(eq(Pages.id, input.pageId))
+        .returning()
+        .then(firstOrThrow);
+
+      pubsub.publish('site:update', page.siteId, { scope: 'site' });
 
       return page;
     },

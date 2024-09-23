@@ -84,6 +84,14 @@ export const dataSchemas = {
       .string({ required_error: '카드 비밀번호를 입력해 주세요' })
       .regex(/^\d{2}$/, { message: '올바른 카드 비밀번호를 입력해 주세요' }),
   },
+
+  page: {
+    slug: z
+      .string({ required_error: '페이지 주소를 입력해 주세요' })
+      .trim()
+      .refine((str) => str.charAt(0) !== '.', { message: '페이지 주소는 온점으로 시작할 수 없어요' })
+      .transform((str) => encodeURIComponent(str)),
+  },
 };
 
 export const inputSchemas = {
