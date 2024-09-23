@@ -27,7 +27,7 @@
     "orderedList": {
       "content": "listItem+",
       "group": "block list",
-      "attrs": { "start": { "default": 1 }, "type": {} },
+      "attrs": { "start": { "default": 1 }, "type": { "default": null } },
       "parseDOM": [{ "tag": "ol" }]
     },
     "listItem": {

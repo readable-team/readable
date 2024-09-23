@@ -134,6 +134,21 @@ export const basicExtensions = [
         '& p': { paddingLeft: '4px' },
       }),
     },
+  }).extend({
+    addAttributes() {
+      return {
+        start: {
+          default: 1,
+          parseHTML: (element) => {
+            return element.hasAttribute('start') ? Number.parseInt(element.getAttribute('start') || '', 10) : 1;
+          },
+        },
+        type: {
+          default: null,
+          parseHTML: (element) => element.getAttribute('type'),
+        },
+      };
+    },
   }),
   ListItem.extend({
     content: 'paragraph (paragraph | bulletList | orderedList)*',
