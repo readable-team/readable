@@ -54,6 +54,7 @@
     if (sizes) imgEl.sizes = sizes;
     if (srcset) imgEl.srcset = srcset;
     imgEl.src = src;
+    imgEl.alt = alt;
 
     await tick();
 
