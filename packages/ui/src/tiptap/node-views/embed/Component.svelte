@@ -25,6 +25,7 @@
   let inflight = false;
   let pickerOpened = false;
   let inputEl: HTMLInputElement;
+  let embedContainerEl: HTMLDivElement;
 
   $: pickerOpened = selected;
 
@@ -68,6 +69,13 @@
       script.src = 'https://cdn.iframe.ly/embed.js';
       document.head.append(script);
     }
+
+    if (node.attrs.html && node.attrs.title) {
+      const iframe = embedContainerEl?.querySelector('iframe');
+      if (iframe) {
+        iframe.setAttribute('title', node.attrs.title);
+      }
+    }
   });
 </script>
 
@@ -80,7 +88,10 @@
   >
     {#if node.attrs.id}
       {#if node.attrs.html}
-        <div class={css({ display: 'contents' }, editor?.isEditable && { pointerEvents: 'none' })}>
+        <div
+          bind:this={embedContainerEl}
+          class={css({ display: 'contents' }, editor?.isEditable && { pointerEvents: 'none' })}
+        >
           {@html node.attrs.html}
         </div>
       {:else}

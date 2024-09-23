@@ -54,7 +54,8 @@
       borderRightRadius: '4px',
     })}
   >
-    <button
+    <svelte:element
+      this={editor?.isEditable ? 'button' : 'div'}
       class={css(
         {
           display: 'flex',
@@ -72,20 +73,24 @@
         },
         !editor?.isEditable && { pointerEvents: 'none' },
       )}
-      aria-pressed={emojiPickerOpened}
       contenteditable={false}
-      type="button"
+      role={editor?.isEditable ? 'button' : 'img'}
       on:click={() => {
         if (editor) {
           emojiPickerOpened = true;
         }
+      }}
+      {...editor?.isEditable && {
+        'type': 'button',
+        'aria-pressed': emojiPickerOpened,
       }}
       use:anchor
     >
       {#if emoji}
         <Icon icon={emoji} size={20} />
       {/if}
-    </button>
+    </svelte:element>
+
     {#if emojiPickerOpened}
       <div
         class={flex({
