@@ -16,6 +16,7 @@
   import AiLoading from './@ai/AiLoading.svelte';
 
   let searchQuery = '';
+  let lastRequestedQuery = '';
   let searchResults: Awaited<ReturnType<typeof searchPublicPage.refetch>>['searchPublicPage']['hits'] = [];
 
   const searchPublicPage = graphql(`
@@ -88,13 +89,27 @@
     aiSearchResult = null;
   }
 
-  async function aiSearch() {
+  async function aiSearch(query: string) {
+    if (query === lastRequestedQuery) {
+      return;
+    }
+
     aiState = 'loading';
+    lastRequestedQuery = query;
     try {
-      const result = await searchPublicPageByNaturalLanguage.refetch({ query: searchQuery });
+      const result = await searchPublicPageByNaturalLanguage.refetch({ query });
+
+      if (query !== lastRequestedQuery) {
+        return;
+      }
+
       aiState = 'success';
       aiSearchResult = result.searchPublicPageByNaturalLanguage;
     } catch {
+      if (query !== lastRequestedQuery) {
+        return;
+      }
+
       aiState = 'error';
       aiSearchResult = null;
     }
@@ -149,7 +164,7 @@
           selectedResultIndex = aiEnabled ? -1 : 0;
         } else {
           if (selectedResultIndex === -1) {
-            aiSearch();
+            aiSearch(searchQuery);
           } else {
             goto(pageUrl(searchResults[selectedResultIndex].page));
           }
@@ -394,7 +409,7 @@
                 on:focus={() => {
                   selectedResultIndex = -1;
                 }}
-                on:click={aiSearch}
+                on:click={() => aiSearch(searchQuery)}
                 on:keydown={null}
               >
                 <AiIcon />
