@@ -5,7 +5,7 @@ export default {
   preprocess: sveltePreprocess(),
   kit: {
     alias: {
-      '@/*': '../api/src/*',
+      '@/*': '../../apps/api/src/*',
     },
   },
 };

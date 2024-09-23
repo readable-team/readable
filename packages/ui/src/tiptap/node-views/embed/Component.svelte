@@ -4,11 +4,13 @@
   import { createFloatingActions } from '@readable/ui/actions';
   import { NodeView } from '@readable/ui/tiptap';
   import { onMount } from 'svelte';
+  import { ReadableError } from '@/errors';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import FileUpIcon from '~icons/lucide/file-up';
   import Trash2Icon from '~icons/lucide/trash-2';
   import { Button, Icon, Menu, MenuItem, RingSpinner, TextInput } from '../../../components';
   import { toast } from '../../../notification';
+  import { addHttpScheme } from '../../../utils';
   import type { NodeViewProps } from '@readable/ui/tiptap';
 
   type $$Props = NodeViewProps;
@@ -48,11 +50,15 @@
 
     inflight = true;
     try {
-      const attrs = await extension.options.handleEmbed(url, true);
+      // FIXME: client side validation 필요할듯 (isValidLinkStructure)
+      const urlWithScheme = addHttpScheme(url);
+
+      const attrs = await extension.options.handleEmbed(urlWithScheme, true);
       updateAttributes(attrs);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        toast.error(err.message);
+      if (err instanceof ReadableError) {
+        // FIXME: 에러 구별해서 메시지 출력
+        toast.error('알 수 없는 오류가 발생했습니다.');
       } else {
         toast.error('알 수 없는 오류가 발생했습니다.');
       }
