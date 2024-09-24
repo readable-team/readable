@@ -67,6 +67,7 @@
       }
     `),
     onSuccess: () => {
+      open = false;
       toast.success('URL이 변경되었습니다');
     },
     onError: () => {
@@ -89,6 +90,7 @@
       }
     `),
     onSuccess: () => {
+      open = false;
       toast.success('URL이 변경되었습니다');
     },
     onError: () => {
@@ -127,6 +129,7 @@
         <div class={flex({ align: 'center' })}>
           <div
             class={css({
+              flexShrink: '0',
               borderWidth: '1px',
               borderRightWidth: '0',
               borderColor: 'border.primary',
@@ -144,7 +147,7 @@
           </div>
           <TextInput
             name="slug"
-            style={css.raw({ borderTopLeftRadius: '0', borderBottomLeftRadius: '0', width: 'full' })}
+            style={css.raw({ borderTopLeftRadius: '0', borderBottomLeftRadius: '0', flexGrow: '1' })}
             placeholder="acme-docs"
           />
         </div>
