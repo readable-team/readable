@@ -166,7 +166,7 @@
           paddingY: '12px',
           textStyle: '14r',
           color: 'text.tertiary',
-          backgroundColor: 'neutral.20',
+          backgroundColor: 'neutral.10',
           width: 'full',
         })}
         use:anchor
@@ -189,7 +189,7 @@
               borderRadius: '4px',
               padding: '2px',
               color: 'text.tertiary',
-              _hover: { backgroundColor: 'neutral.40' },
+              _hover: { backgroundColor: 'neutral.30' },
             },
             open && { display: 'flex' },
           )}

@@ -3,6 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { createFloatingActions } from '@readable/ui/actions';
   import { NodeView } from '@readable/ui/tiptap';
+  import ArrowDownToLineIcon from '~icons/lucide/arrow-down-to-line';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import PaperclipIcon from '~icons/lucide/paperclip';
   import Trash2Icon from '~icons/lucide/trash-2';
@@ -79,33 +80,29 @@
         borderWidth: '1px',
         borderColor: 'border.primary',
         borderRadius: '4px',
-        backgroundColor: { base: 'neutral.20' },
+        backgroundColor: { base: 'neutral.10' },
         _hover: { '& > button > div': { display: 'flex' } },
       },
-      pickerOpened && { backgroundColor: 'neutral.30' },
+      pickerOpened && { backgroundColor: 'neutral.20' },
     )}
   >
     {#if node.attrs.id}
-      <a
-        class={css(
-          {
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            paddingX: '14px',
-            paddingY: '12px',
-            textStyle: '14r',
-            truncate: true,
-          },
-          editor?.isEditable && { pointerEvents: 'none' },
-        )}
-        href={node.attrs.url}
+      <div
+        class={css({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          paddingX: '14px',
+          paddingY: '12px',
+          textStyle: '14r',
+          truncate: true,
+        })}
       >
         <Icon style={css.raw({ color: 'text.tertiary' })} icon={PaperclipIcon} size={20} />
         <span class={css({ truncate: true })}>{node.attrs.name}</span>
         <VerticalDivider style={css.raw({ height: '14px' })} color="secondary" />
         <span class={css({ color: 'text.tertiary' })}>{formatFileSize(node.attrs.size)}</span>
-      </a>
+      </div>
     {:else}
       <div
         class={flex({
@@ -146,7 +143,7 @@
               borderRadius: '4px',
               padding: '2px',
               color: 'text.tertiary',
-              _hover: { backgroundColor: 'neutral.40' },
+              _hover: { backgroundColor: 'neutral.30' },
             },
             open && { display: 'flex' },
           )}
@@ -160,6 +157,20 @@
           <span>삭제</span>
         </MenuItem>
       </Menu>
+    {:else}
+      <a
+        class={css({
+          marginRight: '12px',
+          borderRadius: '4px',
+          padding: '2px',
+          color: 'text.tertiary',
+          _hover: { backgroundColor: 'neutral.30' },
+        })}
+        aria-label={`${node.attrs.name} 파일 다운로드`}
+        href={node.attrs.url}
+      >
+        <Icon icon={ArrowDownToLineIcon} size={20} />
+      </a>
     {/if}
   </div>
 </NodeView>

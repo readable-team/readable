@@ -100,11 +100,13 @@
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '7px',
+          borderWidth: '1px',
+          borderColor: 'border.primary',
           borderRadius: '4px',
-          backgroundColor: 'neutral.20',
+          backgroundColor: 'neutral.10',
           _hover: { '& > button > div': { display: 'flex' } },
         },
-        pickerOpened && { backgroundColor: 'neutral.30' },
+        pickerOpened && { backgroundColor: 'neutral.20' },
       )}
       use:anchor
     >
@@ -137,7 +139,7 @@
               borderRadius: '4px',
               padding: '2px',
               color: 'text.tertiary',
-              _hover: { backgroundColor: 'neutral.40' },
+              _hover: { backgroundColor: 'neutral.30' },
             },
             open && { display: 'flex' },
           )}
