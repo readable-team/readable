@@ -62,6 +62,11 @@
         backgroundColor: { base: 'gray.200', _dark: 'darkgray.900' },
         borderColor: { base: 'gray.200', _dark: 'darkgray.700' },
       },
+      _hasReadonlyInput: {
+        color: 'text.tertiary',
+        backgroundColor: { base: 'gray.200', _dark: 'darkgray.900' },
+        borderColor: { base: 'gray.200', _dark: 'darkgray.700' },
+      },
       _hasInvalidInput: {
         borderColor: { base: 'red.600', _dark: 'red.500' },
         _hasFocusedInput: {
