@@ -6,6 +6,7 @@
   import { toast } from '@readable/ui/notification';
   import { getContext } from 'svelte';
   import { z } from 'zod';
+  import { ReadableError } from '@/errors';
   import { dataSchemas } from '@/schemas';
   import { graphql } from '$graphql';
   import { TitledModal } from '$lib/components';
@@ -53,7 +54,11 @@
     url: string;
   }>('site');
 
-  const { form: updateCategorySlugForm, context: updateCategorySlugContext } = createMutationForm({
+  const {
+    form: updateCategorySlugForm,
+    context: updateCategorySlugContext,
+    setErrors: setCategorySlugErrors,
+  } = createMutationForm({
     schema: z.object({
       categoryId: z.string(),
       slug: dataSchemas.page.slug,
@@ -70,13 +75,22 @@
       open = false;
       toast.success('URL이 변경되었습니다');
     },
-    onError: () => {
+    onError: (err) => {
+      if (err instanceof ReadableError && err.message === 'page_slug_exists') {
+        setCategorySlugErrors({ slug: '이미 존재하는 URL입니다' });
+        return;
+      }
+
       // TODO: 구체적인 에러 핸들링
       toast.error('알 수 없는 오류가 발생했습니다');
     },
   });
 
-  const { form: updatePageSlugForm, context: updatePageSlugContext } = createMutationForm({
+  const {
+    form: updatePageSlugForm,
+    context: updatePageSlugContext,
+    setErrors: setPageSlugErrors,
+  } = createMutationForm({
     schema: z.object({
       pageId: z.string(),
       slug: dataSchemas.page.slug,
@@ -93,7 +107,12 @@
       open = false;
       toast.success('URL이 변경되었습니다');
     },
-    onError: () => {
+    onError: (err) => {
+      if (err instanceof ReadableError && err.message === 'page_slug_exists') {
+        setPageSlugErrors({ slug: '이미 존재하는 URL입니다' });
+        return;
+      }
+
       // TODO: 구체적인 에러 핸들링
       toast.error('알 수 없는 오류가 발생했습니다');
     },

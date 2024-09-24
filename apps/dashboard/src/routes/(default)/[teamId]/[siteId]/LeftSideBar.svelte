@@ -1,7 +1,9 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import { toast } from '@readable/ui/notification';
   import mixpanel from 'mixpanel-browser';
+  import { ReadableError } from '@/errors';
   import { goto } from '$app/navigation';
   import { fragment, graphql } from '$graphql';
   import { editingCategoryId, treeOpenState } from '$lib/svelte/stores/ui';
@@ -114,13 +116,23 @@
     previousOrder?: string;
     nextOrder?: string;
   }) {
-    await updatePagePosition({
-      categoryId: target.categoryId,
-      pageId: target.pageId,
-      parentId: target.parentId,
-      lower: target.previousOrder,
-      upper: target.nextOrder,
-    });
+    try {
+      await updatePagePosition({
+        categoryId: target.categoryId,
+        pageId: target.pageId,
+        parentId: target.parentId,
+        lower: target.previousOrder,
+        upper: target.nextOrder,
+      });
+    } catch (err) {
+      if (err instanceof ReadableError && err.message === 'page_slug_exists') {
+        toast.error('URL이 동일한 페이지가 있습니다');
+        return false;
+      }
+
+      toast.error('알 수 없는 오류가 발생했습니다');
+      return false;
+    }
 
     mixpanel.track('page:move');
 
