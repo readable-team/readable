@@ -19,6 +19,7 @@ import {
   PageViews,
 } from '@/db';
 import { CategoryState, PageContentSyncKind, PageState, TeamRestrictionType } from '@/enums';
+import { ReadableError } from '@/errors';
 import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
@@ -565,7 +566,14 @@ builder.mutationFields((t) => ({
         .set({ slug: input.slug })
         .where(eq(Categories.id, input.categoryId))
         .returning()
-        .then(firstOrThrow);
+        .then(firstOrThrow)
+        .catch((err) => {
+          if (err.code === '23505') {
+            throw new ReadableError({ code: 'page_slug_exists' });
+          }
+
+          throw err;
+        });
 
       pubsub.publish('site:update', category.siteId, { scope: 'site' });
 
@@ -793,7 +801,14 @@ builder.mutationFields((t) => ({
         .set({ slug: input.slug })
         .where(eq(Pages.id, input.pageId))
         .returning()
-        .then(firstOrThrow);
+        .then(firstOrThrow)
+        .catch((err) => {
+          if (err.code === '23505') {
+            throw new ReadableError({ code: 'page_slug_exists' });
+          }
+
+          throw err;
+        });
 
       pubsub.publish('site:update', page.siteId, { scope: 'site' });
 
@@ -830,7 +845,14 @@ builder.mutationFields((t) => ({
         })
         .where(eq(Pages.id, input.pageId))
         .returning()
-        .then(firstOrThrow);
+        .then(firstOrThrow)
+        .catch((err) => {
+          if (err.code === '23505') {
+            throw new ReadableError({ code: 'page_slug_exists' });
+          }
+
+          throw err;
+        });
 
       pubsub.publish('site:update', page.siteId, { scope: 'site' });
 
