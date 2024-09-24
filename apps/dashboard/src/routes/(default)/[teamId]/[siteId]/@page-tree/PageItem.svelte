@@ -8,6 +8,7 @@
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import CopyIcon from '~icons/lucide/copy';
   import EllipsisIcon from '~icons/lucide/ellipsis';
+  import LinkIcon from '~icons/lucide/link';
   import PencilIcon from '~icons/lucide/pencil';
   import Trash2Icon from '~icons/lucide/trash-2';
   import TriangleAlertIcon from '~icons/lucide/triangle-alert';
@@ -15,6 +16,7 @@
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
   import { editingCategoryId } from '$lib/svelte/stores/ui';
+  import ModifyUrlModal from '../@modals/ModifyUrlModal.svelte';
   import { maxDepth } from './const';
   import PageList from './PageList.svelte';
   import type { ComponentProps } from 'svelte';
@@ -37,6 +39,7 @@
 
   let deleteCategoryOpen = false;
   let deletePageOpen = false;
+  let modifyUrlOpen = false;
   let elem: HTMLElement;
 
   $: editing = item.id === $editingCategoryId;
@@ -254,6 +257,10 @@
             <Icon icon={CopyIcon} size={14} />
             <span>복제</span>
           </MenuItem>
+          <MenuItem on:click={() => (modifyUrlOpen = true)}>
+            <Icon icon={LinkIcon} size={14} />
+            <span>URL 변경</span>
+          </MenuItem>
           <MenuItem variant="danger" on:click={() => (deletePageOpen = true)}>
             <Icon icon={Trash2Icon} size={14} />
             <span>삭제</span>
@@ -327,6 +334,10 @@
             >
               <Icon icon={PencilIcon} size={14} />
               <span>이름 변경</span>
+            </MenuItem>
+            <MenuItem on:click={() => (modifyUrlOpen = true)}>
+              <Icon icon={LinkIcon} size={14} />
+              <span>URL 변경</span>
             </MenuItem>
             <MenuItem variant="danger" on:click={() => (deleteCategoryOpen = true)}>
               <Icon icon={Trash2Icon} size={14} />
@@ -426,3 +437,5 @@
     <svelte:fragment slot="cancel">취소</svelte:fragment>
   </Alert>
 {/if}
+
+<ModifyUrlModal entity={item} bind:open={modifyUrlOpen} />

@@ -1,6 +1,7 @@
 export type CategoryData = {
   __typename: 'Category';
   id: string;
+  slug: string;
   name: string;
   order: string;
   pages: PageData[];
@@ -11,8 +12,10 @@ export type CategoryData = {
 export type PageData = {
   __typename: 'Page';
   id: string;
+  slug: string;
   category: {
     id: string;
+    slug: string;
   };
   order: string;
   recursiveChildCount: number;
@@ -22,6 +25,7 @@ export type PageData = {
   parent?:
     | {
         id: string;
+        slug: string;
       }
     | undefined
     | null;

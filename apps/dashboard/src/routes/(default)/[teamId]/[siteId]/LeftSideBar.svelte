@@ -26,12 +26,14 @@
         categories {
           id
           name
+          slug
           order
           recursivePageCount
           __typename
 
           pages {
             id
+            slug
             state
             order
             recursiveChildCount
@@ -39,6 +41,7 @@
 
             category {
               id
+              slug
             }
 
             content {
@@ -48,10 +51,12 @@
 
             parent {
               id
+              slug
             }
 
             children {
               id
+              slug
               state
               order
               recursiveChildCount
@@ -59,6 +64,7 @@
 
               category {
                 id
+                slug
               }
 
               content {
@@ -68,6 +74,7 @@
 
               parent {
                 id
+                slug
               }
             }
           }

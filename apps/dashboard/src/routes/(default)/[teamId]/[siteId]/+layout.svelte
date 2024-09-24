@@ -3,7 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
   import mixpanel from 'mixpanel-browser';
-  import { onDestroy } from 'svelte';
+  import { onDestroy, setContext } from 'svelte';
   import MousePointerClickIcon from '~icons/lucide/mouse-pointer-click';
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
@@ -79,6 +79,8 @@
     mixpanel.unregister('site_id');
     unsubscribe?.();
   });
+
+  $: setContext('site', $query.site);
 </script>
 
 <div style:--usersite-theme-color={$query.site.themeColor} class={css({ display: 'contents' })}>
