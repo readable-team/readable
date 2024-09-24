@@ -1,4 +1,5 @@
 import { defineGlobalFontface, defineGlobalStyles } from '@pandacss/dev';
+import pretendard from './pretendard.json' with { type: 'json' };
 
 export const globalCss = defineGlobalStyles({
   '*': {
@@ -85,12 +86,13 @@ export const globalFontface = defineGlobalFontface({
     fontWeight: '100 900',
     fontDisplay: 'swap',
   },
-  Pretendard: {
-    src: 'url("https://cdn.rdbl.app/fonts/Pretendard.woff2") format("woff2-variations")',
+  Pretendard: pretendard.map((range, index) => ({
+    src: `url("https://cdn.rdbl.app/fonts/PretendardVariable.subset.${index}.woff2") format("woff2-variations")`,
     fontStyle: 'normal',
     fontWeight: '100 900',
     fontDisplay: 'swap',
-  },
+    unicodeRange: range,
+  })),
   FiraCode: {
     src: 'url("https://cdn.rdbl.app/fonts/FiraCode.woff2") format("woff2-variations")',
     fontStyle: 'normal',
