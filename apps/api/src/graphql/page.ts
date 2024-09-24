@@ -468,6 +468,20 @@ builder.queryFields((t) => ({
       return page.id;
     },
   }),
+
+  publicPageById: t.withAuth({ site: true }).field({
+    type: PublicPage,
+    args: { pageId: t.arg.id() },
+    resolve: async (_, args, ctx) => {
+      const page = await db
+        .select()
+        .from(Pages)
+        .where(and(eq(Pages.siteId, ctx.site.id), eq(Pages.id, args.pageId)))
+        .then(firstOrThrow);
+
+      return page;
+    },
+  }),
 }));
 
 /**

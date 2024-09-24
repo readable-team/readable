@@ -40,7 +40,7 @@
   // };
 
   const loadLink = async (url: string) => {
-    if (url.startsWith('page://slug/')) {
+    if (url.startsWith('page:///')) {
       const resp = await handleLink(url);
       return {
         type: 'internal' as const,

@@ -1,7 +1,9 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, getTableColumns, isNull } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
+import { match } from 'ts-pattern';
 import { builder } from '@/builder';
-import { db, Embeds, first, firstOrThrow, Pages, SiteCustomDomains, Sites } from '@/db';
-import { SiteCustomDomainState } from '@/enums';
+import { Categories, db, Embeds, first, firstOrThrow, Pages, SiteCustomDomains, Sites } from '@/db';
+import { CategoryState, PageState, SiteCustomDomainState } from '@/enums';
 import { env } from '@/env';
 import * as iframely from '@/external/iframely';
 import { Embed, Page } from './objects';
@@ -52,10 +54,10 @@ builder.mutationFields((t) => ({
         .where(and(eq(SiteCustomDomains.siteId, site.id), eq(SiteCustomDomains.state, SiteCustomDomainState.ACTIVE)))
         .then(first);
 
-      const dashboardUrl = `${env.PUBLIC_DASHBOARD_URL}/${site.teamId}/${site.id}/`;
-      if (input.url.startsWith(dashboardUrl)) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const pageId = input.url.split('/').pop()!;
+      const url = new URL(input.url);
+
+      if (url.protocol === 'page:') {
+        const pageId = url.pathname.slice(1);
 
         const page = await db
           .select()
@@ -66,21 +68,49 @@ builder.mutationFields((t) => ({
         return page;
       }
 
-      const siteUrls = ['page://slug/'];
-      siteUrls.push(`https://${site.slug}.${env.USERSITE_DEFAULT_HOST}/ko/`);
-      if (customDomain) {
-        siteUrls.push(`https://${customDomain.domain}/ko/`);
-      }
-
-      if (siteUrls.some((url) => input.url.startsWith(url))) {
+      if (url.origin === env.PUBLIC_DASHBOARD_URL && url.pathname.startsWith(`/${site.teamId}/${site.id}/`)) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const slugWithTitle = input.url.split('/').pop()!;
-        const slug = slugWithTitle.split('-')[0];
+        const pageId = url.pathname.slice(1).split('/').pop()!;
 
         const page = await db
           .select()
           .from(Pages)
-          .where(and(eq(Pages.siteId, site.id), eq(Pages.slug, slug)))
+          .where(and(eq(Pages.siteId, site.id), eq(Pages.id, pageId)))
+          .then(firstOrThrow);
+
+        return page;
+      }
+
+      const siteUrls = [];
+      siteUrls.push(`https://${site.slug}.${env.USERSITE_DEFAULT_HOST}`);
+      if (customDomain) {
+        siteUrls.push(`https://${customDomain.domain}`);
+      }
+
+      if (siteUrls.includes(url.origin)) {
+        const slugs = url.pathname.slice(1).split('/');
+        const [categorySlug, parentSlug, pageSlug] = match(slugs.length)
+          .with(2, () => [slugs[0], null, slugs[1]] as const)
+          .with(3, () => [slugs[0], slugs[1], slugs[2]] as const)
+          .run();
+
+        const Pages2 = alias(Pages, 'p');
+
+        const page = await db
+          .select(getTableColumns(Pages))
+          .from(Pages)
+          .innerJoin(Categories, eq(Categories.id, Pages.categoryId))
+          .leftJoin(Pages2, eq(Pages2.id, Pages.parentId))
+          .where(
+            and(
+              eq(Pages.siteId, input.siteId),
+              eq(Categories.slug, categorySlug),
+              parentSlug ? eq(Pages2.slug, parentSlug) : isNull(Pages.parentId),
+              eq(Pages.slug, pageSlug),
+              eq(Categories.state, CategoryState.ACTIVE),
+              eq(Pages.state, PageState.PUBLISHED),
+            ),
+          )
           .then(firstOrThrow);
 
         return page;

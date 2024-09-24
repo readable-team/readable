@@ -116,7 +116,6 @@
 
         ... on Page {
           id
-          slug
 
           content {
             id
@@ -343,7 +342,7 @@
         return resp.__typename === 'Page'
           ? {
               name: resp.content.title,
-              href: `page://slug/${resp.slug}`,
+              href: `page:///${resp.id}`,
               host: $page.url.origin,
               url: `/${$query.page.site.team.id}/${$query.page.site.id}/${resp.id}`,
             }

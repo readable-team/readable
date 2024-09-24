@@ -341,6 +341,7 @@ type Query {
   me: User
   page(pageId: ID!): Page!
   publicPage(path: String!): PublicPage!
+  publicPageById(pageId: ID!): PublicPage!
   publicSite: PublicSite!
   searchPage(query: String!, siteId: String!): SearchPageResult!
   searchPageByChange(query: String!, siteId: String!): [SearchPageByChangeHit!]!

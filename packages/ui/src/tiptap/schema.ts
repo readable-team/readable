@@ -224,11 +224,11 @@ export const basicExtensions = [
   }).extend({
     renderHTML({ HTMLAttributes }) {
       let attrs = HTMLAttributes;
-      if (attrs.href?.startsWith('page://slug/')) {
+      if (attrs.href?.startsWith('page:///')) {
         attrs = {
           target: this.editor?.isEditable ? '_blank' : null,
           rel: null,
-          href: attrs.href.replace('page://slug/', '/ko/'),
+          href: attrs.href.replace('page:///', '/go/'),
         };
       }
 
