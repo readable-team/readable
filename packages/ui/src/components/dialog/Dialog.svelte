@@ -1,6 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { createEventDispatcher } from 'svelte';
+  import { portal } from '../../actions';
   import { dialogStore } from './store';
 
   export let open = false;
@@ -23,21 +24,22 @@
   }
 </script>
 
-<dialog
-  bind:this={dialogElement}
-  class={css({
-    'width': 'full',
-    'height': 'full',
-    'maxWidth': '[unset]',
-    'maxHeight': '[unset]',
-    '& ::backdrop': {
-      display: 'none',
-    },
-  })}
-  on:close={handleClose}
->
-  {#if open}
-    <!-- NOTE: dialog 닫혀있을 때는 scrollLock 등 사이드 이펙트 안 일어나게 아예 렌더링 안 함 -->
+{#if open}
+  <!-- NOTE: dialog 닫혀있을 때는 scrollLock 등 사이드 이펙트 안 일어나게 아예 렌더링 안 함 -->
+  <dialog
+    bind:this={dialogElement}
+    class={css({
+      'width': 'full',
+      'height': 'full',
+      'maxWidth': '[unset]',
+      'maxHeight': '[unset]',
+      '& ::backdrop': {
+        display: 'none',
+      },
+    })}
+    on:close={handleClose}
+    use:portal
+  >
     <slot />
-  {/if}
-</dialog>
+  </dialog>
+{/if}
