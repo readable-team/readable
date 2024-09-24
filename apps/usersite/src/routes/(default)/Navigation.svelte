@@ -23,6 +23,7 @@
           id
           name
           order
+          slug
 
           pages {
             id
@@ -66,15 +67,30 @@
     `),
   );
 
-  $: currentSlug = $page.params.slug.split('/').pop();
+  $: currentSlug = $page.params.slug;
 
   function findPage(slug: string) {
-    return [
-      ...$publicSite.categories.flatMap((c) => c.pages),
-      ...$publicSite.categories.flatMap((c) => c.pages.flatMap((p) => p.children)),
-    ].find((p) => p.slug === slug);
+    const [categorySlug, ...pageSlugs] = slug.split('/');
+
+    const category = $publicSite.categories.find((c) => c.slug === categorySlug);
+    if (!category) {
+      return null;
+    }
+
+    let page = null;
+    for (const slug of pageSlugs) {
+      // eslint-disable-next-line unicorn/prefer-ternary
+      if (page) {
+        page = page.children.find((p) => p.slug === slug);
+      } else {
+        page = category.pages.find((p) => p.slug === slug);
+      }
+    }
+
+    return page;
   }
 
+  let currentPageId: string;
   $: if (currentSlug) {
     // NOTE: 모바일에서 사이드바를 열 때는 현재 페이지만 트리에서 열도록 함
     if ($mobileNavOpen) {
@@ -83,9 +99,10 @@
     const page = findPage(currentSlug);
 
     if (page) {
-      $treeOpenState[page.slug] = true;
+      currentPageId = page.id;
+      $treeOpenState[page.id] = true;
       if (page.parent) {
-        $treeOpenState[page.parent.slug] = true;
+        $treeOpenState[page.parent.id] = true;
       }
     }
   }
@@ -134,7 +151,7 @@
               }),
               'group',
             )}
-            aria-current={page.slug === currentSlug ? 'page' : undefined}
+            aria-current={page.id === currentPageId ? 'page' : undefined}
           >
             <a
               class={css({
@@ -155,10 +172,10 @@
                   },
                 },
               })}
-              aria-current={page.slug === currentSlug ? 'page' : undefined}
+              aria-current={page.id === currentPageId ? 'page' : undefined}
               href={pageUrl(page)}
               on:click={() => {
-                $treeOpenState[page.slug] = true;
+                $treeOpenState[page.id] = true;
               }}
             >
               {page.content.title}
@@ -178,22 +195,18 @@
                     color: 'var(--usersite-theme-color)',
                   },
                 })}
-                aria-expanded={$treeOpenState[page.slug] ? 'true' : 'false'}
-                aria-label={$treeOpenState[page.slug] ? '하위 메뉴 닫기' : '하위 메뉴 열기'}
+                aria-expanded={$treeOpenState[page.id] ? 'true' : 'false'}
+                aria-label={$treeOpenState[page.id] ? '하위 메뉴 닫기' : '하위 메뉴 열기'}
                 type="button"
                 on:click={() => {
-                  $treeOpenState[page.slug] = !$treeOpenState[page.slug];
+                  $treeOpenState[page.id] = !$treeOpenState[page.id];
                 }}
               >
-                <Icon
-                  ariaHidden={true}
-                  icon={$treeOpenState[page.slug] ? ChevronDownIcon : ChevronRightIcon}
-                  size={16}
-                />
+                <Icon ariaHidden={true} icon={$treeOpenState[page.id] ? ChevronDownIcon : ChevronRightIcon} size={16} />
               </button>
             {/if}
           </li>
-          {#if page.children.length > 0 && $treeOpenState[page.slug]}
+          {#if page.children.length > 0 && $treeOpenState[page.id]}
             <li>
               <ul class={flex({ direction: 'column', listStyle: 'none', gap: '2px' })}>
                 {#each page.children as childPage (childPage.id)}
@@ -214,7 +227,7 @@
                           backgroundColor: 'var(--usersite-theme-color)/3',
                         },
                       })}
-                      aria-current={childPage.slug === currentSlug ? 'page' : undefined}
+                      aria-current={childPage.id === currentPageId ? 'page' : undefined}
                       href={pageUrl(childPage)}
                     >
                       {childPage.content.title}
