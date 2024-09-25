@@ -1,3 +1,7 @@
 @layer reset, base, ui, tokens, recipes, utilities;
 
 @import url(@readable/ui/styles.css) layer(ui);
+
+body {
+  overscroll-behavior: none;
+}
