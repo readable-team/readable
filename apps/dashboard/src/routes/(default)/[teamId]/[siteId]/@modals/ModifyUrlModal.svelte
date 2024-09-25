@@ -172,6 +172,7 @@
           <TextInput
             name="slug"
             style={css.raw({ borderTopLeftRadius: '0', borderBottomLeftRadius: '0', flexGrow: '1' })}
+            autofocus
             placeholder="acme-docs"
           />
         </div>
