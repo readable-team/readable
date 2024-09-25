@@ -160,6 +160,8 @@
               color: 'text.tertiary',
               height: '43px',
               backgroundColor: 'surface.secondary',
+              maxWidth: '400px',
+              truncate: true,
             })}
           >
             {site.url}{precedingPath}
