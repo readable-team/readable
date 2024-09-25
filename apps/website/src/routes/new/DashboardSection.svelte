@@ -4,11 +4,11 @@
   import { Icon } from '@readable/ui/components';
   import ChevronLeftIcon from '~icons/lucide/chevron-left';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
-  import Branding from '$assets/branding.svg?component';
-  import Collaboration from '$assets/collaboration.svg?component';
-  import ContentUpdate from '$assets/content-update.svg?component';
-  import EditingExperience from '$assets/editing-experience.png';
-  import ModifyUrl from '$assets/modify-url.svg?component';
+  import Branding from '$assets/dashboard-section/branding.svg?component';
+  import Collaboration from '$assets/dashboard-section/collaboration.svg?component';
+  import ContentUpdate from '$assets/dashboard-section/content-update.svg?component';
+  import EditingExperience from '$assets/dashboard-section/editing-experience.png';
+  import ModifyUrl from '$assets/dashboard-section/modify-url.svg?component';
 
   let currentScroll = 0;
   let carouselEl: HTMLDivElement;

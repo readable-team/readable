@@ -6,6 +6,9 @@
   import HeroLight from '$assets/hero/light.svg?component';
   import FullLogo from '$assets/logos/full.svg?component';
   import A11ySection from './A11ySection.svelte';
+  import ClientsSection from './ClientsSection.svelte';
+  import CtaSection from './CtaSection.svelte';
+  import DashboardSection from './DashboardSection.svelte';
   import Header from './Header.svelte';
   import HeroSection from './HeroSection.svelte';
   import HookingSection from './HookingSection.svelte';
@@ -42,6 +45,12 @@
 <SearchSection />
 
 <A11ySection />
+
+<DashboardSection />
+
+<ClientsSection />
+
+<CtaSection />
 
 <footer
   class={flex({
