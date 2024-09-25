@@ -4,6 +4,7 @@
   import { Button, FormField, FormProvider, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
+  import mixpanel from 'mixpanel-browser';
   import { getContext } from 'svelte';
   import { z } from 'zod';
   import { ReadableError } from '@/errors';
@@ -74,6 +75,7 @@
     onSuccess: () => {
       open = false;
       toast.success('URL이 변경되었습니다');
+      mixpanel.track('category:slug:update');
     },
     onError: (err) => {
       if (err instanceof ReadableError && err.message === 'page_slug_exists') {
@@ -106,6 +108,7 @@
     onSuccess: () => {
       open = false;
       toast.success('URL이 변경되었습니다');
+      mixpanel.track('page:slug:update');
     },
     onError: (err) => {
       if (err instanceof ReadableError && err.message === 'page_slug_exists') {
