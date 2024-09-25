@@ -24,6 +24,7 @@ export const svg = () => ({
           params: { overrides: { inlineStyles: { onlyMatchedOnce: false } } },
         },
         'convertStyleToAttrs',
+        { name: 'prefixIds', params: { prefix: (_, info) => `svg__${info.multipassCount}` } },
       ],
     });
 
