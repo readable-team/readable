@@ -177,6 +177,7 @@ type Mutation {
   persistBlobAsImage(input: PersistBlobAsImageInput!): Image!
   publishPage(input: PublishPageInput!): Page!
   removeTeamMember(input: RemoveTeamMemberInput!): TeamMember!
+  requestInquiry(input: RequestInquiryInput!): Boolean!
   resendInvitationEmail(input: ResendInvitationEmailInput!): TeamMemberInvitation!
   revokeInvitation(input: RevokeInvitationInput!): TeamMemberInvitation!
   setSiteCustomDomain(input: SetSiteCustomDomainInput!): SiteCustomDomain!
@@ -354,6 +355,14 @@ type Query {
 input RemoveTeamMemberInput {
   teamId: String!
   userId: String!
+}
+
+input RequestInquiryInput {
+  companyName: String
+  email: String!
+  name: String!
+  tel: String
+  title: String
 }
 
 input ResendInvitationEmailInput {

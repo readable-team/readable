@@ -17,6 +17,7 @@ const schema = z.object({
   PUBLIC_USERCONTENTS_URL: z.string(),
   PUBLIC_WEBSITE_URL: z.string(),
   SENTRY_DSN: z.string().optional(),
+  SLACK_INQUIRY_WEBHOOK_URL: z.string(),
   USERSITE_CNAME_HOST: z.string(),
   USERSITE_DEFAULT_HOST: z.string(),
   USERSITE_FORCE_HOST: z.string().optional(),
