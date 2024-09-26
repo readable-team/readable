@@ -12,14 +12,15 @@
   import { env } from '$env/dynamic/public';
   import type { ColorToken } from '@readable/styled-system/tokens';
 
-  export let darkSections: HTMLElement[];
+  export let theme: HeaderTheme;
+  export let darkSections: HTMLElement[] = [];
 
   type HeaderTheme = 'light' | 'dark';
 
   let scrollY = 0;
   let headerElem: HTMLHeadElement;
 
-  const headerTheme = writable<HeaderTheme>('dark');
+  const headerTheme = writable<HeaderTheme>(theme);
   const isMenuOpen = writable(false);
 
   function toggleMenu() {
@@ -75,16 +76,18 @@
         $headerTheme === 'dark' ? '[1px solid rgba(63, 63, 70, 0.40)]' : '[1px solid rgba(228, 228, 231, 0.40)]',
     })}
   >
-    <img
-      class={css({
-        height: '24px',
-        lgDown: {
-          height: '20px',
-        },
-      })}
-      alt="Readable"
-      src={$headerTheme === 'dark' ? FullWhiteLogo : FullLogo}
-    />
+    <a href="/">
+      <img
+        class={css({
+          height: '24px',
+          lgDown: {
+            height: '20px',
+          },
+        })}
+        alt="Readable"
+        src={$headerTheme === 'dark' ? FullWhiteLogo : FullLogo}
+      />
+    </a>
 
     <div
       class={flex({
