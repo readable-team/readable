@@ -50,7 +50,7 @@
     paddingTop: '210px',
     lgDown: {
       paddingTop: '128px',
-      minHeight: '646px',
+      minHeight: '936px',
     },
   })}
 >
@@ -148,33 +148,52 @@
       </a>
     </div>
   </div>
-  <div class={cx('animate', 'delayed-400', visible && 'loaded')}>
-    <div class={css({ marginTop: '60px', lgDown: { marginTop: '54px' } })}>
-      <SegmentButtons
-        items={[
-          { label: '사이트', value: 'site' },
-          { label: '에디터', value: 'editor' },
-        ]}
-        on:select={(value) => (selectedHeroMockup = value.detail)}
-      />
-    </div>
-  </div>
+  <!-- absolute position인 SegmentButtons과 목업 이미지 대신 공간을 차지 -->
+  <div class={css({ height: '641px' })} />
+
+  <!-- SegmentButtons과 목업 이미지 -->
   <div
     class={flex({
-      position: 'relative',
-      marginTop: '34px',
-      width: '889px',
-      height: '503px',
-      lgDown: {
-        marginTop: '24px',
-        justifyContent: 'center',
-        width: 'full',
-      },
+      position: 'absolute',
+      bottom: '0',
+      left: '0',
+      right: '0',
+      flexDirection: 'column',
+      alignItems: 'center',
     })}
   >
-    <div class={cx('hero-image', visible && 'loaded')}>
-      <img alt="사이트 이미지" hidden={selectedHeroMockup !== 'site'} src={SiteMockupImage} />
-      <img alt="에디터 이미지" hidden={selectedHeroMockup !== 'editor'} src={EditorMockupImage} />
+    <div class={cx('animate', 'delayed-400', visible && 'loaded')}>
+      <div class={css({ marginTop: '60px', lgDown: { marginTop: '54px' } })}>
+        <SegmentButtons
+          items={[
+            { label: '사이트', value: 'site' },
+            { label: '에디터', value: 'editor' },
+          ]}
+          on:select={(value) => (selectedHeroMockup = value.detail)}
+        />
+      </div>
+    </div>
+    <div
+      class={flex({
+        position: 'relative',
+        marginTop: '34px',
+        width: 'full',
+        maxWidth: '889px',
+        height: '503px',
+        marginX: 'auto',
+        lgDown: {
+          marginTop: '24px',
+          justifyContent: 'center',
+          width: 'full',
+          height: 'auto',
+          paddingX: '20px',
+        },
+      })}
+    >
+      <div class={cx('hero-image', visible && 'loaded')}>
+        <img alt="사이트 이미지" hidden={selectedHeroMockup !== 'site'} src={SiteMockupImage} />
+        <img alt="에디터 이미지" hidden={selectedHeroMockup !== 'editor'} src={EditorMockupImage} />
+      </div>
     </div>
   </div>
 </div>
@@ -204,10 +223,6 @@
     transform: translateY(0);
   }
   .hero-image {
-    position: absolute;
-    top: 0;
-    left: 20px;
-    right: 20px;
     opacity: 0;
     filter: blur(5px);
     transform: translateY(100px) scale(1.04);
