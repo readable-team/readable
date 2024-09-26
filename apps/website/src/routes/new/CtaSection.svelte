@@ -45,7 +45,16 @@
     </div>
 
     <div class={flex({ align: 'center', gap: { base: '16px', lg: '32px' }, lgDown: { flexDirection: 'column' } })}>
-      <Button href={env.PUBLIC_DASHBOARD_URL} size="lg" type="link" variant="secondary">지금 써보러가기</Button>
+      <Button
+        href={env.PUBLIC_DASHBOARD_URL}
+        rel="noopener noreferrer"
+        size="lg"
+        target="_blank"
+        type="link"
+        variant="secondary"
+      >
+        지금 써보러 가기
+      </Button>
 
       <a
         class={flex({
@@ -55,6 +64,8 @@
           color: 'white',
         })}
         href="https://docs.rdbl.io"
+        rel="noopener noreferrer"
+        target="_blank"
       >
         활용 사례 보기
         <Icon icon={ChevronRightIcon} size={20} />

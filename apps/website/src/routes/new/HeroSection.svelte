@@ -101,6 +101,8 @@
           _pressed: { backgroundColor: 'brand.700' },
         })}
         href={env.PUBLIC_DASHBOARD_URL}
+        rel="noopener noreferrer"
+        target="_blank"
       >
         지금 써보러 가기
       </a>
@@ -112,6 +114,8 @@
           color: 'white/80',
         })}
         href="https://docs.rdbl.io"
+        rel="noopener noreferrer"
+        target="_blank"
       >
         활용 사례 보기
         <Icon icon={ChevronRightIcon} size={20} />
