@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { css } from '@readable/styled-system/css';
+  import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
   import { onMount } from 'svelte';
@@ -18,11 +18,18 @@
   $: idx = i % keywords.length;
 
   let selectedHeroMockup = 'site';
+  let visible = false;
 
+  let interval: ReturnType<typeof setInterval>;
   onMount(() => {
-    const interval = setInterval(() => {
+    visible = true;
+
+    setTimeout(() => {
       i += 1;
-    }, 2000);
+      interval = setInterval(() => {
+        i += 1;
+      }, 2000);
+    }, 1000); // 1초 뒤에 시작
 
     return () => clearInterval(interval);
   });
@@ -44,11 +51,15 @@
   })}
 >
   <div
-    class={css({
-      fontSize: '[64px]',
-      fontWeight: '[900]',
-      textAlign: 'center',
-    })}
+    class={cx(
+      'animate',
+      visible && 'loaded',
+      css({
+        fontSize: '[64px]',
+        fontWeight: '[900]',
+        textAlign: 'center',
+      }),
+    )}
   >
     <div>이용자를 붙잡을</div>
     <div class={css({ position: 'relative' })}>
@@ -71,52 +82,101 @@
     </div>
     <!-- <div>만들기</div> -->
   </div>
-
-  <div class={flex({ marginTop: '40px', gap: '32px', alignItems: 'center' })}>
-    <a
-      class={flex({
-        borderRadius: '10px',
-        paddingX: '30px',
-        paddingY: '10px',
-        textStyle: '16sb',
-        height: '43px',
-        color: 'white',
-
-        backgroundColor: 'brand.600',
-        _hover: { backgroundColor: 'brand.500' },
-        _focusVisible: { backgroundColor: 'brand.500' },
-        _active: { backgroundColor: 'brand.700' },
-        _pressed: { backgroundColor: 'brand.700' },
-      })}
-      href={env.PUBLIC_DASHBOARD_URL}
-    >
-      지금 써보러 가기
-    </a>
-    <a
-      class={flex({
-        gap: '6px',
-        alignItems: 'center',
-        textStyle: '16sb',
-        color: 'white/80',
-      })}
-      href="https://docs.rdbl.io"
-    >
-      활용 사례 보기
-      <Icon icon={ChevronRightIcon} size={20} />
-    </a>
+  <div
+    class={cx('animate', 'delayed-200', visible && 'loaded', flex({ flexDirection: 'column', alignItems: 'center' }))}
+  >
+    <div class={flex({ marginTop: '40px', gap: '32px', alignItems: 'center' })}>
+      <a
+        class={flex({
+          borderRadius: '10px',
+          paddingX: '30px',
+          paddingY: '10px',
+          textStyle: '16sb',
+          height: '43px',
+          color: 'white',
+          backgroundColor: 'brand.600',
+          _hover: { backgroundColor: 'brand.500' },
+          _focusVisible: { backgroundColor: 'brand.500' },
+          _active: { backgroundColor: 'brand.700' },
+          _pressed: { backgroundColor: 'brand.700' },
+        })}
+        href={env.PUBLIC_DASHBOARD_URL}
+      >
+        지금 써보러 가기
+      </a>
+      <a
+        class={flex({
+          gap: '6px',
+          alignItems: 'center',
+          textStyle: '16sb',
+          color: 'white/80',
+        })}
+        href="https://docs.rdbl.io"
+      >
+        활용 사례 보기
+        <Icon icon={ChevronRightIcon} size={20} />
+      </a>
+    </div>
   </div>
-
-  <div class={css({ marginTop: '60px' })}>
-    <SegmentButtons
-      items={[
-        { label: '사이트', value: 'site' },
-        { label: '에디터', value: 'editor' },
-      ]}
-      on:select={(value) => (selectedHeroMockup = value.detail)}
-    />
+  <div class={cx('animate', 'delayed-400', visible && 'loaded')}>
+    <div class={css({ marginTop: '60px' })}>
+      <SegmentButtons
+        items={[
+          { label: '사이트', value: 'site' },
+          { label: '에디터', value: 'editor' },
+        ]}
+        on:select={(value) => (selectedHeroMockup = value.detail)}
+      />
+    </div>
   </div>
-  <div class={css({ marginTop: '34px', width: '889px' })}>
-    <img alt="사이트 이미지" hidden={selectedHeroMockup !== 'site'} src={SiteMockupImage} />
-    <img alt="에디터 이미지" hidden={selectedHeroMockup !== 'editor'} src={EditorMockupImage} />
+  <div class={css({ position: 'relative', marginTop: '34px', width: '889px', height: '503px' })}>
+    <div class={cx('hero-image', visible && 'loaded')}>
+      <img alt="사이트 이미지" hidden={selectedHeroMockup !== 'site'} src={SiteMockupImage} />
+      <img alt="에디터 이미지" hidden={selectedHeroMockup !== 'editor'} src={EditorMockupImage} />
+    </div>
   </div>
 </div>
+
+<style>
+  .animate {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translateY(30px);
+    transition:
+      opacity 0.5s ease,
+      filter 0.5s ease,
+      transform 0.5s ease;
+  }
+
+  .animate.delayed-200 {
+    transition-delay: 0.2s;
+  }
+
+  .animate.delayed-400 {
+    transition-delay: 0.4s;
+  }
+
+  .animate.loaded {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+  .hero-image {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    filter: blur(5px);
+    transform: translateY(100px) scale(1.04);
+    transition:
+      opacity 0.8s linear,
+      filter 0.8s linear,
+      transform 0.8s cubic-bezier(0.4, 0, 0.1, 1);
+    transition-delay: 0.4s;
+  }
+
+  .hero-image.loaded {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0) scale(1);
+  }
+</style>
