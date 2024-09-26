@@ -123,7 +123,7 @@
                 _pressed: { backgroundColor: 'gray.300' },
               }),
         })}
-        href={env.PUBLIC_DASHBOARD_URL}
+        href="/contact"
       >
         도입문의
       </a>
