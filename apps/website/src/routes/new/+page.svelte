@@ -59,24 +59,25 @@
 <footer
   class={flex({
     marginX: 'auto',
-    maxWidth: '1200px',
+    width: 'full',
+    maxWidth: '1280px',
     direction: 'column',
     gap: '40px',
-    paddingX: { base: '24px', md: '48px' },
+    paddingX: { base: '24px', lg: '32px' },
     paddingY: '48px',
     backgroundColor: 'neutral.0',
   })}
 >
   <div class={flex({ align: 'center', justify: 'space-between' })}>
-    <FullLogo class={css({ height: { base: '20px', md: '24px' } })} />
+    <FullLogo class={css({ height: { base: '20px', lg: '24px' } })} />
 
     <a aria-label="GitHub" href="https://github.com/readable-team" rel="noopener noreferrer" target="_blank">
-      <Icon style={css.raw({ color: '[#181717]', hideFrom: 'md' })} icon={IconGithub} size={20} />
-      <Icon style={css.raw({ color: '[#181717]', hideBelow: 'md' })} icon={IconGithub} size={24} />
+      <Icon style={css.raw({ color: 'neutral.100', hideFrom: 'lg' })} icon={IconGithub} size={24} />
+      <Icon style={css.raw({ color: 'neutral.100', hideBelow: 'lg' })} icon={IconGithub} size={32} />
     </a>
   </div>
 
-  <div class={flex({ textStyle: { base: '12r', md: '14r' }, color: 'neutral.70', direction: 'column', gap: '4px' })}>
+  <div class={flex({ textStyle: { base: '12m', lg: '14m' }, color: 'neutral.70', direction: 'column', gap: '4px' })}>
     <p>주식회사 펜슬컴퍼니 | 대표 배준현 | 서울특별시 강남구 강남대로100길 14, 6층</p>
 
     <p>
@@ -91,6 +92,4 @@
 
     <p>02-565-7695 | hello@penxle.io</p>
   </div>
-
-  <div class={css({ height: '20px' })}></div>
 </footer>

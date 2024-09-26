@@ -807,6 +807,7 @@
 <footer
   class={flex({
     marginX: 'auto',
+    width: 'full',
     maxWidth: '1280px',
     direction: 'column',
     gap: '40px',
