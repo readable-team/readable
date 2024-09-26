@@ -94,6 +94,7 @@
       fontSize: '24px',
       fontWeight: '[500]',
       color: 'text.secondary',
+      textAlign: 'center',
       lgDown: {
         fontSize: '12px',
       },

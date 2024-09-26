@@ -70,6 +70,7 @@
         marginX: 'auto',
         width: 'full',
         maxWidth: '984px',
+        align: 'flex-start',
         justifyContent: 'space-between',
         lgDown: {
           marginTop: '54px',
