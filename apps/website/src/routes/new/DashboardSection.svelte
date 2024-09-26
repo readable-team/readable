@@ -98,7 +98,7 @@
   bind:this={section}
   class={css({ paddingY: '54px', backgroundColor: 'neutral.100', lg: { paddingTop: '120px', paddingBottom: '80px' } })}
 >
-  <div class={css({ marginX: 'auto', maxWidth: '1280px' })}>
+  <div>
     <h2
       class={css({
         fontSize: { base: '18px', lg: '[45px]' },
@@ -129,11 +129,28 @@
         class={flex({
           align: 'center',
           gap: { base: '16px', lg: '20px' },
-          paddingX: { base: '20px', lg: '23px' },
           overflow: 'auto',
           scrollbar: 'hidden',
           scrollSnapType: 'x',
           scrollSnapStrictness: 'mandatory',
+          _before: {
+            display: 'block',
+            content: '""',
+            minWidth: {
+              // max(calc((100vw - 1280px) / 2 - carouselGap), calc(paddingX - carouselGap))
+              base: '4px',
+              lg: '[calc((100vw - 1280px) / 2 - 20px)]',
+            },
+          },
+          _after: {
+            display: 'block',
+            content: '""',
+            minWidth: {
+              // max(calc((100vw - 1280px) / 2 - carouselGap), calc(paddingX - carouselGap))
+              base: '4px',
+              lg: '[calc((100vw - 1280px) / 2 - 20px)]',
+            },
+          },
         })}
         on:scroll={(e) => {
           currentScroll = e.currentTarget.scrollLeft;
@@ -202,7 +219,9 @@
         justify: 'flex-end',
         gap: '14px',
         marginTop: { base: '30px', lg: '36px' },
-        marginRight: '20px',
+        marginX: 'auto',
+        paddingRight: '20px',
+        maxWidth: '1280px',
         hideBelow: 'lg',
       })}
     >
