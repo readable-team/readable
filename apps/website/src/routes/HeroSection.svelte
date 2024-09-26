@@ -179,7 +179,7 @@
         marginTop: '34px',
         width: 'full',
         maxWidth: '889px',
-        height: '503px',
+        height: '502px',
         marginX: 'auto',
         lgDown: {
           marginTop: '24px',
