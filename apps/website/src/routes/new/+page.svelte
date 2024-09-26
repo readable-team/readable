@@ -35,6 +35,12 @@
     right: '0',
     marginX: 'auto',
     zIndex: '50',
+    width: '1280px',
+    height: '360px',
+    lgDown: {
+      width: 'full',
+      height: '300px',
+    },
   })}
 />
 

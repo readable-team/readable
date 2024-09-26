@@ -24,15 +24,18 @@
     padding: '4px',
     borderRadius: '10px',
     background: 'white/14',
-    backdropFilter: '[blur(20px)]', // 이게 왜 들어가지?
   })}
 >
   <div
-    style:left={`${4 + selectedIndex * 98}px`}
+    style:left={`calc(4px + ${selectedIndex} * (${100 / items.length}% - ${4 / items.length}px))`}
     class={css({
       position: 'absolute',
       width: '94px',
       height: '36px',
+      lgDown: {
+        width: '84px',
+        height: '32px',
+      },
       borderRadius: '6px',
       background: 'white/14',
       boxShadow: '[0px 3px 8px 0px rgba(0, 0, 0, 0.12), 0px 3px 1px 0px rgba(0, 0, 0, 0.04)]',
@@ -47,6 +50,11 @@
         width: '94px',
         height: '36px',
         textStyle: '16m',
+        lgDown: {
+          width: '84px',
+          height: '32px',
+          textStyle: '14m',
+        },
       })}
       type="button"
       on:click={() => (selectedValue = item.value)}

@@ -32,6 +32,10 @@
       marginX: 'auto',
       paddingX: '20px',
       paddingY: '120px',
+      lgDown: {
+        width: 'full',
+        paddingY: '54px',
+      },
     })}
   >
     <SectionTitle>
@@ -52,6 +56,9 @@
     <div
       class={center({
         marginTop: '100px',
+        lgDown: {
+          marginTop: '54px',
+        },
       })}
     >
       <div
@@ -147,7 +154,17 @@
       </div>
     </div>
 
-    <div class={flex({ marginTop: '100px', gap: '15px' })}>
+    <div
+      class={flex({
+        marginTop: '100px',
+        gap: '15px',
+        lgDown: {
+          marginTop: '74px',
+          flexDirection: 'column',
+          gap: '40px',
+        },
+      })}
+    >
       {#each cards as card (card.title)}
         <div
           class={flex({
@@ -156,9 +173,9 @@
             flex: '1',
           })}
         >
-          <div class={flex({ alignItems: 'center', gap: '8px' })}>
-            <Icon style={css.raw({ color: '[#9C3BE8]' })} icon={card.icon} size={24} />
-            <div class={css({ fontSize: '22px', fontWeight: '[700]' })}>{card.title}</div>
+          <div class={flex({ alignItems: 'center', gap: '8px', lgDown: { gap: '6px' } })}>
+            <Icon style={css.raw({ color: '[#9C3BE8]', lgDown: { size: '16px' } })} icon={card.icon} size={24} />
+            <div class={css({ fontSize: '22px', fontWeight: '[700]', lgDown: { fontSize: '14px' } })}>{card.title}</div>
             {#if card.comingSoon}
               <div
                 class={center({
@@ -170,6 +187,11 @@
                   fontSize: '14px',
                   fontWeight: '[700]',
                   textTransform: 'uppercase',
+                  lgDown: {
+                    paddingX: '7px',
+                    paddingY: '3px',
+                    fontSize: '10px',
+                  },
                 })}
               >
                 Coming Soon
@@ -177,7 +199,17 @@
             {/if}
           </div>
 
-          <div class={css({ fontSize: '16px', fontWeight: '[500]', color: 'text.tertiary', whiteSpace: 'pre-line' })}>
+          <div
+            class={css({
+              fontSize: '16px',
+              fontWeight: '[500]',
+              color: 'text.tertiary',
+              whiteSpace: 'pre-line',
+              lgDown: {
+                fontSize: '12px',
+              },
+            })}
+          >
             {card.description}
           </div>
         </div>

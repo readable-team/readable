@@ -48,6 +48,10 @@
     overflow: 'hidden',
     color: 'white',
     paddingTop: '210px',
+    lgDown: {
+      paddingTop: '128px',
+      minHeight: '646px',
+    },
   })}
 >
   <div
@@ -58,6 +62,9 @@
         fontSize: '[64px]',
         fontWeight: '[900]',
         textAlign: 'center',
+        lgDown: {
+          fontSize: '[32px]',
+        },
       }),
     )}
   >
@@ -85,13 +92,29 @@
   <div
     class={cx('animate', 'delayed-200', visible && 'loaded', flex({ flexDirection: 'column', alignItems: 'center' }))}
   >
-    <div class={flex({ marginTop: '40px', gap: '32px', alignItems: 'center' })}>
+    <div
+      class={flex({
+        marginTop: '40px',
+        gap: '32px',
+        alignItems: 'center',
+        lgDown: {
+          flexDirection: 'column',
+          gap: '20px',
+        },
+      })}
+    >
       <a
         class={flex({
           borderRadius: '10px',
           paddingX: '30px',
           paddingY: '10px',
           textStyle: '16sb',
+          lgDown: {
+            paddingX: '20px',
+            paddingY: '9px',
+            height: '38px',
+            textStyle: '14sb',
+          },
           height: '43px',
           color: 'white',
           backgroundColor: 'brand.600',
@@ -111,6 +134,9 @@
           gap: '6px',
           alignItems: 'center',
           textStyle: '16sb',
+          lgDown: {
+            textStyle: '14sb',
+          },
           color: 'white/80',
         })}
         href="https://docs.rdbl.io"
@@ -123,7 +149,7 @@
     </div>
   </div>
   <div class={cx('animate', 'delayed-400', visible && 'loaded')}>
-    <div class={css({ marginTop: '60px' })}>
+    <div class={css({ marginTop: '60px', lgDown: { marginTop: '54px' } })}>
       <SegmentButtons
         items={[
           { label: '사이트', value: 'site' },
@@ -133,7 +159,19 @@
       />
     </div>
   </div>
-  <div class={css({ position: 'relative', marginTop: '34px', width: '889px', height: '503px' })}>
+  <div
+    class={flex({
+      position: 'relative',
+      marginTop: '34px',
+      width: '889px',
+      height: '503px',
+      lgDown: {
+        marginTop: '24px',
+        justifyContent: 'center',
+        width: 'full',
+      },
+    })}
+  >
     <div class={cx('hero-image', visible && 'loaded')}>
       <img alt="사이트 이미지" hidden={selectedHeroMockup !== 'site'} src={SiteMockupImage} />
       <img alt="에디터 이미지" hidden={selectedHeroMockup !== 'editor'} src={EditorMockupImage} />
@@ -167,7 +205,9 @@
   }
   .hero-image {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 20px;
+    right: 20px;
     opacity: 0;
     filter: blur(5px);
     transform: translateY(100px) scale(1.04);
@@ -176,6 +216,9 @@
       filter 0.8s linear,
       transform 0.8s cubic-bezier(0.4, 0, 0.1, 1);
     transition-delay: 0.4s;
+  }
+  .hero-image img {
+    margin: 0 auto;
   }
 
   .hero-image.loaded {

@@ -37,6 +37,10 @@
       marginX: 'auto',
       paddingX: '20px',
       paddingY: '120px',
+      lgDown: {
+        width: 'full',
+        paddingY: '54px',
+      },
     })}
   >
     <SectionTitle>
@@ -63,8 +67,14 @@
     <div
       class={flex({
         marginTop: '80px',
-        gap: '60px',
-        justifyContent: 'center',
+        marginX: 'auto',
+        width: 'full',
+        maxWidth: '984px',
+        justifyContent: 'space-between',
+        lgDown: {
+          marginTop: '54px',
+          gap: '16px',
+        },
       })}
     >
       <Lighthouse title="Performance" />
@@ -73,7 +83,17 @@
       <Lighthouse title="SEO" />
     </div>
 
-    <div class={flex({ marginTop: '80px', justifyContent: 'space-between' })}>
+    <div
+      class={flex({
+        marginTop: '80px',
+        justifyContent: 'space-between',
+        lgDown: {
+          marginTop: '54px',
+          flexDirection: 'column',
+          gap: '16px',
+        },
+      })}
+    >
       {#each cards as card (card.title)}
         <div
           class={flex({
@@ -85,14 +105,46 @@
             borderRadius: '10px',
             backgroundColor: 'surface.primary',
             boxShadow: 'emphasize',
+            lgDown: {
+              width: 'full',
+              height: '91px',
+              padding: '16px',
+            },
           })}
         >
-          <div class={flex({ alignItems: 'center', gap: '8px' })}>
+          <div
+            class={flex({
+              alignItems: 'center',
+              gap: '8px',
+              lgDown: {
+                gap: '6px',
+              },
+            })}
+          >
             <Icon style={css.raw({ color: '[#13AC60]' })} icon={card.icon} size={24} />
-            <div class={css({ fontSize: '22px', fontWeight: '[700]' })}>{card.title}</div>
+            <div
+              class={css({
+                fontSize: '22px',
+                fontWeight: '[700]',
+                lgDown: {
+                  fontSize: '14px',
+                },
+              })}
+            >
+              {card.title}
+            </div>
           </div>
 
-          <div class={css({ fontSize: '16px', fontWeight: '[500]', color: 'text.tertiary' })}>
+          <div
+            class={css({
+              fontSize: '16px',
+              fontWeight: '[500]',
+              color: 'text.tertiary',
+              lgDown: {
+                fontSize: '12px',
+              },
+            })}
+          >
             {card.description}
           </div>
         </div>

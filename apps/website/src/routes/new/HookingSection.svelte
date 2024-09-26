@@ -59,6 +59,9 @@
     justifyContent: 'center',
     paddingY: '120px',
     backgroundColor: 'neutral.20',
+    lgDown: {
+      paddingY: '54px',
+    },
   })}
 >
   <h1
@@ -68,6 +71,9 @@
       lineHeight: '[138%]',
       letterSpacing: '-0.9px',
       textAlign: 'center',
+      lgDown: {
+        fontSize: '18px',
+      },
     })}
   >
     리더블에서는 콘텐츠 작성에만 집중하세요 <br />
@@ -82,6 +88,10 @@
       lineHeight: '[144%]',
       letterSpacing: '-0.088px',
       textAlign: 'center',
+      lgDown: {
+        marginTop: '10px',
+        fontSize: '13px',
+      },
     })}
   >
     리더블은 도움센터 구축의 복잡성을 제거했습니다. <br />
@@ -98,6 +108,10 @@
       flexDirection: 'column',
       gap: '16px',
       overflow: 'hidden',
+      lgDown: {
+        marginTop: '40px',
+        gap: '10px',
+      },
     })}
   >
     <div
@@ -124,7 +138,18 @@
     />
 
     <!-- 윗줄 카드 (왼쪽으로 이동) -->
-    <div class={cx(css({ display: 'flex', gap: '16px' }), 'scrollLeft')}>
+    <div
+      class={cx(
+        css({
+          display: 'flex',
+          gap: '16px',
+          lgDown: {
+            gap: '14px',
+          },
+        }),
+        'scrollLeft',
+      )}
+    >
       {#each [...topCards, ...topCards] as card, index (index)}
         <div
           class={flex({
@@ -139,15 +164,23 @@
             padding: '20px',
             backgroundColor: 'white',
             color: 'text.tertiary',
+            lgDown: {
+              width: '220px',
+              height: '105px',
+              padding: '16px',
+            },
           })}
         >
-          <Icon icon={card.icon} size={24} />
+          <Icon style={css.raw({ lgDown: { size: '16px' } })} icon={card.icon} size={24} />
           <p
             class={css({
               marginTop: '10px',
               fontSize: '[18px]',
               fontWeight: '[700]',
               color: 'text.primary',
+              lgDown: {
+                fontSize: '14px',
+              },
             })}
           >
             {card.title}
@@ -157,6 +190,10 @@
               marginTop: '4px',
               fontSize: '[14px]',
               fontWeight: '[500]',
+              lgDown: {
+                marginTop: '2px',
+                fontSize: '12px',
+              },
             })}
           >
             {card.description}
@@ -166,7 +203,18 @@
     </div>
 
     <!-- 아랫줄 카드 (오른쪽으로 이동) -->
-    <div class={cx(css({ display: 'flex', gap: '16px' }), 'scrollRight')}>
+    <div
+      class={cx(
+        css({
+          display: 'flex',
+          gap: '16px',
+          lgDown: {
+            gap: '14px',
+          },
+        }),
+        'scrollRight',
+      )}
+    >
       {#each [...bottomCards, ...bottomCards] as card, index (index)}
         <div
           class={flex({
@@ -181,15 +229,23 @@
             padding: '20px',
             backgroundColor: 'white',
             color: 'text.tertiary',
+            lgDown: {
+              width: '220px',
+              height: '105px',
+              padding: '16px',
+            },
           })}
         >
-          <Icon icon={card.icon} size={24} />
+          <Icon style={css.raw({ lgDown: { size: '16px' } })} icon={card.icon} size={24} />
           <p
             class={css({
               marginTop: '10px',
               fontSize: '[18px]',
               fontWeight: '[700]',
               color: 'text.primary',
+              lgDown: {
+                fontSize: '14px',
+              },
             })}
           >
             {card.title}
@@ -199,6 +255,10 @@
               marginTop: '4px',
               fontSize: '[14px]',
               fontWeight: '[500]',
+              lgDown: {
+                marginTop: '2px',
+                fontSize: '12px',
+              },
             })}
           >
             {card.description}

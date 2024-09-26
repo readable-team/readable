@@ -33,6 +33,11 @@
       marginX: 'auto',
       paddingX: '20px',
       paddingY: '120px',
+      lgDown: {
+        width: 'full',
+        paddingTop: '54px',
+        paddingBottom: '40px',
+      },
     })}
   >
     <SectionTitle>
@@ -51,7 +56,7 @@
       </span>
     </SectionTitle>
 
-    <div class={flex({ marginTop: '120px', gap: '16px' })}>
+    <div class={flex({ marginTop: '120px', gap: '16px', lgDown: { marginTop: '74px', flexDirection: 'column' } })}>
       {#each cards as card (card.title)}
         <div class={flex({ flexDirection: 'column', gap: '10px' })}>
           <div
@@ -63,14 +68,24 @@
             })}
           >
             <div class={flex({ alignItems: 'center', gap: '8px' })}>
-              <div class={css({ fontSize: '22px', fontWeight: '[700]' })}>{card.title}</div>
+              <div class={css({ fontSize: '22px', fontWeight: '[700]', lgDown: { fontSize: '14px' } })}>
+                {card.title}
+              </div>
             </div>
-            <div class={css({ fontSize: '16px', fontWeight: '[500]', color: 'text.tertiary', whiteSpace: 'pre-line' })}>
+            <div
+              class={css({
+                fontSize: '16px',
+                fontWeight: '[500]',
+                color: 'text.tertiary',
+                whiteSpace: 'pre-line',
+                lgDown: { fontSize: '12px' },
+              })}
+            >
               {card.description}
             </div>
           </div>
 
-          <div class={center({ width: '403px', height: '177px' })}>
+          <div class={center({ width: '403px', height: '177px', lgDown: { width: 'full' } })}>
             <svelte:component this={card.image} />
           </div>
         </div>

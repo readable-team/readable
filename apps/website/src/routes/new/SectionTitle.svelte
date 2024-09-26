@@ -7,30 +7,37 @@
   class={flex({
     flexDirection: 'column',
     gap: '16px',
+    lgDown: {
+      gap: '10px',
+    },
   })}
 >
-  <!-- 20px 600 subtitle -->
   <div
     class={css({
       fontSize: '20px',
       fontWeight: '[600]',
+      lgDown: {
+        fontSize: '13px',
+      },
     })}
   >
     <slot name="subtitle" />
   </div>
 
-  <!-- 45px 800 title -->
   <h1
     class={css({
       fontSize: '[45px]',
       fontWeight: '[800]',
       lineHeight: '[138%]',
+      lgDown: {
+        fontSize: '24px',
+        marginTop: '2px',
+      },
     })}
   >
     <slot name="title" />
   </h1>
 
-  <!-- 20px 500 description -->
   <p
     class={css({
       'fontSize': '0',
@@ -38,11 +45,17 @@
         fontSize: '20px',
         fontWeight: '[500]',
         color: 'text.tertiary',
+        lgDown: {
+          fontSize: '14px',
+        },
       },
       '& > * > em': {
         fontSize: '20px',
         fontWeight: '[700]',
         color: 'text.primary',
+        lgDown: {
+          fontSize: '14px',
+        },
       },
     })}
   >

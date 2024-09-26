@@ -38,8 +38,16 @@
 </script>
 
 <!-- TODO: animation -->
-<div bind:this={containerEl} class={flex({ flexDirection: 'column', alignItems: 'center', gap: '14px' })}>
-  <div class={center({ position: 'relative', width: '201px', height: '201px' })}>
+<div bind:this={containerEl} class={flex({ flexDirection: 'column', alignItems: 'center', gap: '14px', flex: '1' })}>
+  <div
+    class={center({
+      position: 'relative',
+      width: 'full',
+      height: 'full',
+      maxWidth: '201px',
+      maxHeight: '201px',
+    })}
+  >
     <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
       <circle
         class={css({
@@ -73,13 +81,25 @@
         transitionProperty: 'color',
         transitionDuration: '250ms',
         transitionTimingFunction: 'ease',
+        lgDown: {
+          fontSize: '24px',
+        },
       })}
     >
       {$value}
     </div>
   </div>
 
-  <div class={css({ fontSize: '24px', fontWeight: '[500]', color: 'text.secondary' })}>
+  <div
+    class={css({
+      fontSize: '24px',
+      fontWeight: '[500]',
+      color: 'text.secondary',
+      lgDown: {
+        fontSize: '12px',
+      },
+    })}
+  >
     {title}
   </div>
 </div>
