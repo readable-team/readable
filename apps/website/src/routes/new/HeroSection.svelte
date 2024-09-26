@@ -10,6 +10,8 @@
   import { env } from '$env/dynamic/public';
   import SegmentButtons from './SegmentButtons.svelte';
 
+  export let section: HTMLElement;
+
   const keywords = ['도움센터', '유저 가이드', '업데이트 노트', '개발자 문서'];
 
   let i = 0;
@@ -27,6 +29,7 @@
 </script>
 
 <div
+  bind:this={section}
   class={flex({
     position: 'relative',
     flexDirection: 'column',

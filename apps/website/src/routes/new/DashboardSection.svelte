@@ -10,6 +10,8 @@
   import EditingExperience from '$assets/dashboard-section/editing-experience.png';
   import ModifyUrl from '$assets/dashboard-section/modify-url.svg?component';
 
+  export let section: HTMLElement;
+
   let currentScroll = 0;
   let carouselEl: HTMLDivElement;
 
@@ -93,6 +95,7 @@
 </script>
 
 <div
+  bind:this={section}
   class={css({ paddingY: '54px', backgroundColor: 'neutral.100', lg: { paddingTop: '120px', paddingBottom: '80px' } })}
 >
   <div class={css({ marginX: 'auto', maxWidth: '1280px' })}>

@@ -1,15 +1,46 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import { writable } from 'svelte/store';
+  import { browser } from '$app/environment';
+  import FullLogo from '$assets/logos/full.svg?component';
   import FullWhiteLogo from '$assets/logos/full-white.svg?component';
   import { env } from '$env/dynamic/public';
+  import type { ColorToken } from '@readable/styled-system/tokens';
+
+  export let darkSections: HTMLElement[];
+
+  type HeaderTheme = 'light' | 'dark';
 
   let scrollY = 0;
+  let headerElem: HTMLHeadElement;
+
+  const headerTheme = writable<HeaderTheme>('dark');
+
+  $: if (browser && darkSections.length > 0 && headerElem) {
+    let currentTheme: HeaderTheme = 'light';
+
+    const headerHeight = headerElem.offsetHeight;
+    for (const section of darkSections) {
+      if (
+        section.offsetTop - headerHeight < scrollY &&
+        section.offsetTop + section.offsetHeight - headerHeight > scrollY
+      ) {
+        currentTheme = 'dark';
+        break;
+      }
+    }
+
+    headerTheme.set(currentTheme);
+  }
+
+  $: headerBgColor = ($headerTheme === 'light' ? 'white' : 'neutral.100') as ColorToken;
 </script>
 
-<svelte:window on:scroll={() => (scrollY = window.scrollY)} />
+<svelte:window bind:scrollY />
 
 <header
+  bind:this={headerElem}
   class={flex({
     position: 'fixed',
     top: '0',
@@ -17,8 +48,8 @@
     right: '0',
     height: '60px',
     zIndex: '100',
-    backgroundColor: scrollY > 100 ? 'neutral.100' : 'transparent',
-    transition: '[background-color 500ms ease-in-out]',
+    backgroundColor: scrollY > 100 ? headerBgColor : 'transparent',
+    transition: '[all 500ms cubic-bezier(0.3, 0, 0, 1)]',
   })}
 >
   <div
@@ -27,14 +58,23 @@
       alignItems: 'center',
       justifyContent: 'space-between',
       width: '1080px',
-      borderBottom: '[1px solid rgba(63, 63, 70, 0.40)]',
+      borderBottom:
+        $headerTheme === 'dark' ? '[1px solid rgba(63, 63, 70, 0.40)]' : '[1px solid rgba(228, 228, 231, 0.40)]',
     })}
   >
-    <FullWhiteLogo
-      class={css({
-        height: '24px',
-      })}
-    />
+    {#if $headerTheme === 'dark'}
+      <FullWhiteLogo
+        class={css({
+          height: '24px',
+        })}
+      />
+    {:else}
+      <FullLogo
+        class={css({
+          height: '24px',
+        })}
+      />
+    {/if}
 
     <div
       class={flex({
@@ -42,7 +82,7 @@
         '& a': {
           display: 'inline-block',
           textStyle: '16sb',
-          color: '[#E4E4E7]',
+          color: $headerTheme === 'dark' ? '[#E4E4E7]' : 'text.secondary',
           paddingX: '16px',
           paddingY: '13px',
         },
@@ -62,12 +102,26 @@
           paddingY: '9px',
           textStyle: '14sb',
           height: '38px',
-          color: 'darkgray.200',
-          backgroundColor: 'darkgray.800',
-          _hover: { backgroundColor: 'darkgray.700' },
-          _focusVisible: { backgroundColor: 'darkgray.700' },
-          _active: { backgroundColor: 'darkgray.900' },
-          _pressed: { backgroundColor: 'darkgray.900' },
+          borderWidth: '1px',
+          ...($headerTheme === 'dark'
+            ? {
+                borderColor: 'darkgray.700',
+                color: 'darkgray.200',
+                backgroundColor: 'darkgray.800',
+                _hover: { backgroundColor: 'darkgray.700' },
+                _focusVisible: { backgroundColor: 'darkgray.700' },
+                _active: { backgroundColor: 'darkgray.900' },
+                _pressed: { backgroundColor: 'darkgray.900' },
+              }
+            : {
+                borderColor: 'gray.300',
+                color: 'gray.700',
+                backgroundColor: 'white',
+                _hover: { backgroundColor: 'gray.100' },
+                _focusVisible: { backgroundColor: 'gray.100' },
+                _active: { backgroundColor: 'gray.300' },
+                _pressed: { backgroundColor: 'gray.300' },
+              }),
         })}
         href={env.PUBLIC_DASHBOARD_URL}
       >

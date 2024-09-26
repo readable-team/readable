@@ -14,6 +14,10 @@
   import HookingSection from './HookingSection.svelte';
   import MachineFriendlySection from './MachineFriendlySection.svelte';
   import SearchSection from './SearchSection.svelte';
+
+  let heroSection: HTMLElement;
+  let dashboardSection: HTMLElement;
+  $: darkSections = [heroSection, dashboardSection].filter(Boolean);
 </script>
 
 <Helmet
@@ -34,9 +38,9 @@
   })}
 />
 
-<Header />
+<Header {darkSections} />
 
-<HeroSection />
+<HeroSection bind:section={heroSection} />
 
 <HookingSection />
 
@@ -46,7 +50,7 @@
 
 <A11ySection />
 
-<DashboardSection />
+<DashboardSection bind:section={dashboardSection} />
 
 <ClientsSection />
 
