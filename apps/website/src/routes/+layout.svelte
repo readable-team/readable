@@ -11,10 +11,12 @@
 </script>
 
 <div class={flex({ direction: 'column', grow: '1', minHeight: 'screen' })}>
-  {#if $page.url.pathname !== '/'}
+  {#if $page.url.pathname !== '/' && $page.url.pathname !== '/pricing'}
     <Header theme="light" />
   {/if}
+
   <slot />
+
   <footer
     class={flex({
       marginX: 'auto',
