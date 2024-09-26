@@ -19,6 +19,7 @@
     grow: '1',
     paddingTop: { base: '64px', lg: '140px' },
     paddingBottom: { base: '120px', lg: '200px' },
+    background: '[linear-gradient(180deg, #FFF 0%, #FAFAFA 74.47%)]',
   })}
 >
   <div class={css({ marginX: 'auto', paddingX: '20px', width: 'full', maxWidth: '726px' })}>
