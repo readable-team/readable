@@ -1,3 +1,9 @@
+export type BillingCycle = keyof typeof BillingCycle;
+export const BillingCycle = {
+  MONTHLY: 'MONTHLY',
+  YEARLY: 'YEARLY',
+} as const;
+
 export type CategoryState = keyof typeof CategoryState;
 export const CategoryState = {
   ACTIVE: 'ACTIVE',

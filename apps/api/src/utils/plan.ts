@@ -17,7 +17,7 @@ export const getPlanRule = async <T extends keyof PlanRules>({
   const plan = await db
     .select({ rules: Plans.rules })
     .from(Teams)
-    .leftJoin(Plans, eq(Teams.planId, Plans.id))
+    // .leftJoin(Plans, eq(Teams.planId, Plans.id))
     .where(and(eq(Teams.id, teamId), eq(Teams.state, TeamState.ACTIVE)))
     .then(firstOrThrow);
 

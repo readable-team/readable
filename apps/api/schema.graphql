@@ -3,6 +3,11 @@ input AuthorizeSingleSignOnInput {
   provider: SingleSignOnProvider!
 }
 
+enum BillingCycle {
+  MONTHLY
+  YEARLY
+}
+
 scalar Binary
 
 interface Blob {

@@ -12,6 +12,17 @@ import type { PlanRules } from './json';
 
 const createCategoryAndPageSlug = () => faker.string.numeric(10);
 
+export const Addons = pgTable('addons', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('ADD', { length: 'short' })),
+  name: text('name').notNull(),
+  fee: integer('fee').notNull().default(0),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
+
 export const Categories = pgTable(
   'categories',
   {
@@ -318,6 +329,7 @@ export const Plans = pgTable('plans', {
     .$defaultFn(() => createDbId('PLAN', { length: 'short' })),
   name: text('name').notNull(),
   rules: jsonb('rules').notNull().$type<Partial<PlanRules>>(),
+  fee: integer('fee').notNull().default(0),
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),
@@ -392,9 +404,6 @@ export const Teams = pgTable(
       .$defaultFn(() => createDbId('T', { length: 'short' })),
     name: text('name').notNull(),
     state: E._TeamState('state').notNull().default('ACTIVE'),
-    planId: text('plan_id')
-      .notNull()
-      .references(() => Plans.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
     avatarId: text('avatar_id')
       .notNull()
       .references(() => Images.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
@@ -449,6 +458,25 @@ export const TeamMemberInvitations = pgTable(
     teamIdEmailUniq: unique().on(t.teamId, t.email),
   }),
 );
+
+export const TeamPlans = pgTable('team_plans', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('TPLN')),
+  teamId: text('team_id')
+    .notNull()
+    .references(() => Teams.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+  planId: text('plan_id')
+    .notNull()
+    .references(() => Plans.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+  billingCycle: E._BillingCycle('billing_cycle').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+  updatedAt: datetime('updated_at')
+    .notNull()
+    .default(sql`now()`),
+});
 
 export const TeamRestrictions = pgTable('team_restrictions', {
   id: text('id')

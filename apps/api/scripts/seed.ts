@@ -7,7 +7,7 @@ const avatar = await persistBlobAsImage({
 });
 
 await db.transaction(async (tx) => {
-  const plan = await tx
+  await tx
     .insert(Plans)
     .values({
       id: 'PLAN0000000FREE',
@@ -22,7 +22,6 @@ await db.transaction(async (tx) => {
     .values({
       id: 'T00000PENXLE',
       name: 'PENXLE',
-      planId: plan.id,
       avatarId: avatar.id,
     })
     .returning({ id: Teams.id })
