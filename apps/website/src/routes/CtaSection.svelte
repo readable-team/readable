@@ -32,15 +32,14 @@
           lgDown: { textAlign: 'center' },
         })}
       >
-        지금, 가이드문서가 없어도
-        <br />
-        시작해보세요
+        아직 고민하고 계신가요?
       </h2>
 
       <p class={css({ textStyle: { base: '13m', lg: '20m' }, lgDown: { textAlign: 'center' } })}>
-        기존 문서를 쉽게 임포트하고
+        카드 등록 없이 지금 바로 시작해보세요.
         <br />
-        즉시 리더블의 강력한 기능을 경험하세요
+        기존 문서가 있으신가요?
+        <a href="/demo">이사 서비스를 무료로 이용해보세요</a>
       </p>
     </div>
 
@@ -53,7 +52,7 @@
         type="link"
         variant="secondary"
       >
-        지금 써보러 가기
+        30초만에 시작하기
       </Button>
 
       <a
@@ -67,7 +66,7 @@
         rel="noopener noreferrer"
         target="_blank"
       >
-        활용 사례 보기
+        예시 사이트 보기
         <Icon icon={ChevronRightIcon} size={20} />
       </a>
     </div>

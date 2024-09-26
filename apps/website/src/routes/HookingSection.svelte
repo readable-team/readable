@@ -4,47 +4,58 @@
   import { Icon } from '@readable/ui/components';
   import FlaskConicalIcon from '~icons/lucide/flask-conical';
   import FlowerIcon from '~icons/lucide/flower';
+  import SearchIcon from '~icons/lucide/search';
 
   const cards = [
     {
-      icon: FlaskConicalIcon,
-      title: 'SEO 최적화',
-      description: 'SEO 최적화',
-    },
-    {
       icon: FlowerIcon,
-      title: '반응형 디자인 구현',
-      description: '반응형 디자인 구현',
+      title: '반응형 디자인',
+      description: '모든 디바이스에 최적화된 사용자 경험',
     },
     {
       icon: FlaskConicalIcon,
-      title: '메타 태그',
-      description: '메타 태그',
+      title: 'SEO',
+      description: '검색 엔진 최적화',
+    },
+    {
+      icon: SearchIcon,
+      title: '키워드 검색',
+      description: '실시간 검색 엔진 인덱싱',
+    },
+    {
+      icon: SearchIcon,
+      title: 'AI 검색',
+      description: 'RAG 기반 자연어 검색',
     },
     {
       icon: FlowerIcon,
-      title: '페이지 로딩 속도',
-      description: '페이지 로딩 속도',
+      title: '버전 관리',
+      description: '콘텐츠 변경 이력 추적',
     },
     {
       icon: FlaskConicalIcon,
-      title: '문서 분석 및 인사이트',
-      description: '문서 분석 및 인사이트',
-    },
-    {
-      icon: FlowerIcon,
-      title: '문서 레이아웃 최적화',
-      description: '문서 레이아웃 최적화',
+      title: '동시 편집',
+      description: '막힘 없는 실시간 협업',
     },
     {
       icon: FlaskConicalIcon,
-      title: '콘텐츠 가독성 개선',
-      description: '콘텐츠 가독성 개선',
-    },
-    {
-      icon: FlowerIcon,
       title: '접근성',
-      description: '접근성',
+      description: '모두를 위한 포용적 디자인',
+    },
+    {
+      icon: FlaskConicalIcon,
+      title: '다국어',
+      description: '글로벌 사용자용 다국어 지원',
+    },
+    {
+      icon: FlaskConicalIcon,
+      title: '접속자 통계 및 인사이트',
+      description: '사용자 데이터 수집 및 행동 분석 ',
+    },
+    {
+      icon: FlowerIcon,
+      title: '콘텐츠 최신화',
+      description: '지속적인 업데이트로 신뢰성 향상',
     },
   ];
 
@@ -76,8 +87,9 @@
       },
     })}
   >
-    리더블에서는 콘텐츠 작성에만 집중하세요 <br />
-    나머지 모든 것은 자동으로 최적화됩니다
+    콘텐츠에만 집중하세요
+    <br />
+    나머지는 리더블이 해드려요
   </h1>
   <p
     class={css({
@@ -94,8 +106,9 @@
       },
     })}
   >
-    리더블은 도움센터 구축의 복잡성을 제거했습니다. <br />
-    더 이상 기술적인 세부사항에 시간을 낭비하지 마세요.
+    리더블은 도움센터 구축의 복잡성을 제거했습니다.
+    <br />
+    더 이상 기술적인 세부사항에 시간을 소모하지 마세요
   </p>
 
   <div

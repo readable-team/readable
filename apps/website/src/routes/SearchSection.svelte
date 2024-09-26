@@ -15,15 +15,15 @@
   const cards = [
     {
       icon: CodeXmlIcon,
-      title: '효율적인 문서 검색',
-      description: `사용자가 원하는 정보를 빠르고 효과적으로 찾을 수 있게 해줍니다.
-키워드를 입력하면 관련된 문서, 페이지, 또는 데이터를 검색 결과로 제공합니다.`,
+      title: '실시간 문서 검색',
+      description: `사용자가 입력한 키워드를 기반으로 가장 유사한 결과를 제공합니다.
+한글 자소 단위의 정확도로 사용자가 의도한 바를 정확히 반영합니다`,
     },
     {
       icon: CodeXmlIcon,
       title: 'AI 피드백',
-      description: `고객이 자주 물어보는 검색어를 기반으로 콘텐츠를 제안하여
-사이트의 정보 격차를 해소하고 사용자 니즈를 충족합니다`,
+      description: `사용자들이 자주 찾지만 검색 결과가 없는 키워드를 분석해 제공합니다.
+누락된 정보 없이 사용자에게 도움이 되는 사이트를 만들어 보세요`,
       comingSoon: true,
     },
   ];
@@ -121,17 +121,17 @@
     })}
   >
     <SectionTitle>
-      <span slot="subtitle" class={css({ color: '[#9C3BE8]' })}>Search</span>
+      <span slot="subtitle" class={css({ color: '[#9C3BE8]' })}>고객 만족</span>
       <span slot="title">
-        발견될 수 있는
+        실제로
         <br />
-        도움센터
+        도움이 되는
       </span>
       <span slot="description">
-        <span>단순 키워드 검색만으로 고객의 질문을 이해하고&nbsp;</span>
-        <em>맞춤형 답변을 제공하는 AI 검색</em>
+        <span>단순 키워드 검색만으로&nbsp;</span>
+        <em>질문의 요지를 이해하는 AI 검색</em>
         <br />
-        <span>고객 데이터를 기반으로 개인화된 해결책을 제안하고 있습니다</span>
+        <span>문서 내용을 기반으로 가장 유용한 답변을 제공합니다</span>
       </span>
     </SectionTitle>
 
@@ -149,7 +149,6 @@
         bind:this={containerEl}
         class={flex({
           flexDirection: 'column',
-          position: 'relative',
           marginX: 'auto',
           borderRadius: { base: '16px', lg: '[22px]' },
           width: 'full',

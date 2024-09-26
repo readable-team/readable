@@ -18,7 +18,7 @@
   const contents = [
     {
       title: '콘텐츠 최신화',
-      description: '마우스 사용이 어려운 사용자도 쉽게 탐색할 수 있도록 직관적인 키보드 내비게이션을 제공',
+      description: '현재 운영중인 서비스의 변경사항을 지속적으로 추적하고 발행된 문서와의 불일치점을 찾아냅니다',
       badge: 'COMING SOON',
       asset: ContentUpdate,
       assetStyle: css({
@@ -29,9 +29,8 @@
       }),
     },
     {
-      title: '공동 협업',
-      description:
-        '실시간 공동 편집으로 문서를 즉시 수정하고, 실시간 발행 상태를 확인하며 사이트 진행 상황을 투명하게 관리할 수 있습니다',
+      title: '공동 편집',
+      description: '실시간 공동 편집으로 문서를 함께 수정하고, 원하는 변경사항을 발행해 효율적으로 협업을 진행합니다',
       asset: Collaboration,
       assetStyle: css({
         marginLeft: { base: '38px', lg: '56px' },
@@ -43,7 +42,7 @@
     },
     {
       title: '직관적인 편집 경험',
-      description: '사용자가 복잡한 기술 지식 없이도 쉽고 효율적으로 콘텐츠를 생성하고 수정할 수 있습니다',
+      description: '익숙한 블럭 기반 에디터를 통해 쉽고 효율적으로 콘텐츠를 작성할 수 있습니다',
       asset: EditingExperience,
       assetStyle: css({
         marginTop: { base: '25px', lg: '53px' },
@@ -56,7 +55,7 @@
     {
       title: '브랜딩',
       description:
-        '웹사이트의 테마 색상, 콜아웃, 카테고리 호버 등 브랜드 이미지에 완벽히 일치시킵니다.\n시각적 일관성으로 브랜드 가치를 높이세요',
+        '색상 코드 하나만 지정하면 그 색상으로부터 파생된 여러 색상이 사이트의 적재적소에 적용됩니다. 일관된 브랜드 이미지를 사이트에 손쉽게 적용하고 사이트의 내용에 집중해 보세요',
       asset: Branding,
       assetStyle: css({
         marginLeft: { base: '38px', lg: '56px' },
@@ -70,7 +69,7 @@
     {
       title: '커스텀 URL',
       description:
-        '기존 URL을 그대로 사용할 수 있는 커스텀 도메인 설정을 제공합니다. 브랜드 연속성을 유지하며 새로운 시스템으로 쉽게 전환하세요',
+        '커스텀 도메인과 클린 URL 기능을 제공합니다. 브랜드 연속성을 유지하며 새로운 시스템으로 쉽게 전환하고 의미있는 주소로 문서를 배포해 보세요',
       asset: ModifyUrl,
       assetStyle: css({
         marginTop: { base: '11px', lg: '21px' },
@@ -120,7 +119,7 @@
     >
       빨리 움직이는 팀을 위한 가이드 문서 도구,
       <br />
-      실시간 협업과 간편한 설정으로 문서를 만들어보세요
+      실시간 협업과 간편한 설정으로 사용자들에게 사랑받는 사이트를 만들어보세요
     </p>
 
     <div class={css({ marginTop: { base: '40px', lg: '80px' }, overflow: 'hidden' })}>

@@ -127,23 +127,22 @@
         rel="noopener noreferrer"
         target="_blank"
       >
-        지금 써보러 가기
+        30초만에 시작하기
       </a>
       <a
         class={flex({
           gap: '6px',
           alignItems: 'center',
+          paddingY: '10px',
           textStyle: '16sb',
           lgDown: {
             textStyle: '14sb',
           },
           color: 'white/80',
         })}
-        href="https://docs.rdbl.io"
-        rel="noopener noreferrer"
-        target="_blank"
+        href="/demo"
       >
-        활용 사례 보기
+        이사 신청하기
         <Icon icon={ChevronRightIcon} size={20} />
       </a>
     </div>

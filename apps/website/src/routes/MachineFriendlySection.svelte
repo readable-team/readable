@@ -10,22 +10,22 @@
     {
       icon: CodeXmlIcon,
       title: 'SSR',
-      description: '서버 사이드 렌더링',
+      description: '검색엔진이 읽을 수 있도록 서버에서 HTML을 렌더링합니다',
     },
     {
       icon: CodeXmlIcon,
-      title: 'Site Map',
-      description: '사이트 맵',
+      title: '사이트맵',
+      description: '검색엔진이 페이지를 쉽게 발견할 수 있도록 사이트맵을 자동 생성합니다',
     },
     {
       icon: CodeXmlIcon,
-      title: '소셜 미디어 최적화',
-      description: '소셜 미디어 최적화',
+      title: 'OpenGraph',
+      description: '메신저와 소셜 미디어 링크 미리보기를 위한 OpenGraph 메타데이터를 자동 지원합니다',
     },
     {
       icon: CodeXmlIcon,
       title: '웹 접근성 최적화',
-      description: '웹 접근성 최적화',
+      description: '시맨틱한 마크업과 표준적인 설계 덕분에 검색 엔진에 최적화되어 있습니다',
     },
   ];
 </script>
@@ -46,9 +46,9 @@
     <SectionTitle>
       <span slot="subtitle" class={css({ color: '[#13AC60]' })}>SEO</span>
       <span slot="title">
-        발견될 수 있는
+        누구나
         <br />
-        도움센터
+        찾아올 수 있는
       </span>
       <span slot="description">
         <span>별도의 설정 없이도&nbsp;</span>
@@ -56,7 +56,7 @@
         <span>
           와 잘 만들어져 있는
           <br />
-          메타데이터 덕분에 검색 엔진에 잘 인덱싱될 수 있습니다.
+          메타데이터 덕분에 검색 엔진에 잘 인덱싱될 수 있습니다
         </span>
         <div class={css({ marginTop: '13px', fontSize: '14px', fontWeight: '[500]', color: 'text.tertiary' })}>
           *라이트하우스 스코어

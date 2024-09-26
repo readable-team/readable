@@ -104,10 +104,10 @@
         },
       })}
     >
-      <a href="/pricing">가격정책</a>
+      <a href="/pricing">가격 안내</a>
       <a href="https://docs.rdbl.io" rel="noopener noreferrer" target="_blank">이용 가이드</a>
       <a href="https://updates.rdbl.io" rel="noopener noreferrer" target="_blank">업데이트 노트</a>
-      <a href="/demo">데모 신청</a>
+      <a href="/demo">이사 신청</a>
     </div>
 
     <div class={flex({ gap: '8px', lgDown: { display: 'none' } })}>
@@ -141,7 +141,7 @@
         })}
         href="/contact"
       >
-        도입문의
+        도입 문의
       </a>
       <a
         class={flex({
@@ -213,10 +213,10 @@
           },
         })}
       >
-        <a href="/pricing">가격정책</a>
+        <a href="/pricing">가격 안내</a>
         <a href="https://docs.rdbl.io" rel="noopener noreferrer" target="_blank">이용 가이드</a>
         <a href="https://updates.rdbl.io" rel="noopener noreferrer" target="_blank">업데이트 노트</a>
-        <a href="/demo">데모 신청</a>
+        <a href="/demo">이사 신청</a>
       </nav>
       <div
         class={flex({
@@ -245,7 +245,7 @@
           })}
           href={env.PUBLIC_DASHBOARD_URL}
         >
-          도입문의
+          도입 문의
         </a>
         <a
           class={flex({
