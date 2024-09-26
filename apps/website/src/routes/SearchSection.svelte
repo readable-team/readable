@@ -136,8 +136,10 @@
     </SectionTitle>
 
     <div
-      class={center({
+      class={flex({
         marginTop: '100px',
+        alignItems: 'flex-start',
+        minHeight: { base: '260px', lg: '220px' },
         lgDown: {
           marginTop: '54px',
         },
@@ -148,12 +150,10 @@
         class={flex({
           flexDirection: 'column',
           position: 'relative',
-          zIndex: '100',
           marginX: 'auto',
           borderRadius: { base: '16px', lg: '[22px]' },
           width: 'full',
           maxWidth: '867px',
-          minHeight: { base: '260px', lg: '220px' },
           padding: '8px',
           backgroundColor: 'surface.primary',
           boxShadow: 'strong',
