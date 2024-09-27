@@ -43,7 +43,7 @@
 </script>
 
 <Helmet
-  description="빨리 움직이는 팀을 위한 가이드 문서 도구. 낡지 않는 도움센터를 지금 생성해 보세요."
+  description="팀 문서화의 고민, 리더블 전문가와 함께 해결하세요. 기존 문서 이전부터 최적의 활용 방법까지, 궁금한 점이 있으시다면 언제든 물어보세요"
   image={{ src: 'https://cdn.rdbl.app/opengraph/cover.png', size: 'large' }}
   title="도입 문의"
   trailing="리더블"

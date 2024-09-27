@@ -37,7 +37,7 @@
 </script>
 
 <Helmet
-  description="빨리 움직이는 팀을 위한 가이드 문서 도구. 낡지 않는 도움센터를 지금 생성해 보세요."
+  description="빠르게 움직이는 팀을 위한 문서 이전 서비스. 문서 주소만 보내주시면 24시간 내에 리더블로 옮겨드려요"
   image={{ src: 'https://cdn.rdbl.app/opengraph/cover.png', size: 'large' }}
   title="이사 신청"
   trailing="리더블"

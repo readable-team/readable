@@ -95,7 +95,7 @@
 </script>
 
 <Helmet
-  description="빨리 움직이는 팀을 위한 가이드 문서 도구. 낡지 않는 도움센터를 지금 생성해 보세요."
+  description="개인용 문서부터 기업용 가이드까지 알맞은 플랜을 선택해보세요"
   image={{ src: 'https://cdn.rdbl.app/opengraph/cover.png', size: 'large' }}
   title="가격 안내"
   trailing="리더블"

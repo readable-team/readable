@@ -30,6 +30,13 @@
   })}
 />
 
+<Helmet
+  description="콘텐츠에만 집중하세요. 나머지는 리더블이 해드려요. 낡지 않는 가이드 문서를 지금 생성해 보세요"
+  image={{ src: 'https://cdn.rdbl.app/opengraph/cover.png', size: 'large' }}
+  title="빨리 움직이는 팀을 위한 가이드 문서 도구, 리더블"
+  trailing={null}
+/>
+
 <Header darkSections={[]} theme="dark" />
 
 <div
