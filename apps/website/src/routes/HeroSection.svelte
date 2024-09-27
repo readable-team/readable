@@ -140,7 +140,7 @@
           },
           color: 'white/80',
         })}
-        href="/demo"
+        href="/preview"
       >
         이사 신청하기
         <Icon icon={ChevronRightIcon} size={20} />

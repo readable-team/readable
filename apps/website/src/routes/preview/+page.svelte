@@ -4,15 +4,32 @@
   import { Button, FormField, FormProvider, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { z } from 'zod';
+  import { goto } from '$app/navigation';
   import HeroLight from '$assets/hero/light.svg?component';
+  import { supabase } from '$lib/supabase';
   import Header from '../Header.svelte';
 
   let darkSection: HTMLElement;
 
   const { form, context } = createMutationForm({
-    schema: z.object({}),
-    mutation: async () => {
-      console.log('asdf');
+    schema: z.object({
+      email: z.string().email(),
+      docsUrl: z.string().min(1),
+    }),
+    mutation: async (data) => {
+      const { error } = await supabase.from('previews').insert([
+        {
+          email: data.email,
+          docs_url: data.docsUrl,
+        },
+      ]);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    },
+    onSuccess: async () => {
+      await goto('/complete');
     },
   });
 
@@ -83,11 +100,11 @@
       {context}
       {form}
     >
-      <FormField name="url" label="문서 주소">
-        <TextInput placeholder="https://docs.company.com" />
+      <FormField name="docsUrl" label="문서 주소">
+        <TextInput placeholder="https://docs.example.com" />
       </FormField>
-      <FormField name="name" label="받아보실 이메일">
-        <TextInput placeholder="company@example.com" />
+      <FormField name="email" label="받아보실 이메일">
+        <TextInput placeholder="me@example.com" />
       </FormField>
 
       <Button style={css.raw({ marginTop: '16px' })} glossy size="lg" type="submit">신청하기</Button>

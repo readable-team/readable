@@ -4,15 +4,38 @@
   import { Button, FormField, FormProvider, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { z } from 'zod';
+  import { goto } from '$app/navigation';
   import HeroLight from '$assets/hero/light.svg?component';
+  import { supabase } from '$lib/supabase';
   import Header from '../Header.svelte';
 
   let darkSection: HTMLElement;
 
   const { form, context } = createMutationForm({
-    schema: z.object({}),
-    mutation: async () => {
-      console.log('asdf');
+    schema: z.object({
+      name: z.string().min(1),
+      email: z.string().email(),
+      phoneNumber: z.string().nullish(),
+      companyName: z.string().nullish(),
+      content: z.string().nullish(),
+    }),
+    mutation: async (data) => {
+      const { error } = await supabase.from('contacts').insert([
+        {
+          name: data.name,
+          email: data.email,
+          phone_number: data.phoneNumber,
+          company_name: data.companyName,
+          content: data.content,
+        },
+      ]);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    },
+    onSuccess: async () => {
+      await goto('/complete');
     },
   });
 
@@ -78,18 +101,18 @@
       {form}
     >
       <FormField name="name" label="성함 *">
-        <TextInput placeholder="username" />
+        <TextInput placeholder="홍길동" />
       </FormField>
       <FormField name="email" label="이메일 *">
-        <TextInput placeholder="company@example.com" />
+        <TextInput placeholder="me@example.com" />
       </FormField>
-      <FormField name="number" label="전화번호">
+      <FormField name="phoneNumber" label="전화번호">
         <TextInput placeholder="010-0000-0000" />
       </FormField>
-      <FormField name="company" label="회사">
-        <TextInput placeholder="abccompany" />
+      <FormField name="companyName" label="회사">
+        <TextInput placeholder="ACME Inc." />
       </FormField>
-      <FormField name="munhui" label="문의사항">
+      <FormField name="content" label="문의사항">
         <label
           class={flex({
             'align': 'center',
@@ -117,7 +140,7 @@
               minWidth: '0',
               resize: 'none',
             })}
-            placeholder="문의사항"
+            placeholder="자유롭게 문의사항을 작성해주세요"
             rows="3"
           />
         </label>

@@ -39,7 +39,7 @@
         카드 등록 없이 지금 바로 시작해보세요.
         <br />
         기존 문서가 있으신가요?
-        <a class={css({ textDecoration: 'underline', textUnderlineOffset: '3px' })} href="/demo">
+        <a class={css({ textDecoration: 'underline', textUnderlineOffset: '3px' })} href="/preview">
           이사 서비스를 무료로 이용해보세요.
         </a>
       </p>

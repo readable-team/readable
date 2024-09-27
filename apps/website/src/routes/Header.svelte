@@ -112,7 +112,7 @@
       <a href="/pricing">가격 안내</a>
       <a href="https://docs.rdbl.io" rel="noopener noreferrer" target="_blank">이용 가이드</a>
       <a href="https://updates.rdbl.io" rel="noopener noreferrer" target="_blank">업데이트 노트</a>
-      <a href="/demo">이사 신청</a>
+      <a href="/preview">이사 신청</a>
     </div>
 
     <div class={flex({ gap: '8px', lgDown: { display: 'none' } })}>
@@ -221,7 +221,7 @@
         <a href="/pricing">가격 안내</a>
         <a href="https://docs.rdbl.io" rel="noopener noreferrer" target="_blank">이용 가이드</a>
         <a href="https://updates.rdbl.io" rel="noopener noreferrer" target="_blank">업데이트 노트</a>
-        <a href="/demo">이사 신청</a>
+        <a href="/preview">이사 신청</a>
       </nav>
       <div
         class={flex({
