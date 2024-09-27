@@ -2,28 +2,31 @@
   import { css } from '@readable/styled-system/css';
   import { flex, grid } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
-  import CodeXmlIcon from '~icons/lucide/code-xml';
+  import MapIcon from '~icons/lucide/map';
+  import PersonStandingIcon from '~icons/lucide/person-standing';
+  import ServerIcon from '~icons/lucide/server';
+  import ShareIcon from '~icons/lucide/share';
   import Lighthouse from './Lighthouse.svelte';
   import SectionTitle from './SectionTitle.svelte';
 
   const cards = [
     {
-      icon: CodeXmlIcon,
+      icon: ServerIcon,
       title: 'SSR',
       description: '검색엔진이 읽을 수 있도록 서버에서 HTML을 렌더링합니다',
     },
     {
-      icon: CodeXmlIcon,
+      icon: MapIcon,
       title: '사이트맵',
       description: '검색엔진이 페이지를 쉽게 발견할 수 있도록 사이트맵을 자동 생성합니다',
     },
     {
-      icon: CodeXmlIcon,
+      icon: ShareIcon,
       title: 'OpenGraph',
       description: '메신저와 소셜 미디어 링크 미리보기를 위한 OpenGraph 메타데이터를 자동 지원합니다',
     },
     {
-      icon: CodeXmlIcon,
+      icon: PersonStandingIcon,
       title: '웹 접근성 최적화',
       description: '시맨틱한 마크업과 표준적인 설계 덕분에 검색 엔진에 최적화되어 있습니다',
     },

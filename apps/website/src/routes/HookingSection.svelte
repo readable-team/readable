@@ -4,33 +4,33 @@
   import { Icon } from '@readable/ui/components';
   import AccessibilityIcon from '~icons/lucide/accessibility';
   import BarChartIcon from '~icons/lucide/bar-chart';
-  import BrainIcon from '~icons/lucide/brain';
+  import BotIcon from '~icons/lucide/bot';
   import FlaskConicalIcon from '~icons/lucide/flask-conical';
-  import FlowerIcon from '~icons/lucide/flower';
   import GitBranchIcon from '~icons/lucide/git-branch';
   import GlobeIcon from '~icons/lucide/globe';
+  import LayoutIcon from '~icons/lucide/layout';
   import RefreshCwIcon from '~icons/lucide/refresh-cw';
   import SearchIcon from '~icons/lucide/search';
   import UsersIcon from '~icons/lucide/users';
 
   const cards = [
     {
-      icon: FlowerIcon,
+      icon: LayoutIcon,
       title: '반응형 디자인',
       description: '모든 디바이스에 최적화된 사용자 경험',
     },
     {
-      icon: SearchIcon,
+      icon: FlaskConicalIcon,
       title: 'SEO',
       description: '검색 엔진 최적화',
     },
     {
-      icon: FlaskConicalIcon,
+      icon: SearchIcon,
       title: '키워드 검색',
-      description: '실시간 검색 엔진 인덱싱',
+      description: '아주 빠른 실시간 검색',
     },
     {
-      icon: BrainIcon,
+      icon: BotIcon,
       title: 'AI 검색',
       description: 'RAG 기반 자연어 검색',
     },

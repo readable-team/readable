@@ -6,7 +6,7 @@
   import { cubicInOut } from 'svelte/easing';
   import { fade } from 'svelte/transition';
   import CircleXIcon from '~icons/lucide/circle-x';
-  import CodeXmlIcon from '~icons/lucide/code-xml';
+  import MessagesSquareIcon from '~icons/lucide/messages-square';
   import SearchIcon from '~icons/lucide/search';
   import SparklesIcon from '$assets/icons/sparkles.svg?component';
   import SectionTitle from './SectionTitle.svelte';
@@ -14,13 +14,13 @@
 
   const cards = [
     {
-      icon: CodeXmlIcon,
+      icon: SearchIcon,
       title: '실시간 문서 검색',
       description: `사용자가 입력한 키워드를 기반으로 가장 유사한 결과를 제공합니다.
 한글 자소 단위의 정확도로 사용자가 의도한 바를 정확히 반영합니다.`,
     },
     {
-      icon: CodeXmlIcon,
+      icon: MessagesSquareIcon,
       title: 'AI 피드백',
       description: `사용자들이 자주 찾지만 검색 결과가 없는 키워드를 분석해 제공합니다.
 누락된 정보 없이 사용자에게 도움이 되는 사이트를 만들어 보세요.`,
