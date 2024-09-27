@@ -101,7 +101,9 @@
   );
 
   $: if ($searchQuery.length > 0 && aiState === 'idle') {
-    debouncedSearch.call($searchQuery);
+    if (browser) {
+      debouncedSearch.call($searchQuery);
+    }
   } else if ($searchQuery.length === 0 && aiState !== 'idle') {
     aiState = 'idle';
     aiSearchResult = null;
