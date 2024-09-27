@@ -10,4 +10,4 @@ Sentry.init({
   environment: env.PUBLIC_PULUMI_STACK,
 });
 
-export { handleError } from '@readable/lib/svelte';
+export const handleError = Sentry.handleErrorWithSentry();
