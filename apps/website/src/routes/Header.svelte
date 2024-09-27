@@ -1,6 +1,6 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
+  import { center, flex } from '@readable/styled-system/patterns';
   import { scrollLock } from '@readable/ui/actions';
   import { Icon } from '@readable/ui/components';
   import { writable } from 'svelte/store';
@@ -112,7 +112,7 @@
 
     <div class={flex({ gap: '8px', lgDown: { display: 'none' } })}>
       <a
-        class={flex({
+        class={center({
           borderRadius: '8px',
           paddingX: '20px',
           paddingY: '9px',
@@ -144,7 +144,7 @@
         도입 문의
       </a>
       <a
-        class={flex({
+        class={center({
           borderRadius: '8px',
           paddingX: '20px',
           paddingY: '9px',
