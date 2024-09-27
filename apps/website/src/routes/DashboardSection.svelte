@@ -96,10 +96,10 @@
 <div
   bind:this={section}
   class={css({
-    paddingTop: '60px',
-    paddingBottom: '74px',
+    paddingTop: '120px',
+    paddingBottom: '134px',
     backgroundColor: 'neutral.100',
-    lg: { paddingTop: '120px', paddingBottom: '80px' },
+    lg: { paddingTop: '140px', paddingBottom: '100px' },
   })}
 >
   <div>

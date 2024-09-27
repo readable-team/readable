@@ -39,7 +39,7 @@
       paddingY: '120px',
       lgDown: {
         width: 'full',
-        paddingY: '54px',
+        paddingY: '84px',
       },
     })}
   >
@@ -72,12 +72,13 @@
     </SectionTitle>
 
     <div
-      class={flex({
+      class={grid({
+        columns: 4,
+        alignItems: 'baseline',
         marginTop: '80px',
         marginX: 'auto',
         width: 'full',
         maxWidth: '984px',
-        align: 'flex-start',
         justifyContent: 'space-between',
         lgDown: {
           marginTop: '54px',
@@ -114,7 +115,6 @@
             boxShadow: 'emphasize',
             lgDown: {
               width: 'full',
-              height: '91px', // TODO: 높이 다시 맞추기
               padding: '16px',
             },
           })}

@@ -116,7 +116,7 @@
       paddingY: '120px',
       lgDown: {
         width: 'full',
-        paddingY: '54px',
+        paddingY: '84px',
       },
     })}
   >

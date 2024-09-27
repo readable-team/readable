@@ -39,8 +39,8 @@
       paddingY: '120px',
       lgDown: {
         width: 'full',
-        paddingTop: '54px',
-        paddingBottom: '40px',
+        paddingTop: '84px',
+        paddingBottom: '60px',
       },
     })}
   >

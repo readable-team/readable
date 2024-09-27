@@ -8,7 +8,7 @@
 
 <div
   class={css({
-    paddingY: { base: '54px', lg: '120px' },
+    paddingY: { base: '100px', lg: '140px' },
     background: '[linear-gradient(110deg, rgba(255, 122, 45, 1.00) 4.65%, rgba(255, 94, 0, 1.00) 92.57%)]',
   })}
 >
@@ -39,9 +39,14 @@
         카드 등록 없이 지금 바로 시작해보세요.
         <br />
         기존 문서가 있으신가요?
-        <a class={css({ textDecoration: 'underline', textUnderlineOffset: '3px' })} href="/preview">
-          이사 서비스를 무료로 이용해보세요.
-        </a>
+        <!-- prettier-ignore -->
+        <span>
+          <a
+            class={css({ textDecoration: 'underline', textUnderlineOffset: '3px', textDecorationColor: 'white/40' })}
+            href="/preview"
+          >
+            이사 서비스를 무료로 이용</a>해보세요.
+        </span>
       </p>
     </div>
 

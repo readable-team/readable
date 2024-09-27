@@ -75,10 +75,10 @@
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingY: '120px',
+    paddingY: '140px',
     backgroundColor: 'neutral.20',
     lgDown: {
-      paddingY: '54px',
+      paddingY: '100px',
     },
   })}
 >
