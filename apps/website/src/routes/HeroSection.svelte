@@ -40,7 +40,6 @@
   class={flex({
     position: 'relative',
     flexDirection: 'column',
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'neutral.100',
     height: 'screen',
@@ -49,8 +48,11 @@
     color: 'white',
     paddingTop: '210px',
     lgDown: {
-      minHeight: '739px',
+      minHeight: '1002px',
       paddingTop: '128px',
+    },
+    mdDown: {
+      minHeight: '739px',
     },
   })}
 >
