@@ -5,16 +5,10 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
   import IconGithub from '~icons/simple-icons/github';
-  import { page } from '$app/stores';
   import FullLogo from '$assets/logos/full.svg?component';
-  import Header from './Header.svelte';
 </script>
 
 <div class={flex({ direction: 'column', grow: '1', minHeight: 'screen' })}>
-  {#if $page.url.pathname !== '/' && $page.url.pathname !== '/pricing'}
-    <Header theme="light" />
-  {/if}
-
   <slot />
 
   <footer

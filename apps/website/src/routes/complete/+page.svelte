@@ -1,14 +1,37 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import HeroLight from '$assets/hero/light.svg?component';
+  import Header from '../Header.svelte';
 </script>
+
+<HeroLight
+  class={css({
+    position: 'absolute',
+    top: '-121px',
+    left: '0',
+    right: '0',
+    marginX: 'auto',
+    zIndex: '50',
+    width: '1280px',
+    height: '360px',
+    lgDown: {
+      width: 'full',
+      height: '300px',
+    },
+  })}
+/>
+
+<Header darkSections={[]} theme="dark" />
 
 <div
   class={flex({
+    justify: 'center',
     direction: 'column',
     grow: '1',
-    paddingTop: { base: '64px', lg: '140px' },
-    paddingBottom: { base: '220px', lg: '[340px]' },
+    paddingY: { base: '204px', lg: '[280px]' },
+    backgroundColor: 'neutral.100',
+    color: 'white',
   })}
 >
   <div class={css({ marginX: 'auto', paddingX: '20px', maxWidth: '726px' })}>
@@ -23,11 +46,10 @@
       감사합니다
     </h1>
 
-    <p class={css({ textStyle: { base: '13m', lg: '22m' }, color: 'text.tertiary', textAlign: 'center' })}>
+    <p class={css({ textStyle: { base: '13m', lg: '22m' }, textAlign: 'center' })}>
       제출이 완료되었습니다.
       <br />
       확인 후 연락드리겠습니다.
-      <!-- TODO: complete 페이지 합치기 -->
     </p>
   </div>
 </div>
