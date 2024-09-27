@@ -2,17 +2,25 @@
   import { css } from '@readable/styled-system/css';
   import { flex, grid } from '@readable/styled-system/patterns';
   import { Button, Helmet, HorizontalDivider, Icon, Tooltip } from '@readable/ui/components';
-  import BlocksIcon from '~icons/lucide/blocks';
-  import BookTextIcon from '~icons/lucide/book-text';
+  import CheckCircle2Icon from '~icons/lucide/check-circle-2';
   import CircleHelpIcon from '~icons/lucide/circle-help';
+  import ClipboardListIcon from '~icons/lucide/clipboard-list';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import FileIcon from '~icons/lucide/file';
+  import FileSignatureIcon from '~icons/lucide/file-signature';
+  import HeadphonesIcon from '~icons/lucide/headphones';
   import LinkIcon from '~icons/lucide/link';
   import MonitorSmartphone from '~icons/lucide/monitor-smartphone';
+  import MousePointerClickIcon from '~icons/lucide/mouse-pointer-click';
   import PaintbrushIcon from '~icons/lucide/paintbrush';
+  import RefreshCwIcon from '~icons/lucide/refresh-cw';
   import SearchIcon from '~icons/lucide/search';
-  import SendIcon from '~icons/lucide/send';
+  import SettingsIcon from '~icons/lucide/settings';
+  import TagIcon from '~icons/lucide/tag';
+  import UserCogIcon from '~icons/lucide/user-cog';
   import UserRoundIcon from '~icons/lucide/user-round';
+  import UsersRoundIcon from '~icons/lucide/users-round';
+  import WrenchIcon from '~icons/lucide/wrench';
   import HeroLight from '$assets/hero/light.svg?component';
   import { env } from '$env/dynamic/public';
   import Header from '../Header.svelte';
@@ -48,30 +56,34 @@
       features: [
         { icon: UserRoundIcon, feature: '1명의 멤버' },
         { icon: MonitorSmartphone, feature: '1개의 사이트' },
-        { icon: FileIcon, feature: '5,000 페이지뷰/월', tooltipMessage: '화이트 라벨 툴팁' },
-        { icon: BlocksIcon, feature: '무제한 페이지' },
+        {
+          icon: MousePointerClickIcon,
+          feature: '5,000 페이지뷰/월',
+          tooltipMessage: '1개월간 총 5,000회의 페이지 조회를 지원합니다',
+        },
+        { icon: FileIcon, feature: '무제한 페이지' },
         { icon: SearchIcon, feature: '일반 검색' },
       ],
     },
     {
-      name: 'Pro', // TODO: 추천 뱃지 추가
+      name: 'Pro',
       price: selectedPrice === 'yearly' ? '27,500' : '33,000',
       features: [
-        { icon: UserRoundIcon, feature: '무제한 멤버' },
+        { icon: UsersRoundIcon, feature: '무제한 멤버' },
         { icon: MonitorSmartphone, feature: '무제한 사이트' },
-        { icon: FileIcon, feature: '무제한 페이지뷰' },
-        { icon: BlocksIcon, feature: '무제한 페이지' },
+        { icon: MousePointerClickIcon, feature: '무제한 페이지뷰' },
+        { icon: FileIcon, feature: '무제한 페이지' },
         { icon: PaintbrushIcon, feature: '브랜딩' },
         { icon: SearchIcon, feature: '일반 + AI 검색' },
         { icon: LinkIcon, feature: '커스텀 도메인' },
-        { icon: BookTextIcon, feature: '콘텐츠 최신화 (지원예정)' },
+        { icon: RefreshCwIcon, feature: '콘텐츠 최신화 (지원예정)' },
       ],
       addOns: [
         {
-          icon: SendIcon,
+          icon: TagIcon,
           feature: '화이트 라벨링 애드온',
           price: `${selectedPrice === 'yearly' ? '18,333' : '22,000'}원/사이트/월`,
-          tooltipMessage: '화이트 라벨 툴팁',
+          tooltipMessage: '사이트에 보이는 리더블 워터마크(Powered by Readable)를 제거할 수 있습니다',
         },
       ],
     },
@@ -79,13 +91,13 @@
       name: 'Enterprise',
       price: '문의',
       features: [
-        { icon: BookTextIcon, feature: 'Pro 플랜의 모든 기능' },
-        { icon: BookTextIcon, feature: '커스텀 플랜' },
-        { icon: BookTextIcon, feature: 'SLA 계약' },
-        { icon: BookTextIcon, feature: '24/7 지원' },
-        { icon: BookTextIcon, feature: '감사 로그' },
-        { icon: BookTextIcon, feature: '맞춤형 기능 개발' },
-        { icon: BookTextIcon, feature: '전담 담당자 배정' },
+        { icon: CheckCircle2Icon, feature: 'Pro 플랜의 모든 기능' },
+        { icon: WrenchIcon, feature: '커스텀 플랜' },
+        { icon: FileSignatureIcon, feature: 'SLA 계약' },
+        { icon: HeadphonesIcon, feature: '24/7 지원' },
+        { icon: ClipboardListIcon, feature: '감사 로그' },
+        { icon: SettingsIcon, feature: '맞춤형 기능 개발' },
+        { icon: UserCogIcon, feature: '전담 담당자 배정' },
         { icon: EllipsisIcon, feature: '그리고 무엇이든 요청하세요' },
       ],
     },
@@ -205,7 +217,7 @@
           zIndex: '1',
         })}
       >
-        <p
+        <div
           class={flex({
             align: 'center',
             justify: 'space-between',
@@ -230,7 +242,7 @@
               추천
             </div>
           {/if}
-        </p>
+        </div>
 
         <p class={css({ textStyle: { base: '22eb', lg: '28eb' } })}>
           {plan.price}
