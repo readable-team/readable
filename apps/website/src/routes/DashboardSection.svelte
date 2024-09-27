@@ -243,6 +243,7 @@
           backgroundColor: 'neutral.50',
           _disabled: { color: 'neutral.50', backgroundColor: 'neutral.80' },
         })}
+        aria-label="이전"
         disabled={currentScroll <= 0}
         type="button"
         on:click={scrollPrev}
@@ -259,6 +260,7 @@
           backgroundColor: 'neutral.50',
           _disabled: { color: 'neutral.50', backgroundColor: 'neutral.80' },
         })}
+        aria-label="다음"
         disabled={carouselEl && currentScroll >= carouselEl.scrollWidth - carouselEl.clientWidth}
         type="button"
         on:click={scrollNext}
