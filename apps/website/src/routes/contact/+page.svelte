@@ -1,7 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, FormProvider, TextInput } from '@readable/ui/components';
+  import { Button, FormField, FormProvider, Helmet, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { z } from 'zod';
   import { goto } from '$app/navigation';
@@ -41,6 +41,13 @@
 
   $: darkSections = [darkSection].filter(Boolean);
 </script>
+
+<Helmet
+  description="빨리 움직이는 팀을 위한 가이드 문서 도구. 낡지 않는 도움센터를 지금 생성해 보세요."
+  image={{ src: 'https://cdn.rdbl.app/opengraph/cover.png', size: 'large' }}
+  title="도입 문의"
+  trailing="리더블"
+/>
 
 <HeroLight
   class={css({

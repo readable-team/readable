@@ -1,9 +1,17 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import { Helmet } from '@readable/ui/components';
   import HeroLight from '$assets/hero/light.svg?component';
   import Header from '../Header.svelte';
 </script>
+
+<Helmet
+  description="빨리 움직이는 팀을 위한 가이드 문서 도구. 낡지 않는 도움센터를 지금 생성해 보세요."
+  image={{ src: 'https://cdn.rdbl.app/opengraph/cover.png', size: 'large' }}
+  title="제출 완료"
+  trailing="리더블"
+/>
 
 <HeroLight
   class={css({
