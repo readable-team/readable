@@ -536,16 +536,16 @@
               paddingX: '18px',
               paddingY: '16px',
               gap: '12px',
+              overflow: 'auto',
             })}
           >
             <AiIcon />
             <div class={flex({ flexDirection: 'column', gap: '12px' })}>
-              <p class={css({ textStyle: '14r', whiteSpace: 'pre-wrap' })}>{aiSearchResult.answer}</p>
+              <p class={css({ textStyle: '16r', whiteSpace: 'pre-wrap' })}>{aiSearchResult.answer}</p>
               {#if aiSearchResult.pages.length > 0}
                 <HorizontalDivider />
                 <div>
-                  <div class={css({ textStyle: '11sb', color: 'text.tertiary' })}>연관된 페이지</div>
-                  <ul class={css({ marginTop: '8px' })}>
+                  <ul class={css({ marginTop: '12px' })}>
                     {#each aiSearchResult.pages as page, index (index)}
                       <li>
                         <a class={flex({ gap: '6px', alignItems: 'center' })} href={pageUrl(page)}>
@@ -562,7 +562,7 @@
                           </div>
                           <span
                             class={css({
-                              textStyle: '13r',
+                              textStyle: '16r',
                               color: 'text.secondary',
                               truncate: true,
                               textDecoration: 'underline',
