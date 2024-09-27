@@ -2,7 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
   import { scrollLock } from '@readable/ui/actions';
-  import { Icon } from '@readable/ui/components';
+  import { Button, Icon } from '@readable/ui/components';
   import { writable } from 'svelte/store';
   import ExternalLinkIcon from '~icons/lucide/external-link';
   import MenuIcon from '~icons/lucide/menu';
@@ -283,46 +283,8 @@
           paddingBottom: '40px',
         })}
       >
-        <a
-          class={flex({
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: '8px',
-            paddingY: '10px',
-            textStyle: '16sb',
-            color: 'gray.700',
-            backgroundColor: 'white',
-            _hover: { backgroundColor: 'gray.100' },
-            _focusVisible: { backgroundColor: 'gray.100' },
-            _active: { backgroundColor: 'gray.300' },
-            _pressed: { backgroundColor: 'gray.300' },
-            borderColor: 'gray.300',
-            borderWidth: '1px',
-          })}
-          href="/contact"
-        >
-          도입 문의
-        </a>
-        <a
-          class={flex({
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: '10px',
-            paddingX: '20px',
-            paddingY: '10px',
-            textStyle: '16sb',
-            height: '43px',
-            color: 'white',
-            backgroundColor: 'brand.600',
-            _hover: { backgroundColor: 'brand.500' },
-            _focusVisible: { backgroundColor: 'brand.500' },
-            _active: { backgroundColor: 'brand.700' },
-            _pressed: { backgroundColor: 'brand.700' },
-          })}
-          href={env.PUBLIC_DASHBOARD_URL}
-        >
-          로그인
-        </a>
+        <Button href="/contact" size="lg" type="link" variant="secondary">도입 문의</Button>
+        <Button href={env.PUBLIC_DASHBOARD_URL} size="lg" type="link">로그인</Button>
       </div>
     </div>
   </div>
