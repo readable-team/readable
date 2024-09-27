@@ -75,11 +75,6 @@ const uploads = new aws.s3.Bucket('uploads', {
 export const buckets = { cdn, usercontents, uploads };
 
 export const outputs = {
-  AWS_S3_BUCKET_CDN_BUCKET: cdn.bucket,
-  AWS_S3_BUCKET_USERCONTENTS_BUCKET: usercontents.bucket,
-  AWS_S3_BUCKET_UPLOADS_BUCKET: uploads.bucket,
-
-  AWS_S3_BUCKET_CDN_ARN: cdn.arn,
   AWS_S3_BUCKET_USERCONTENTS_ARN: usercontents.arn,
   AWS_S3_BUCKET_UPLOADS_ARN: uploads.arn,
 };

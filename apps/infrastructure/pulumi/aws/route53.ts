@@ -20,7 +20,7 @@ new aws.route53.Record('rdbl.io|txt', {
   name: 'rdbl.io',
   records: [
     // spell-checker:disable-next-line
-    'google-site-verification=aVWE05YPOxEGxeH-X5NRyfb_IYilB3KL7QlN-xkFrU0',
+    'google-site-verification=zd13JhTsjRQJRm_gF8hI8Z28-sRjHL8PUJ5kAFDFrq0',
   ],
   ttl: 300,
 });

@@ -64,11 +64,5 @@ export const cloudfrontCertificates = {
 };
 
 export const outputs = {
-  AWS_ACM_RDBL_IO_CERTIFICATE_ARN: certificates.rdbl_io.arn,
-  AWS_ACM_RDBL_APP_CERTIFICATE_ARN: certificates.rdbl_app.arn,
-  AWS_ACM_RDBL_NINJA_CERTIFICATE_ARN: certificates.rdbl_ninja.arn,
-
   AWS_ACM_CLOUDFRONT_RDBL_IO_CERTIFICATE_ARN: cloudfrontCertificates.rdbl_io.arn,
-  AWS_ACM_CLOUDFRONT_RDBL_APP_CERTIFICATE_ARN: cloudfrontCertificates.rdbl_app.arn,
-  AWS_ACM_CLOUDFRONT_RDBL_NINJA_CERTIFICATE_ARN: cloudfrontCertificates.rdbl_ninja.arn,
 };
