@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { flex } from '@readable/styled-system/patterns';
   import mixpanel from 'mixpanel-browser';
   import qs from 'query-string';
   import { browser } from '$app/environment';
@@ -30,4 +31,13 @@
   }
 </script>
 
-<slot />
+<div
+  class={flex({
+    direction: 'column',
+    grow: 1,
+    minWidth: '1280px',
+    minHeight: 'screen',
+  })}
+>
+  <slot />
+</div>
