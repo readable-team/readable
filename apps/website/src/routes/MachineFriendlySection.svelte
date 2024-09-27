@@ -74,7 +74,7 @@
     <div
       class={grid({
         columns: 4,
-        alignItems: 'baseline',
+        alignItems: 'flex-start',
         marginTop: '80px',
         marginX: 'auto',
         width: 'full',
