@@ -16,4 +16,6 @@ export const logging: Handle = async ({ event, resolve }) => {
 
 export const sentry: Handle = Sentry.sentryHandle();
 
-export const handleError = Sentry.handleErrorWithSentry();
+export const handleError = Sentry.handleErrorWithSentry(() => {
+  /* pass */
+});
