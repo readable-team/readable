@@ -30,13 +30,13 @@ const site = new readable.Site('dashboard', {
   },
 
   resources: {
-    cpu: '100m',
-    memory: '200Mi',
+    cpu: '500m',
+    memory: '1Gi',
   },
 
   autoscale: {
-    minCount: 2,
-    maxCount: 10,
+    minCount: 3,
+    maxCount: 20,
     averageCpuUtilization: 50,
   },
 
