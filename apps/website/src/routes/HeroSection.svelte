@@ -49,8 +49,8 @@
     color: 'white',
     paddingTop: '210px',
     lgDown: {
+      minHeight: '739px',
       paddingTop: '128px',
-      minHeight: '936px',
     },
   })}
 >
@@ -62,6 +62,7 @@
         fontSize: '[64px]',
         fontWeight: '[900]',
         textAlign: 'center',
+        marginTop: 'auto',
         lgDown: {
           fontSize: '[32px]',
         },
@@ -87,7 +88,7 @@
         </div>
       {/key}
     </div>
-    <!-- <div>만들기</div> -->
+    <div>만들기</div>
   </div>
   <div
     class={cx('animate', 'delayed-200', visible && 'loaded', flex({ flexDirection: 'column', alignItems: 'center' }))}
@@ -147,18 +148,13 @@
       </a>
     </div>
   </div>
-  <!-- absolute position인 SegmentButtons과 목업 이미지 대신 공간을 차지 -->
-  <div class={css({ height: '641px' })} />
 
   <!-- SegmentButtons과 목업 이미지 -->
   <div
     class={flex({
-      position: 'absolute',
-      bottom: '0',
-      left: '0',
-      right: '0',
       flexDirection: 'column',
       alignItems: 'center',
+      marginTop: 'auto',
     })}
   >
     <div class={cx('animate', 'delayed-400', visible && 'loaded')}>
