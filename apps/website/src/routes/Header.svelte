@@ -218,16 +218,18 @@
           marginX: 'auto',
         })}
       >
-        <img
-          class={css({
-            height: '22px',
-            lgDown: {
-              height: '18px',
-            },
-          })}
-          alt="Readable"
-          src={FullLogo}
-        />
+        <a href="/">
+          <img
+            class={css({
+              height: '22px',
+              lgDown: {
+                height: '18px',
+              },
+            })}
+            alt="Readable"
+            src={FullLogo}
+          />
+        </a>
         <button type="button" on:click={toggleMenu}>
           <Icon icon={CloseIcon} size={24} />
         </button>
