@@ -4,20 +4,37 @@
   import { HorizontalDivider, Icon } from '@readable/ui/components';
   import * as R from 'remeda';
   import { tick } from 'svelte';
+  import { writable } from 'svelte/store';
   import ChevronLeftIcon from '~icons/lucide/chevron-left';
   import CircleXIcon from '~icons/lucide/circle-x';
   import MoveLeftIcon from '~icons/lucide/move-left';
   import SearchIcon from '~icons/lucide/search';
+  import { browser } from '$app/environment';
   import { beforeNavigate, goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { graphql } from '$graphql';
   import { searchBarOpen } from '$lib/stores/ui';
   import { pageUrl } from '$lib/utils/url';
   import AiIcon from './@ai/AiIcon.svelte';
   import AiLoading from './@ai/AiLoading.svelte';
 
-  let searchQuery = '';
+  const searchQuery = writable($page.url.searchParams.get('q') ?? '');
+  searchBarOpen.set($searchQuery.length > 0);
+
+  if (browser) {
+    searchQuery.subscribe((value) => {
+      const url = new URL(location.toString());
+      if (value.length > 0) {
+        url.searchParams.set('q', value);
+      } else {
+        url.searchParams.delete('q');
+      }
+      history.pushState(null, '', url.toString());
+    });
+  }
+
   let lastRequestedQuery = '';
-  let searchResults: Awaited<ReturnType<typeof searchPublicPage.refetch>>['searchPublicPage']['hits'] = [];
+  export let searchResults: Awaited<ReturnType<typeof searchPublicPage.refetch>>['searchPublicPage']['hits'] = [];
 
   const searchPublicPage = graphql(`
     query SearchBar_Query($query: String!) @manual {
@@ -82,9 +99,9 @@
     },
   );
 
-  $: if (searchQuery.length > 0 && aiState === 'idle') {
-    debouncedSearch.call(searchQuery);
-  } else if (searchQuery.length === 0 && aiState !== 'idle') {
+  $: if ($searchQuery.length > 0 && aiState === 'idle') {
+    debouncedSearch.call($searchQuery);
+  } else if ($searchQuery.length === 0 && aiState !== 'idle') {
     aiState = 'idle';
     aiSearchResult = null;
   }
@@ -119,14 +136,14 @@
     aiState = 'idle';
     aiSearchResult = null;
     searchBarOpen.set(false);
-    searchQuery = '';
+    searchQuery.set('');
     searchResults = [];
     selectedResultIndex = null;
   }
 
   function clearSearch(e: MouseEvent) {
     e.stopPropagation();
-    searchQuery = '';
+    searchQuery.set('');
     searchResults = [];
     selectedResultIndex = null;
     inputEl.focus();
@@ -137,7 +154,7 @@
   let listEl: HTMLUListElement;
   let selectedResultIndex: number | null = null;
 
-  $: if ($searchBarOpen) {
+  $: if (browser && $searchBarOpen) {
     // eslint-disable-next-line unicorn/prefer-top-level-await
     tick().then(() => {
       inputEl.focus();
@@ -164,7 +181,7 @@
           selectedResultIndex = aiEnabled ? -1 : 0;
         } else {
           if (selectedResultIndex === -1) {
-            aiSearch(searchQuery);
+            aiSearch($searchQuery);
           } else {
             goto(pageUrl(searchResults[selectedResultIndex].page));
           }
@@ -358,14 +375,14 @@
               paddingY: '8px',
               height: '47px',
             })}
-            aria-live={searchQuery ? 'polite' : 'off'}
+            aria-live={$searchQuery ? 'polite' : 'off'}
             placeholder="검색어를 입력하세요"
             type="text"
-            bind:value={searchQuery}
+            bind:value={$searchQuery}
             on:keydown={handleInputKeyDown}
           />
 
-          {#if searchQuery}
+          {#if $searchQuery}
             <button
               class={css({
                 marginLeft: '14px',
@@ -381,7 +398,7 @@
           {/if}
         </label>
       </div>
-      {#if searchQuery.length > 0}
+      {#if $searchQuery.length > 0}
         {#if aiState === 'idle'}
           <ul bind:this={listEl} class={css({ marginTop: '12px', overflowY: 'auto', smOnly: { paddingX: '20px' } })}>
             {#if aiEnabled}
@@ -409,14 +426,14 @@
                 on:focus={() => {
                   selectedResultIndex = -1;
                 }}
-                on:click={() => aiSearch(searchQuery)}
+                on:click={() => aiSearch($searchQuery)}
                 on:keydown={null}
               >
                 <AiIcon />
 
                 <div class={css({ flexDirection: 'column', truncate: true })}>
                   <p class={css({ fontSize: '0' })}>
-                    <em class={css({ textStyle: '16sb', color: 'var(--usersite-theme-color)' })}>{searchQuery}</em>
+                    <em class={css({ textStyle: '16sb', color: 'var(--usersite-theme-color)' })}>{$searchQuery}</em>
                     <span class={css({ textStyle: '16sb' })}>를 AI에게 물어보세요</span>
                   </p>
                   <p class={css({ textStyle: '14r', truncate: true })}>

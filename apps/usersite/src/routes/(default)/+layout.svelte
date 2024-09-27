@@ -16,7 +16,7 @@
   import SearchBar from './SearchBar.svelte';
 
   $: query = graphql(`
-    query DefaultLayout_Query {
+    query DefaultLayout_Query($searchQuery: String!) {
       publicSite {
         id
         name
@@ -34,6 +34,27 @@
         }
 
         ...Navigation_publicSite
+      }
+
+      searchPublicPage(query: $searchQuery) {
+        estimatedTotalHits
+        hits {
+          highlight {
+            title
+            subtitle
+            text
+          }
+          page {
+            id
+            slug
+
+            content {
+              title
+            }
+
+            ...PageUrl_publicPage
+          }
+        }
       }
     }
   `);
@@ -191,7 +212,7 @@
     </div>
   </header>
 
-  <SearchBar />
+  <SearchBar searchResults={$query.searchPublicPage.hits} />
 
   <main
     id="main-content"
