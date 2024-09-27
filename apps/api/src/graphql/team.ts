@@ -8,7 +8,6 @@ import {
   first,
   firstOrThrow,
   Images,
-  PaymentMethods,
   Sites,
   TeamMemberInvitations,
   TeamMembers,
@@ -18,7 +17,7 @@ import {
 import { sendEmail } from '@/email';
 import TeamMemberAddedEmail from '@/email/templates/TeamMemberAdded.tsx';
 import TeamMemberInvitedEmail from '@/email/templates/TeamMemberInvited.tsx';
-import { PaymentMethodState, SiteState, TeamMemberRole, TeamRestrictionType, TeamState, UserState } from '@/enums';
+import { SiteState, TeamMemberRole, TeamRestrictionType, TeamState, UserState } from '@/enums';
 import { env } from '@/env';
 import { ReadableError } from '@/errors';
 import { pubsub } from '@/pubsub';
@@ -27,7 +26,7 @@ import { generateRandomAvatar } from '@/utils/image-generation';
 import { assertTeamPermission, throwableToBoolean } from '@/utils/permissions';
 import { assertTeamRestriction } from '@/utils/restrictions';
 import { persistBlobAsImage } from '@/utils/user-contents';
-import { Image, PaymentMethod, Site, Team, TeamMember, TeamMemberInvitation, User } from './objects';
+import { Image, Site, Team, TeamMember, TeamMemberInvitation, User } from './objects';
 
 /**
  * * Types
@@ -112,24 +111,6 @@ Team.implement({
           .from(Sites)
           .where(and(eq(Sites.teamId, team.id), eq(Sites.state, SiteState.ACTIVE)))
           .orderBy(asc(Sites.name));
-      },
-    }),
-
-    paymentMethod: t.field({
-      type: PaymentMethod,
-      nullable: true,
-      resolve: async (team, _, ctx) => {
-        await assertTeamPermission({
-          teamId: team.id,
-          userId: ctx.session?.userId,
-          role: TeamMemberRole.ADMIN,
-        });
-
-        return await db
-          .select()
-          .from(PaymentMethods)
-          .where(and(eq(PaymentMethods.teamId, team.id), eq(PaymentMethods.state, PaymentMethodState.ACTIVE)))
-          .then(first);
       },
     }),
   }),

@@ -289,6 +289,14 @@ enum PaymentMethodState {
   DEACTIVATED
 }
 
+type PaymentRecord {
+  amount: Int!
+  createdAt: DateTime!
+  id: ID!
+  paymentMethod: PaymentMethod!
+  state: PaymentRecordState!
+}
+
 enum PaymentRecordState {
   COMPLETED
   FAILED
@@ -472,6 +480,7 @@ type Team {
   members: [TeamMember!]!
   name: String!
   paymentMethod: PaymentMethod
+  paymentRecords(state: PaymentRecordState): [PaymentRecord!]!
   sites: [Site!]!
 }
 

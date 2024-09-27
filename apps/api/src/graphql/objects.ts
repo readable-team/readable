@@ -49,6 +49,7 @@ export const Page = createObjectRef('Page', T.Pages);
 export const PageContentContributor = createObjectRef('PageContentContributor', T.PageContentContributors);
 export const PageContentState = createObjectRef('PageContentState', T.PageContentStates);
 export const PaymentMethod = createObjectRef('PaymentMethod', T.PaymentMethods);
+export const PaymentRecord = createObjectRef('PaymentRecord', T.PaymentRecords);
 export const Site = createObjectRef('Site', T.Sites);
 export const SiteCustomDomain = createObjectRef('SiteCustomDomain', T.SiteCustomDomains);
 export const Team = createObjectRef('Team', T.Teams);

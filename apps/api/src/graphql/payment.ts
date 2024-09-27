@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { builder } from '@/builder';
 import {
   db,
@@ -11,12 +11,12 @@ import {
   TeamPlans,
   Teams,
 } from '@/db';
-import { BillingCycle, TeamMemberRole } from '@/enums';
+import { BillingCycle, PaymentInvoiceState, PaymentMethodState, PaymentRecordState, TeamMemberRole } from '@/enums';
 import { ReadableError } from '@/errors';
 import * as portone from '@/external/portone';
 import { dataSchemas } from '@/schemas';
 import { assertTeamPermission } from '@/utils/permissions';
-import { PaymentMethod, Team } from './objects';
+import { PaymentMethod, PaymentRecord, Team } from './objects';
 
 const UPGRADABLE_PLAN_ID = 'PLAN000000TEAM';
 
@@ -25,6 +25,54 @@ PaymentMethod.implement({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
+  }),
+});
+
+PaymentRecord.implement({
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    state: t.expose('state', { type: PaymentRecordState }),
+    amount: t.exposeInt('amount'),
+    createdAt: t.expose('createdAt', { type: 'DateTime' }),
+
+    paymentMethod: t.field({
+      type: PaymentMethod,
+      resolve: (record) => record.methodId,
+    }),
+  }),
+});
+
+Team.implement({
+  fields: (t) => ({
+    paymentMethod: t.field({
+      type: PaymentMethod,
+      nullable: true,
+      resolve: async (team, _, ctx) => {
+        await assertTeamPermission({
+          teamId: team.id,
+          userId: ctx.session?.userId,
+          role: TeamMemberRole.ADMIN,
+        });
+
+        return await db
+          .select()
+          .from(PaymentMethods)
+          .where(and(eq(PaymentMethods.teamId, team.id), eq(PaymentMethods.state, PaymentMethodState.ACTIVE)))
+          .then(first);
+      },
+    }),
+
+    paymentRecords: t.field({
+      type: [PaymentRecord],
+      args: { state: t.arg({ type: PaymentRecordState, required: false }) },
+      resolve: async (team, { state }) => {
+        return await db
+          .select()
+          .from(PaymentRecords)
+          .where(and(eq(PaymentRecords.teamId, team.id), state ? eq(PaymentRecords.state, state) : undefined))
+          .orderBy(desc(PaymentRecords.createdAt));
+      },
+    }),
   }),
 });
 
@@ -65,8 +113,8 @@ builder.mutationFields((t) => ({
       return await db.transaction(async (tx) => {
         const methods = await tx
           .update(PaymentMethods)
-          .set({ state: 'DEACTIVATED' })
-          .where(and(eq(PaymentMethods.teamId, input.teamId), eq(PaymentMethods.state, 'ACTIVE')))
+          .set({ state: PaymentMethodState.DEACTIVATED })
+          .where(and(eq(PaymentMethods.teamId, input.teamId), eq(PaymentMethods.state, PaymentMethodState.ACTIVE)))
           .returning({ billingKey: PaymentMethods.billingKey });
 
         for (const method of methods) {
@@ -119,7 +167,7 @@ builder.mutationFields((t) => ({
           billingKey: PaymentMethods.billingKey,
         })
         .from(PaymentMethods)
-        .where(and(eq(PaymentMethods.teamId, input.teamId), eq(PaymentMethods.state, 'ACTIVE')))
+        .where(and(eq(PaymentMethods.teamId, input.teamId), eq(PaymentMethods.state, PaymentMethodState.ACTIVE)))
         .then(first);
 
       if (!paymentMethod) {
@@ -134,7 +182,7 @@ builder.mutationFields((t) => ({
         .where(eq(Plans.id, UPGRADABLE_PLAN_ID))
         .then(firstOrThrow);
 
-      const paymentAmount = input.billingCycle === 'MONTHLY' ? plan.fee : plan.fee * 10;
+      const paymentAmount = input.billingCycle === BillingCycle.MONTHLY ? plan.fee : plan.fee * 10;
 
       await db.transaction(async (tx) => {
         // 결제 실패하면 롤백되서 플랜 변경 자체가 없던 일이 됨 -> 그래서 일단 COMPLETED
@@ -144,7 +192,7 @@ builder.mutationFields((t) => ({
           .values({
             teamId: input.teamId,
             amount: paymentAmount,
-            state: 'COMPLETED',
+            state: PaymentInvoiceState.COMPLETED,
           })
           .returning({ id: PaymentInvoices.id })
           .then(firstOrThrow);
@@ -156,7 +204,7 @@ builder.mutationFields((t) => ({
             methodId: paymentMethod.id,
             invoiceId: invoice.id,
             amount: paymentAmount,
-            state: 'COMPLETED',
+            state: PaymentRecordState.COMPLETED,
           })
           .returning()
           .then(firstOrThrow);
@@ -176,7 +224,10 @@ builder.mutationFields((t) => ({
         });
 
         if (paymentResult.status === 'failed') {
-          await tx.update(PaymentRecords).set({ state: 'FAILED' }).where(eq(PaymentRecords.id, record.id));
+          await tx
+            .update(PaymentRecords)
+            .set({ state: PaymentRecordState.FAILED })
+            .where(eq(PaymentRecords.id, record.id));
           throw new ReadableError({ code: 'payment_failed' });
         }
       });
