@@ -142,6 +142,7 @@
           _before: {
             display: 'block',
             content: '""',
+            height: '1px',
             minWidth: {
               // max(calc((100vw - 1280px) / 2 - carouselGap), calc(paddingX - carouselGap))
               base: '4px',
@@ -151,6 +152,7 @@
           _after: {
             display: 'block',
             content: '""',
+            height: '1px',
             minWidth: {
               // max(calc((100vw - 1280px) / 2 - carouselGap), calc(paddingX - carouselGap))
               base: '4px',
