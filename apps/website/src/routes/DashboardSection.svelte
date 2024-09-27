@@ -59,7 +59,7 @@
       asset: Branding,
       assetStyle: css({
         marginLeft: { base: '38px', lg: '56px' },
-        paddingTop: { base: '39px', lg: '55px' },
+        paddingTop: { base: '18px', lg: '55px' },
         paddingLeft: { base: '20px', lg: '33px' },
         paddingRight: { base: '19px', lg: '32px' },
         paddingBottom: { base: '28px', lg: '54px' },
