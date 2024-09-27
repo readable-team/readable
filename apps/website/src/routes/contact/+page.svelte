@@ -71,54 +71,56 @@
   </div>
 </div>
 
-<div class={css({ marginX: 'auto', paddingX: '20px', paddingBottom: '120px', width: 'full', maxWidth: '726px' })}>
-  <FormProvider class={flex({ direction: 'column', gap: '16px', marginTop: '80px' })} {context} {form}>
-    <FormField name="name" label="성함 *">
-      <TextInput placeholder="username" />
-    </FormField>
-    <FormField name="email" label="이메일 *">
-      <TextInput placeholder="company@example.com" />
-    </FormField>
-    <FormField name="number" label="전화번호">
-      <TextInput placeholder="010-0000-0000" />
-    </FormField>
-    <FormField name="company" label="회사">
-      <TextInput placeholder="abccompany" />
-    </FormField>
-    <FormField name="munhui" label="문의사항">
-      <label
-        class={flex({
-          'align': 'center',
-          'borderWidth': '1px',
-          'borderColor': { base: 'gray.300', _dark: 'darkgray.700' },
-          'borderRadius': '10px',
-          'paddingX': '16px',
-          'paddingY': '10px',
-          'textStyle': '16r',
-          'color': 'gray.1000',
-          'backgroundColor': 'white',
-          'transition': 'common',
-          '_hover': {
-            borderColor: 'brand.400',
-          },
-          '&:has(textarea:focus)': {
-            borderColor: 'brand.600',
-          },
-        })}
-      >
-        <textarea
-          class={css({
-            flexGrow: '1',
-            width: 'full',
-            minWidth: '0',
-            resize: 'none',
+<div class={css({ background: '[linear-gradient(180deg, #FFF 0%, #FAFAFA 74.47%)]' })}>
+  <div class={css({ marginX: 'auto', paddingX: '20px', paddingBottom: '120px', width: 'full', maxWidth: '726px' })}>
+    <FormProvider class={flex({ direction: 'column', gap: '16px', marginTop: '80px' })} {context} {form}>
+      <FormField name="name" label="성함 *">
+        <TextInput placeholder="username" />
+      </FormField>
+      <FormField name="email" label="이메일 *">
+        <TextInput placeholder="company@example.com" />
+      </FormField>
+      <FormField name="number" label="전화번호">
+        <TextInput placeholder="010-0000-0000" />
+      </FormField>
+      <FormField name="company" label="회사">
+        <TextInput placeholder="abccompany" />
+      </FormField>
+      <FormField name="munhui" label="문의사항">
+        <label
+          class={flex({
+            'align': 'center',
+            'borderWidth': '1px',
+            'borderColor': { base: 'gray.300', _dark: 'darkgray.700' },
+            'borderRadius': '10px',
+            'paddingX': '16px',
+            'paddingY': '10px',
+            'textStyle': '16r',
+            'color': 'gray.1000',
+            'backgroundColor': 'white',
+            'transition': 'common',
+            '_hover': {
+              borderColor: 'brand.400',
+            },
+            '&:has(textarea:focus)': {
+              borderColor: 'brand.600',
+            },
           })}
-          placeholder="문의사항"
-          rows="3"
-        />
-      </label>
-    </FormField>
+        >
+          <textarea
+            class={css({
+              flexGrow: '1',
+              width: 'full',
+              minWidth: '0',
+              resize: 'none',
+            })}
+            placeholder="문의사항"
+            rows="3"
+          />
+        </label>
+      </FormField>
 
-    <Button glossy size="lg" type="submit">문의하기</Button>
-  </FormProvider>
+      <Button glossy size="lg" type="submit">문의하기</Button>
+    </FormProvider>
+  </div>
 </div>

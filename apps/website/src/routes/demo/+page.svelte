@@ -69,15 +69,25 @@
   </div>
 </div>
 
-<div class={css({ marginX: 'auto', paddingX: '20px', paddingBottom: '120px', width: 'full', maxWidth: '726px' })}>
-  <FormProvider class={flex({ direction: 'column', gap: '16px', marginTop: '80px' })} {context} {form}>
-    <FormField name="url" label="문서 주소">
-      <TextInput placeholder="https://docs.company.com" />
-    </FormField>
-    <FormField name="name" label="받아보실 이메일">
-      <TextInput placeholder="company@example.com" />
-    </FormField>
+<div class={css({ background: '[linear-gradient(180deg, #FFF 0%, #FAFAFA 74.47%)]' })}>
+  <div
+    class={css({
+      marginX: 'auto',
+      paddingX: '20px',
+      paddingBottom: '120px',
+      width: 'full',
+      maxWidth: '726px',
+    })}
+  >
+    <FormProvider class={flex({ direction: 'column', gap: '16px', marginTop: '80px' })} {context} {form}>
+      <FormField name="url" label="문서 주소">
+        <TextInput placeholder="https://docs.company.com" />
+      </FormField>
+      <FormField name="name" label="받아보실 이메일">
+        <TextInput placeholder="company@example.com" />
+      </FormField>
 
-    <Button glossy size="lg" type="submit">신청하기</Button>
-  </FormProvider>
+      <Button glossy size="lg" type="submit">신청하기</Button>
+    </FormProvider>
+  </div>
 </div>
