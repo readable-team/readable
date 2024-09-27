@@ -7,6 +7,7 @@
   import MenuIcon from '~icons/lucide/menu';
   import CloseIcon from '~icons/lucide/x';
   import { browser } from '$app/environment';
+  import { beforeNavigate } from '$app/navigation';
   import FullLogo from '$assets/logos/full.svg';
   import FullWhiteLogo from '$assets/logos/full-white.svg';
   import { env } from '$env/dynamic/public';
@@ -45,6 +46,10 @@
   }
 
   $: headerBgColor = ($headerTheme === 'light' ? 'white' : 'neutral.100') as ColorToken;
+
+  beforeNavigate(() => {
+    $isMenuOpen = false;
+  });
 </script>
 
 <svelte:window bind:scrollY />
@@ -243,7 +248,7 @@
             borderColor: 'gray.300',
             borderWidth: '1px',
           })}
-          href={env.PUBLIC_DASHBOARD_URL}
+          href="/contact"
         >
           도입 문의
         </a>
