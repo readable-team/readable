@@ -90,7 +90,7 @@
       letterSpacing: '-0.9px',
       textAlign: 'center',
       lgDown: {
-        fontSize: '18px',
+        fontSize: '24px',
       },
     })}
   >
@@ -109,7 +109,7 @@
       textAlign: 'center',
       lgDown: {
         marginTop: '10px',
-        fontSize: '13px',
+        fontSize: '14px',
       },
     })}
   >

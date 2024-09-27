@@ -9,7 +9,7 @@
 <div
   class={css({
     paddingY: { base: '54px', lg: '120px' },
-    background: '[linear-gradient(108deg, rgba(255, 123, 46, 1.00) 4.37%, rgba(255, 106, 69, 1.00) 85.95%)]',
+    background: '[linear-gradient(110deg, rgba(255, 122, 45, 1.00) 4.65%, rgba(255, 94, 0, 1.00) 92.57%)]',
   })}
 >
   <div
@@ -27,7 +27,7 @@
       <h2
         class={css({
           marginBottom: { base: '10px', lg: '16px' },
-          fontSize: { base: '18px', lg: '[45px]' },
+          fontSize: { base: '24px', lg: '[45px]' },
           fontWeight: '[800]',
           lgDown: { textAlign: 'center' },
         })}
@@ -35,7 +35,7 @@
         아직 고민하고 계신가요?
       </h2>
 
-      <p class={css({ textStyle: { base: '13m', lg: '20m' }, lgDown: { textAlign: 'center' } })}>
+      <p class={css({ textStyle: { base: '14m', lg: '20m' }, lgDown: { textAlign: 'center' } })}>
         카드 등록 없이 지금 바로 시작해보세요.
         <br />
         기존 문서가 있으신가요?
@@ -59,7 +59,8 @@
         class={flex({
           gap: '6px',
           alignItems: 'center',
-          textStyle: '18sb',
+          paddingLeft: '8px',
+          textStyle: { base: '15sb', lg: '16sb' },
           color: 'white',
         })}
         href="https://docs.rdbl.io"

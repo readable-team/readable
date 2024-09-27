@@ -1,6 +1,6 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
+  import { flex, grid } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
   import CodeXmlIcon from '~icons/lucide/code-xml';
   import Lighthouse from './Lighthouse.svelte';
@@ -55,10 +55,17 @@
         <em>접근성이 고려된 설계</em>
         <span>
           와 잘 만들어져 있는
-          <br />
+          <br class={css({ hideBelow: 'md' })} />
           메타데이터 덕분에 검색 엔진에 잘 인덱싱될 수 있습니다
         </span>
-        <div class={css({ marginTop: '13px', fontSize: '14px', fontWeight: '[500]', color: 'text.tertiary' })}>
+        <div
+          class={css({
+            marginTop: '13px',
+            fontSize: { base: '13px', lg: '14px' },
+            fontWeight: '[500]',
+            color: 'text.tertiary',
+          })}
+        >
           *라이트하우스 스코어
         </div>
       </span>
@@ -85,12 +92,12 @@
     </div>
 
     <div
-      class={flex({
+      class={grid({
+        columns: { base: 1, md: 2, lg: 4 },
         marginTop: '80px',
         justifyContent: 'space-between',
         lgDown: {
           marginTop: '54px',
-          flexDirection: 'column',
           gap: '16px',
         },
       })}
@@ -99,16 +106,15 @@
         <div
           class={flex({
             width: '300px',
-            height: '138px',
             flexDirection: 'column',
             gap: '6px',
-            padding: '20px',
+            padding: '24px',
             borderRadius: '10px',
             backgroundColor: 'surface.primary',
             boxShadow: 'emphasize',
             lgDown: {
               width: 'full',
-              height: '91px',
+              height: '91px', // TODO: 높이 다시 맞추기
               padding: '16px',
             },
           })}
@@ -122,13 +128,15 @@
               },
             })}
           >
-            <Icon style={css.raw({ color: '[#13AC60]' })} icon={card.icon} size={24} />
+            <Icon style={css.raw({ color: '[#13AC60]', hideFrom: 'lg' })} icon={card.icon} size={20} />
+            <Icon style={css.raw({ color: '[#13AC60]', hideBelow: 'lg' })} icon={card.icon} size={24} />
+
             <div
               class={css({
                 fontSize: '22px',
                 fontWeight: '[700]',
                 lgDown: {
-                  fontSize: '14px',
+                  fontSize: '15px',
                 },
               })}
             >
@@ -142,7 +150,7 @@
               fontWeight: '[500]',
               color: 'text.tertiary',
               lgDown: {
-                fontSize: '12px',
+                fontSize: '13px',
               },
             })}
           >

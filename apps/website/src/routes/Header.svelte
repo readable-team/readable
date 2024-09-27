@@ -99,7 +99,7 @@
         'gap': '48px',
         '& a': {
           display: 'inline-block',
-          textStyle: '16sb',
+          textStyle: '15b',
           color: $headerTheme === 'dark' ? '[#E4E4E7]' : 'text.secondary',
           paddingX: '16px',
           paddingY: '13px',

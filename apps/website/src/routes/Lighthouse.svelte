@@ -76,13 +76,10 @@
         transform: 'translate(-50%, -50%)',
         fontFamily: 'mono',
         fontWeight: '[600]',
-        fontSize: '[64px]',
+        fontSize: { base: '24px', md: '[48px]', lg: '[64px]' },
         transitionProperty: 'color',
         transitionDuration: '250ms',
         transitionTimingFunction: 'ease',
-        lgDown: {
-          fontSize: '24px',
-        },
       })}
     >
       {$value}
@@ -92,11 +89,11 @@
   <div
     class={css({
       fontSize: '24px',
-      fontWeight: '[500]',
+      fontWeight: '[600]',
       color: 'text.secondary',
       textAlign: 'center',
       lgDown: {
-        fontSize: '12px',
+        fontSize: '13px',
       },
     })}
   >

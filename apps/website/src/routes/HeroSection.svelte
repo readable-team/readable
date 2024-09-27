@@ -46,7 +46,7 @@
     minHeight: '1096px',
     overflow: 'hidden',
     color: 'white',
-    paddingTop: '210px',
+    paddingTop: '180px',
     lgDown: {
       minHeight: '1002px',
       paddingTop: '128px',
@@ -61,13 +61,11 @@
       'animate',
       visible && 'loaded',
       css({
-        fontSize: '[64px]',
+        fontSize: { base: '32px', md: '[48px]', lg: '[64px]' },
         fontWeight: '[900]',
         textAlign: 'center',
         marginTop: 'auto',
-        lgDown: {
-          fontSize: '[32px]',
-        },
+        lineHeight: '[1.3]',
       }),
     )}
   >
@@ -102,23 +100,21 @@
         alignItems: 'center',
         lgDown: {
           flexDirection: 'column',
-          gap: '20px',
+          gap: '16px',
         },
       })}
     >
       <a
         class={flex({
           borderRadius: '10px',
-          paddingX: '30px',
+          paddingX: '24px',
           paddingY: '10px',
           textStyle: '16sb',
           lgDown: {
             paddingX: '20px',
             paddingY: '9px',
-            height: '38px',
-            textStyle: '14sb',
+            textStyle: '15sb',
           },
-          height: '43px',
           color: 'white',
           backgroundColor: 'brand.600',
           _hover: { backgroundColor: 'brand.500' },
@@ -137,9 +133,10 @@
           gap: '6px',
           alignItems: 'center',
           paddingY: '10px',
+          paddingLeft: '8px',
           textStyle: '16sb',
           lgDown: {
-            textStyle: '14sb',
+            textStyle: '15sb',
           },
           color: 'white/80',
         })}

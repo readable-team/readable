@@ -95,12 +95,18 @@
 
 <div
   bind:this={section}
-  class={css({ paddingY: '54px', backgroundColor: 'neutral.100', lg: { paddingTop: '120px', paddingBottom: '80px' } })}
+  class={css({
+    paddingTop: '60px',
+    paddingBottom: '74px',
+    backgroundColor: 'neutral.100',
+    lg: { paddingTop: '120px', paddingBottom: '80px' },
+  })}
 >
   <div>
     <h2
       class={css({
-        fontSize: { base: '18px', lg: '[45px]' },
+        paddingX: '20px',
+        fontSize: { base: '24px', lg: '[45px]' },
         fontWeight: '[800]',
         color: 'white',
         textAlign: 'center',
@@ -111,7 +117,8 @@
     <p
       class={css({
         marginTop: { base: '10px', lg: '16px' },
-        textStyle: { base: '13m', lg: '22m' },
+        paddingX: '20px',
+        textStyle: { base: '14m', lg: '22m' },
         color: 'white',
         textAlign: 'center',
         opacity: '80',
@@ -122,7 +129,7 @@
       실시간 협업과 간편한 설정으로 사용자들에게 사랑받는 사이트를 만들어보세요
     </p>
 
-    <div class={css({ marginTop: { base: '40px', lg: '80px' }, overflow: 'hidden' })}>
+    <div class={css({ marginTop: { base: '48px', lg: '80px' }, overflow: 'hidden' })}>
       <div
         bind:this={carouselEl}
         class={flex({
@@ -175,7 +182,7 @@
                 class={flex({
                   align: 'center',
                   gap: { base: '6px', lg: '8px' },
-                  textStyle: { base: '14b', lg: '22b' },
+                  textStyle: { base: '15b', lg: '22b' },
                 })}
               >
                 {title}
@@ -195,7 +202,7 @@
                   </span>
                 {/if}
               </p>
-              <p class={css({ marginTop: '10px', textStyle: { base: '12m', lg: '16m' }, color: 'text.tertiary' })}>
+              <p class={css({ marginTop: '10px', textStyle: { base: '13m', lg: '16m' }, color: 'text.tertiary' })}>
                 {description}
               </p>
             </div>

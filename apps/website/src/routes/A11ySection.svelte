@@ -62,9 +62,15 @@
       </span>
     </SectionTitle>
 
-    <div class={flex({ marginTop: '120px', gap: '16px', lgDown: { marginTop: '74px', flexDirection: 'column' } })}>
+    <div
+      class={flex({
+        marginTop: '120px',
+        gap: '16px',
+        lgDown: { marginTop: '74px', flexWrap: 'wrap' },
+      })}
+    >
       {#each cards as card (card.title)}
-        <div class={flex({ flexDirection: 'column', gap: '10px' })}>
+        <div class={flex({ flexDirection: 'column', gap: '10px', width: 'full', maxWidth: '403px' })}>
           <div
             class={flex({
               flexDirection: 'column',
@@ -74,7 +80,7 @@
             })}
           >
             <div class={flex({ alignItems: 'center', gap: '8px' })}>
-              <div class={css({ fontSize: '22px', fontWeight: '[700]', lgDown: { fontSize: '14px' } })}>
+              <div class={css({ fontSize: '22px', fontWeight: '[700]', lgDown: { fontSize: '15px' } })}>
                 {card.title}
               </div>
             </div>
@@ -84,7 +90,7 @@
                 fontWeight: '[500]',
                 color: 'text.tertiary',
                 whiteSpace: 'pre-line',
-                lgDown: { fontSize: '12px' },
+                lgDown: { fontSize: '13px' },
               })}
             >
               {card.description}

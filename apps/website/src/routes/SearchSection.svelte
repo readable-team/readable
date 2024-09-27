@@ -1,6 +1,6 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { center, flex } from '@readable/styled-system/patterns';
+  import { center, flex, grid } from '@readable/styled-system/patterns';
   import { HorizontalDivider, Icon } from '@readable/ui/components';
   import { onMount } from 'svelte';
   import { cubicInOut } from 'svelte/easing';
@@ -130,7 +130,7 @@
       <span slot="description">
         <span>단순 키워드 검색만으로&nbsp;</span>
         <em>질문의 요지를 이해하는 AI 검색</em>
-        <br />
+        <br class={css({ hideBelow: 'md' })} />
         <span>문서 내용을 기반으로 가장 유용한 답변을 제공합니다</span>
       </span>
     </SectionTitle>
@@ -288,12 +288,12 @@
     </div>
 
     <div
-      class={flex({
+      class={grid({
         marginTop: '100px',
+        columns: { base: 1, md: 2 },
         gap: '15px',
         lgDown: {
           marginTop: '74px',
-          flexDirection: 'column',
           gap: '40px',
         },
       })}
@@ -307,8 +307,8 @@
           })}
         >
           <div class={flex({ alignItems: 'center', gap: '8px', lgDown: { gap: '6px' } })}>
-            <Icon style={css.raw({ color: '[#9C3BE8]', lgDown: { size: '16px' } })} icon={card.icon} size={24} />
-            <div class={css({ fontSize: '22px', fontWeight: '[700]', lgDown: { fontSize: '14px' } })}>{card.title}</div>
+            <Icon style={css.raw({ color: '[#9C3BE8]', lgDown: { size: '20px' } })} icon={card.icon} size={24} />
+            <div class={css({ fontSize: '22px', fontWeight: '[700]', lgDown: { fontSize: '15px' } })}>{card.title}</div>
             {#if card.comingSoon}
               <div
                 class={center({
@@ -339,7 +339,7 @@
               color: 'text.tertiary',
               whiteSpace: 'pre-line',
               lgDown: {
-                fontSize: '12px',
+                fontSize: '13px',
               },
             })}
           >
