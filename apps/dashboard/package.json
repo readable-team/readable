@@ -25,22 +25,22 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@iconify-json/lucide": "^1.2.4",
-    "@iconify-json/simple-icons": "^1.2.2",
-    "@pandacss/dev": "^0.46.0",
-    "@pulumi/pulumi": "^3.132.0",
+    "@iconify-json/lucide": "^1.2.6",
+    "@iconify-json/simple-icons": "^1.2.4",
+    "@pandacss/dev": "^0.46.1",
+    "@pulumi/pulumi": "^3.134.1",
     "@readable/adapter-bun": "workspace:*",
     "@readable/pulumi": "workspace:*",
     "@readable/tsconfig": "workspace:*",
-    "@sveltejs/kit": "^2.5.27",
+    "@sveltejs/kit": "^2.5.28",
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@types/mixpanel-browser": "^2.50.0",
     "svelte": "^4.2.19",
-    "svelte-check": "^4.0.2",
-    "svelte-preprocess": "^6.0.2",
+    "svelte-check": "^4.0.3",
+    "svelte-preprocess": "^6.0.3",
     "tsx": "^4.19.1",
     "typescript": "^5.6.2",
     "unplugin-icons": "^0.19.3",
-    "vite": "^5.4.5"
+    "vite": "^5.4.8"
   }
 }
