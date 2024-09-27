@@ -196,7 +196,8 @@
 
 {#if $isMenuOpen}
   <div
-    class={css({
+    class={flex({
+      direction: 'column',
       position: 'fixed',
       top: '0',
       left: '0',
@@ -235,8 +236,8 @@
     <div
       class={flex({
         flexDirection: 'column',
+        grow: '1',
         width: 'full',
-        height: 'full',
         maxWidth: '1080px',
         marginX: 'auto',
       })}
