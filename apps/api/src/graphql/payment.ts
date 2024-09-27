@@ -1,4 +1,4 @@
-import { and, desc, eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { builder } from '@/builder';
 import {
   db,
@@ -38,40 +38,6 @@ PaymentRecord.implement({
     paymentMethod: t.field({
       type: PaymentMethod,
       resolve: (record) => record.methodId,
-    }),
-  }),
-});
-
-Team.implement({
-  fields: (t) => ({
-    paymentMethod: t.field({
-      type: PaymentMethod,
-      nullable: true,
-      resolve: async (team, _, ctx) => {
-        await assertTeamPermission({
-          teamId: team.id,
-          userId: ctx.session?.userId,
-          role: TeamMemberRole.ADMIN,
-        });
-
-        return await db
-          .select()
-          .from(PaymentMethods)
-          .where(and(eq(PaymentMethods.teamId, team.id), eq(PaymentMethods.state, PaymentMethodState.ACTIVE)))
-          .then(first);
-      },
-    }),
-
-    paymentRecords: t.field({
-      type: [PaymentRecord],
-      args: { state: t.arg({ type: PaymentRecordState, required: false }) },
-      resolve: async (team, { state }) => {
-        return await db
-          .select()
-          .from(PaymentRecords)
-          .where(and(eq(PaymentRecords.teamId, team.id), state ? eq(PaymentRecords.state, state) : undefined))
-          .orderBy(desc(PaymentRecords.createdAt));
-      },
     }),
   }),
 });
