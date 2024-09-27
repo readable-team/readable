@@ -6,7 +6,7 @@
   import FullLogo from '$assets/logos/full.svg?component';
 </script>
 
-<div class={flex({ direction: 'column', grow: '1', minHeight: 'screen' })}>
+<div class={flex({ direction: 'column', grow: '1', minHeight: 'screen', wordBreak: 'keep-all' })}>
   <slot />
 
   <footer
