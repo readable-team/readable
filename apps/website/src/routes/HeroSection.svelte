@@ -5,8 +5,8 @@
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
-  import EditorMockupImage from '$assets/hero/editor-mockup.svg';
-  import SiteMockupImage from '$assets/hero/site-mockup.svg';
+  import EditorMockupImage from '$assets/hero/editor-mockup.webp';
+  import SiteMockupImage from '$assets/hero/site-mockup.webp';
   import { env } from '$env/dynamic/public';
   import SegmentButtons from './SegmentButtons.svelte';
 

@@ -7,7 +7,7 @@
   import Branding from '$assets/dashboard-section/branding.svg?component';
   import Collaboration from '$assets/dashboard-section/collaboration.svg?component';
   import ContentUpdate from '$assets/dashboard-section/content-update.svg?component';
-  import EditingExperience from '$assets/dashboard-section/editing-experience.png';
+  import EditingExperience from '$assets/dashboard-section/editing-experience.webp';
   import ModifyUrl from '$assets/dashboard-section/modify-url.svg?component';
 
   export let section: HTMLElement;
