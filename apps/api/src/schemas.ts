@@ -5,6 +5,8 @@ const UNAVAILABLE_SITE_SLUGS = {
 };
 
 export const dataSchemas = {
+  url: z.string({ required_error: 'URL을 입력해 주세요' }).trim().url({ message: '잘못된 URL이에요' }),
+
   email: z
     .string({ required_error: '이메일 주소를 입력해 주세요' })
     .trim()

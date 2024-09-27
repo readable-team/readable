@@ -4,6 +4,7 @@
   import { Button, FormField, FormProvider, Helmet, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { z } from 'zod';
+  import { dataSchemas } from '@/schemas';
   import { goto } from '$app/navigation';
   import HeroLight from '$assets/hero/light.svg?component';
   import { supabase } from '$lib/supabase';
@@ -13,8 +14,8 @@
 
   const { form, context } = createMutationForm({
     schema: z.object({
-      email: z.string().email(),
-      docsUrl: z.string().min(1),
+      email: dataSchemas.email,
+      docsUrl: dataSchemas.url,
     }),
     mutation: async (data) => {
       const { error } = await supabase.from('previews').insert([
