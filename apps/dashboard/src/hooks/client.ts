@@ -1,2 +1,3 @@
-import '@readable/lib/dayjs';
 import '$lib/analytics';
+
+export { handleError } from './common';

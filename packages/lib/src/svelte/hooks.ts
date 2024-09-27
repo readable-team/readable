@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/sveltekit';
 import { logger } from '../logging';
 import type { Handle } from '@sveltejs/kit';
 
@@ -13,8 +14,6 @@ export const logging: Handle = async ({ event, resolve }) => {
   return await resolve(event);
 };
 
-export const headers: Handle = async ({ event, resolve }) => {
-  return await resolve(event, {
-    filterSerializedResponseHeaders: (name) => name === 'content-type',
-  });
-};
+export const sentry: Handle = Sentry.sentryHandle();
+
+export const handleError = Sentry.handleErrorWithSentry();

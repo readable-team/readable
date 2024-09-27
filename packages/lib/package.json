@@ -16,6 +16,7 @@
     "lint:typecheck": "tsc"
   },
   "dependencies": {
+    "@sentry/sveltekit": "^8.32.0",
     "dayjs": "^1.11.13",
     "ipaddr.js": "^2.2.0",
     "pino": "^9.4.0",

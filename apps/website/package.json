@@ -13,6 +13,7 @@
     "@readable/lib": "workspace:*",
     "@readable/styled-system": "workspace:*",
     "@readable/ui": "workspace:*",
+    "@sentry/sveltekit": "^8.32.0",
     "@supabase/supabase-js": "^2.45.4"
   },
   "devDependencies": {

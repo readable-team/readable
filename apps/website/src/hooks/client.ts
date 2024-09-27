@@ -1,1 +1,1 @@
-import '@readable/lib/dayjs';
+export { handleError } from './common';
