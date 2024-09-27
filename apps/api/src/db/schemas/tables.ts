@@ -300,6 +300,20 @@ export const PageViews = pgTable(
   }),
 );
 
+export const PaymentInvoices = pgTable('payment_invoices', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('PYIV')),
+  teamId: text('team_id')
+    .notNull()
+    .references(() => Teams.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+  state: E._PaymentInvoiceState('state').notNull().default('PENDING'),
+  amount: integer('amount').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
+
 export const PaymentMethods = pgTable(
   'payment_methods',
   {
@@ -322,6 +336,26 @@ export const PaymentMethods = pgTable(
       .where(sql`${t.state} = 'ACTIVE'`),
   }),
 );
+
+export const PaymentRecords = pgTable('payment_records', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('PYRD')),
+  teamId: text('team_id')
+    .notNull()
+    .references(() => Teams.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+  methodId: text('method_id')
+    .notNull()
+    .references(() => PaymentMethods.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+  invoiceId: text('invoice_id')
+    .notNull()
+    .references(() => PaymentInvoices.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+  state: E._PaymentRecordState('state').notNull().default('PENDING'),
+  amount: integer('amount').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
 
 export const Plans = pgTable('plans', {
   id: text('id')

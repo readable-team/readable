@@ -86,7 +86,7 @@ type MakePaymentParams = {
   paymentId: string;
   billingKey: string;
   customerName: string;
-  customerEmail: string;
+  customerEmail?: string;
   orderName: string;
   amount: number;
 };

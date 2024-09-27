@@ -201,6 +201,7 @@ type Mutation {
   updateTeam(input: UpdateTeamInput!): Team!
   updateTeamMemberRole(input: UpdateTeamMemberRoleInput!): TeamMember!
   updateUser(input: UpdateUserInput!): User!
+  upgradePlan(input: UpgradePlanInput!): Team!
 }
 
 type Page implements IPage {
@@ -272,6 +273,11 @@ enum PageState {
   PUBLISHED
 }
 
+enum PaymentInvoiceState {
+  COMPLETED
+  PENDING
+}
+
 type PaymentMethod {
   createdAt: DateTime!
   id: ID!
@@ -281,6 +287,12 @@ type PaymentMethod {
 enum PaymentMethodState {
   ACTIVE
   DEACTIVATED
+}
+
+enum PaymentRecordState {
+  COMPLETED
+  FAILED
+  PENDING
 }
 
 input PersistBlobAsFileInput {
@@ -582,6 +594,11 @@ input UpdateTeamMemberRoleInput {
 input UpdateUserInput {
   avatarId: ID!
   name: String!
+}
+
+input UpgradePlanInput {
+  billingCycle: BillingCycle!
+  teamId: String!
 }
 
 type User {
