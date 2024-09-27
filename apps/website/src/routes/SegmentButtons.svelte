@@ -4,12 +4,13 @@
   import { createEventDispatcher } from 'svelte';
 
   export let variant: 'default' | 'white' = 'default';
+  export let defaultValue: string | undefined = undefined;
   export let items: {
     label: string;
     value: string;
   }[] = [];
 
-  let selectedValue = items[0].value;
+  let selectedValue = defaultValue ?? items[0].value;
   const dispatch = createEventDispatcher<{
     select: string;
   }>();

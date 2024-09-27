@@ -26,7 +26,8 @@
     <p class={css({ textStyle: { base: '13m', lg: '22m' }, color: 'text.tertiary', textAlign: 'center' })}>
       제출이 완료되었습니다.
       <br />
-      확인 후 이메일로 연락드리겠습니다
+      확인 후 연락드리겠습니다.
+      <!-- TODO: complete 페이지 합치기 -->
     </p>
   </div>
 </div>

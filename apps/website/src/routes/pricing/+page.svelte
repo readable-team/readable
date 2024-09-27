@@ -4,7 +4,9 @@
   import { Button, HorizontalDivider, Icon } from '@readable/ui/components';
   import BlocksIcon from '~icons/lucide/blocks';
   import BookTextIcon from '~icons/lucide/book-text';
+  import EllipsisIcon from '~icons/lucide/ellipsis';
   import FileIcon from '~icons/lucide/file';
+  import LinkIcon from '~icons/lucide/link';
   import MonitorSmartphone from '~icons/lucide/monitor-smartphone';
   import PaintbrushIcon from '~icons/lucide/paintbrush';
   import SearchIcon from '~icons/lucide/search';
@@ -15,47 +17,48 @@
   import Header from '../Header.svelte';
   import SegmentButtons from '../SegmentButtons.svelte';
 
-  let selectedPrice = 'monthly';
+  let selectedPrice = 'yearly';
   let darkSection: HTMLElement;
 
   $: plans = [
     {
-      name: 'Individual',
+      name: 'Basic',
       price: '무료',
       features: [
         { icon: UserRoundIcon, feature: '1명의 멤버' },
         { icon: MonitorSmartphone, feature: '1개의 사이트' },
-        { icon: FileIcon, feature: '5,000 페이지뷰' },
-        { icon: BlocksIcon, feature: '블럭수 무제한' },
-        { icon: PaintbrushIcon, feature: '브랜딩 (테마색)' },
+        { icon: FileIcon, feature: '5,000 페이지뷰/월' }, // TODO: tooltip 추가
+        { icon: BlocksIcon, feature: '무제한 페이지' },
         { icon: SearchIcon, feature: '일반 검색' },
       ],
     },
     {
-      name: 'Team',
+      name: 'Pro', // TODO: 추천 뱃지 추가
       price: selectedPrice === 'yearly' ? '27,500' : '33,000',
       features: [
         { icon: UserRoundIcon, feature: '무제한 멤버' },
-        { icon: MonitorSmartphone, feature: '무제한 사이트 생성' },
+        { icon: MonitorSmartphone, feature: '무제한 사이트' },
         { icon: FileIcon, feature: '무제한 페이지뷰' },
-        { icon: BlocksIcon, feature: '블럭수 무제한' },
-        { icon: PaintbrushIcon, feature: '브랜딩 (테마색)' },
+        { icon: BlocksIcon, feature: '무제한 페이지' },
+        { icon: PaintbrushIcon, feature: '브랜딩' },
         { icon: SearchIcon, feature: '일반 + AI 검색' },
+        { icon: LinkIcon, feature: '커스텀 도메인' },
         { icon: BookTextIcon, feature: '콘텐츠 최신화 (지원예정)' },
       ],
-      addOns: [{ icon: SendIcon, feature: '화이트 라벨링 애드온', price: '22,000원/사이트' }],
+      addOns: [{ icon: SendIcon, feature: '화이트 라벨링 애드온', price: '22,000원/사이트/월' }], // TODO: tooltip 추가, 연 결제일 때 금액 수정
     },
     {
       name: 'Enterprise',
       price: '문의',
       features: [
-        { icon: UserRoundIcon, feature: '무제한 멤버' },
-        { icon: MonitorSmartphone, feature: '무제한 사이트 생성' },
-        { icon: FileIcon, feature: '무제한 페이지뷰' },
-        { icon: BlocksIcon, feature: '블럭수 무제한' },
-        { icon: PaintbrushIcon, feature: '브랜딩 (테마색)' },
-        { icon: SearchIcon, feature: '일반 + AI 검색' },
-        { icon: BookTextIcon, feature: '콘텐츠 최신화 (지원예정)' },
+        { icon: BookTextIcon, feature: 'Pro 플랜의 모든 기능' },
+        { icon: BookTextIcon, feature: '커스텀 플랜' },
+        { icon: BookTextIcon, feature: 'SLA 계약' },
+        { icon: BookTextIcon, feature: '24/7 지원' },
+        { icon: BookTextIcon, feature: '감사 로그' },
+        { icon: BookTextIcon, feature: '맞춤형 기능 개발' },
+        { icon: BookTextIcon, feature: '전담 담당자 배정' },
+        { icon: EllipsisIcon, feature: '그리고 무엇이든 요청하세요' },
       ],
     },
   ];
@@ -105,22 +108,19 @@
         textAlign: 'center',
       })}
     >
-      가격 정책
+      가격 안내
     </h1>
 
     <p class={css({ marginBottom: '60px', textStyle: { base: '13m', lg: '22m' }, textAlign: 'center' })}>
-      팀과 함께 리더블을 무료로 시작하세요.
-      <br />
-      무제한 문서 작성, 간편한 협업 기능,
-      <br class={css({ hideFrom: 'lg' })} />
-      그리고 기본적인 자동화 도구를 즐겨보세요.
+      개인용 문서부터 기업용 가이드까지 알맞은 플랜을 선택해보세요
     </p>
 
     <div class={css({ position: 'relative' })}>
       <SegmentButtons
+        defaultValue="yearly"
         items={[
           { label: '월 결제', value: 'monthly' },
-          { label: '년 결제', value: 'yearly' },
+          { label: '연 결제', value: 'yearly' },
         ]}
         variant="white"
         on:select={(value) => (selectedPrice = value.detail)}
@@ -160,7 +160,7 @@
         class={flex({
           direction: 'column',
           borderWidth: '2px',
-          borderColor: plan.name === 'Team' ? '[#FFA16B]' : 'border.primary',
+          borderColor: plan.name === 'Pro' ? '[#FFA16B]' : 'border.primary',
           borderRadius: '[20px]',
           padding: '24px',
           width: 'full',
@@ -182,10 +182,8 @@
 
         <p class={css({ textStyle: { base: '22eb', lg: '28eb' } })}>
           {plan.price}
-          {#if plan.name === 'Team'}
-            <span class={css({ textStyle: { base: '13sb', lg: '16sb' } })}>
-              원 / {selectedPrice === 'yearly' ? '년 결제' : '월 결제'}
-            </span>
+          {#if plan.name === 'Pro'}
+            <span class={css({ textStyle: { base: '13sb', lg: '16sb' } })}>원 / 월</span>
           {/if}
         </p>
 
@@ -231,7 +229,7 @@
             href={env.PUBLIC_DASHBOARD_URL}
             size="lg"
             type="link"
-            variant={plan.name === 'Team' ? 'primary' : 'secondary'}
+            variant={plan.name === 'Pro' ? 'primary' : 'secondary'}
           >
             시작하기
           </Button>

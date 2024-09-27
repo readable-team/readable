@@ -39,7 +39,7 @@
       <br />
       기존 문서 이전부터 최적의 활용 방법까지,
       <br />
-      맞춤형 무료 데모로 리더블의 가치를 직접 경험해보세요.
+      궁금한 점이 있으시다면 언제든 물어보세요.
     </p>
 
     <FormProvider class={flex({ direction: 'column', gap: '16px', marginTop: '80px' })} {context} {form}>
@@ -55,11 +55,10 @@
       <FormField name="company" label="회사">
         <TextInput placeholder="abccompany" />
       </FormField>
-      <FormField name="role" label="직함">
-        <TextInput placeholder="example" />
-      </FormField>
 
-      <Button glossy size="lg" type="submit">완료</Button>
+      <!-- TODO: 문의내용 textarea -->
+
+      <Button glossy size="lg" type="submit">문의하기</Button>
     </FormProvider>
   </div>
 </div>
