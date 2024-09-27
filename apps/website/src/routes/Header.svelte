@@ -4,6 +4,7 @@
   import { scrollLock } from '@readable/ui/actions';
   import { Icon } from '@readable/ui/components';
   import { writable } from 'svelte/store';
+  import ExternalLinkIcon from '~icons/lucide/external-link';
   import MenuIcon from '~icons/lucide/menu';
   import CloseIcon from '~icons/lucide/x';
   import { browser } from '$app/environment';
@@ -98,7 +99,6 @@
       class={flex({
         'gap': '48px',
         '& a': {
-          display: 'inline-block',
           textStyle: '15b',
           color: $headerTheme === 'dark' ? '[#E4E4E7]' : 'text.secondary',
           paddingX: '16px',
@@ -109,10 +109,26 @@
         },
       })}
     >
-      <a href="/pricing">가격 안내</a>
-      <a href="https://docs.rdbl.io" rel="noopener noreferrer" target="_blank">이용 가이드</a>
-      <a href="https://updates.rdbl.io" rel="noopener noreferrer" target="_blank">업데이트 노트</a>
-      <a href="/preview">이사 신청</a>
+      <a class={css({ display: 'inline-block' })} href="/pricing">가격 안내</a>
+      <a
+        class={flex({ align: 'center', gap: '6px' })}
+        href="https://docs.rdbl.io"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <span>이용 가이드</span>
+        <Icon icon={ExternalLinkIcon} size={14} />
+      </a>
+      <a
+        class={flex({ align: 'center', gap: '6px' })}
+        href="https://updates.rdbl.io"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <span>업데이트 노트</span>
+        <Icon icon={ExternalLinkIcon} size={14} />
+      </a>
+      <a class={css({ display: 'inline-block' })} href="/preview">이사 신청</a>
     </div>
 
     <div class={flex({ gap: '8px', lgDown: { display: 'none' } })}>
@@ -237,8 +253,24 @@
         })}
       >
         <a href="/pricing">가격 안내</a>
-        <a href="https://docs.rdbl.io" rel="noopener noreferrer" target="_blank">이용 가이드</a>
-        <a href="https://updates.rdbl.io" rel="noopener noreferrer" target="_blank">업데이트 노트</a>
+        <a
+          class={flex({ align: 'center', gap: '6px' })}
+          href="https://docs.rdbl.io"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span>이용 가이드</span>
+          <Icon icon={ExternalLinkIcon} size={14} />
+        </a>
+        <a
+          class={flex({ align: 'center', gap: '6px' })}
+          href="https://updates.rdbl.io"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span>업데이트 노트</span>
+          <Icon icon={ExternalLinkIcon} size={14} />
+        </a>
         <a href="/preview">이사 신청</a>
       </nav>
       <div
