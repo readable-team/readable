@@ -43,7 +43,7 @@ const cluster = new aws.rds.Cluster('readable', {
 
   engine: 'aurora-postgresql',
   engineMode: 'provisioned',
-  engineVersion: '16.3',
+  engineVersion: '16.4',
 
   dbClusterParameterGroupName: parameterGroup.name,
 
@@ -91,7 +91,7 @@ const devCluster = new aws.rds.Cluster('readable-dev', {
 
   engine: 'aurora-postgresql',
   engineMode: 'provisioned',
-  engineVersion: '16.3',
+  engineVersion: '16.4',
 
   dbClusterParameterGroupName: parameterGroup.name,
 
