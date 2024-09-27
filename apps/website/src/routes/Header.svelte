@@ -191,13 +191,21 @@
     })}
     use:scrollLock
   >
-    <div class={flex({ flexDirection: 'column', width: 'full', height: 'full', maxWidth: '1080px', marginX: 'auto' })}>
-      <div class={flex({ justifyContent: 'space-between', alignItems: 'center', padding: '20px' })}>
+    <div class={css({ paddingX: '20px' })}>
+      <div
+        class={flex({
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingY: '20px',
+          maxWidth: '1080px',
+          marginX: 'auto',
+        })}
+      >
         <img
           class={css({
-            height: '24px',
+            height: '22px',
             lgDown: {
-              height: '20px',
+              height: '18px',
             },
           })}
           alt="Readable"
@@ -207,6 +215,16 @@
           <Icon icon={CloseIcon} size={24} />
         </button>
       </div>
+    </div>
+    <div
+      class={flex({
+        flexDirection: 'column',
+        width: 'full',
+        height: 'full',
+        maxWidth: '1080px',
+        marginX: 'auto',
+      })}
+    >
       <nav
         class={flex({
           'flexDirection': 'column',
