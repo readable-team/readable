@@ -1,10 +1,17 @@
 <script lang="ts">
-  import { css, cx } from '@readable/styled-system/css';
+  import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
+  import AccessibilityIcon from '~icons/lucide/accessibility';
+  import BarChartIcon from '~icons/lucide/bar-chart';
+  import BrainIcon from '~icons/lucide/brain';
   import FlaskConicalIcon from '~icons/lucide/flask-conical';
   import FlowerIcon from '~icons/lucide/flower';
+  import GitBranchIcon from '~icons/lucide/git-branch';
+  import GlobeIcon from '~icons/lucide/globe';
+  import RefreshCwIcon from '~icons/lucide/refresh-cw';
   import SearchIcon from '~icons/lucide/search';
+  import UsersIcon from '~icons/lucide/users';
 
   const cards = [
     {
@@ -13,47 +20,47 @@
       description: '모든 디바이스에 최적화된 사용자 경험',
     },
     {
-      icon: FlaskConicalIcon,
+      icon: SearchIcon,
       title: 'SEO',
       description: '검색 엔진 최적화',
     },
     {
-      icon: SearchIcon,
+      icon: FlaskConicalIcon,
       title: '키워드 검색',
       description: '실시간 검색 엔진 인덱싱',
     },
     {
-      icon: SearchIcon,
+      icon: BrainIcon,
       title: 'AI 검색',
       description: 'RAG 기반 자연어 검색',
     },
     {
-      icon: FlowerIcon,
-      title: '버전 관리',
+      icon: GitBranchIcon,
+      title: '버전관리',
       description: '콘텐츠 변경 이력 추적',
     },
     {
-      icon: FlaskConicalIcon,
-      title: '동시 편집',
+      icon: UsersIcon,
+      title: '동시편집',
       description: '막힘 없는 실시간 협업',
     },
     {
-      icon: FlaskConicalIcon,
+      icon: AccessibilityIcon,
       title: '접근성',
       description: '모두를 위한 포용적 디자인',
     },
     {
-      icon: FlaskConicalIcon,
+      icon: GlobeIcon,
       title: '다국어',
       description: '글로벌 사용자용 다국어 지원',
     },
     {
-      icon: FlaskConicalIcon,
+      icon: BarChartIcon,
       title: '접속자 통계 및 인사이트',
-      description: '사용자 데이터 수집 및 행동 분석 ',
+      description: '사용자 데이터 수집 및 행동 분석',
     },
     {
-      icon: FlowerIcon,
+      icon: RefreshCwIcon,
       title: '콘텐츠 최신화',
       description: '지속적인 업데이트로 신뢰성 향상',
     },
@@ -152,18 +159,19 @@
 
     <!-- 윗줄 카드 (왼쪽으로 이동) -->
     <div
-      class={cx(
-        css({
-          display: 'flex',
-          gap: '16px',
-          lgDown: {
-            gap: '14px',
-          },
-        }),
-        'scrollLeft',
-      )}
+      class={css({
+        display: 'flex',
+        gap: '16px',
+        animation: 'scrollCardsLeft 20s linear infinite',
+        lg: {
+          animation: 'scrollCardsLeftLg 20s linear infinite',
+        },
+        lgDown: {
+          gap: '14px',
+        },
+      })}
     >
-      {#each [...topCards, ...topCards] as card, index (index)}
+      {#each [...topCards, ...topCards, ...topCards] as card, index (index)}
         <div
           class={flex({
             flexShrink: 0,
@@ -217,18 +225,19 @@
 
     <!-- 아랫줄 카드 (오른쪽으로 이동) -->
     <div
-      class={cx(
-        css({
-          display: 'flex',
-          gap: '16px',
-          lgDown: {
-            gap: '14px',
-          },
-        }),
-        'scrollRight',
-      )}
+      class={css({
+        display: 'flex',
+        gap: '16px',
+        animation: 'scrollCardsRight 20s linear infinite',
+        lg: {
+          animation: 'scrollCardsRightLg 20s linear infinite',
+        },
+        lgDown: {
+          gap: '14px',
+        },
+      })}
     >
-      {#each [...bottomCards, ...bottomCards] as card, index (index)}
+      {#each [...bottomCards, ...bottomCards, ...bottomCards] as card, index (index)}
         <div
           class={flex({
             flexShrink: 0,
@@ -281,31 +290,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  @keyframes scrollLeft {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(calc(-1280px + 32px));
-    }
-  }
-
-  @keyframes scrollRight {
-    0% {
-      transform: translateX(calc(-1280px + 32px));
-    }
-    100% {
-      transform: translateX(0);
-    }
-  }
-
-  .scrollLeft {
-    animation: scrollLeft 40s linear infinite;
-  }
-
-  .scrollRight {
-    animation: scrollRight 40s linear infinite;
-  }
-</style>
