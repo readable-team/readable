@@ -26,7 +26,7 @@ const pvc = new k8s.core.v1.PersistentVolumeClaim('meilisearch', {
 
 new k8s.helm.v3.Chart('meilisearch', {
   chart: 'meilisearch',
-  version: '0.9.0',
+  version: '0.10.1',
   namespace: namespace.metadata.name,
   fetchOpts: {
     repo: 'https://meilisearch.github.io/meilisearch-kubernetes',
