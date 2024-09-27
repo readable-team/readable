@@ -84,9 +84,9 @@
     <a href="/">
       <img
         class={css({
-          height: '24px',
+          height: '22px',
           lgDown: {
-            height: '20px',
+            height: '18px',
           },
         })}
         alt="Readable"

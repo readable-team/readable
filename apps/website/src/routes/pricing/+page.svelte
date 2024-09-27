@@ -1,9 +1,10 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex, grid } from '@readable/styled-system/patterns';
-  import { Button, HorizontalDivider, Icon } from '@readable/ui/components';
+  import { Button, HorizontalDivider, Icon, Tooltip } from '@readable/ui/components';
   import BlocksIcon from '~icons/lucide/blocks';
   import BookTextIcon from '~icons/lucide/book-text';
+  import CircleHelpIcon from '~icons/lucide/circle-help';
   import EllipsisIcon from '~icons/lucide/ellipsis';
   import FileIcon from '~icons/lucide/file';
   import LinkIcon from '~icons/lucide/link';
@@ -16,9 +17,29 @@
   import { env } from '$env/dynamic/public';
   import Header from '../Header.svelte';
   import SegmentButtons from '../SegmentButtons.svelte';
+  import type { ComponentType } from 'svelte';
 
   let selectedPrice = 'yearly';
   let darkSection: HTMLElement;
+
+  type Feature = {
+    icon: ComponentType;
+    feature: string;
+    tooltipMessage?: string;
+  };
+
+  type AddOn = Feature & {
+    price?: string;
+  };
+
+  type Plan = {
+    name: string;
+    price: string;
+    features: Feature[];
+    addOns?: AddOn[];
+  };
+
+  let plans: Plan[];
 
   $: plans = [
     {
@@ -27,7 +48,7 @@
       features: [
         { icon: UserRoundIcon, feature: '1명의 멤버' },
         { icon: MonitorSmartphone, feature: '1개의 사이트' },
-        { icon: FileIcon, feature: '5,000 페이지뷰/월' }, // TODO: tooltip 추가
+        { icon: FileIcon, feature: '5,000 페이지뷰/월', tooltipMessage: '화이트 라벨 툴팁' },
         { icon: BlocksIcon, feature: '무제한 페이지' },
         { icon: SearchIcon, feature: '일반 검색' },
       ],
@@ -45,7 +66,14 @@
         { icon: LinkIcon, feature: '커스텀 도메인' },
         { icon: BookTextIcon, feature: '콘텐츠 최신화 (지원예정)' },
       ],
-      addOns: [{ icon: SendIcon, feature: '화이트 라벨링 애드온', price: '22,000원/사이트/월' }], // TODO: tooltip 추가, 연 결제일 때 금액 수정
+      addOns: [
+        {
+          icon: SendIcon,
+          feature: '화이트 라벨링 애드온',
+          price: `${selectedPrice === 'yearly' ? '18,333' : '22,000'}원/사이트/월`,
+          tooltipMessage: '화이트 라벨 툴팁',
+        },
+      ],
     },
     {
       name: 'Enterprise',
@@ -96,14 +124,14 @@
       backgroundColor: 'neutral.100',
       overflow: 'hidden',
       color: 'white',
-      paddingTop: { base: '128px', lg: '204px' },
+      paddingTop: { base: '128px', lg: '168px' },
       paddingBottom: { base: '84px', lg: '130px' },
     })}
   >
     <h1
       class={css({
-        marginBottom: '16px',
-        fontSize: { base: '20px', lg: '[45px]' },
+        marginBottom: { base: '10px', lg: '16px' },
+        fontSize: { base: '24px', lg: '[45px]' },
         fontWeight: '[800]',
         textAlign: 'center',
       })}
@@ -111,7 +139,7 @@
       가격 안내
     </h1>
 
-    <p class={css({ marginBottom: '60px', textStyle: { base: '13m', lg: '22m' }, textAlign: 'center' })}>
+    <p class={css({ marginBottom: '60px', textStyle: { base: '14m', lg: '22m' }, textAlign: 'center' })}>
       개인용 문서부터 기업용 가이드까지 알맞은 플랜을 선택해보세요
     </p>
 
@@ -128,14 +156,14 @@
       <span
         class={css({
           position: 'absolute',
-          top: '-27px',
+          top: '-29px',
           right: '0',
           borderRadius: 'full',
-          paddingX: '8px',
-          paddingY: '3px',
-          backgroundColor: 'accent.60',
-          textStyle: '12sb',
-          color: 'white',
+          paddingX: '10px',
+          paddingY: '4px',
+          backgroundColor: '[#1EDFD3]',
+          textStyle: '13sb',
+          color: 'text.primary',
         })}
       >
         2달 무료
@@ -166,18 +194,35 @@
           width: 'full',
           backgroundColor: 'white',
           boxShadow: 'emphasize',
-          height: { base: '464px', md: '497px' },
+          height: { base: '518px', md: '555px' },
           zIndex: '1',
         })}
       >
         <p
-          class={css({
+          class={flex({
+            align: 'center',
+            justify: 'space-between',
             marginBottom: { base: '6px', lg: '10px' },
             textStyle: { base: '14b', lg: '18b' },
             color: 'text.tertiary',
           })}
         >
           {plan.name}
+
+          {#if plan.name === 'Pro'}
+            <div
+              class={css({
+                borderRadius: '6px',
+                paddingX: '12px',
+                paddingY: '4px',
+                textStyle: '14sb',
+                color: 'white',
+                backgroundColor: 'accent.60',
+              })}
+            >
+              추천
+            </div>
+          {/if}
         </p>
 
         <p class={css({ textStyle: { base: '22eb', lg: '28eb' } })}>
@@ -194,6 +239,12 @@
             <div class={flex({ align: 'center', gap: '6px', color: 'text.secondary' })}>
               <Icon icon={feature.icon} size={14} />
               <span>{feature.feature}</span>
+
+              {#if feature?.tooltipMessage}
+                <Tooltip message={feature.tooltipMessage} placement="top">
+                  <Icon icon={CircleHelpIcon} size={12} />
+                </Tooltip>
+              {/if}
             </div>
           {/each}
 
@@ -205,6 +256,9 @@
                 <div class={flex({ align: 'center', gap: '6px' })}>
                   <Icon icon={addOn.icon} size={14} />
                   <span>{addOn.feature}</span>
+                  <Tooltip message={addOn.tooltipMessage} placement="top">
+                    <Icon icon={CircleHelpIcon} size={12} />
+                  </Tooltip>
                 </div>
 
                 <span>{addOn.price}</span>
@@ -226,6 +280,7 @@
         {:else}
           <Button
             style={css.raw({ marginTop: 'auto', width: 'full' })}
+            glossy
             href={env.PUBLIC_DASHBOARD_URL}
             size="lg"
             type="link"

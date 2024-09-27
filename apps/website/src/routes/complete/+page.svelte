@@ -38,7 +38,7 @@
     <h1
       class={css({
         marginBottom: { base: '10px', lg: '16px' },
-        fontSize: { base: '20px', lg: '[45px]' },
+        fontSize: { base: '24px', lg: '[45px]' },
         fontWeight: '[800]',
         textAlign: 'center',
       })}
@@ -46,7 +46,7 @@
       감사합니다
     </h1>
 
-    <p class={css({ textStyle: { base: '13m', lg: '22m' }, textAlign: 'center' })}>
+    <p class={css({ textStyle: { base: '14m', lg: '22m' }, textAlign: 'center' })}>
       제출이 완료되었습니다.
       <br />
       확인 후 연락드리겠습니다.

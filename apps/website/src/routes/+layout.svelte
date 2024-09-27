@@ -3,8 +3,6 @@
 
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon } from '@readable/ui/components';
-  import IconGithub from '~icons/simple-icons/github';
   import FullLogo from '$assets/logos/full.svg?component';
 </script>
 
@@ -24,15 +22,12 @@
     })}
   >
     <div class={flex({ align: 'center', justify: 'space-between' })}>
-      <FullLogo class={css({ height: { base: '20px', lg: '24px' } })} />
-
-      <a aria-label="GitHub" href="https://github.com/readable-team" rel="noopener noreferrer" target="_blank">
-        <Icon style={css.raw({ color: 'neutral.100', hideFrom: 'lg' })} icon={IconGithub} size={24} />
-        <Icon style={css.raw({ color: 'neutral.100', hideBelow: 'lg' })} icon={IconGithub} size={32} />
-      </a>
+      <FullLogo class={css({ height: { base: '18px', lg: '22px' } })} />
     </div>
 
-    <div class={flex({ textStyle: { base: '12m', lg: '14m' }, color: 'neutral.70', direction: 'column', gap: '4px' })}>
+    <div
+      class={flex({ textStyle: { base: '12r', lg: '14r' }, color: 'text.tertiary', direction: 'column', gap: '4px' })}
+    >
       <p>주식회사 펜슬컴퍼니 | 대표 배준현 | 서울특별시 강남구 강남대로100길 14, 6층</p>
 
       <p>
