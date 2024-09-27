@@ -29,7 +29,8 @@
       } else {
         url.searchParams.delete('q');
       }
-      history.pushState(null, '', url.toString());
+      // NOTE: 상태 업데이트를 유발하지 않기 위해 history.replaceState 사용
+      history.replaceState(null, '', url.toString());
     });
   }
 
