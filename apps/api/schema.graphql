@@ -231,6 +231,7 @@ type Page implements IPage {
   site: Site!
   slug: String!
   state: PageState!
+  title: String!
 }
 
 type PageContentContributor {
@@ -368,6 +369,7 @@ type PublicPage implements IPage {
   parent: PublicPage
   slug: String!
   state: PageState!
+  title: String!
 }
 
 type PublicPageContent {

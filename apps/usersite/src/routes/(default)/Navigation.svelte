@@ -30,11 +30,7 @@
             state
             order
             slug
-
-            content {
-              id
-              title
-            }
+            title
 
             parent {
               id
@@ -46,11 +42,7 @@
               state
               order
               slug
-
-              content {
-                id
-                title
-              }
+              title
 
               parent {
                 id
@@ -178,7 +170,7 @@
                 $treeOpenState[page.id] = true;
               }}
             >
-              {page.content.title}
+              {page.title}
             </a>
             {#if page.children.length > 0}
               <button
@@ -230,7 +222,7 @@
                       aria-current={childPage.id === currentPageId ? 'page' : undefined}
                       href={pageUrl(childPage)}
                     >
-                      {childPage.content.title}
+                      {childPage.title}
                     </a>
                   </li>
                 {/each}

@@ -39,16 +39,12 @@
             state
             order
             recursiveChildCount
+            title
             __typename
 
             category {
               id
               slug
-            }
-
-            content {
-              id
-              title
             }
 
             parent {
@@ -62,16 +58,12 @@
               state
               order
               recursiveChildCount
+              title
               __typename
 
               category {
                 id
                 slug
-              }
-
-              content {
-                id
-                title
               }
 
               parent {

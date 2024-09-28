@@ -143,6 +143,25 @@ Page.implement({
 
     site: t.field({ type: Site, resolve: (page) => page.siteId }),
 
+    title: t.string({
+      resolve: async (page, _, ctx) => {
+        const loader = ctx.loader({
+          name: 'PageContentStates.title(pageId)',
+          load: async (ids: string[]) => {
+            return await db
+              .select({ pageId: PageContentStates.pageId, title: PageContentStates.title })
+              .from(PageContentStates)
+              .where(inArray(PageContentStates.pageId, ids));
+          },
+          key: (row) => row.pageId,
+        });
+
+        const pageContentState = await loader.load(page.id);
+
+        return pageContentState.title ?? '(제목 없음)';
+      },
+    }),
+
     content: t.field({
       type: PageContentState,
       resolve: async (page, _, ctx) => {
@@ -303,6 +322,25 @@ PublicPage.implement({
   interfaces: [IPage],
 
   fields: (t) => ({
+    title: t.string({
+      resolve: async (page, _, ctx) => {
+        const loader = ctx.loader({
+          name: 'PageContents.title(pageId)',
+          load: async (ids: string[]) => {
+            return await db
+              .select({ pageId: PageContents.pageId, title: PageContents.title })
+              .from(PageContents)
+              .where(inArray(PageContents.pageId, ids));
+          },
+          key: (row) => row.pageId,
+        });
+
+        const pageContent = await loader.load(page.id);
+
+        return pageContent.title ?? '(제목 없음)';
+      },
+    }),
+
     content: t.field({
       type: PublicPageContent,
       resolve: async (page, _, ctx) => {

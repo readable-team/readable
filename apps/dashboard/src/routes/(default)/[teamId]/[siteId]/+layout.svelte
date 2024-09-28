@@ -51,11 +51,7 @@
           id
           state
           hasUnpublishedChanges
-
-          content {
-            id
-            title
-          }
+          title
         }
       }
     }

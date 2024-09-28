@@ -14,25 +14,17 @@
       fragment PagePage_Breadcrumb_query on Query {
         page(pageId: $pageId) {
           id
+          title
 
           category {
             id
             name
           }
 
-          content {
-            id
-            title
-          }
-
           # NOTE: maxDepth = 2
           parent {
             id
-
-            content {
-              id
-              title
-            }
+            title
           }
 
           site {
@@ -79,7 +71,7 @@
           aria-current={current ? 'page' : undefined}
           href={`/${$query.page.site.team.id}/${$query.page.site.id}/${page.id}`}
         >
-          {page.content.title}
+          {page.title}
         </a>
       </li>
     {/each}

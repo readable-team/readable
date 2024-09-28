@@ -121,11 +121,7 @@
 
         ... on Page {
           id
-
-          content {
-            id
-            title
-          }
+          title
         }
 
         ... on UnfurlLinkUrl {
@@ -403,7 +399,7 @@
         const resp = await unfurlLink({ siteId: $query.page.site.id, url });
         return resp.__typename === 'Page'
           ? {
-              name: resp.content.title,
+              name: resp.title,
               href: `page:///${resp.id}`,
               host: $page.url.origin,
               url: `/${$query.page.site.team.id}/${$query.page.site.id}/${resp.id}`,

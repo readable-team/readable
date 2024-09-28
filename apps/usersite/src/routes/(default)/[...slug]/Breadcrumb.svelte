@@ -12,11 +12,7 @@
       fragment PagePage_Breadcrumb_publicPage on PublicPage {
         id
         slug
-
-        content {
-          id
-          title
-        }
+        title
 
         category {
           id
@@ -26,11 +22,7 @@
         parent {
           id
           slug
-
-          content {
-            id
-            title
-          }
+          title
 
           ...PageUrl_publicPage
         }
@@ -61,14 +53,14 @@
     {#if $publicPage.parent}
       <li>
         <a href={pageUrl($publicPage.parent)}>
-          {$publicPage.parent.content.title}
+          {$publicPage.parent.title}
         </a>
         <span class={css({ color: 'neutral.50' })} aria-hidden="true">/</span>
       </li>
     {/if}
     <li>
       <a aria-current="page" href={pageUrl($publicPage)}>
-        {$publicPage.content.title}
+        {$publicPage.title}
       </a>
     </li>
   </ol>

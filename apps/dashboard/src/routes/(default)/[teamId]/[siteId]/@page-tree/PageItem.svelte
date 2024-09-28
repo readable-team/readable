@@ -222,7 +222,7 @@
             flex: '1',
           })}
         >
-          {item.content.title}
+          {item.title}
         </span>
         <Menu disableAutoUpdate offset={2} placement="bottom-start">
           <div
@@ -372,7 +372,7 @@
     bind:open={deletePageOpen}
   >
     <svelte:fragment slot="title">
-      "{item.content?.title ?? '(제목 없음)'}" 페이지를 삭제하시겠어요?
+      "{item.title}" 페이지를 삭제하시겠어요?
     </svelte:fragment>
     <svelte:fragment slot="content">삭제된 페이지는 복구할 수 없습니다</svelte:fragment>
 

@@ -97,19 +97,17 @@
     query SearchBar_Query($query: String!) @manual {
       searchPublicPage(query: $query) {
         estimatedTotalHits
+
         hits {
           highlight {
             title
             subtitle
             text
           }
+
           page {
             id
-            slug
-
-            content {
-              title
-            }
+            title
 
             ...PageUrl_publicPage
           }
@@ -124,11 +122,7 @@
         answer
         pages {
           id
-          slug
-
-          content {
-            title
-          }
+          title
 
           ...PageUrl_publicPage
         }
@@ -541,9 +535,9 @@
                       },
                       'truncate': true,
                     })}
-                    aria-label={result.page.content.title}
+                    aria-label={result.page.title}
                   >
-                    {@html result.highlight?.title || result.page.content.title}
+                    {@html result.highlight?.title || result.page.title}
                   </h3>
                   {#if result.highlight?.text}
                     <p
@@ -630,7 +624,7 @@
                               textUnderlineOffset: '3px',
                             })}
                           >
-                            {page.content.title}
+                            {page.title}
                           </span>
                         </a>
                       </li>

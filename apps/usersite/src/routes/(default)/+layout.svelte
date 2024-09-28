@@ -38,19 +38,18 @@
 
       searchPublicPage(query: $searchQuery) {
         estimatedTotalHits
+
         hits {
           highlight {
             title
             subtitle
             text
           }
+
           page {
             id
             slug
-
-            content {
-              title
-            }
+            title
 
             ...PageUrl_publicPage
           }

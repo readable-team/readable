@@ -19,9 +19,7 @@ export type PageData = {
   };
   order: string;
   recursiveChildCount: number;
-  content: {
-    title: string;
-  };
+  title: string;
   parent?:
     | {
         id: string;
