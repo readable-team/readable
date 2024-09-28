@@ -406,6 +406,27 @@ export const Sites = pgTable(
   }),
 );
 
+export const SiteAddons = pgTable(
+  'site_addons',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createDbId('SADD')),
+    siteId: text('site_id')
+      .notNull()
+      .references(() => Sites.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+    addonId: text('addon_id')
+      .notNull()
+      .references(() => Addons.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+    createdAt: datetime('created_at')
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => ({
+    siteIdAddonIdUniq: unique().on(t.siteId, t.addonId),
+  }),
+);
+
 export const SiteCustomDomains = pgTable(
   'site_custom_domains',
   {
@@ -498,6 +519,7 @@ export const TeamPlans = pgTable('team_plans', {
     .$defaultFn(() => createDbId('TPLN')),
   teamId: text('team_id')
     .notNull()
+    .unique()
     .references(() => Teams.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
   planId: text('plan_id')
     .notNull()

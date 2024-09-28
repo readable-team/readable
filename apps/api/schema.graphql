@@ -388,6 +388,7 @@ type PublicSite implements ISite {
   slug: String!
   themeColor: String!
   url: String!
+  whitelabelled: Boolean!
 }
 
 input PublishPageInput {
@@ -472,7 +473,19 @@ type Site implements ISite {
   team: Team!
   themeColor: String!
   url: String!
+  whitelabel: SiteAddonResult!
 }
+
+type SiteAddon {
+  id: ID!
+}
+
+type SiteAddonPurchasable {
+  enrollmentFee: Int!
+  id: ID!
+}
+
+union SiteAddonResult = SiteAddon | SiteAddonPurchasable
 
 type SiteCustomDomain {
   domain: String!

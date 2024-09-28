@@ -53,6 +53,7 @@ export const PaymentMethod = createObjectRef('PaymentMethod', T.PaymentMethods);
 export const PaymentRecord = createObjectRef('PaymentRecord', T.PaymentRecords);
 export const Plan = createObjectRef('Plan', T.Plans);
 export const Site = createObjectRef('Site', T.Sites);
+export const SiteAddon = createObjectRef('SiteAddon', T.SiteAddons);
 export const SiteCustomDomain = createObjectRef('SiteCustomDomain', T.SiteCustomDomains);
 export const Team = createObjectRef('Team', T.Teams);
 export const TeamPlan = createObjectRef('TeamPlan', T.TeamPlans);

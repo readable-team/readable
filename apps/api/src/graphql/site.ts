@@ -13,6 +13,7 @@ import {
   PageContents,
   PageContentStates,
   Pages,
+  SiteAddons,
   SiteCustomDomains,
   Sites,
 } from '@/db';
@@ -42,6 +43,7 @@ import {
   PublicPage,
   PublicSite,
   Site,
+  SiteAddon,
   SiteCustomDomain,
   Team,
 } from './objects';
@@ -151,6 +153,26 @@ Site.implement({
           .then(first);
       },
     }),
+
+    whitelabel: t.field({
+      type: SiteAddonResult,
+      resolve: async (site) => {
+        const addon = await db
+          .select()
+          .from(SiteAddons)
+          .where(and(eq(SiteAddons.siteId, site.id), eq(SiteAddons.addonId, 'ADD0WHITELABEL')))
+          .then(first);
+
+        if (addon) {
+          return addon;
+        } else {
+          return {
+            id: 'ADD0WHITELABEL',
+            enrollmentFee: 0, // TODO: 계산 필요
+          };
+        }
+      },
+    }),
   }),
 });
 
@@ -198,6 +220,24 @@ PublicSite.implement({
           .then(first);
       },
     }),
+
+    whitelabelled: t.boolean({
+      resolve: async (site) => {
+        const addon = await db
+          .select({ id: SiteAddons.id })
+          .from(SiteAddons)
+          .where(and(eq(SiteAddons.siteId, site.id), eq(SiteAddons.addonId, 'ADD0WHITELABEL')))
+          .then(first);
+
+        return !!addon;
+      },
+    }),
+  }),
+});
+
+SiteAddon.implement({
+  fields: (t) => ({
+    id: t.exposeID('id'),
   }),
 });
 
@@ -207,6 +247,18 @@ SiteCustomDomain.implement({
     domain: t.exposeString('domain'),
     state: t.expose('state', { type: SiteCustomDomainState }),
   }),
+});
+
+const SiteAddonPurchasable = builder.simpleObject('SiteAddonPurchasable', {
+  fields: (t) => ({
+    id: t.id(),
+    enrollmentFee: t.int(),
+  }),
+});
+
+const SiteAddonResult = builder.unionType('SiteAddonResult', {
+  types: [SiteAddon, SiteAddonPurchasable],
+  resolveType: (value) => ('enrollmentFee' in value ? SiteAddonPurchasable : SiteAddon),
 });
 
 /**
