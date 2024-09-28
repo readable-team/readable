@@ -287,7 +287,11 @@
       color: '#000000',
     });
 
+    const interval = setInterval(() => forceSync(), 10_000);
+
     return () => {
+      clearInterval(interval);
+
       unsubscribe();
       YAwareness.removeAwarenessStates(awareness, [doc.clientID], 'local');
 
