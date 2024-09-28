@@ -335,11 +335,9 @@ type Plan {
 
 type PlanRule {
   aiSearch: Boolean!
-  auditLog: Boolean!
   memberLimit: Int
   pageViewLimit: Int
   siteLimit: Int
-  statistics: Boolean!
 }
 
 enum PlanType {
@@ -519,7 +517,9 @@ type Team {
   meAsMember: TeamMember
   members: [TeamMember!]!
   name: String!
+  paymentInvoices: [PaymentInvoice!]!
   paymentMethod: PaymentMethod
+  plan: TeamPlan!
   sites: [Site!]!
 }
 
@@ -539,6 +539,15 @@ type TeamMemberInvitation {
 enum TeamMemberRole {
   ADMIN
   MEMBER
+}
+
+type TeamPlan {
+  amount: Int!
+  billingCycle: BillingCycle!
+  enrolledAt: DateTime!
+  id: ID!
+  nextPaymentAt: DateTime!
+  plan: Plan!
 }
 
 enum TeamRestrictionType {

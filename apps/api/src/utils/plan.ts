@@ -31,8 +31,6 @@ export const assertPlanRule = async <T extends keyof PlanRules>(params: GetPlanP
   }
 
   switch (params.rule) {
-    case 'auditLog':
-    case 'statistics':
     case 'aiSearch': {
       if (!value) {
         throw new ReadableError({ code: 'feature_not_available' });

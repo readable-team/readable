@@ -222,7 +222,7 @@ builder.mutationFields((t) => ({
           .set({
             planId: input.planId,
             billingCycle: input.billingCycle,
-            updatedAt: dayjs(),
+            enrolledAt: dayjs(),
           })
           .where(eq(TeamPlans.teamId, input.teamId));
       });

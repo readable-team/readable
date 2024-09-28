@@ -55,6 +55,7 @@ export const Plan = createObjectRef('Plan', T.Plans);
 export const Site = createObjectRef('Site', T.Sites);
 export const SiteCustomDomain = createObjectRef('SiteCustomDomain', T.SiteCustomDomains);
 export const Team = createObjectRef('Team', T.Teams);
+export const TeamPlan = createObjectRef('TeamPlan', T.TeamPlans);
 export const TeamMember = createObjectRef('TeamMember', T.TeamMembers);
 export const TeamMemberInvitation = createObjectRef('TeamMemberInvitation', T.TeamMemberInvitations);
 export const User = createObjectRef('User', T.Users);

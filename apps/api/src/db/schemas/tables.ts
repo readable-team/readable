@@ -506,7 +506,7 @@ export const TeamPlans = pgTable('team_plans', {
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),
-  updatedAt: datetime('updated_at')
+  enrolledAt: datetime('enrolled_at')
     .notNull()
     .default(sql`now()`),
 });

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { and, asc, count, eq, getTableColumns, ne } from 'drizzle-orm';
+import { and, asc, count, desc, eq, getTableColumns, ne } from 'drizzle-orm';
 import { match } from 'ts-pattern';
 import { builder } from '@/builder';
 import {
@@ -8,7 +8,9 @@ import {
   first,
   firstOrThrow,
   Images,
+  PaymentInvoices,
   PaymentMethods,
+  Plans,
   Sites,
   TeamMemberInvitations,
   TeamMembers,
@@ -36,7 +38,18 @@ import { generateRandomAvatar } from '@/utils/image-generation';
 import { assertTeamPermission, throwableToBoolean } from '@/utils/permissions';
 import { assertTeamRestriction } from '@/utils/restrictions';
 import { persistBlobAsImage } from '@/utils/user-contents';
-import { Image, PaymentMethod, Site, Team, TeamMember, TeamMemberInvitation, User } from './objects';
+import {
+  Image,
+  PaymentInvoice,
+  PaymentMethod,
+  Plan,
+  Site,
+  Team,
+  TeamMember,
+  TeamMemberInvitation,
+  TeamPlan,
+  User,
+} from './objects';
 
 /**
  * * Types
@@ -124,6 +137,13 @@ Team.implement({
       },
     }),
 
+    plan: t.field({
+      type: TeamPlan,
+      resolve: async (team) => {
+        return await db.select().from(TeamPlans).where(eq(TeamPlans.teamId, team.id)).then(firstOrThrow);
+      },
+    }),
+
     paymentMethod: t.field({
       type: PaymentMethod,
       nullable: true,
@@ -139,6 +159,17 @@ Team.implement({
           .from(PaymentMethods)
           .where(and(eq(PaymentMethods.teamId, team.id), eq(PaymentMethods.state, PaymentMethodState.ACTIVE)))
           .then(first);
+      },
+    }),
+
+    paymentInvoices: t.field({
+      type: [PaymentInvoice],
+      resolve: async (team) => {
+        return await db
+          .select()
+          .from(PaymentInvoices)
+          .where(eq(PaymentInvoices.teamId, team.id))
+          .orderBy(desc(PaymentInvoices.createdAt));
       },
     }),
   }),
@@ -173,6 +204,41 @@ TeamMemberInvitation.implement({
     id: t.exposeID('id'),
     email: t.exposeString('email'),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
+  }),
+});
+
+TeamPlan.implement({
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    billingCycle: t.expose('billingCycle', { type: BillingCycle }),
+    enrolledAt: t.expose('enrolledAt', { type: 'DateTime' }),
+
+    plan: t.field({ type: Plan, resolve: (teamPlan) => teamPlan.planId }),
+
+    amount: t.int({
+      resolve: async (teamPlan) => {
+        const plan = await db
+          .select({ fee: Plans.fee })
+          .from(Plans)
+          .where(eq(Plans.id, teamPlan.planId))
+          .then(firstOrThrow);
+
+        return match(teamPlan.billingCycle)
+          .with(BillingCycle.MONTHLY, () => plan.fee)
+          .with(BillingCycle.YEARLY, () => plan.fee * 10)
+          .exhaustive();
+      },
+    }),
+
+    nextPaymentAt: t.field({
+      type: 'DateTime',
+      resolve: (teamPlan) => {
+        return match(teamPlan.billingCycle)
+          .with(BillingCycle.MONTHLY, () => teamPlan.enrolledAt.add(1, 'month')) // TODO: 31일 등일 경우 처리 필요
+          .with(BillingCycle.YEARLY, () => teamPlan.enrolledAt.add(1, 'year'))
+          .exhaustive();
+      },
+    }),
   }),
 });
 
