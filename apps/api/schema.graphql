@@ -80,7 +80,12 @@ type Embed {
   url: String!
 }
 
-input EnrollPlanInput {
+input EnrollSiteAddonInput {
+  addonId: ID!
+  siteId: ID!
+}
+
+input EnrollTeamPlanInput {
   billingCycle: BillingCycle!
   planId: ID!
   teamId: ID!
@@ -180,7 +185,8 @@ type Mutation {
   deleteSite(input: DeleteSiteInput!): Site!
   deleteTeam(input: DeleteTeamInput!): Team!
   duplicatePage(input: DuplicatePageInput!): Page!
-  enrollPlan(input: EnrollPlanInput!): Team!
+  enrollSiteAddon(input: EnrollSiteAddonInput!): Site!
+  enrollTeamPlan(input: EnrollTeamPlanInput!): Team!
   generateSingleSignOnAuthorizationUrl(input: GenerateSingleSignOnAuthorizationUrlInput!): String!
   inviteTeamMember(input: InviteTeamMemberInput!): InviteTeamMemberResult!
   issueBlobUploadUrl(input: IssueBlobUploadUrlInput!): IssueBlobUploadUrlResult!

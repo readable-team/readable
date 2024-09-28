@@ -29,6 +29,7 @@ await db.transaction(async (tx) => {
       siteLimit: null,
       pageViewLimit: null,
       aiSearch: true,
+      addonsAvailable: ['ADD0WHITELABEL'],
     },
   });
 

@@ -3,6 +3,7 @@ export type PlanRules = {
   siteLimit: number | null;
   pageViewLimit: number | null;
   aiSearch: boolean;
+  addonsAvailable: string[];
 };
 
 export const defaultPlanRules: PlanRules = {
@@ -10,4 +11,5 @@ export const defaultPlanRules: PlanRules = {
   siteLimit: 1,
   pageViewLimit: 5000,
   aiSearch: false,
+  addonsAvailable: [],
 };

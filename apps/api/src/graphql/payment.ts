@@ -2,7 +2,20 @@ import dayjs from 'dayjs';
 import { and, desc, eq } from 'drizzle-orm';
 import { match } from 'ts-pattern';
 import { builder } from '@/builder';
-import { db, firstOrThrow, PaymentInvoices, PaymentMethods, PaymentRecords, Plans, TeamPlans, Teams } from '@/db';
+import {
+  Addons,
+  db,
+  first,
+  firstOrThrow,
+  PaymentInvoices,
+  PaymentMethods,
+  PaymentRecords,
+  Plans,
+  SiteAddons,
+  Sites,
+  TeamPlans,
+  Teams,
+} from '@/db';
 import {
   BillingCycle,
   PaymentInvoiceState,
@@ -15,9 +28,9 @@ import {
 import { ReadableError } from '@/errors';
 import * as portone from '@/external/portone';
 import { dataSchemas } from '@/schemas';
-import { assertTeamPermission } from '@/utils/permissions';
+import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
 import { assertTeamRestriction } from '@/utils/restrictions';
-import { PaymentInvoice, PaymentMethod, PaymentRecord, Team } from './objects';
+import { PaymentInvoice, PaymentMethod, PaymentRecord, Site, Team } from './objects';
 
 PaymentInvoice.implement({
   fields: (t) => ({
@@ -120,7 +133,7 @@ builder.mutationFields((t) => ({
     },
   }),
 
-  enrollPlan: t.withAuth({ session: true }).fieldWithInput({
+  enrollTeamPlan: t.withAuth({ session: true }).fieldWithInput({
     type: Team,
     input: {
       teamId: t.input.id(),
@@ -145,7 +158,7 @@ builder.mutationFields((t) => ({
         .where(eq(TeamPlans.teamId, input.teamId))
         .then(firstOrThrow);
 
-      if (teamPlan?.planId === input.planId) {
+      if (teamPlan.planId === input.planId) {
         throw new ReadableError({ code: 'already_enrolled' });
       }
 
@@ -196,17 +209,13 @@ builder.mutationFields((t) => ({
           throw new ReadableError({ code: 'payment_failed', message: res.message });
         }
 
-        await tx
-          .insert(PaymentRecords)
-          .values({
-            invoiceId: invoice.id,
-            methodId: paymentMethod.id,
-            type: PaymentRecordType.SUCCESS,
-            amount: paymentAmount,
-            receiptUrl: res.receiptUrl,
-          })
-          .returning()
-          .then(firstOrThrow);
+        await tx.insert(PaymentRecords).values({
+          invoiceId: invoice.id,
+          methodId: paymentMethod.id,
+          type: PaymentRecordType.SUCCESS,
+          amount: paymentAmount,
+          receiptUrl: res.receiptUrl,
+        });
 
         await tx
           .update(TeamPlans)
@@ -219,6 +228,126 @@ builder.mutationFields((t) => ({
       });
 
       return input.teamId;
+    },
+  }),
+
+  enrollSiteAddon: t.withAuth({ session: true }).fieldWithInput({
+    type: Site,
+    input: {
+      siteId: t.input.id(),
+      addonId: t.input.id(),
+    },
+    resolve: async (_, { input }, ctx) => {
+      await assertSitePermission({
+        siteId: input.siteId,
+        userId: ctx.session.userId,
+        role: TeamMemberRole.ADMIN,
+      });
+
+      await assertTeamRestriction({
+        siteId: input.siteId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
+      const addon = await db
+        .select({ fee: Addons.fee })
+        .from(Addons)
+        .where(eq(Addons.id, input.addonId))
+        .then(firstOrThrow);
+
+      const siteAddon = await db
+        .select({ id: SiteAddons.id })
+        .from(SiteAddons)
+        .where(and(eq(SiteAddons.siteId, input.siteId), eq(SiteAddons.addonId, input.addonId)))
+        .then(first);
+
+      if (siteAddon) {
+        throw new ReadableError({ code: 'already_enrolled' });
+      }
+
+      const site = await db
+        .select({ teamId: Sites.teamId })
+        .from(Sites)
+        .where(eq(Sites.id, input.siteId))
+        .then(firstOrThrow);
+
+      const teamPlan = await db
+        .select({
+          planId: TeamPlans.planId,
+          billingCycle: TeamPlans.billingCycle,
+          billingEmail: TeamPlans.billingEmail,
+        })
+        .from(TeamPlans)
+        .where(eq(TeamPlans.teamId, site.teamId))
+        .then(firstOrThrow);
+
+      const plan = await db
+        .select({ rules: Plans.rules })
+        .from(Plans)
+        .where(eq(Plans.id, teamPlan.planId))
+        .then(firstOrThrow);
+
+      if (!plan.rules.addonsAvailable?.includes(input.addonId)) {
+        throw new ReadableError({ code: 'addon_not_available' });
+      }
+
+      const paymentMethod = await db
+        .select({ id: PaymentMethods.id, billingKey: PaymentMethods.billingKey })
+        .from(PaymentMethods)
+        .where(and(eq(PaymentMethods.teamId, site.teamId), eq(PaymentMethods.state, PaymentMethodState.ACTIVE)))
+        .then(firstOrThrow);
+
+      const team = await db
+        .select({ name: Teams.name })
+        .from(Teams)
+        .where(eq(Teams.id, site.teamId))
+        .then(firstOrThrow);
+
+      // TODO: 일할 계산 필요
+      const paymentAmount = match(teamPlan.billingCycle)
+        .with(BillingCycle.MONTHLY, () => addon.fee)
+        .with(BillingCycle.YEARLY, () => addon.fee * 10)
+        .exhaustive();
+
+      await db.transaction(async (tx) => {
+        const invoice = await tx
+          .insert(PaymentInvoices)
+          .values({
+            teamId: site.teamId,
+            amount: paymentAmount,
+            state: PaymentInvoiceState.COMPLETED,
+          })
+          .returning({ id: PaymentInvoices.id })
+          .then(firstOrThrow);
+
+        const res = await portone.makePayment({
+          paymentId: invoice.id,
+          billingKey: paymentMethod.billingKey,
+          customerName: team.name,
+          customerEmail: teamPlan.billingEmail,
+          orderName: '리더블 정기결제',
+          amount: paymentAmount,
+        });
+
+        if (res.status === 'failed') {
+          throw new ReadableError({ code: 'payment_failed', message: res.message });
+        }
+
+        await tx.insert(PaymentRecords).values({
+          invoiceId: invoice.id,
+          methodId: paymentMethod.id,
+          type: PaymentRecordType.SUCCESS,
+          amount: paymentAmount,
+          receiptUrl: res.receiptUrl,
+        });
+
+        await tx.insert(SiteAddons).values({
+          siteId: input.siteId,
+          addonId: input.addonId,
+        });
+      });
+
+      return input.siteId;
     },
   }),
 }));
