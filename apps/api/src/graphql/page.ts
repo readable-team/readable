@@ -577,7 +577,7 @@ builder.mutationFields((t) => ({
   updateCategoryPosition: t.withAuth({ session: true }).fieldWithInput({
     type: Category,
     input: {
-      categoryId: t.input.string(),
+      categoryId: t.input.id(),
       lower: t.input.string({ required: false }),
       upper: t.input.string({ required: false }),
     },
@@ -812,9 +812,9 @@ builder.mutationFields((t) => ({
   updatePagePosition: t.withAuth({ session: true }).fieldWithInput({
     type: Page,
     input: {
-      pageId: t.input.string(),
-      categoryId: t.input.string(),
-      parentId: t.input.string({ required: false }),
+      pageId: t.input.id(),
+      categoryId: t.input.id(),
+      parentId: t.input.id({ required: false }),
       lower: t.input.string({ required: false }),
       upper: t.input.string({ required: false }),
     },

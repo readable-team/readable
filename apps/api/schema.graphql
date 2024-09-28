@@ -64,7 +64,7 @@ input DeleteSiteInput {
 }
 
 input DeleteTeamInput {
-  teamId: String!
+  teamId: ID!
 }
 
 input DuplicatePageInput {
@@ -134,7 +134,7 @@ type Image implements Blob {
 
 input InviteTeamMemberInput {
   email: String!
-  teamId: String!
+  teamId: ID!
 }
 
 union InviteTeamMemberResult = TeamMember | TeamMemberInvitation
@@ -393,16 +393,16 @@ type Query {
 }
 
 input RemoveTeamMemberInput {
-  teamId: String!
-  userId: String!
+  teamId: ID!
+  userId: ID!
 }
 
 input ResendInvitationEmailInput {
-  invitationId: String!
+  invitationId: ID!
 }
 
 input RevokeInvitationInput {
-  invitationId: String!
+  invitationId: ID!
 }
 
 type SearchPageByChangeFix {
@@ -565,7 +565,7 @@ input UpdateCategoryInput {
 }
 
 input UpdateCategoryPositionInput {
-  categoryId: String!
+  categoryId: ID!
   lower: String
   upper: String
 }
@@ -576,10 +576,10 @@ input UpdateCategorySlugInput {
 }
 
 input UpdatePagePositionInput {
-  categoryId: String!
+  categoryId: ID!
   lower: String
-  pageId: String!
-  parentId: String
+  pageId: ID!
+  parentId: ID
   upper: String
 }
 
@@ -598,7 +598,7 @@ input UpdatePaymentMethodInput {
   cardNumber: String!
   expiry: String!
   passwordTwoDigits: String!
-  teamId: String!
+  teamId: ID!
 }
 
 input UpdateSiteInput {
@@ -610,15 +610,15 @@ input UpdateSiteInput {
 }
 
 input UpdateTeamInput {
-  avatarId: String!
+  avatarId: ID!
   name: String!
-  teamId: String!
+  teamId: ID!
 }
 
 input UpdateTeamMemberRoleInput {
   role: TeamMemberRole!
-  teamId: String!
-  userId: String!
+  teamId: ID!
+  userId: ID!
 }
 
 input UpdateUserInput {
@@ -628,7 +628,7 @@ input UpdateUserInput {
 
 input UpgradePlanInput {
   billingCycle: BillingCycle!
-  teamId: String!
+  teamId: ID!
 }
 
 type User {

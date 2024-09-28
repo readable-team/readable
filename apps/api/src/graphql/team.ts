@@ -236,9 +236,9 @@ builder.mutationFields((t) => ({
   updateTeam: t.withAuth({ session: true }).fieldWithInput({
     type: Team,
     input: {
-      teamId: t.input.string(),
+      teamId: t.input.id(),
       name: t.input.string({ validate: { schema: dataSchemas.team.name } }),
-      avatarId: t.input.string(),
+      avatarId: t.input.id(),
     },
     resolve: async (_, { input }, ctx) => {
       await assertTeamPermission({
@@ -270,7 +270,7 @@ builder.mutationFields((t) => ({
 
   deleteTeam: t.withAuth({ session: true }).fieldWithInput({
     type: Team,
-    input: { teamId: t.input.string() },
+    input: { teamId: t.input.id() },
     resolve: async (_, { input }, ctx) => {
       await assertTeamPermission({
         teamId: input.teamId,
@@ -306,7 +306,10 @@ builder.mutationFields((t) => ({
       types: [TeamMember, TeamMemberInvitation],
       resolveType: (object) => ('expiresAt' in object ? TeamMemberInvitation : TeamMember),
     }),
-    input: { teamId: t.input.string(), email: t.input.string({ validate: { schema: dataSchemas.email } }) },
+    input: {
+      teamId: t.input.id(),
+      email: t.input.string({ validate: { schema: dataSchemas.email } }),
+    },
     resolve: async (_, { input }, ctx) => {
       await assertTeamPermission({
         teamId: input.teamId,
@@ -409,7 +412,7 @@ builder.mutationFields((t) => ({
 
   resendInvitationEmail: t.withAuth({ session: true }).fieldWithInput({
     type: TeamMemberInvitation,
-    input: { invitationId: t.input.string() },
+    input: { invitationId: t.input.id() },
     resolve: async (_, { input }, ctx) => {
       const invitation = await db
         .select({
@@ -466,7 +469,7 @@ builder.mutationFields((t) => ({
 
   revokeInvitation: t.withAuth({ session: true }).fieldWithInput({
     type: TeamMemberInvitation,
-    input: { invitationId: t.input.string() },
+    input: { invitationId: t.input.id() },
     resolve: async (_, { input }, ctx) => {
       const invitation = await db
         .select({
@@ -504,7 +507,7 @@ builder.mutationFields((t) => ({
 
   removeTeamMember: t.withAuth({ session: true }).fieldWithInput({
     type: TeamMember,
-    input: { teamId: t.input.string(), userId: t.input.string() },
+    input: { teamId: t.input.id(), userId: t.input.id() },
     resolve: async (_, { input }, ctx) => {
       await assertTeamPermission({
         teamId: input.teamId,
@@ -544,8 +547,8 @@ builder.mutationFields((t) => ({
   updateTeamMemberRole: t.withAuth({ session: true }).fieldWithInput({
     type: TeamMember,
     input: {
-      teamId: t.input.string(),
-      userId: t.input.string(),
+      teamId: t.input.id(),
+      userId: t.input.id(),
       role: t.input.field({ type: TeamMemberRole }),
     },
     resolve: async (_, { input }, ctx) => {

@@ -46,7 +46,7 @@ builder.mutationFields((t) => ({
   updatePaymentMethod: t.withAuth({ session: true }).fieldWithInput({
     type: PaymentMethod,
     input: {
-      teamId: t.input.string(),
+      teamId: t.input.id(),
       cardNumber: t.input.string({ validate: { schema: dataSchemas.card.number } }),
       expiry: t.input.string({ validate: { schema: dataSchemas.card.expiry } }),
       birthOrBusinessRegistrationNumber: t.input.string({
@@ -103,7 +103,7 @@ builder.mutationFields((t) => ({
   upgradePlan: t.withAuth({ session: true }).fieldWithInput({
     type: Team,
     input: {
-      teamId: t.input.string(),
+      teamId: t.input.id(),
       billingCycle: t.input.field({ type: BillingCycle }),
     },
     resolve: async (_, { input }, ctx) => {
