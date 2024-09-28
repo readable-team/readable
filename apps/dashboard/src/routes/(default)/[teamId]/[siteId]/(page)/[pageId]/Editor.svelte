@@ -5,6 +5,7 @@
   import ky from 'ky';
   import { base64 } from 'rfc4648';
   import { onMount } from 'svelte';
+  import { IndexeddbPersistence } from 'y-indexeddb';
   import * as YAwareness from 'y-protocols/awareness';
   import * as Y from 'yjs';
   import { PageContentSyncKind } from '@/enums';
@@ -50,7 +51,10 @@
 
   const syncPageContent = graphql(`
     mutation PagePage_SyncPageContent_Mutation($input: SyncPageContentInput!) {
-      syncPageContent(input: $input)
+      syncPageContent(input: $input) {
+        kind
+        data
+      }
     }
   `);
 
@@ -230,7 +234,7 @@
 
     await syncPageContent({
       pageId: $query.page.id,
-      kind: PageContentSyncKind.CURSOR,
+      kind: PageContentSyncKind.AWARENESS,
       data: base64.stringify(update),
     });
   });
@@ -238,14 +242,43 @@
   pageContentSyncStream.on('data', ({ pageContentSyncStream: { kind, data } }) => {
     if (kind === PageContentSyncKind.UPDATE) {
       Y.applyUpdateV2(doc, base64.parse(data), 'remote');
-    } else if (kind === PageContentSyncKind.CURSOR) {
+    } else if (kind === PageContentSyncKind.AWARENESS) {
       YAwareness.applyAwarenessUpdate(awareness, base64.parse(data), 'remote');
     }
   });
 
+  const forceSync = async () => {
+    const clientStateVector = Y.encodeStateVector(doc);
+
+    const results = await syncPageContent({
+      pageId: $query.page.id,
+      kind: PageContentSyncKind.VECTOR,
+      data: base64.stringify(clientStateVector),
+    });
+
+    for (const { kind, data } of results) {
+      if (kind === PageContentSyncKind.VECTOR) {
+        const serverStateVector = base64.parse(data);
+        const serverMissingUpdate = Y.encodeStateAsUpdateV2(doc, serverStateVector);
+
+        await syncPageContent({
+          pageId: $query.page.id,
+          kind: PageContentSyncKind.UPDATE,
+          data: base64.stringify(serverMissingUpdate),
+        });
+      } else if (kind === PageContentSyncKind.UPDATE) {
+        const clientMissingUpdate = base64.parse(data);
+        Y.applyUpdateV2(doc, clientMissingUpdate, 'remote');
+      }
+    }
+  };
+
   const title = createStore('title');
 
   onMount(() => {
+    const persistence = new IndexeddbPersistence(`readable:editor:${$query.page.id}`, doc);
+    persistence.on('synced', () => forceSync());
+
     const unsubscribe = pageContentSyncStream.subscribe({ pageId: $query.page.id });
 
     Y.applyUpdateV2(doc, base64.parse($query.page.content.update), 'remote');
@@ -258,6 +291,7 @@
       unsubscribe();
       YAwareness.removeAwarenessStates(awareness, [doc.clientID], 'local');
 
+      persistence.destroy();
       awareness.destroy();
       doc.destroy();
     };

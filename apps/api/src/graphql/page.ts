@@ -406,14 +406,6 @@ PublicPageContent.implement({
   }),
 });
 
-const PageContentSyncStreamPayload = builder.simpleObject('PageContentSyncStreamPayload', {
-  fields: (t) => ({
-    pageId: t.id(),
-    kind: t.field({ type: PageContentSyncKind }),
-    data: t.field({ type: 'Binary' }),
-  }),
-});
-
 /**
  * * Queries
  */
@@ -1009,7 +1001,14 @@ builder.mutationFields((t) => ({
   }),
 
   syncPageContent: t.withAuth({ session: true }).fieldWithInput({
-    type: 'Boolean',
+    type: [
+      builder.simpleObject('SyncPageContentPayload', {
+        fields: (t) => ({
+          kind: t.field({ type: PageContentSyncKind }),
+          data: t.field({ type: 'Binary' }),
+        }),
+      }),
+    ],
     input: {
       pageId: t.input.id(),
       kind: t.input.field({ type: PageContentSyncKind }),
@@ -1026,12 +1025,13 @@ builder.mutationFields((t) => ({
         type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
-      pubsub.publish('page:content:sync', input.pageId, {
-        kind: input.kind,
-        data: base64.stringify(input.data),
-      });
-
+      // eslint-disable-next-line unicorn/prefer-switch
       if (input.kind === PageContentSyncKind.UPDATE) {
+        pubsub.publish('page:content:sync', input.pageId, {
+          kind: input.kind,
+          data: base64.stringify(input.data),
+        });
+
         await db.transaction(async (tx) => {
           await tx.insert(PageContentUpdates).values({
             pageId: input.pageId,
@@ -1041,9 +1041,29 @@ builder.mutationFields((t) => ({
 
           await enqueueJob(tx, 'page:content:state-update', input.pageId);
         });
+
+        return [];
+      } else if (input.kind === PageContentSyncKind.VECTOR) {
+        const state = await getLatestPageContentState(input.pageId);
+
+        const clientStateVector = input.data;
+        const clientMissingUpdate = Y.diffUpdateV2(state.update, clientStateVector);
+        const serverStateVector = state.vector;
+
+        return [
+          { kind: 'UPDATE', data: clientMissingUpdate },
+          { kind: 'VECTOR', data: serverStateVector },
+        ] as const;
+      } else if (input.kind === PageContentSyncKind.AWARENESS) {
+        pubsub.publish('page:content:sync', input.pageId, {
+          kind: input.kind,
+          data: base64.stringify(input.data),
+        });
+
+        return [];
       }
 
-      return true;
+      throw new Error('Invalid kind');
     },
   }),
 
@@ -1170,7 +1190,13 @@ builder.mutationFields((t) => ({
 
 builder.subscriptionFields((t) => ({
   pageContentSyncStream: t.withAuth({ session: true }).field({
-    type: PageContentSyncStreamPayload,
+    type: builder.simpleObject('PageContentSyncStreamPayload', {
+      fields: (t) => ({
+        pageId: t.id(),
+        kind: t.field({ type: PageContentSyncKind }),
+        data: t.field({ type: 'Binary' }),
+      }),
+    }),
     args: { pageId: t.arg.id() },
     subscribe: async (_, args, ctx) => {
       await assertPagePermission({
@@ -1200,3 +1226,31 @@ builder.subscriptionFields((t) => ({
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
+
+export const getLatestPageContentState = async (pageId: string) => {
+  const state = await db
+    .select({ update: PageContentStates.update, vector: PageContentStates.vector, seq: PageContentStates.seq })
+    .from(PageContentStates)
+    .where(eq(PageContentStates.pageId, pageId))
+    .then(firstOrThrow);
+
+  const pendingUpdates = await db
+    .select({ update: PageContentUpdates.update })
+    .from(PageContentUpdates)
+    .where(and(eq(PageContentUpdates.pageId, pageId), gt(PageContentUpdates.seq, state.seq)));
+
+  if (pendingUpdates.length === 0) {
+    return {
+      update: state.update,
+      vector: state.vector,
+    };
+  }
+
+  const updatedUpdate = Y.mergeUpdatesV2([state.update, ...pendingUpdates.map(({ update }) => update)]);
+  const updatedVector = Y.encodeStateVectorFromUpdateV2(updatedUpdate);
+
+  return {
+    update: updatedUpdate,
+    vector: updatedVector,
+  };
+};

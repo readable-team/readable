@@ -185,7 +185,7 @@ type Mutation {
   resendInvitationEmail(input: ResendInvitationEmailInput!): TeamMemberInvitation!
   revokeInvitation(input: RevokeInvitationInput!): TeamMemberInvitation!
   setSiteCustomDomain(input: SetSiteCustomDomainInput!): SiteCustomDomain!
-  syncPageContent(input: SyncPageContentInput!): Boolean!
+  syncPageContent(input: SyncPageContentInput!): [SyncPageContentPayload!]!
   unfurlEmbed(input: UnfurlEmbedInput!): Embed!
   unfurlLink(input: UnfurlLinkInput!): UnfurlLinkResult!
   unpublishPage(input: UnpublishPageInput!): Page!
@@ -239,9 +239,9 @@ type PageContentState {
 }
 
 enum PageContentSyncKind {
-  CURSOR
+  AWARENESS
   UPDATE
-  VERSION
+  VECTOR
 }
 
 type PageContentSyncStreamPayload {
@@ -485,6 +485,11 @@ input SyncPageContentInput {
   data: Binary!
   kind: PageContentSyncKind!
   pageId: ID!
+}
+
+type SyncPageContentPayload {
+  data: Binary!
+  kind: PageContentSyncKind!
 }
 
 type Team {

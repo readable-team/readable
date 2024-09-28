@@ -21,8 +21,8 @@ export const JobState = {
 export type PageContentSyncKind = keyof typeof PageContentSyncKind;
 export const PageContentSyncKind = {
   UPDATE: 'UPDATE',
-  VERSION: 'VERSION',
-  CURSOR: 'CURSOR',
+  VECTOR: 'VECTOR',
+  AWARENESS: 'AWARENESS',
 } as const;
 
 export type PageState = keyof typeof PageState;
