@@ -1,4 +1,5 @@
-import { and, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
+import { match } from 'ts-pattern';
 import { builder } from '@/builder';
 import {
   db,
@@ -11,14 +12,41 @@ import {
   TeamPlans,
   Teams,
 } from '@/db';
-import { BillingCycle, PaymentInvoiceState, PaymentMethodState, PaymentRecordState, TeamMemberRole } from '@/enums';
+import {
+  BillingCycle,
+  PaymentInvoiceState,
+  PaymentMethodState,
+  PaymentRecordType,
+  PlanType,
+  TeamMemberRole,
+  TeamRestrictionType,
+} from '@/enums';
 import { ReadableError } from '@/errors';
 import * as portone from '@/external/portone';
 import { dataSchemas } from '@/schemas';
 import { assertTeamPermission } from '@/utils/permissions';
-import { PaymentMethod, PaymentRecord, Team } from './objects';
+import { assertTeamRestriction } from '@/utils/restrictions';
+import { PaymentInvoice, PaymentMethod, PaymentRecord, Team } from './objects';
 
-const UPGRADABLE_PLAN_ID = 'PLAN000000TEAM';
+PaymentInvoice.implement({
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    amount: t.exposeInt('amount'),
+    state: t.expose('state', { type: PaymentInvoiceState }),
+    createdAt: t.expose('createdAt', { type: 'DateTime' }),
+
+    records: t.field({
+      type: [PaymentRecord],
+      resolve: async (invoice) => {
+        return await db
+          .select()
+          .from(PaymentRecords)
+          .where(eq(PaymentRecords.invoiceId, invoice.id))
+          .orderBy(desc(PaymentRecords.createdAt));
+      },
+    }),
+  }),
+});
 
 PaymentMethod.implement({
   fields: (t) => ({
@@ -31,8 +59,9 @@ PaymentMethod.implement({
 PaymentRecord.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
-    state: t.expose('state', { type: PaymentRecordState }),
+    type: t.expose('type', { type: PaymentRecordType }),
     amount: t.exposeInt('amount'),
+    receiptUrl: t.exposeString('receiptUrl', { nullable: true }),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
 
     paymentMethod: t.field({
@@ -100,10 +129,11 @@ builder.mutationFields((t) => ({
     },
   }),
 
-  upgradePlan: t.withAuth({ session: true }).fieldWithInput({
+  enrollPlan: t.withAuth({ session: true }).fieldWithInput({
     type: Team,
     input: {
       teamId: t.input.id(),
+      planId: t.input.id(),
       billingCycle: t.input.field({ type: BillingCycle }),
     },
     resolve: async (_, { input }, ctx) => {
@@ -113,47 +143,46 @@ builder.mutationFields((t) => ({
         role: TeamMemberRole.ADMIN,
       });
 
-      const teamPlan = await db
-        .select({
-          team: Teams,
-          id: TeamPlans.planId,
-        })
-        .from(Teams)
-        .leftJoin(TeamPlans, eq(TeamPlans.teamId, Teams.id))
-        .where(eq(Teams.id, input.teamId))
-        .then(firstOrThrow);
+      await assertTeamRestriction({
+        teamId: input.teamId,
+        type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
 
-      if (teamPlan.id) {
-        throw new ReadableError({ code: 'already_upgraded' });
+      const teamPlan = await db
+        .select({ planId: TeamPlans.planId })
+        .from(TeamPlans)
+        .where(eq(TeamPlans.teamId, input.teamId))
+        .then(first);
+
+      if (teamPlan?.planId === input.planId) {
+        throw new ReadableError({ code: 'already_enrolled' });
       }
 
       const paymentMethod = await db
-        .select({
-          id: PaymentMethods.id,
-          billingKey: PaymentMethods.billingKey,
-        })
+        .select({ id: PaymentMethods.id, billingKey: PaymentMethods.billingKey })
         .from(PaymentMethods)
         .where(and(eq(PaymentMethods.teamId, input.teamId), eq(PaymentMethods.state, PaymentMethodState.ACTIVE)))
-        .then(first);
-
-      if (!paymentMethod) {
-        throw new ReadableError({ code: 'payment_method_not_found' });
-      }
-
-      const plan = await db
-        .select({
-          fee: Plans.fee,
-        })
-        .from(Plans)
-        .where(eq(Plans.id, UPGRADABLE_PLAN_ID))
         .then(firstOrThrow);
 
-      const paymentAmount = input.billingCycle === BillingCycle.MONTHLY ? plan.fee : plan.fee * 10;
+      const plan = await db
+        .select({ fee: Plans.fee })
+        .from(Plans)
+        .where(and(eq(Plans.id, input.planId), eq(Plans.type, PlanType.PUBLIC)))
+        .then(firstOrThrow);
+
+      const team = await db
+        .select({ name: Teams.name })
+        .from(Teams)
+        .where(eq(Teams.id, input.teamId))
+        .then(firstOrThrow);
+
+      const paymentAmount = match(input.billingCycle)
+        .with(BillingCycle.MONTHLY, () => plan.fee)
+        .with(BillingCycle.YEARLY, () => plan.fee * 10)
+        .exhaustive();
 
       await db.transaction(async (tx) => {
-        // 결제 실패하면 롤백되서 플랜 변경 자체가 없던 일이 됨 -> 그래서 일단 COMPLETED
-
-        const invoice = await db
+        const invoice = await tx
           .insert(PaymentInvoices)
           .values({
             teamId: input.teamId,
@@ -163,42 +192,38 @@ builder.mutationFields((t) => ({
           .returning({ id: PaymentInvoices.id })
           .then(firstOrThrow);
 
-        const record = await db
+        const res = await portone.makePayment({
+          paymentId: invoice.id,
+          billingKey: paymentMethod.billingKey,
+          customerName: team.name,
+          orderName: '리더블 정기결제',
+          amount: paymentAmount,
+        });
+
+        if (res.status === 'failed') {
+          throw new ReadableError({ code: 'payment_failed', message: res.message });
+        }
+
+        await tx
           .insert(PaymentRecords)
           .values({
-            teamId: input.teamId,
-            methodId: paymentMethod.id,
             invoiceId: invoice.id,
+            methodId: paymentMethod.id,
+            type: PaymentRecordType.SUCCESS,
             amount: paymentAmount,
-            state: PaymentRecordState.COMPLETED,
+            receiptUrl: res.receiptUrl,
           })
           .returning()
           .then(firstOrThrow);
 
         await tx.insert(TeamPlans).values({
           teamId: input.teamId,
-          planId: UPGRADABLE_PLAN_ID,
+          planId: input.planId,
           billingCycle: input.billingCycle,
         });
-
-        const paymentResult = await portone.makePayment({
-          billingKey: paymentMethod.billingKey,
-          amount: paymentAmount,
-          customerName: teamPlan.team.name,
-          orderName: '리더블 정기결제',
-          paymentId: record.id,
-        });
-
-        if (paymentResult.status === 'failed') {
-          await tx
-            .update(PaymentRecords)
-            .set({ state: PaymentRecordState.FAILED })
-            .where(eq(PaymentRecords.id, record.id));
-          throw new ReadableError({ code: 'payment_failed' });
-        }
       });
 
-      return teamPlan.team;
+      return input.teamId;
     },
   }),
 }));

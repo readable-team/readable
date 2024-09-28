@@ -80,6 +80,12 @@ type Embed {
   url: String!
 }
 
+input EnrollPlanInput {
+  billingCycle: BillingCycle!
+  planId: ID!
+  teamId: ID!
+}
+
 type File implements Blob {
   id: ID!
   name: String!
@@ -174,6 +180,7 @@ type Mutation {
   deleteSite(input: DeleteSiteInput!): Site!
   deleteTeam(input: DeleteTeamInput!): Team!
   duplicatePage(input: DuplicatePageInput!): Page!
+  enrollPlan(input: EnrollPlanInput!): Team!
   generateSingleSignOnAuthorizationUrl(input: GenerateSingleSignOnAuthorizationUrlInput!): String!
   inviteTeamMember(input: InviteTeamMemberInput!): InviteTeamMemberResult!
   issueBlobUploadUrl(input: IssueBlobUploadUrlInput!): IssueBlobUploadUrlResult!
@@ -201,7 +208,6 @@ type Mutation {
   updateTeam(input: UpdateTeamInput!): Team!
   updateTeamMemberRole(input: UpdateTeamMemberRoleInput!): TeamMember!
   updateUser(input: UpdateUserInput!): User!
-  upgradePlan(input: UpgradePlanInput!): Team!
 }
 
 type Page implements IPage {
@@ -274,6 +280,14 @@ enum PageState {
   PUBLISHED
 }
 
+type PaymentInvoice {
+  amount: Int!
+  createdAt: DateTime!
+  id: ID!
+  records: [PaymentRecord!]!
+  state: PaymentInvoiceState!
+}
+
 enum PaymentInvoiceState {
   COMPLETED
   PENDING
@@ -295,13 +309,13 @@ type PaymentRecord {
   createdAt: DateTime!
   id: ID!
   paymentMethod: PaymentMethod!
-  state: PaymentRecordState!
+  receiptUrl: String
+  type: PaymentRecordType!
 }
 
-enum PaymentRecordState {
-  COMPLETED
-  FAILED
-  PENDING
+enum PaymentRecordType {
+  FAILURE
+  SUCCESS
 }
 
 input PersistBlobAsFileInput {
@@ -326,6 +340,11 @@ type PlanRule {
   pageViewLimit: Int
   siteLimit: Int
   statistics: Boolean!
+}
+
+enum PlanType {
+  PRIVATE
+  PUBLIC
 }
 
 type PublicCategory implements ICategory {
@@ -501,7 +520,6 @@ type Team {
   members: [TeamMember!]!
   name: String!
   paymentMethod: PaymentMethod
-  paymentRecords(state: PaymentRecordState): [PaymentRecord!]!
   sites: [Site!]!
 }
 
@@ -624,11 +642,6 @@ input UpdateTeamMemberRoleInput {
 input UpdateUserInput {
   avatarId: ID!
   name: String!
-}
-
-input UpgradePlanInput {
-  billingCycle: BillingCycle!
-  teamId: ID!
 }
 
 type User {

@@ -45,11 +45,16 @@ export const PaymentMethodState = {
   DEACTIVATED: 'DEACTIVATED',
 } as const;
 
-export type PaymentRecordState = keyof typeof PaymentRecordState;
-export const PaymentRecordState = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  FAILED: 'FAILED',
+export type PaymentRecordType = keyof typeof PaymentRecordType;
+export const PaymentRecordType = {
+  SUCCESS: 'SUCCESS',
+  FAILURE: 'FAILURE',
+} as const;
+
+export type PlanType = keyof typeof PlanType;
+export const PlanType = {
+  PUBLIC: 'PUBLIC',
+  PRIVATE: 'PRIVATE',
 } as const;
 
 export type SingleSignOnProvider = keyof typeof SingleSignOnProvider;

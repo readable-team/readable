@@ -341,17 +341,15 @@ export const PaymentRecords = pgTable('payment_records', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => createDbId('PYRD')),
-  teamId: text('team_id')
-    .notNull()
-    .references(() => Teams.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
-  methodId: text('method_id')
-    .notNull()
-    .references(() => PaymentMethods.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
   invoiceId: text('invoice_id')
     .notNull()
     .references(() => PaymentInvoices.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
-  state: E._PaymentRecordState('state').notNull().default('PENDING'),
+  methodId: text('method_id')
+    .notNull()
+    .references(() => PaymentMethods.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+  type: E._PaymentRecordType('type').notNull(),
   amount: integer('amount').notNull(),
+  receiptUrl: text('receipt_url'),
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),
@@ -364,6 +362,7 @@ export const Plans = pgTable('plans', {
   name: text('name').notNull(),
   rules: jsonb('rules').notNull().$type<Partial<PlanRules>>(),
   fee: integer('fee').notNull().default(0),
+  type: E._PlanType('type').notNull().default('PUBLIC'),
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),

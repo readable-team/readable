@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { and, asc, count, desc, eq, getTableColumns, ne } from 'drizzle-orm';
+import { and, asc, count, eq, getTableColumns, ne } from 'drizzle-orm';
 import { match } from 'ts-pattern';
 import { builder } from '@/builder';
 import {
@@ -9,7 +9,6 @@ import {
   firstOrThrow,
   Images,
   PaymentMethods,
-  PaymentRecords,
   Sites,
   TeamMemberInvitations,
   TeamMembers,
@@ -19,15 +18,7 @@ import {
 import { sendEmail } from '@/email';
 import TeamMemberAddedEmail from '@/email/templates/TeamMemberAdded.tsx';
 import TeamMemberInvitedEmail from '@/email/templates/TeamMemberInvited.tsx';
-import {
-  PaymentMethodState,
-  PaymentRecordState,
-  SiteState,
-  TeamMemberRole,
-  TeamRestrictionType,
-  TeamState,
-  UserState,
-} from '@/enums';
+import { PaymentMethodState, SiteState, TeamMemberRole, TeamRestrictionType, TeamState, UserState } from '@/enums';
 import { env } from '@/env';
 import { ReadableError } from '@/errors';
 import { pubsub } from '@/pubsub';
@@ -36,7 +27,7 @@ import { generateRandomAvatar } from '@/utils/image-generation';
 import { assertTeamPermission, throwableToBoolean } from '@/utils/permissions';
 import { assertTeamRestriction } from '@/utils/restrictions';
 import { persistBlobAsImage } from '@/utils/user-contents';
-import { Image, PaymentMethod, PaymentRecord, Site, Team, TeamMember, TeamMemberInvitation, User } from './objects';
+import { Image, PaymentMethod, Site, Team, TeamMember, TeamMemberInvitation, User } from './objects';
 
 /**
  * * Types
@@ -139,18 +130,6 @@ Team.implement({
           .from(PaymentMethods)
           .where(and(eq(PaymentMethods.teamId, team.id), eq(PaymentMethods.state, PaymentMethodState.ACTIVE)))
           .then(first);
-      },
-    }),
-
-    paymentRecords: t.field({
-      type: [PaymentRecord],
-      args: { state: t.arg({ type: PaymentRecordState, required: false }) },
-      resolve: async (team, { state }) => {
-        return await db
-          .select()
-          .from(PaymentRecords)
-          .where(and(eq(PaymentRecords.teamId, team.id), state ? eq(PaymentRecords.state, state) : undefined))
-          .orderBy(desc(PaymentRecords.createdAt));
       },
     }),
   }),
