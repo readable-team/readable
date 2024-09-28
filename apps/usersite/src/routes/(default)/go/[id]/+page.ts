@@ -9,3 +9,5 @@ export const _GoPage_Query_Variables: GoPage_Query_Variables = ({ params }) => (
 export const _GoPage_Query_AfterLoad: GoPage_Query_AfterLoad = (query) => {
   redirect(302, pageUrl(query.publicPageById));
 };
+
+export const _GoPage_Query_Extensions = { cache: true };

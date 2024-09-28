@@ -37,6 +37,7 @@ type CreateOperationParams<T extends $StoreSchema> = {
   context?: {
     fetch?: typeof globalThis.fetch;
     requestPolicy?: 'cache-only' | 'network-only';
+    extensions?: Record<string, unknown>;
   };
 };
 
@@ -94,6 +95,7 @@ class Client {
         fetchOpts: {
           headers: this.headers?.(),
         },
+        extensions: context?.extensions,
       },
     };
   }

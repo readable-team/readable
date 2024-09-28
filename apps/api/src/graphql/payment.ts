@@ -28,6 +28,7 @@ import {
 import { ReadableError } from '@/errors';
 import * as portone from '@/external/portone';
 import { dataSchemas } from '@/schemas';
+import { invalidateSiteCache } from '@/utils/cache';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
 import { assertTeamRestriction } from '@/utils/restrictions';
 import { PaymentInvoice, PaymentMethod, PaymentRecord, Site, Team } from './objects';
@@ -346,6 +347,8 @@ builder.mutationFields((t) => ({
           addonId: input.addonId,
         });
       });
+
+      await invalidateSiteCache(input.siteId);
 
       return input.siteId;
     },

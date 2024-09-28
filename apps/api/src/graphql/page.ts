@@ -25,6 +25,7 @@ import { enqueueJob } from '@/jobs';
 import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
+import { invalidateSiteCache } from '@/utils/cache';
 import { hashPageContent, makeYDoc } from '@/utils/page';
 import { assertCategoryPermission, assertPagePermission, assertSitePermission } from '@/utils/permissions';
 import { assertTeamRestriction } from '@/utils/restrictions';
@@ -546,6 +547,7 @@ builder.mutationFields((t) => ({
         .then(firstOrThrow);
 
       pubsub.publish('site:update', input.siteId, { scope: 'site' });
+      await invalidateSiteCache(input.siteId);
 
       return category;
     },
@@ -573,6 +575,7 @@ builder.mutationFields((t) => ({
         .then(firstOrThrow);
 
       pubsub.publish('site:update', category.siteId, { scope: 'site' });
+      await invalidateSiteCache(category.siteId);
 
       return category;
     },
@@ -607,6 +610,7 @@ builder.mutationFields((t) => ({
         });
 
       pubsub.publish('site:update', category.siteId, { scope: 'site' });
+      await invalidateSiteCache(category.siteId);
 
       return category;
     },
@@ -638,6 +642,7 @@ builder.mutationFields((t) => ({
         .then(firstOrThrow);
 
       pubsub.publish('site:update', category.siteId, { scope: 'site' });
+      await invalidateSiteCache(category.siteId);
 
       return category;
     },
@@ -679,6 +684,8 @@ builder.mutationFields((t) => ({
       for (const pageId of deletedPageIds) {
         pubsub.publish('site:update', category.siteId, { scope: 'page', pageId });
       }
+
+      await invalidateSiteCache(category.siteId);
 
       return category;
     },
@@ -809,6 +816,8 @@ builder.mutationFields((t) => ({
         pubsub.publish('site:update', page.siteId, { scope: 'page', pageId });
       }
 
+      await invalidateSiteCache(page.siteId);
+
       return page;
     },
   }),
@@ -842,6 +851,7 @@ builder.mutationFields((t) => ({
         });
 
       pubsub.publish('site:update', page.siteId, { scope: 'site' });
+      await invalidateSiteCache(page.siteId);
 
       return page;
     },
@@ -886,6 +896,7 @@ builder.mutationFields((t) => ({
         });
 
       pubsub.publish('site:update', page.siteId, { scope: 'site' });
+      await invalidateSiteCache(page.siteId);
 
       return page;
     },
@@ -985,6 +996,7 @@ builder.mutationFields((t) => ({
       });
 
       pubsub.publish('site:update', page.siteId, { scope: 'page', pageId: page.id });
+      await invalidateSiteCache(page.siteId);
 
       return page;
     },
@@ -1034,6 +1046,7 @@ builder.mutationFields((t) => ({
       });
 
       pubsub.publish('site:update', page.siteId, { scope: 'site' });
+      await invalidateSiteCache(page.siteId);
 
       return page;
     },

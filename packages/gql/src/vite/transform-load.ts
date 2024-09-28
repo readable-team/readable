@@ -110,16 +110,17 @@ export const transformLoadPlugin = (contextHolder: ContextHolder): Plugin => {
                           }),
                           arguments: [
                             AST.b.identifier('event.fetch'),
-                            ...(`_${query.name}_Variables` in exportedVariables
-                              ? [
-                                  AST.b.awaitExpression(
-                                    AST.b.callExpression.from({
-                                      callee: AST.b.identifier(`_${query.name}_Variables`),
-                                      arguments: [AST.b.identifier('event')],
-                                    }),
-                                  ),
-                                ]
-                              : []),
+                            `_${query.name}_Variables` in exportedVariables
+                              ? AST.b.awaitExpression(
+                                  AST.b.callExpression.from({
+                                    callee: AST.b.identifier(`_${query.name}_Variables`),
+                                    arguments: [AST.b.identifier('event')],
+                                  }),
+                                )
+                              : AST.b.identifier('undefined'),
+                            `_${query.name}_Extensions` in exportedVariables
+                              ? AST.b.identifier(`_${query.name}_Extensions`)
+                              : AST.b.identifier('undefined'),
                           ],
                         }),
                       ),

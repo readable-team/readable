@@ -9,3 +9,5 @@ export const _IndexPage_Query_AfterLoad: IndexPage_Query_AfterLoad = async (quer
 
   error(404);
 };
+
+export const _IndexPage_Query_Extensions = { cache: true };

@@ -31,6 +31,7 @@ import * as dns from '@/external/dns';
 import { enqueueJob } from '@/jobs';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
+import { invalidateSiteCache } from '@/utils/cache';
 import { makeYDoc } from '@/utils/page';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
 import { assertTeamRestriction } from '@/utils/restrictions';
@@ -485,12 +486,16 @@ builder.mutationFields((t) => ({
         throw new ReadableError({ code: 'site_slug_exists' });
       }
 
-      return await db
+      const site = await db
         .update(Sites)
         .set({ name: input.name, slug: input.slug, logoId: input.logoId, themeColor: input.themeColor })
         .where(eq(Sites.id, input.siteId))
         .returning()
         .then(firstOrThrow);
+
+      await invalidateSiteCache(site.id);
+
+      return site;
     },
   }),
 
@@ -566,11 +571,15 @@ builder.mutationFields((t) => ({
         type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
-      return await db
+      const site = await db
         .delete(SiteCustomDomains)
         .where(eq(SiteCustomDomains.id, input.siteCustomDomainId))
         .returning()
         .then(firstOrThrow);
+
+      await invalidateSiteCache(site.siteId);
+
+      return site;
     },
   }),
 
@@ -612,6 +621,8 @@ builder.mutationFields((t) => ({
       });
 
       pubsub.publish('team:update', site.teamId, { scope: 'team' });
+
+      await invalidateSiteCache(site.id);
 
       return site;
     },
@@ -710,6 +721,8 @@ builder.subscriptionFields((t) => ({
                     .set({ state: SiteCustomDomainState.ACTIVE })
                     .where(eq(SiteCustomDomains.id, domain.id));
                 });
+
+                await invalidateSiteCache(customDomain.siteId);
               }
             }
           } catch {

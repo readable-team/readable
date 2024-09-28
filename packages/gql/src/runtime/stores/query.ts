@@ -61,13 +61,18 @@ export const createQueryStore = <T extends $StoreSchema<Kind>>(schema: StoreSche
       },
     });
   } else {
-    return async (fetch: typeof globalThis.fetch, variables?: T['$input']): Promise<QueryStore<T>> => {
+    return async (
+      fetch: typeof globalThis.fetch,
+      variables?: T['$input'],
+      extensions?: Record<string, unknown>,
+    ): Promise<QueryStore<T>> => {
       const operation = client.createOperation({
         schema,
         variables: variables ?? {},
         context: {
           requestPolicy: 'network-only',
           fetch,
+          extensions,
         },
       });
 

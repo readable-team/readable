@@ -26,6 +26,7 @@ async function* request<T extends $StoreSchema>(op: Operation<T>) {
       operationName: name,
       query: source,
       variables,
+      extensions: context.extensions,
     }),
   });
 

@@ -4,6 +4,8 @@ export const _DefaultLayout_Query_Variables: DefaultLayout_Query_Variables = (ev
   searchQuery: event.url.searchParams.get('q') || '',
 });
 
+export const _DefaultLayout_Query_Extensions = { cache: true };
+
 // export const _DefaultLayout_Query_AfterLoad: DefaultLayout_Query_AfterLoad = (query, event) => {
 //   if (!event.data.hostnameOverride && query.publicSite.url !== event.url.origin) {
 //     event.setHeaders({

@@ -7,6 +7,7 @@ export type OperationContext = {
   requestPolicy: 'cache-only' | 'network-only';
   fetch?: typeof globalThis.fetch;
   fetchOpts?: RequestInit;
+  extensions?: Record<string, unknown>;
 };
 
 export type Operation<T extends $StoreSchema = $StoreSchema> = {
