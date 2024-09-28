@@ -2,9 +2,10 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { TiptapEditor } from '@readable/ui/tiptap';
+  import dayjs from 'dayjs';
   import ky from 'ky';
   import { base64 } from 'rfc4648';
-  import { onMount } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import { IndexeddbPersistence } from 'y-indexeddb';
   import * as YAwareness from 'y-protocols/awareness';
   import * as Y from 'yjs';
@@ -134,6 +135,8 @@
     }
   `);
 
+  const dispatch = createEventDispatcher<{ connectionStateChange: { state: 'connected' | 'disconnected' } }>();
+
   let editor: Editor | undefined;
 
   let titleEl: HTMLElement;
@@ -239,11 +242,17 @@
     });
   });
 
+  let lastHeartbeatAt = dayjs();
+  let connectionState: 'idle' | 'connected' | 'disconnected' = 'idle';
+
   pageContentSyncStream.on('data', ({ pageContentSyncStream: { kind, data } }) => {
+    // eslint-disable-next-line unicorn/prefer-switch
     if (kind === PageContentSyncKind.UPDATE) {
       Y.applyUpdateV2(doc, base64.parse(data), 'remote');
     } else if (kind === PageContentSyncKind.AWARENESS) {
       YAwareness.applyAwarenessUpdate(awareness, base64.parse(data), 'remote');
+    } else if (kind === PageContentSyncKind.HEARTBEAT) {
+      lastHeartbeatAt = dayjs();
     }
   });
 
@@ -273,6 +282,19 @@
     }
   };
 
+  const updateConnectionState = async () => {
+    const connected = dayjs().diff(lastHeartbeatAt, 'second') <= 5;
+
+    if (connectionState !== 'connected' && connected) {
+      await forceSync();
+      connectionState = 'connected';
+      dispatch('connectionStateChange', { state: 'connected' });
+    } else if (connectionState !== 'disconnected' && !connected) {
+      connectionState = 'disconnected';
+      dispatch('connectionStateChange', { state: 'disconnected' });
+    }
+  };
+
   const title = createStore('title');
 
   onMount(() => {
@@ -287,10 +309,12 @@
       color: '#000000',
     });
 
-    const interval = setInterval(() => forceSync(), 10_000);
+    const heartbeatInterval = setInterval(() => updateConnectionState(), 1000);
+    const forceSyncInterval = setInterval(() => forceSync(), 10_000);
 
     return () => {
-      clearInterval(interval);
+      clearInterval(heartbeatInterval);
+      clearInterval(forceSyncInterval);
 
       unsubscribe();
       YAwareness.removeAwarenessStates(awareness, [doc.clientID], 'local');

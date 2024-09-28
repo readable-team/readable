@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { and, asc, count, desc, eq, gt, inArray, isNull, ne, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
+import { Repeater } from 'graphql-yoga';
 import { base64 } from 'rfc4648';
 import { match } from 'ts-pattern';
 import * as Y from 'yjs';
@@ -1204,7 +1205,24 @@ builder.subscriptionFields((t) => ({
         userId: ctx.session.userId,
       });
 
-      const repeater = pubsub.subscribe('page:content:sync', args.pageId);
+      const repeater = Repeater.merge([
+        pubsub.subscribe('page:content:sync', args.pageId),
+        new Repeater<{ pageId: string; kind: PageContentSyncKind; data: string }>(async (push, stop) => {
+          const ping = () => {
+            push({
+              pageId: args.pageId,
+              kind: 'HEARTBEAT',
+              data: base64.stringify(encoder.encode(dayjs().toISOString())),
+            });
+          };
+
+          ping();
+          const interval = setInterval(() => ping(), 1000);
+
+          await stop;
+          clearInterval(interval);
+        }),
+      ]);
 
       ctx.req.signal.addEventListener('abort', () => {
         repeater.return();

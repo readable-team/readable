@@ -130,6 +130,8 @@
     }
   `);
 
+  let connectionState: 'idle' | 'connected' | 'disconnected' = 'idle';
+
   afterNavigate(() => {
     // NOTE: maxDepth = 2
     if ($query.page.children.length > 0) {
@@ -170,7 +172,30 @@
     })}
   >
     {#key $query.page.id}
-      {#if $query.page.hasUnpublishedChanges || $query.page.state === PageState.DRAFT}
+      {#if connectionState === 'disconnected'}
+        <div
+          class={css({
+            position: 'absolute',
+            zIndex: '1',
+            backgroundColor: 'surface.primary',
+            width: 'full',
+            pointerEvents: 'none',
+          })}
+        >
+          <div
+            class={css({
+              paddingY: '5px',
+              paddingX: '80px',
+              textStyle: '13m',
+              color: 'text.danger',
+              textAlign: 'center',
+              backgroundColor: 'danger.40/50',
+            })}
+          >
+            연결이 끊어졌습니다
+          </div>
+        </div>
+      {:else if $query.page.hasUnpublishedChanges || $query.page.state === PageState.DRAFT}
         <div
           class={css({
             position: 'absolute',
@@ -203,7 +228,7 @@
         </div>
       {/if}
 
-      <Editor _query={$query} />
+      <Editor _query={$query} on:connectionStateChange={(e) => (connectionState = e.detail.state)} />
     {/key}
   </div>
 

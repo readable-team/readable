@@ -240,6 +240,7 @@ type PageContentState {
 
 enum PageContentSyncKind {
   AWARENESS
+  HEARTBEAT
   UPDATE
   VECTOR
 }

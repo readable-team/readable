@@ -23,6 +23,7 @@ export const PageContentSyncKind = {
   UPDATE: 'UPDATE',
   VECTOR: 'VECTOR',
   AWARENESS: 'AWARENESS',
+  HEARTBEAT: 'HEARTBEAT',
 } as const;
 
 export type PageState = keyof typeof PageState;
