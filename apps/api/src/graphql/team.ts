@@ -210,6 +210,7 @@ TeamMemberInvitation.implement({
 TeamPlan.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
+    billingEmail: t.exposeString('billingEmail'),
     billingCycle: t.expose('billingCycle', { type: BillingCycle }),
     enrolledAt: t.expose('enrolledAt', { type: 'DateTime' }),
 
@@ -697,6 +698,7 @@ const createTeam = async (userId: string, teamName: string) => {
       file: await generateRandomAvatar(),
     });
 
+    const user = await tx.select({ email: Users.email }).from(Users).where(eq(Users.id, userId)).then(firstOrThrow);
     const team = await tx.insert(Teams).values({ name: teamName, avatarId: avatar.id }).returning().then(firstOrThrow);
 
     await tx.insert(TeamMembers).values({
@@ -709,6 +711,7 @@ const createTeam = async (userId: string, teamName: string) => {
       teamId: team.id,
       planId: 'PLAN000000BASIC',
       billingCycle: BillingCycle.MONTHLY,
+      billingEmail: user.email,
     });
 
     return team;

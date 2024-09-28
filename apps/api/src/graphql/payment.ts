@@ -2,17 +2,7 @@ import dayjs from 'dayjs';
 import { and, desc, eq } from 'drizzle-orm';
 import { match } from 'ts-pattern';
 import { builder } from '@/builder';
-import {
-  db,
-  first,
-  firstOrThrow,
-  PaymentInvoices,
-  PaymentMethods,
-  PaymentRecords,
-  Plans,
-  TeamPlans,
-  Teams,
-} from '@/db';
+import { db, firstOrThrow, PaymentInvoices, PaymentMethods, PaymentRecords, Plans, TeamPlans, Teams } from '@/db';
 import {
   BillingCycle,
   PaymentInvoiceState,
@@ -150,10 +140,10 @@ builder.mutationFields((t) => ({
       });
 
       const teamPlan = await db
-        .select({ planId: TeamPlans.planId })
+        .select({ planId: TeamPlans.planId, billingEmail: TeamPlans.billingEmail })
         .from(TeamPlans)
         .where(eq(TeamPlans.teamId, input.teamId))
-        .then(first);
+        .then(firstOrThrow);
 
       if (teamPlan?.planId === input.planId) {
         throw new ReadableError({ code: 'already_enrolled' });
@@ -197,6 +187,7 @@ builder.mutationFields((t) => ({
           paymentId: invoice.id,
           billingKey: paymentMethod.billingKey,
           customerName: team.name,
+          customerEmail: teamPlan.billingEmail,
           orderName: '리더블 정기결제',
           amount: paymentAmount,
         });

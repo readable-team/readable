@@ -62,6 +62,7 @@ await db.transaction(async (tx) => {
     teamId: team.id,
     planId: plan.id,
     billingCycle: BillingCycle.MONTHLY,
+    billingEmail: 'billing@penxle.io',
   });
 
   await tx.insert(Sites).values({

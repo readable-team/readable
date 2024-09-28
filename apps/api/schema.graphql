@@ -544,6 +544,7 @@ enum TeamMemberRole {
 type TeamPlan {
   amount: Int!
   billingCycle: BillingCycle!
+  billingEmail: String!
   enrolledAt: DateTime!
   id: ID!
   nextPaymentAt: DateTime!

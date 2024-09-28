@@ -503,6 +503,7 @@ export const TeamPlans = pgTable('team_plans', {
     .notNull()
     .references(() => Plans.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
   billingCycle: E._BillingCycle('billing_cycle').notNull(),
+  billingEmail: text('billing_email').notNull(),
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),
