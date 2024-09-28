@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { and, desc, eq } from 'drizzle-orm';
 import { match } from 'ts-pattern';
 import { builder } from '@/builder';
@@ -216,11 +217,14 @@ builder.mutationFields((t) => ({
           .returning()
           .then(firstOrThrow);
 
-        await tx.insert(TeamPlans).values({
-          teamId: input.teamId,
-          planId: input.planId,
-          billingCycle: input.billingCycle,
-        });
+        await tx
+          .update(TeamPlans)
+          .set({
+            planId: input.planId,
+            billingCycle: input.billingCycle,
+            updatedAt: dayjs(),
+          })
+          .where(eq(TeamPlans.teamId, input.teamId));
       });
 
       return input.teamId;

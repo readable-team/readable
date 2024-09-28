@@ -12,13 +12,22 @@ import {
   Sites,
   TeamMemberInvitations,
   TeamMembers,
+  TeamPlans,
   Teams,
   Users,
 } from '@/db';
 import { sendEmail } from '@/email';
 import TeamMemberAddedEmail from '@/email/templates/TeamMemberAdded.tsx';
 import TeamMemberInvitedEmail from '@/email/templates/TeamMemberInvited.tsx';
-import { PaymentMethodState, SiteState, TeamMemberRole, TeamRestrictionType, TeamState, UserState } from '@/enums';
+import {
+  BillingCycle,
+  PaymentMethodState,
+  SiteState,
+  TeamMemberRole,
+  TeamRestrictionType,
+  TeamState,
+  UserState,
+} from '@/enums';
 import { env } from '@/env';
 import { ReadableError } from '@/errors';
 import { pubsub } from '@/pubsub';
@@ -628,6 +637,12 @@ const createTeam = async (userId: string, teamName: string) => {
       teamId: team.id,
       userId,
       role: TeamMemberRole.ADMIN,
+    });
+
+    await tx.insert(TeamPlans).values({
+      teamId: team.id,
+      planId: 'PLAN000000BASIC',
+      billingCycle: BillingCycle.MONTHLY,
     });
 
     return team;

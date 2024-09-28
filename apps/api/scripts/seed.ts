@@ -1,4 +1,5 @@
-import { db, firstOrThrow, Plans, Sites, Teams } from '@/db';
+import { db, firstOrThrow, Plans, Sites, TeamPlans, Teams } from '@/db';
+import { BillingCycle } from '@/enums';
 import { generateRandomAvatar } from '@/utils/image-generation';
 import { persistBlobAsImage } from '@/utils/user-contents';
 
@@ -7,11 +8,11 @@ const avatar = await persistBlobAsImage({
 });
 
 await db.transaction(async (tx) => {
-  await tx
+  const plan = await tx
     .insert(Plans)
     .values({
-      id: 'PLAN0000000FREE',
-      name: '무료',
+      id: 'PLAN000000BASIC',
+      name: 'Basic',
       rules: {},
     })
     .returning({ id: Plans.id })
@@ -26,6 +27,12 @@ await db.transaction(async (tx) => {
     })
     .returning({ id: Teams.id })
     .then(firstOrThrow);
+
+  await tx.insert(TeamPlans).values({
+    teamId: team.id,
+    planId: plan.id,
+    billingCycle: BillingCycle.MONTHLY,
+  });
 
   await tx.insert(Sites).values({
     id: 'S000TEMPLATE',
