@@ -4,16 +4,18 @@
   import { Icon } from '@readable/ui/components';
   import { setContext } from 'svelte';
   import { writable } from 'svelte/store';
+  import { swipe } from 'svelte-gestures';
   import SearchIcon from '~icons/lucide/search';
   import ReadableIcon from '~icons/rdbl/readable';
   import { browser } from '$app/environment';
   import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
-  import { searchBarOpen } from '$lib/stores/ui';
+  import { mobileNavOpen, searchBarOpen } from '$lib/stores/ui';
   import MobileSidebar from './MobileSidebar.svelte';
   import Navigation from './Navigation.svelte';
   import SearchBar from './SearchBar.svelte';
+  import type { SwipeCustomEvent } from 'svelte-gestures';
 
   $: query = graphql(`
     query DefaultLayout_Query($searchQuery: String!) {
@@ -66,6 +68,14 @@
   function openSearchBar() {
     searchBarOpen.set(true);
   }
+
+  const swipeHandler = (event: SwipeCustomEvent) => {
+    if (event.detail.direction === 'left') {
+      mobileNavOpen.set(false);
+    } else if (event.detail.direction === 'right') {
+      mobileNavOpen.set(true);
+    }
+  };
 </script>
 
 <svelte:head>
@@ -79,6 +89,12 @@
 <div
   style:--usersite-theme-color={$query.publicSite.themeColor}
   class={flex({ direction: 'column', minHeight: 'screen' })}
+  on:swipe={swipeHandler}
+  use:swipe={{
+    touchAction: 'pan-y',
+    minSwipeDistance: 60, // default
+    timeFrame: 800,
+  }}
 >
   <a
     class={visuallyHidden({

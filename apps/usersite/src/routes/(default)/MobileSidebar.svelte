@@ -3,6 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { scrollLock } from '@readable/ui/actions';
   import { Icon } from '@readable/ui/components';
+  import { fade, fly } from 'svelte/transition';
   import CloseIcon from '~icons/lucide/x';
   import ReadableIcon from '~icons/rdbl/readable';
   import { env } from '$env/dynamic/public';
@@ -36,6 +37,8 @@
       tabindex="-1"
       on:click={() => mobileNavOpen.set(false)}
       on:keypress={null}
+      in:fade={{ duration: 200 }}
+      out:fade={{ duration: 200 }}
     />
     <aside
       class={flex({
@@ -52,6 +55,8 @@
         borderRightColor: 'border.primary',
       })}
       use:scrollLock
+      in:fly={{ x: -200, duration: 200 }}
+      out:fly={{ x: -200, duration: 200 }}
     >
       <div
         class={css({
