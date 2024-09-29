@@ -314,6 +314,23 @@ export const PaymentInvoices = pgTable('payment_invoices', {
     .default(sql`now()`),
 });
 
+export const PaymentInvoiceItems = pgTable('payment_invoice_items', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('PYIT')),
+  invoiceId: text('invoice_id')
+    .notNull()
+    .references(() => PaymentInvoices.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+  name: text('name').notNull(),
+  quantity: integer('quantity').notNull(),
+  amount: integer('amount').notNull(),
+  type: E._PaymentInvoiceItemType('type').notNull(),
+  order: integer('order').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
+
 export const PaymentMethods = pgTable(
   'payment_methods',
   {

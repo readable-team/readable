@@ -33,6 +33,12 @@ export const PageState = {
   DELETED: 'DELETED',
 } as const;
 
+export type PaymentInvoiceItemType = keyof typeof PaymentInvoiceItemType;
+export const PaymentInvoiceItemType = {
+  PLAN: 'PLAN',
+  ADDON: 'ADDON',
+} as const;
+
 export type PaymentInvoiceState = keyof typeof PaymentInvoiceState;
 export const PaymentInvoiceState = {
   PENDING: 'PENDING',

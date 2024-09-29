@@ -64,6 +64,13 @@
       "when": 1727577380329,
       "tag": "0008_sloppy_sandman",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1727580529660,
+      "tag": "0009_shallow_wiccan",
+      "breakpoints": true
     }
   ]
 }

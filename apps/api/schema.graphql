@@ -291,8 +291,22 @@ type PaymentInvoice {
   amount: Int!
   createdAt: DateTime!
   id: ID!
+  items: [PaymentInvoiceItem!]!
   records: [PaymentRecord!]!
   state: PaymentInvoiceState!
+}
+
+type PaymentInvoiceItem {
+  amount: Int!
+  id: ID!
+  name: String!
+  quantity: Int!
+  type: PaymentInvoiceItemType!
+}
+
+enum PaymentInvoiceItemType {
+  ADDON
+  PLAN
 }
 
 enum PaymentInvoiceState {

@@ -9,6 +9,7 @@ export const _BillingCycle = createPgEnum('_billing_cycle', E.BillingCycle);
 export const _CategoryState = createPgEnum('_category_state', E.CategoryState);
 export const _JobState = createPgEnum('_job_state', E.JobState);
 export const _PageState = createPgEnum('_page_state', E.PageState);
+export const _PaymentInvoiceItemType = createPgEnum('_payment_invoice_item_type', E.PaymentInvoiceItemType);
 export const _PaymentInvoiceState = createPgEnum('_payment_invoice_state', E.PaymentInvoiceState);
 export const _PaymentMethodState = createPgEnum('_payment_method_state', E.PaymentMethodState);
 export const _PaymentRecordType = createPgEnum('_payment_record_type', E.PaymentRecordType);

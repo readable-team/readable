@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, asc, desc, eq } from 'drizzle-orm';
 import { match } from 'ts-pattern';
 import { builder } from '@/builder';
 import {
@@ -7,6 +7,7 @@ import {
   db,
   first,
   firstOrThrow,
+  PaymentInvoiceItems,
   PaymentInvoices,
   PaymentMethods,
   PaymentRecords,
@@ -18,6 +19,7 @@ import {
 } from '@/db';
 import {
   BillingCycle,
+  PaymentInvoiceItemType,
   PaymentInvoiceState,
   PaymentMethodState,
   PaymentRecordType,
@@ -31,7 +33,7 @@ import { dataSchemas } from '@/schemas';
 import { invalidateSiteCache } from '@/utils/cache';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
 import { assertTeamRestriction } from '@/utils/restrictions';
-import { PaymentInvoice, PaymentMethod, PaymentRecord, Site, Team } from './objects';
+import { PaymentInvoice, PaymentInvoiceItem, PaymentMethod, PaymentRecord, Site, Team } from './objects';
 
 PaymentInvoice.implement({
   fields: (t) => ({
@@ -39,6 +41,17 @@ PaymentInvoice.implement({
     amount: t.exposeInt('amount'),
     state: t.expose('state', { type: PaymentInvoiceState }),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
+
+    items: t.field({
+      type: [PaymentInvoiceItem],
+      resolve: async (invoice) => {
+        return await db
+          .select()
+          .from(PaymentInvoiceItems)
+          .where(eq(PaymentInvoiceItems.invoiceId, invoice.id))
+          .orderBy(asc(PaymentInvoiceItems.order));
+      },
+    }),
 
     records: t.field({
       type: [PaymentRecord],
@@ -50,6 +63,16 @@ PaymentInvoice.implement({
           .orderBy(desc(PaymentRecords.createdAt));
       },
     }),
+  }),
+});
+
+PaymentInvoiceItem.implement({
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    name: t.exposeString('name'),
+    quantity: t.exposeInt('quantity'),
+    amount: t.exposeInt('amount'),
+    type: t.expose('type', { type: PaymentInvoiceItemType }),
   }),
 });
 
@@ -170,7 +193,7 @@ builder.mutationFields((t) => ({
         .then(firstOrThrow);
 
       const plan = await db
-        .select({ fee: Plans.fee })
+        .select({ name: Plans.name, fee: Plans.fee })
         .from(Plans)
         .where(and(eq(Plans.id, input.planId), eq(Plans.type, PlanType.PUBLIC)))
         .then(firstOrThrow);
@@ -196,6 +219,15 @@ builder.mutationFields((t) => ({
           })
           .returning({ id: PaymentInvoices.id })
           .then(firstOrThrow);
+
+        await tx.insert(PaymentInvoiceItems).values({
+          invoiceId: invoice.id,
+          name: plan.name,
+          quantity: 1,
+          amount: paymentAmount,
+          type: PaymentInvoiceItemType.PLAN,
+          order: 0,
+        });
 
         const res = await portone.makePayment({
           paymentId: invoice.id,
@@ -251,7 +283,7 @@ builder.mutationFields((t) => ({
       });
 
       const addon = await db
-        .select({ fee: Addons.fee })
+        .select({ name: Addons.name, fee: Addons.fee })
         .from(Addons)
         .where(eq(Addons.id, input.addonId))
         .then(firstOrThrow);
@@ -320,6 +352,15 @@ builder.mutationFields((t) => ({
           })
           .returning({ id: PaymentInvoices.id })
           .then(firstOrThrow);
+
+        await tx.insert(PaymentInvoiceItems).values({
+          invoiceId: invoice.id,
+          name: addon.name,
+          quantity: 1,
+          amount: paymentAmount,
+          type: PaymentInvoiceItemType.ADDON,
+          order: 0,
+        });
 
         const res = await portone.makePayment({
           paymentId: invoice.id,
