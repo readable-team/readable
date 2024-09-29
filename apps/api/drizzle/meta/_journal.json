@@ -57,6 +57,13 @@
       "when": 1726970450875,
       "tag": "0007_cloudy_excalibur",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1727577380329,
+      "tag": "0008_sloppy_sandman",
+      "breakpoints": true
     }
   ]
 }
