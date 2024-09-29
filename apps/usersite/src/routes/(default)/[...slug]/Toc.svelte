@@ -138,7 +138,7 @@
         borderColor: 'neutral.30',
       })}
     >
-      {#each headings as item, index (item.text)}
+      {#each headings as item, index (index)}
         <li>
           <a
             style:padding-left={`${(item.level - 1) * 20 + 12}px`}
