@@ -40,6 +40,7 @@ export type UserContext = {
 export type SiteContext = {
   site: {
     id: string;
+    teamId: string;
     hostname: string;
   };
 };
@@ -142,13 +143,13 @@ export const createContext = async ({ request, ip }: ServerContext): Promise<Con
         const slug = hostname.split('.')[0];
 
         site = await db
-          .select({ id: Sites.id })
+          .select({ id: Sites.id, teamId: Sites.teamId })
           .from(Sites)
           .where(and(eq(Sites.slug, slug), eq(Sites.state, SiteState.ACTIVE)))
           .then(first);
       } else {
         site = await db
-          .select({ id: Sites.id })
+          .select({ id: Sites.id, teamId: Sites.teamId })
           .from(Sites)
           .innerJoin(SiteCustomDomains, eq(Sites.id, SiteCustomDomains.siteId))
           .where(
@@ -164,6 +165,7 @@ export const createContext = async ({ request, ip }: ServerContext): Promise<Con
       if (site) {
         ctx.site = {
           id: site.id,
+          teamId: site.teamId,
           hostname,
         };
       }

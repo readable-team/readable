@@ -36,6 +36,7 @@ import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { generateRandomAvatar } from '@/utils/image-generation';
 import { assertTeamPermission, throwableToBoolean } from '@/utils/permissions';
+import { assertTeamPlanRule } from '@/utils/plan';
 import { assertTeamRestriction } from '@/utils/restrictions';
 import { persistBlobAsImage } from '@/utils/user-contents';
 import {
@@ -375,6 +376,11 @@ builder.mutationFields((t) => ({
       await assertTeamRestriction({
         teamId: input.teamId,
         type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
+      await assertTeamPlanRule({
+        teamId: input.teamId,
+        rule: 'memberLimit',
       });
 
       const me = await db

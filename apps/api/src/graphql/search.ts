@@ -11,6 +11,7 @@ import { fixByChangePrompt } from '@/prompt/fix-by-change';
 import { keywordExtractionPrompt, naturalLanguageSearchPrompt } from '@/prompt/natural-language-search';
 import { searchIndex } from '@/search';
 import { assertSitePermission } from '@/utils/permissions';
+import { assertTeamPlanRule } from '@/utils/plan';
 import { Page, PublicPage } from './objects';
 
 type PageSearchData = {
@@ -295,6 +296,11 @@ builder.queryFields((t) => ({
     type: SearchPublicPageByNaturalLanguageResult,
     args: { query: t.arg.string() },
     resolve: async (_, args, ctx) => {
+      await assertTeamPlanRule({
+        teamId: ctx.site.teamId,
+        rule: 'aiSearch',
+      });
+
       const keyword = await openai.client.beta.chat.completions
         .parse({
           model: 'gpt-4o-mini',

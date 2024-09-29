@@ -34,6 +34,7 @@ import { dataSchemas } from '@/schemas';
 import { invalidateSiteCache } from '@/utils/cache';
 import { makeYDoc } from '@/utils/page';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
+import { assertTeamPlanRule } from '@/utils/plan';
 import { assertTeamRestriction } from '@/utils/restrictions';
 import {
   Category,
@@ -320,6 +321,11 @@ builder.mutationFields((t) => ({
       await assertTeamRestriction({
         teamId: input.teamId,
         type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
+      await assertTeamPlanRule({
+        teamId: input.teamId,
+        rule: 'siteLimit',
       });
 
       return await db.transaction(async (tx) => {

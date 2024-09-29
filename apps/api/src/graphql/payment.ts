@@ -32,6 +32,7 @@ import * as portone from '@/external/portone';
 import { dataSchemas } from '@/schemas';
 import { invalidateSiteCache } from '@/utils/cache';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
+import { getTeamPlanRule } from '@/utils/plan';
 import { assertTeamRestriction } from '@/utils/restrictions';
 import { PaymentInvoice, PaymentInvoiceItem, PaymentMethod, PaymentRecord, Site, Team } from './objects';
 
@@ -282,6 +283,21 @@ builder.mutationFields((t) => ({
         type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
+      const site = await db
+        .select({ teamId: Sites.teamId })
+        .from(Sites)
+        .where(eq(Sites.id, input.siteId))
+        .then(firstOrThrow);
+
+      const availableAddons = await getTeamPlanRule({
+        teamId: site.teamId,
+        rule: 'addonsAvailable',
+      });
+
+      if (!availableAddons.includes(input.addonId)) {
+        throw new ReadableError({ code: 'addon_not_available' });
+      }
+
       const addon = await db
         .select({ name: Addons.name, fee: Addons.fee })
         .from(Addons)
@@ -298,12 +314,6 @@ builder.mutationFields((t) => ({
         throw new ReadableError({ code: 'already_enrolled' });
       }
 
-      const site = await db
-        .select({ teamId: Sites.teamId })
-        .from(Sites)
-        .where(eq(Sites.id, input.siteId))
-        .then(firstOrThrow);
-
       const teamPlan = await db
         .select({
           planId: TeamPlans.planId,
@@ -313,16 +323,6 @@ builder.mutationFields((t) => ({
         .from(TeamPlans)
         .where(eq(TeamPlans.teamId, site.teamId))
         .then(firstOrThrow);
-
-      const plan = await db
-        .select({ rules: Plans.rules })
-        .from(Plans)
-        .where(eq(Plans.id, teamPlan.planId))
-        .then(firstOrThrow);
-
-      if (!plan.rules.addonsAvailable?.includes(input.addonId)) {
-        throw new ReadableError({ code: 'addon_not_available' });
-      }
 
       const paymentMethod = await db
         .select({ id: PaymentMethods.id, billingKey: PaymentMethods.billingKey })
