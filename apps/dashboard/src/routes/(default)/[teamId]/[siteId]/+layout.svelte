@@ -135,7 +135,7 @@
 
   <div
     class={flex({
-      flex: '1',
+      grow: '1',
       overflow: 'auto',
     })}
   >

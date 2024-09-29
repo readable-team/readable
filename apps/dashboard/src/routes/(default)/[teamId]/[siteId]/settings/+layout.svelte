@@ -36,8 +36,7 @@
     direction: 'column',
     backgroundColor: 'surface.secondary',
     width: 'full',
-    minHeight: 'full',
-    height: 'fit',
+    height: 'full',
   })}
 >
   <div class={flex({ grow: '1', width: 'full', maxWidth: '920px', marginX: 'auto', height: 'full' })}>
@@ -58,7 +57,7 @@
       </nav>
     </aside>
 
-    <div class={css({ paddingTop: '40px', paddingLeft: '32px', paddingBottom: '120px', width: 'full' })}>
+    <div class={css({ paddingTop: '40px', paddingX: '32px', paddingBottom: '120px', width: 'full', overflow: 'auto' })}>
       <slot />
     </div>
   </div>

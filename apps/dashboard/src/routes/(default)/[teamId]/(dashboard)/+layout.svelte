@@ -60,6 +60,7 @@
     grow: '1',
     paddingX: '20px',
     backgroundColor: 'surface.secondary',
+    overflow: 'auto',
   })}
 >
   <slot />
