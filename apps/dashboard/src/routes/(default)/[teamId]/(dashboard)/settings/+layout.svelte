@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import CoinsIcon from '~icons/lucide/coins';
+  import LayersIcon from '~icons/lucide/layers';
   import SettingsIcon from '~icons/lucide/settings';
   import { page } from '$app/stores';
   import { SettingTabItem } from '$lib/components';
@@ -12,6 +13,12 @@
       href: `/${$page.params.teamId}/settings`,
       icon: SettingsIcon,
       selected: $page.url.pathname === `/${$page.params.teamId}/settings`,
+    },
+    {
+      name: '플랜',
+      href: `/${$page.params.teamId}/settings/plan`,
+      icon: LayersIcon,
+      selected: $page.url.pathname === `/${$page.params.teamId}/settings/plan`,
     },
     {
       name: '결제 및 청구',

@@ -51,7 +51,7 @@
         pointerEvents: 'auto',
         size: '[fit-content]',
         maxWidth: '946px',
-        maxHeight: '705px',
+        maxHeight: '738px',
         boxShadow: 'strong',
       })}
       use:scrollLock

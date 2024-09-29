@@ -4,7 +4,9 @@
   import { Button, Helmet, HorizontalDivider, Icon } from '@readable/ui/components';
   import dayjs from 'dayjs';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
+  import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
+  import UpdateCardModal from '../@modals/UpdateCardModal.svelte';
 
   $: query = graphql(`
     query TeamSettingsBillingPage_Query($teamId: ID!) {
@@ -85,6 +87,8 @@
         return state;
     }
   };
+
+  let isUpdateCardModalOpen = false;
 </script>
 
 <Helmet title="결제 및 청구" trailing={$query.team.name} />
@@ -107,7 +111,11 @@
         <div class={css({ textStyle: '20b' })}>
           {$query.team.plan.plan.name}
         </div>
-        <Button disabled size="md" variant={$query.team.plan.plan.name === 'Basic' ? 'primary' : 'secondary'}>
+        <Button
+          size="md"
+          variant={$query.team.plan.plan.name === 'Basic' ? 'primary' : 'secondary'}
+          on:click={() => goto(`/${$query.team.id}/settings/plan`)}
+        >
           플랜 변경
         </Button>
       </div>
@@ -119,7 +127,7 @@
             {dayjs($query.team.plan.nextPaymentAt).format('YYYY년 MM월 DD일')}에 {$query.team.plan.amount.toLocaleString()}원
             갱신될 예정입니다
           </div>
-          <dl
+          <!-- <dl
             class={flex({
               alignSelf: 'flex-start',
               flexDirection: 'column',
@@ -143,7 +151,7 @@
               <dt>총액</dt>
               <dd>24,000원</dd>
             </div>
-          </dl>
+          </dl> -->
         </div>
       {/if}
     </div>
@@ -164,7 +172,7 @@
           <div class={css({ textStyle: '14sb', color: 'text.secondary' })}>결제 정보</div>
           <div class={flex({ justifyContent: 'space-between', alignItems: 'center' })}>
             <div class={css({ textStyle: '16m' })}>{$query.team.paymentMethod.name}</div>
-            <Button disabled size="md" variant="secondary">카드 변경</Button>
+            <Button size="md" variant="secondary" on:click={() => (isUpdateCardModalOpen = true)}>카드 변경</Button>
           </div>
         </div>
         <HorizontalDivider />
@@ -249,3 +257,5 @@
     </div>
   {/if}
 </div>
+
+<UpdateCardModal teamId={$query.team.id} bind:open={isUpdateCardModalOpen} />

@@ -15,6 +15,7 @@ export { default as Menu } from './Menu.svelte';
 export { default as MenuItem } from './MenuItem.svelte';
 export { default as Modal } from './Modal.svelte';
 export { default as RingSpinner } from './RingSpinner.svelte';
+export { default as SegmentButtons } from './SegmentButtons.svelte';
 export { default as TextInput } from './TextInput.svelte';
 export { default as Tooltip } from './Tooltip.svelte';
 export { default as VerticalDivider } from './VerticalDivider.svelte';

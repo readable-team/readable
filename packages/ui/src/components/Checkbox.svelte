@@ -44,7 +44,7 @@
         justifyContent: 'center',
         flex: 'none',
         size: '13px',
-        borderWidth: '1px',
+        borderWidth: '2px',
         borderColor: 'gray.500',
         borderRadius: '2px',
         cursor: 'pointer',
@@ -63,7 +63,7 @@
         },
         brand: {
           item: {
-            _checked: { borderWidth: '0', backgroundColor: 'brand.400' },
+            _checked: { borderWidth: '0', backgroundColor: 'brand.600' },
           },
         },
       },
@@ -72,6 +72,11 @@
           wrapper: { size: '18px' },
           item: { size: '14px', _checked: { size: '15px' } },
           text: { fontSize: '14px' },
+        },
+        md: {
+          wrapper: { size: '20px' },
+          item: { size: '15px', _checked: { size: '16px' } },
+          text: { fontSize: '15px' },
         },
         lg: {
           wrapper: { size: '22px' },
@@ -86,7 +91,7 @@
 </script>
 
 <div>
-  <label class={css({ display: 'flex', alignItems: 'center', gap: '4px' }, style)}>
+  <label class={css({ display: 'flex', alignItems: 'center', gap: '8px' }, style)}>
     <div class={css(classes.wrapper)}>
       <input
         id={name}
