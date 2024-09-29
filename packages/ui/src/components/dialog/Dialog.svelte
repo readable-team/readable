@@ -24,22 +24,22 @@
   }
 </script>
 
-{#if open}
+<dialog
+  bind:this={dialogElement}
+  class={css({
+    'width': 'full',
+    'height': 'full',
+    'maxWidth': '[unset]',
+    'maxHeight': '[unset]',
+    '& ::backdrop': {
+      display: 'none',
+    },
+  })}
+  on:close={handleClose}
+  use:portal
+>
   <!-- NOTE: dialog 닫혀있을 때는 scrollLock 등 사이드 이펙트 안 일어나게 아예 렌더링 안 함 -->
-  <dialog
-    bind:this={dialogElement}
-    class={css({
-      'width': 'full',
-      'height': 'full',
-      'maxWidth': '[unset]',
-      'maxHeight': '[unset]',
-      '& ::backdrop': {
-        display: 'none',
-      },
-    })}
-    on:close={handleClose}
-    use:portal
-  >
+  {#if open}
     <slot />
-  </dialog>
-{/if}
+  {/if}
+</dialog>
