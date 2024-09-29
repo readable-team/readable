@@ -1,7 +1,8 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import IconSettings from '~icons/lucide/settings';
+  import CoinsIcon from '~icons/lucide/coins';
+  import SettingsIcon from '~icons/lucide/settings';
   import { page } from '$app/stores';
   import { SettingTabItem } from '$lib/components';
 
@@ -9,8 +10,14 @@
     {
       name: '일반',
       href: `/${$page.params.teamId}/settings`,
-      icon: IconSettings,
+      icon: SettingsIcon,
       selected: $page.url.pathname === `/${$page.params.teamId}/settings`,
+    },
+    {
+      name: '결제 및 청구',
+      href: `/${$page.params.teamId}/settings/billing`,
+      icon: CoinsIcon,
+      selected: $page.url.pathname === `/${$page.params.teamId}/settings/billing`,
     },
   ];
 </script>
