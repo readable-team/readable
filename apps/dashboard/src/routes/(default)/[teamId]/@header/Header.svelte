@@ -1,12 +1,13 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon } from '@readable/ui/components';
+  import { Button, Icon } from '@readable/ui/components';
   import ReadableIcon from '~icons/rdbl/readable';
   import SlashDividerIcon from '~icons/rdbl/slash-divider';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
   import { Img } from '$lib/components';
+  import FeedbackModal from './FeedbackModal.svelte';
   import SiteSwitcher from './SiteSwitcher.svelte';
   import TeamSwitcher from './TeamSwitcher.svelte';
   import UserMenu from './UserMenu.svelte';
@@ -51,6 +52,8 @@
 
   $: currentSiteId = $page.params.siteId;
   $: currentSite = $query.team.sites.find((site) => site.id === currentSiteId);
+
+  let isFeedbackModalOpen = false;
 </script>
 
 <header
@@ -115,5 +118,40 @@
       <SiteSwitcher $team={$query.team} />
     {/if}
   </div>
-  <UserMenu {$query} teamId={$query.team.id} />
+
+  <div class={flex({ alignItems: 'center', gap: '24px' })}>
+    <Button
+      style={css.raw({
+        color: 'text.tertiary',
+        height: '28px',
+        paddingX: '8px',
+        paddingY: '4px',
+        textStyle: '14sb',
+        borderRadius: '4px',
+      })}
+      size="sm"
+      type="button"
+      variant="secondary"
+      on:click={() => {
+        isFeedbackModalOpen = true;
+      }}
+    >
+      피드백
+    </Button>
+    <a
+      class={css({
+        textStyle: '14sb',
+        color: 'text.tertiary',
+        _hover: { textDecoration: 'underline' },
+      })}
+      href="https://docs.rdbl.io"
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      이용 가이드
+    </a>
+    <UserMenu {$query} teamId={$query.team.id} />
+  </div>
 </header>
+
+<FeedbackModal teamId={$query.team.id} bind:open={isFeedbackModalOpen} />
