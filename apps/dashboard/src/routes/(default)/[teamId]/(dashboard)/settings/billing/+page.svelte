@@ -6,6 +6,7 @@
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
+  import InvoiceDetailModal from '../@modals/InvoiceDetailModal.svelte';
   import UpdateBillingEmailModal from '../@modals/UpdateBillingEmailModal.svelte';
   import UpdateCardModal from '../@modals/UpdateCardModal.svelte';
 
@@ -14,6 +15,7 @@
       team(teamId: $teamId) {
         id
         name
+
         plan {
           id
           amount
@@ -21,35 +23,21 @@
           billingEmail
           enrolledAt
           nextPaymentAt
+
           plan {
             id
             name
           }
         }
+
         paymentInvoices {
           id
           amount
-          createdAt
-          items {
-            id
-            name
-            amount
-            quantity
-            type
-          }
-          records {
-            id
-            amount
-            createdAt
-            paymentMethod {
-              id
-              name
-            }
-            receiptUrl
-            type
-          }
           state
+          createdAt
+          ...InvoiceDetailModal_paymentInvoice
         }
+
         paymentMethod {
           id
           name
@@ -91,6 +79,9 @@
 
   let isUpdateCardModalOpen = false;
   let isUpdateBillingEmailModalOpen = false;
+  let isInvoiceDetailModalOpen = false;
+
+  let paymentInvoice: (typeof $query.team.paymentInvoices)[number];
 </script>
 
 <Helmet title="결제 및 청구" trailing={$query.team.name} />
@@ -246,12 +237,19 @@
                   </div>
                 </td>
                 <td class={css({ textStyle: '14r', textAlign: 'right', paddingRight: '8px' })}>
-                  <div class={flex({ alignItems: 'center', justifyContent: 'flex-end', gap: '4px' })}>
+                  <button
+                    class={flex({ alignItems: 'center', justifyContent: 'flex-end', gap: '4px', marginLeft: 'auto' })}
+                    type="button"
+                    on:click={() => {
+                      paymentInvoice = invoice;
+                      isInvoiceDetailModalOpen = true;
+                    }}
+                  >
                     {invoice.amount.toLocaleString()}원
                     <div class={css({ color: 'gray.500', padding: '4px' })}>
                       <Icon icon={ChevronRightIcon} size={16} />
                     </div>
-                  </div>
+                  </button>
                 </td>
               </tr>
             {/each}
@@ -264,3 +262,6 @@
 
 <UpdateCardModal teamId={$query.team.id} bind:open={isUpdateCardModalOpen} />
 <UpdateBillingEmailModal teamId={$query.team.id} bind:open={isUpdateBillingEmailModalOpen} />
+{#if paymentInvoice}
+  <InvoiceDetailModal $paymentInvoice={paymentInvoice} bind:open={isInvoiceDetailModalOpen} />
+{/if}
