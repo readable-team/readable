@@ -13,11 +13,25 @@
   import { browser } from '$app/environment';
   import { beforeNavigate, goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { graphql } from '$graphql';
+  import { fragment, graphql } from '$graphql';
   import { searchBarOpen } from '$lib/stores/ui';
   import { pageUrl } from '$lib/utils/url';
   import AiIcon from './@ai/AiIcon.svelte';
   import AiLoading from './@ai/AiLoading.svelte';
+  import type { SearchBar_publicSite } from '$graphql';
+
+  let _publicSite: SearchBar_publicSite;
+  export { _publicSite as $publicSite };
+
+  $: publicSite = fragment(
+    _publicSite,
+    graphql(`
+      fragment SearchBar_publicSite on PublicSite {
+        id
+        aiSearchEnabled
+      }
+    `),
+  );
 
   // NOTE: p, em, strong, ul, ol, li 이외에는 AI 출력에서 발견하지 못함
   const markdownStyles = css({
@@ -130,7 +144,8 @@
     }
   `);
 
-  let aiEnabled = true; // TODO: 플랜에 따라..
+  $: aiEnabled = $publicSite.aiSearchEnabled;
+
   let aiState: 'idle' | 'loading' | 'success' | 'error' = 'idle';
   let aiSearchResult:
     | Awaited<ReturnType<typeof searchPublicPageByNaturalLanguage.refetch>>['searchPublicPageByNaturalLanguage']

@@ -36,6 +36,7 @@
         }
 
         ...Navigation_publicSite
+        ...SearchBar_publicSite
       }
 
       searchPublicPage(query: $searchQuery) {
@@ -227,7 +228,7 @@
     </div>
   </header>
 
-  <SearchBar searchResults={$query.searchPublicPage.hits} />
+  <SearchBar $publicSite={$query.publicSite} searchResults={$query.searchPublicPage.hits} />
 
   <main
     id="main-content"
