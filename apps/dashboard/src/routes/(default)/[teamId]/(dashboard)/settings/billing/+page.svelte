@@ -218,8 +218,8 @@
               <tr
                 class={css({
                   'backgroundColor': 'white',
-                  // '_hover': { backgroundColor: 'neutral.10' },
-                  // 'cursor': 'pointer',
+                  '_hover': { backgroundColor: 'neutral.10' },
+                  'cursor': 'pointer',
                   '& td': {
                     borderTopWidth: '1px',
                     borderBottomWidth: '1px',
@@ -227,6 +227,11 @@
                     verticalAlign: 'middle',
                   },
                 })}
+                role="button"
+                on:click={() => {
+                  paymentInvoice = invoice;
+                  isInvoiceDetailModalOpen = true;
+                }}
               >
                 <td class={css({ paddingY: '14px', paddingLeft: '16px', textStyle: '14r' })}>
                   {dayjs(invoice.createdAt).formatAsDate()}
@@ -237,19 +242,14 @@
                   </div>
                 </td>
                 <td class={css({ textStyle: '14r', textAlign: 'right', paddingRight: '8px' })}>
-                  <button
+                  <div
                     class={flex({ alignItems: 'center', justifyContent: 'flex-end', gap: '4px', marginLeft: 'auto' })}
-                    type="button"
-                    on:click={() => {
-                      paymentInvoice = invoice;
-                      isInvoiceDetailModalOpen = true;
-                    }}
                   >
                     {invoice.amount.toLocaleString()}원
                     <div class={css({ color: 'gray.500', padding: '4px' })}>
                       <Icon icon={ChevronRightIcon} size={16} />
                     </div>
-                  </button>
+                  </div>
                 </td>
               </tr>
             {/each}
