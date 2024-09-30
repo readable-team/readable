@@ -36,7 +36,7 @@
       borderRadius: '6px',
       background: 'white',
       borderWidth: '1px',
-      borderColor: 'border.primary',
+      borderColor: 'border.secondary',
       transition: '[left 100ms cubic-bezier(0.3, 0, 0, 1)]',
     })}
     aria-hidden="true"

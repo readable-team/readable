@@ -34,7 +34,7 @@
       borderRadius: '6px',
       background: 'white',
       borderWidth: '1px',
-      borderColor: 'border.primary',
+      borderColor: 'border.secondary',
       transition: '[left 100ms cubic-bezier(0.3, 0, 0, 1)]',
     })}
     aria-hidden="true"
@@ -73,33 +73,23 @@
     type="button"
     on:click={() => (selectedValue = 'YEARLY')}
   >
-    <div class={css({ position: 'relative', display: 'inline-block' })}>
-      연 결제
+    <div class={flex({ position: 'relative', gap: '8px', alignItems: 'center', justifyContent: 'center' })}>
+      <span>연 결제</span>
       <div
-        class={flex({
-          position: 'absolute',
-          top: '0',
-          bottom: '0',
-          left: '[calc(100% + 6px)]',
+        class={css({
+          display: 'inline-flex',
           alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          textStyle: '11b',
+          color: 'white',
+          borderRadius: '4px',
+          paddingX: '4px',
+          paddingY: '2px',
+          backgroundColor: 'accent.60',
         })}
       >
-        <div
-          class={css({
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-            textStyle: '11b',
-            color: 'white',
-            borderRadius: '4px',
-            paddingX: '4px',
-            paddingY: '2px',
-            backgroundColor: 'accent.60',
-          })}
-        >
-          2달 무료
-        </div>
+        2달 무료
       </div>
     </div>
   </button>

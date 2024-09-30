@@ -44,7 +44,7 @@
   <FormProvider class={flex({ flexDirection: 'column', gap: '20px' })} {context} {form}>
     <input name="teamId" type="hidden" value={teamId} />
 
-    <p class={css({ textStyle: '13r', color: 'text.tertiary' })}>
+    <p class={css({ textStyle: '14r', color: 'text.tertiary' })}>
       청구서 수신 이메일을 변경합니다. 변경된 이메일로 청구서가 발송됩니다.
     </p>
 

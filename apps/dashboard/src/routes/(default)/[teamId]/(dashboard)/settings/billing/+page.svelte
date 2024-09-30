@@ -69,8 +69,8 @@
     },
     variants: {
       state: {
-        FAILED: { backgroundColor: '[#FFF2F2]', color: 'text.danger' },
-        PENDING: { backgroundColor: 'neutral.20', color: 'text.tertiary' },
+        FAILED: { backgroundColor: 'danger.60', color: 'white' },
+        PENDING: { backgroundColor: 'danger.10', color: 'text.danger' },
         COMPLETED: { backgroundColor: '[#EBFAF1]', color: '[#308959]' },
       },
     },

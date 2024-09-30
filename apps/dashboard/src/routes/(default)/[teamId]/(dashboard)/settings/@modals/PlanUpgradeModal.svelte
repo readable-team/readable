@@ -14,7 +14,7 @@
   <svelte:fragment slot="title">Pro 플랜으로 업그레이드</svelte:fragment>
 
   <div class={flex({ flexDirection: 'column', gap: '20px' })}>
-    <p class={css({ textStyle: '13r', color: 'text.tertiary' })}>
+    <p class={css({ textStyle: '14r', color: 'text.tertiary' })}>
       Pro 플랜으로 업그레이드하면 모든 기능을 이용할 수 있습니다.
     </p>
     <PlanCycleToggle defaultValue={planCycle} on:select={(cycle) => (planCycle = cycle.detail)} />
