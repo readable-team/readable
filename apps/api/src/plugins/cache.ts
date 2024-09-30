@@ -1,11 +1,12 @@
 import stringify from 'fast-json-stable-stringify';
 import { handleStreamOrSingleExecutionResult } from 'graphql-yoga';
 import { redis } from '@/cache';
+import { dev } from '@/env';
 import type { GraphQLParams, Plugin } from 'graphql-yoga';
 import type { Context } from '@/context';
 
 const getCacheKey = (request: Request, params: GraphQLParams, siteId?: string) => {
-  if (!siteId || !params.extensions?.cache || request.headers.has('authorization')) {
+  if (dev || !siteId || !params.extensions?.cache || request.headers.has('authorization')) {
     return null;
   }
 
