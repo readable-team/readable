@@ -6,8 +6,7 @@
   import InfoIcon from '~icons/lucide/info';
   import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
-  import EnrollPlanWithCardModal from '../@modals/EnrollPlanWithCardModal.svelte';
-  import PlanUpgradeModal from '../@modals/PlanUpgradeModal.svelte';
+  import { isPlanUpgradeModalOpen, selectedPlanCycle } from '$lib/svelte/stores/ui';
 
   $: query = graphql(`
     query TeamSettingsPlanPage_Query($teamId: ID!) {
@@ -27,13 +26,8 @@
     }
   `);
 
-  let isPlanUpgradeModalOpen = false;
-  let isEnrollPlanWithCardModalOpen = false;
-
-  let selectedPlanCycle: 'MONTHLY' | 'YEARLY' = 'YEARLY';
-
   const onSelect = (value: CustomEvent<string>) => {
-    selectedPlanCycle = value.detail as 'MONTHLY' | 'YEARLY';
+    selectedPlanCycle.set(value.detail as 'MONTHLY' | 'YEARLY');
   };
 
   const usages = [
@@ -124,7 +118,7 @@
     {
       title: '화이트 라벨링',
       basic: '',
-      pro: `${selectedPlanCycle === 'YEARLY' ? '18,333' : '22,000'}원/사이트/월`,
+      pro: `${$selectedPlanCycle === 'YEARLY' ? '18,333' : '22,000'}원/사이트/월`,
       enterprise: CheckIcon,
     },
   ];
@@ -219,7 +213,7 @@
                 추천
               </span>
             </p>
-            <span class={css({ textStyle: '20b' })}>{selectedPlanCycle === 'YEARLY' ? '27,500' : '33,000'}</span>
+            <span class={css({ textStyle: '20b' })}>{$selectedPlanCycle === 'YEARLY' ? '27,500' : '33,000'}</span>
             <Button
               style={css.raw({ marginTop: '40px', width: 'full' })}
               disabled={$query.team.plan.plan.id === 'PLAN00000000PRO'}
@@ -227,7 +221,9 @@
               size="sm"
               variant="primary"
               on:click={() => {
-                if ($query.team.plan.plan.id !== 'PLAN00000000PRO') isPlanUpgradeModalOpen = true;
+                if ($query.team.plan.plan.id !== 'PLAN00000000PRO') {
+                  $isPlanUpgradeModalOpen = true;
+                }
               }}
             >
               {$query.team.plan.plan.id === 'PLAN00000000PRO' ? '현재 플랜' : '업그레이드'}
@@ -348,19 +344,3 @@
     </table>
   </div>
 </div>
-
-<PlanUpgradeModal
-  confirm={(cycle) => {
-    isPlanUpgradeModalOpen = false;
-    isEnrollPlanWithCardModalOpen = true;
-    selectedPlanCycle = cycle;
-  }}
-  planCycle={selectedPlanCycle}
-  bind:open={isPlanUpgradeModalOpen}
-/>
-
-<EnrollPlanWithCardModal
-  planCycle={selectedPlanCycle}
-  teamId={$query.team.id}
-  bind:open={isEnrollPlanWithCardModalOpen}
-/>

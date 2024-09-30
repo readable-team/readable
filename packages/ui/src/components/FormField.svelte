@@ -24,7 +24,6 @@
     <label
       class={flex({
         align: 'center',
-        gap: '4px',
         marginBottom: '8px',
         textStyle: '14sb',
         color: { base: 'gray.700', _dark: 'gray.300' },
@@ -36,9 +35,10 @@
       </span>
       {#if description}
         <Tooltip message={description} placement="right">
-          <Icon style={css.raw({ color: 'neutral.50' })} icon={InfoIcon} size={14} />
+          <Icon style={css.raw({ color: 'neutral.50', marginLeft: '4px' })} icon={InfoIcon} size={14} />
         </Tooltip>
       {/if}
+      <slot name="label-suffix" />
     </label>
   {/if}
 

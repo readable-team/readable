@@ -4,7 +4,15 @@
   import { onDestroy } from 'svelte';
   import { browser } from '$app/environment';
   import { graphql } from '$graphql';
+  import {
+    isEnrollPlanWithCardModalOpen,
+    isPlanUpgradeModalOpen,
+    isPro,
+    selectedPlanCycle,
+  } from '$lib/svelte/stores/ui';
   import Header from './@header/Header.svelte';
+  import EnrollPlanWithCardModal from './@modals/EnrollPlanWithCardModal.svelte';
+  import PlanUpgradeModal from './@modals/PlanUpgradeModal.svelte';
 
   $: query = graphql(`
     query TeamLayout_Query($teamId: ID!) {
@@ -12,6 +20,13 @@
 
       team(teamId: $teamId) {
         id
+        plan {
+          id
+          plan {
+            id
+            name
+          }
+        }
       }
     }
   `);
@@ -47,6 +62,8 @@
     }
   `);
 
+  $: isPro.set($query.team.plan.plan.id === 'PLAN00000000PRO');
+
   let unsubscribe: (() => void) | null = null;
 
   $: if (browser) {
@@ -72,3 +89,19 @@
 
   <slot />
 </div>
+
+<PlanUpgradeModal
+  confirm={(cycle) => {
+    $isPlanUpgradeModalOpen = false;
+    $isEnrollPlanWithCardModalOpen = true;
+    $selectedPlanCycle = cycle;
+  }}
+  planCycle={$selectedPlanCycle}
+  bind:open={$isPlanUpgradeModalOpen}
+/>
+
+<EnrollPlanWithCardModal
+  planCycle={$selectedPlanCycle}
+  teamId={$query.team.id}
+  bind:open={$isEnrollPlanWithCardModalOpen}
+/>

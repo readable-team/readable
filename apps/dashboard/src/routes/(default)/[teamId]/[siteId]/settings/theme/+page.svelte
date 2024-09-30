@@ -8,6 +8,8 @@
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import { graphql } from '$graphql';
+  import { ProBadge } from '$lib/components';
+  import { isPro } from '$lib/svelte/stores/ui';
 
   $: query = graphql(`
     query SiteSettingsThemePage_Query($siteId: ID!) {
@@ -91,8 +93,10 @@
   {context}
   {form}
 >
-  <FormField name="themeColor" label="색상">
+  <FormField name="themeColor" label="테마 색상">
+    <ProBadge slot="label-suffix" />
     <TextInput
+      disabled={!$isPro}
       on:input={(e) => {
         if (e.currentTarget.value[0] !== '#') {
           e.currentTarget.value = `#${e.currentTarget.value}`;

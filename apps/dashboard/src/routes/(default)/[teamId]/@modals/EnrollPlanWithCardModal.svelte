@@ -25,6 +25,7 @@
   const enrollTeamPlan = graphql(`
     mutation EnrollPlanWithCardModal_EnrollTeamPlan_Mutation($input: EnrollTeamPlanInput!) {
       enrollTeamPlan(input: $input) {
+        id
         plan {
           id
           plan {
