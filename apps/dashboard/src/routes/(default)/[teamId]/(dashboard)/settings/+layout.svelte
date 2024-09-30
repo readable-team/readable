@@ -5,7 +5,21 @@
   import LayersIcon from '~icons/lucide/layers';
   import SettingsIcon from '~icons/lucide/settings';
   import { page } from '$app/stores';
+  import { graphql } from '$graphql';
   import { SettingTabItem } from '$lib/components';
+
+  $: query = graphql(`
+    query TeamSettingsLayout_Query($teamId: ID!) {
+      team(teamId: $teamId) {
+        id
+
+        meAsMember {
+          id
+          role
+        }
+      }
+    }
+  `);
 
   $: settings = [
     {
@@ -14,18 +28,22 @@
       icon: SettingsIcon,
       selected: $page.url.pathname === `/${$page.params.teamId}/settings`,
     },
-    {
-      name: '플랜',
-      href: `/${$page.params.teamId}/settings/plan`,
-      icon: LayersIcon,
-      selected: $page.url.pathname === `/${$page.params.teamId}/settings/plan`,
-    },
-    {
-      name: '결제 및 청구',
-      href: `/${$page.params.teamId}/settings/billing`,
-      icon: CoinsIcon,
-      selected: $page.url.pathname === `/${$page.params.teamId}/settings/billing`,
-    },
+    ...($query.team.meAsMember?.role === 'ADMIN'
+      ? [
+          {
+            name: '플랜',
+            href: `/${$page.params.teamId}/settings/plan`,
+            icon: LayersIcon,
+            selected: $page.url.pathname === `/${$page.params.teamId}/settings/plan`,
+          },
+          {
+            name: '결제 및 청구',
+            href: `/${$page.params.teamId}/settings/billing`,
+            icon: CoinsIcon,
+            selected: $page.url.pathname === `/${$page.params.teamId}/settings/billing`,
+          },
+        ]
+      : []),
   ];
 </script>
 
