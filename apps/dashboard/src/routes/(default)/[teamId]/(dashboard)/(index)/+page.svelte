@@ -1,7 +1,17 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex, grid } from '@readable/styled-system/patterns';
-  import { Button, FormField, FormProvider, Helmet, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
+  import {
+    Button,
+    FormField,
+    FormProvider,
+    Helmet,
+    Icon,
+    Menu,
+    MenuItem,
+    TextInput,
+    Tooltip,
+  } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import dayjs from 'dayjs';
   import mixpanel from 'mixpanel-browser';
@@ -11,11 +21,13 @@
   import CloudUploadIcon from '~icons/lucide/cloud-upload';
   import EarthIcon from '~icons/lucide/earth';
   import EllipsisIcon from '~icons/lucide/ellipsis';
+  import InfoIcon from '~icons/lucide/info';
   import PlusIcon from '~icons/lucide/plus';
   import SettingsIcon from '~icons/lucide/settings';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import { Img, TitledModal } from '$lib/components';
+  import { isPro } from '$lib/svelte/stores/ui';
 
   let createSiteOpen = false;
 
@@ -88,10 +100,19 @@
         사이트
         <span class={css({ color: 'text.tertiary' })}>{$query.team.sites.length}</span>
       </h1>
-      <Button style={css.raw({ gap: '6px' })} size="sm" on:click={() => (createSiteOpen = true)}>
-        <Icon icon={PlusIcon} size={16} />
-        <span>만들기</span>
-      </Button>
+      {#if $isPro}
+        <Button style={css.raw({ gap: '6px' })} size="sm" type="button" on:click={() => (createSiteOpen = true)}>
+          <span>만들기</span>
+          <Icon icon={PlusIcon} size={16} />
+        </Button>
+      {:else}
+        <Tooltip message="Pro 플랜부터 사이트를 더 만들 수 있어요" placement="bottom">
+          <Button style={css.raw({ gap: '6px' })} disabled size="sm" type="button">
+            <span>만들기</span>
+            <Icon icon={InfoIcon} size={16} />
+          </Button>
+        </Tooltip>
+      {/if}
     </div>
     <ul class={grid({ columns: 3, gap: '16px' })}>
       {#each $query.team.sites as site (site.id)}

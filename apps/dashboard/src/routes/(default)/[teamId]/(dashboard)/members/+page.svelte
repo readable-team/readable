@@ -1,7 +1,17 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, FormProvider, Helmet, Icon, Menu, MenuItem, TextInput } from '@readable/ui/components';
+  import {
+    Button,
+    FormField,
+    FormProvider,
+    Helmet,
+    Icon,
+    Menu,
+    MenuItem,
+    TextInput,
+    Tooltip,
+  } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
   import { GraphQLError } from 'graphql';
@@ -11,7 +21,9 @@
   import CheckIcon from '~icons/lucide/check';
   import ChevronDownIcon from '~icons/lucide/chevron-down';
   import EllipsisIcon from '~icons/lucide/ellipsis';
+  import InfoIcon from '~icons/lucide/info';
   import MailOpenIcon from '~icons/lucide/mail-open';
+  import PlusIcon from '~icons/lucide/plus';
   import UserRoundMinusIcon from '~icons/lucide/user-round-minus';
   import UserXIcon from '~icons/lucide/user-x';
   import { goto, invalidateAll } from '$app/navigation';
@@ -19,6 +31,7 @@
   import Img from '$lib/components/Img.svelte';
   import { invokeAlert } from '$lib/components/invoke-alert';
   import TitledModal from '$lib/components/TitledModal.svelte';
+  import { isPro } from '$lib/svelte/stores/ui';
 
   let isInviteModalOpen = false;
 
@@ -155,7 +168,19 @@
     </h1>
 
     {#if $query.team.meAsMember?.role === 'ADMIN'}
-      <Button size="sm" type="button" on:click={() => (isInviteModalOpen = true)}>멤버 초대</Button>
+      {#if $isPro}
+        <Button style={css.raw({ gap: '6px' })} size="sm" type="button" on:click={() => (isInviteModalOpen = true)}>
+          <span>초대하기</span>
+          <Icon icon={PlusIcon} size={16} />
+        </Button>
+      {:else}
+        <Tooltip message="Pro 플랜부터 멤버를 초대할 수 있어요" placement="bottom">
+          <Button style={css.raw({ gap: '6px' })} disabled size="sm" type="button">
+            <span>초대하기</span>
+            <Icon icon={InfoIcon} size={16} />
+          </Button>
+        </Tooltip>
+      {/if}
     {/if}
   </div>
 

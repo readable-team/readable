@@ -1,24 +1,31 @@
 <script lang="ts">
-  import { flex } from '@readable/styled-system/patterns';
+  import { css } from '@readable/styled-system/css';
   import { Icon } from '@readable/ui/components';
   import ArrowUpRightIcon from '~icons/lucide/arrow-up-right';
   import { isPlanUpgradeModalOpen, isPro } from '$lib/svelte/stores/ui';
+  import type { SystemStyleObject } from '@readable/styled-system/types';
+
+  export let style: SystemStyleObject | undefined = undefined;
 </script>
 
 {#if !$isPro}
   <button
-    class={flex({
-      marginLeft: '8px',
-      alignItems: 'center',
-      gap: '2px',
-      textStyle: '11sb',
-      color: 'text.accent',
-      backgroundColor: 'accent.10',
-      borderRadius: '4px',
-      height: '20px',
-      paddingLeft: '6px',
-      paddingRight: '4px',
-    })}
+    class={css(
+      {
+        display: 'flex',
+        marginLeft: '8px',
+        alignItems: 'center',
+        gap: '2px',
+        textStyle: '11sb',
+        color: 'text.accent',
+        backgroundColor: 'accent.10',
+        borderRadius: '4px',
+        height: '20px',
+        paddingLeft: '6px',
+        paddingRight: '4px',
+      },
+      style,
+    )}
     type="button"
     on:click={() => {
       isPlanUpgradeModalOpen.set(true);
