@@ -34,6 +34,10 @@ input CreateCategoryInput {
   upper: String
 }
 
+input CreateFeedbackInput {
+  content: String!
+}
+
 input CreatePageInput {
   categoryId: ID!
   parentId: ID
@@ -176,6 +180,7 @@ type Mutation {
   authorizeSingleSignOn(input: AuthorizeSingleSignOnInput!): UserWithAccessToken!
   createCategory(input: CreateCategoryInput!): Category!
   createDefaultTeam: Team!
+  createFeedback(input: CreateFeedbackInput!): Boolean!
   createPage(input: CreatePageInput!): Page!
   createSite(input: CreateSiteInput!): Site!
   createTeam(input: CreateTeamInput!): Team!
