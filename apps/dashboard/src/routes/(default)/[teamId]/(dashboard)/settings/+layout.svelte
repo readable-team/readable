@@ -1,8 +1,8 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import CoinsIcon from '~icons/lucide/coins';
-  import LayersIcon from '~icons/lucide/layers';
+  import CreditCardIcon from '~icons/lucide/credit-card';
+  import MapIcon from '~icons/lucide/map';
   import SettingsIcon from '~icons/lucide/settings';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
@@ -33,13 +33,13 @@
           {
             name: '플랜',
             href: `/${$page.params.teamId}/settings/plan`,
-            icon: LayersIcon,
+            icon: MapIcon,
             selected: $page.url.pathname === `/${$page.params.teamId}/settings/plan`,
           },
           {
             name: '결제 및 청구',
             href: `/${$page.params.teamId}/settings/billing`,
-            icon: CoinsIcon,
+            icon: CreditCardIcon,
             selected: $page.url.pathname === `/${$page.params.teamId}/settings/billing`,
           },
         ]

@@ -127,7 +127,7 @@
 
 <Helmet title="플랜" trailing={$query.team.name} />
 
-<h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>플랜 요금제</h1>
+<h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>플랜</h1>
 
 <div class={flex({ flexDirection: 'column', gap: '8px' })}>
   <div

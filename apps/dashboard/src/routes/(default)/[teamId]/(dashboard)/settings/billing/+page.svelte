@@ -50,7 +50,7 @@
     base: {
       display: 'inline-block',
       verticalAlign: 'text-top',
-      textStyle: '11b',
+      textStyle: '12b',
       paddingX: '4px',
       paddingY: '2px',
       borderRadius: '4px',
@@ -117,8 +117,8 @@
         <HorizontalDivider />
         <div class={flex({ flexDirection: 'column', gap: '12px' })}>
           <div class={css({ textStyle: '13r', color: 'text.tertiary' })}>
-            {dayjs($query.team.plan.nextPaymentAt).format('YYYY년 MM월 DD일')}에 {$query.team.plan.amount.toLocaleString()}원
-            갱신될 예정입니다
+            {dayjs($query.team.plan.nextPaymentAt).format('YYYY년 MM월 DD일')}에 {$query.team.plan.amount.toLocaleString()}원이
+            결제될 예정입니다
           </div>
           <!-- <dl
             class={flex({
@@ -193,7 +193,7 @@
       })}
     >
       <div class={flex({ flexDirection: 'column', gap: '16px' })}>
-        <div class={css({ textStyle: '14sb', color: 'text.secondary' })}>청구내역</div>
+        <div class={css({ textStyle: '14sb', color: 'text.secondary' })}>청구 내역</div>
         <table class={css({ width: 'full', borderCollapse: 'collapse', borderSpacingX: '10px' })}>
           <thead>
             <tr

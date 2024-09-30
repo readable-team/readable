@@ -35,7 +35,7 @@
 </script>
 
 <TitledModal bind:open>
-  <svelte:fragment slot="title">피드백</svelte:fragment>
+  <svelte:fragment slot="title">리더블 팀에 피드백 보내기</svelte:fragment>
 
   <FormProvider {context} {form}>
     <input name="teamId" type="hidden" value={teamId} />
@@ -68,13 +68,13 @@
             minWidth: '0',
             resize: 'none',
           })}
-          placeholder="피드백을 자유롭게 작성해주세요"
+          placeholder="기능 요청, 버그 제보, 개선 제안 등 하고 싶으신 말씀을 자유롭게 적어주세요"
           rows="4"
         />
       </label>
     </FormField>
     <Button style={css.raw({ width: 'full', marginTop: '20px' })} disabled={!isValid} glossy size="lg" type="submit">
-      피드백 보내기
+      보내기
     </Button>
   </FormProvider>
 </TitledModal>

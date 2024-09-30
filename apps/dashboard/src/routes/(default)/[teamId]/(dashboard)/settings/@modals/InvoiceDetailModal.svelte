@@ -153,10 +153,12 @@
             {#if record.type === 'SUCCESS'}
               <div
                 class={css({
+                  borderWidth: '1px',
+                  borderColor: '[#EBFAF1]',
                   borderRadius: '4px',
                   paddingX: '4px',
                   paddingY: '2px',
-                  textStyle: '11b',
+                  textStyle: '12b',
                   color: '[#308959]',
                   backgroundColor: '[#EBFAF1]',
                 })}
@@ -175,7 +177,7 @@
                   borderRadius: '4px',
                   paddingX: '4px',
                   paddingY: '2px',
-                  textStyle: '11b',
+                  textStyle: '12b',
                   color: 'text.tertiary',
                 })}
                 href={record.receiptUrl}
@@ -190,10 +192,12 @@
                 class={flex({
                   align: 'center',
                   gap: '4px',
+                  borderWidth: '1px',
+                  borderColor: 'danger.10',
                   borderRadius: '4px',
                   paddingX: '4px',
                   paddingY: '2px',
-                  textStyle: '11b',
+                  textStyle: '12b',
                   color: 'text.danger',
                   backgroundColor: 'danger.10',
                 })}
