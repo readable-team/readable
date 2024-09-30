@@ -189,7 +189,7 @@
               textStyle: '13m',
               color: 'text.danger',
               textAlign: 'center',
-              backgroundColor: 'danger.40/50',
+              backgroundColor: 'danger.20',
             })}
           >
             연결이 끊어졌습니다
