@@ -61,20 +61,9 @@
     input.value = value.length > 2 ? value.slice(0, 2) + '/' + value.slice(2, 4) : value;
   }
 
-  // FIXME
   const agreements = [
-    {
-      name: '개인정보 수집 및 이용',
-      url: 'https://gist.github.com/devunt/c1661ae3d20781bc2504219bd3a3d5f1',
-    },
-    {
-      name: 'NICEPAY 전자금융거래 기본약관',
-      url: 'https://www.nicepay.co.kr/cs/terms/policy1.do',
-    },
-    {
-      name: 'NICEPAY 개인정보처리방침',
-      url: 'https://www.nicepay.co.kr/cs/terms/private.do',
-    },
+    { name: '리더블 결제서비스 이용약관', url: 'https://docs.rdbl.io/legal/payment' },
+    { name: 'NICEPAY 전자금융거래 기본약관', url: 'https://www.nicepay.co.kr/cs/terms/policy1.do' },
   ];
 
   let agreementChecks = agreements.map(() => false);
