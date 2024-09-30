@@ -64,6 +64,8 @@
     paddingRight: '16px',
     paddingY: '10px',
     backgroundColor: 'surface.primary',
+    borderBottomWidth: '1px',
+    borderBottomColor: 'border.primary',
   })}
 >
   <div
@@ -124,7 +126,7 @@
       style={css.raw({
         color: 'text.tertiary',
         height: '28px',
-        paddingX: '8px',
+        paddingX: '12px',
         paddingY: '4px',
         textStyle: '14sb',
         borderRadius: '4px',
