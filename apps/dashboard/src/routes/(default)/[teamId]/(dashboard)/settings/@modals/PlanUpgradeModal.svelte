@@ -7,7 +7,7 @@
 
   export let open = false;
   export let confirm: (cycle: 'MONTHLY' | 'YEARLY') => void;
-  let planCycle: 'MONTHLY' | 'YEARLY' = 'MONTHLY';
+  export let planCycle: 'MONTHLY' | 'YEARLY' = 'MONTHLY';
 </script>
 
 <TitledModal bind:open>

@@ -55,7 +55,16 @@
       </nav>
     </aside>
 
-    <div class={css({ paddingTop: '40px', paddingX: '32px', paddingBottom: '120px', width: 'full', overflow: 'auto' })}>
+    <div
+      class={css({
+        paddingTop: '40px',
+        paddingLeft: '32px',
+        paddingBottom: '120px',
+        width: 'full',
+        overflow: 'auto',
+        scrollbar: 'hidden',
+      })}
+    >
       <slot />
     </div>
   </div>
