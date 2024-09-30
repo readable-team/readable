@@ -94,7 +94,7 @@
   {form}
 >
   <FormField name="themeColor" label="테마 색상">
-    <ProBadge slot="label-suffix" />
+    <ProBadge slot="label-suffix" via="site-theme-color:pro-badge" />
     <TextInput
       disabled={!$isPro}
       on:input={(e) => {

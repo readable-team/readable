@@ -95,6 +95,8 @@
     $isPlanUpgradeModalOpen = false;
     $isEnrollPlanWithCardModalOpen = true;
     $selectedPlanCycle = cycle;
+
+    mixpanel.track('plan:upgrade:confirm');
   }}
   planCycle={$selectedPlanCycle}
   bind:open={$isPlanUpgradeModalOpen}

@@ -4,6 +4,7 @@
   import { Button, Checkbox, FormField, FormProvider, HorizontalDivider, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
+  import mixpanel from 'mixpanel-browser';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import { graphql } from '$graphql';
@@ -47,6 +48,11 @@
       passwordTwoDigits: z.string().min(2),
     }),
     onSuccess: async () => {
+      mixpanel.track('billing:add-method:success');
+      mixpanel.track('plan:enroll:start', {
+        billingCycle: planCycle,
+      });
+
       enrollTeamPlan({
         teamId,
         planId: 'PLAN00000000PRO',
@@ -55,15 +61,20 @@
         .then(() => {
           toast.success('플랜이 변경되었습니다');
           open = false;
+          mixpanel.track('plan:enroll:success', {
+            billingCycle: planCycle,
+          });
         })
         .catch(() => {
           // TODO: 에러 메시지 구별
           toast.error('플랜 변경에 실패했습니다');
+          mixpanel.track('plan:enroll:fail');
         });
     },
     onError: () => {
       // TODO: 에러 메시지 구별
       toast.error('카드 추가에 실패했습니다');
+      mixpanel.track('billing:add-method:fail');
     },
   });
 

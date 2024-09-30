@@ -4,6 +4,7 @@
   import { Button, Checkbox, FormField, FormProvider, HorizontalDivider, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
+  import mixpanel from 'mixpanel-browser';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import { graphql } from '$graphql';
@@ -31,11 +32,13 @@
     onSuccess: async () => {
       toast.success('결제 카드가 변경되었습니다');
       open = false;
+      mixpanel.track('billing:update-method:success');
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onError: (_error) => {
       // TODO: 에러 메시지 구별
       toast.error('결제 카드 변경에 실패했습니다');
+      mixpanel.track('billing:update-method:fail');
     },
   });
 

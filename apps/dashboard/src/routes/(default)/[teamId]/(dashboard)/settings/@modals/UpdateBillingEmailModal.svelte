@@ -4,6 +4,7 @@
   import { Button, FormField, FormProvider, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
+  import mixpanel from 'mixpanel-browser';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import { graphql } from '$graphql';
@@ -31,9 +32,11 @@
     onSuccess: async () => {
       toast.success('청구서 수신 이메일이 변경되었습니다');
       open = false;
+      mixpanel.track('billing:update-email:success');
     },
     onError: () => {
       toast.error('이메일 변경에 실패했습니다');
+      mixpanel.track('billing:update-email:fail');
     },
   });
 </script>

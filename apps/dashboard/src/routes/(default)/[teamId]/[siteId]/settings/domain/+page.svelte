@@ -253,7 +253,7 @@
   >
     <input name="siteId" type="hidden" />
     <FormField name="domain" label="커스텀 도메인 URL">
-      <ProBadge slot="label-suffix" />
+      <ProBadge slot="label-suffix" via="site-custom-domain:pro-badge" />
       <TextInput name="domain" disabled={!!$query.site.customDomain || !$isPro} placeholder="docs.example.com" />
     </FormField>
 

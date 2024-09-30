@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Button, Helmet, Icon, SegmentButtons, Tooltip } from '@readable/ui/components';
+  import mixpanel from 'mixpanel-browser';
   import CheckIcon from '~icons/lucide/check';
   import InfoIcon from '~icons/lucide/info';
   import { env } from '$env/dynamic/public';
@@ -228,6 +229,7 @@
               variant="primary"
               on:click={() => {
                 if ($query.team.plan.plan.id !== 'PLAN00000000PRO') {
+                  mixpanel.track('plan:upgrade:show', { via: 'plan' });
                   $isPlanUpgradeModalOpen = true;
                 }
               }}

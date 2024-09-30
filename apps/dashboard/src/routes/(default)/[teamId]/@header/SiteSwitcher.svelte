@@ -148,13 +148,14 @@
       if ($isPro) {
         newSiteModalOpen = true;
       } else {
+        mixpanel.track('plan:upgrade:show', { via: 'site-switcher:new-site-button' });
         isPlanUpgradeModalOpen.set(true);
       }
     }}
   >
     <Icon icon={CirclePlusIcon} size={16} />
     <span>새 사이트 만들기</span>
-    <ProBadge style={css.raw({ marginLeft: 'auto' })} />
+    <ProBadge style={css.raw({ marginLeft: 'auto' })} via="site-switcher:pro-badge" />
   </MenuItem>
 </Menu>
 
