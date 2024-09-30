@@ -213,7 +213,10 @@
                 추천
               </span>
             </p>
-            <span class={css({ textStyle: '20b' })}>{$selectedPlanCycle === 'YEARLY' ? '27,500' : '33,000'}</span>
+            <span class={css({ textStyle: '20b' })}>
+              {$selectedPlanCycle === 'YEARLY' ? '27,500' : '33,000'}
+            </span>
+            <span class={css({ textStyle: '13r' })}>원 / 월</span>
             <Button
               style={css.raw({ marginTop: '40px', width: 'full' })}
               disabled={$query.team.plan.plan.id === 'PLAN00000000PRO'}
@@ -249,6 +252,7 @@
       <tbody
         class={css({
           '& > tr > td': {
+            borderColor: 'border.primary',
             paddingX: '12px',
             paddingY: '10px',
             color: 'text.secondary',
