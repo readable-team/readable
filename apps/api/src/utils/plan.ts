@@ -21,7 +21,7 @@ export const getTeamPlanRule = async <T extends keyof PlanRules>({
     .where(eq(TeamPlans.teamId, teamId))
     .then(firstOrThrow);
 
-  return plan.rules?.[rule] ?? defaultPlanRules[rule];
+  return plan.rules[rule] === undefined ? defaultPlanRules[rule] : plan.rules[rule];
 };
 
 export const assertTeamPlanRule = async <T extends keyof PlanRules>(params: GetPlanParams<T>) => {
