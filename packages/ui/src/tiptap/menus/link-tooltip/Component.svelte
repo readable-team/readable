@@ -2,6 +2,8 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
+  import FileIcon from '~icons/lucide/file';
+  import GlobeIcon from '~icons/lucide/globe';
   // import { toast } from '@readable/ui/notification';
   import PencilLineIcon from '~icons/lucide/pencil-line';
   import Trash2Icon from '~icons/lucide/trash-2';
@@ -74,7 +76,7 @@
       maxWidth: '280px',
       paddingX: '12px',
       paddingY: '6px',
-      gap: '14px',
+      gap: '6px',
       backgroundColor: 'background.overlay',
       borderRadius: '8px',
       boxShadow: 'strong',
@@ -83,6 +85,11 @@
     {#await loadLink(linkHref)}
       <RingSpinner style={css.raw({ size: '14px', color: 'text.tertiary' })} />
     {:then link}
+      <Icon
+        style={css.raw({ color: 'text.tertiary' })}
+        icon={link.type === 'internal' ? FileIcon : GlobeIcon}
+        size={16}
+      />
       <a
         class={css({
           color: 'text.tertiary',
@@ -103,6 +110,7 @@
     {/await}
     <div
       class={flex({
+        marginLeft: '14px',
         gap: '8px',
       })}
     >
