@@ -402,6 +402,7 @@ type PublicPageSearchHit implements IPageSearchHit {
 }
 
 type PublicSite implements ISite {
+  aiSearchEnabled: Boolean!
   categories: [PublicCategory!]!
   firstPage: PublicPage
   id: ID!

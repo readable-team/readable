@@ -34,7 +34,7 @@ import { dataSchemas } from '@/schemas';
 import { invalidateSiteCache } from '@/utils/cache';
 import { makeYDoc } from '@/utils/page';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
-import { assertTeamPlanRule } from '@/utils/plan';
+import { assertTeamPlanRule, getTeamPlanRule } from '@/utils/plan';
 import { assertTeamRestriction } from '@/utils/restrictions';
 import {
   Category,
@@ -232,6 +232,15 @@ PublicSite.implement({
           .then(first);
 
         return !!addon;
+      },
+    }),
+
+    aiSearchEnabled: t.boolean({
+      resolve: async (site) => {
+        return await getTeamPlanRule({
+          teamId: site.teamId,
+          rule: 'aiSearch',
+        });
       },
     }),
   }),
