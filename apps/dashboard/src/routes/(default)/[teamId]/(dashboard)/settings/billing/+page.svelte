@@ -6,6 +6,7 @@
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
+  import UpdateBillingEmailModal from '../@modals/UpdateBillingEmailModal.svelte';
   import UpdateCardModal from '../@modals/UpdateCardModal.svelte';
 
   $: query = graphql(`
@@ -89,6 +90,7 @@
   };
 
   let isUpdateCardModalOpen = false;
+  let isUpdateBillingEmailModalOpen = false;
 </script>
 
 <Helmet title="결제 및 청구" trailing={$query.team.name} />
@@ -180,7 +182,9 @@
           <div class={css({ textStyle: '14sb', color: 'text.secondary', marginBottom: '4px' })}>청구서 수신 이메일</div>
           <div class={flex({ justifyContent: 'space-between', alignItems: 'center' })}>
             <div class={css({ textStyle: '16m' })}>{$query.team.plan.billingEmail}</div>
-            <Button disabled size="md" variant="secondary">이메일 변경</Button>
+            <Button size="md" variant="secondary" on:click={() => (isUpdateBillingEmailModalOpen = true)}>
+              이메일 변경
+            </Button>
           </div>
         </div>
       </div>
@@ -259,3 +263,4 @@
 </div>
 
 <UpdateCardModal teamId={$query.team.id} bind:open={isUpdateCardModalOpen} />
+<UpdateBillingEmailModal teamId={$query.team.id} bind:open={isUpdateBillingEmailModalOpen} />
