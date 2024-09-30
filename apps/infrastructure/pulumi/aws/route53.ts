@@ -21,6 +21,7 @@ new aws.route53.Record('rdbl.io|txt', {
   records: [
     // spell-checker:disable-next-line
     'google-site-verification=zd13JhTsjRQJRm_gF8hI8Z28-sRjHL8PUJ5kAFDFrq0',
+    'v=spf1 include:mail.stibee.com ~all',
   ],
   ttl: 300,
 });
@@ -33,18 +34,10 @@ new aws.route53.Record('rdbl.io|mx', {
   ttl: 300,
 });
 
-new aws.route53.Record('k2._domainkey.rdbl.io', {
+new aws.route53.Record('stb._domainkey.rdbl.io', {
   zoneId: zones.rdbl_io.zoneId,
   type: 'CNAME',
-  name: 'k2._domainkey.rdbl.io',
-  records: ['dkim2.mcsv.net'],
-  ttl: 300,
-});
-
-new aws.route53.Record('k3._domainkey.rdbl.io', {
-  zoneId: zones.rdbl_io.zoneId,
-  type: 'CNAME',
-  name: 'k3._domainkey.rdbl.io',
-  records: ['dkim3.mcsv.net'],
+  name: 'stb._domainkey.rdbl.io',
+  records: ['dkim.stibee.com'],
   ttl: 300,
 });
