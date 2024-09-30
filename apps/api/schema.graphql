@@ -36,6 +36,7 @@ input CreateCategoryInput {
 
 input CreateFeedbackInput {
   content: String!
+  teamId: String!
 }
 
 input CreatePageInput {
