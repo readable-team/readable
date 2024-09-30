@@ -394,4 +394,23 @@ builder.mutationFields((t) => ({
       return input.siteId;
     },
   }),
+
+  updateBillingEmail: t.withAuth({ session: true }).fieldWithInput({
+    type: Team,
+    input: {
+      teamId: t.input.id(),
+      billingEmail: t.input.string({ validate: { schema: dataSchemas.email } }),
+    },
+    resolve: async (_, { input }, ctx) => {
+      await assertTeamPermission({
+        teamId: input.teamId,
+        userId: ctx.session.userId,
+        role: TeamMemberRole.ADMIN,
+      });
+
+      await db.update(TeamPlans).set({ billingEmail: input.billingEmail }).where(eq(TeamPlans.teamId, input.teamId));
+
+      return input.teamId;
+    },
+  }),
 }));

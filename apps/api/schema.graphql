@@ -203,6 +203,7 @@ type Mutation {
   unfurlLink(input: UnfurlLinkInput!): UnfurlLinkResult!
   unpublishPage(input: UnpublishPageInput!): Page!
   unsetSiteCustomDomain(input: UnsetSiteCustomDomainInput!): SiteCustomDomain!
+  updateBillingEmail(input: UpdateBillingEmailInput!): Team!
   updateCategory(input: UpdateCategoryInput!): Category!
   updateCategoryPosition(input: UpdateCategoryPositionInput!): Category!
   updateCategorySlug(input: UpdateCategorySlugInput!): Category!
@@ -620,6 +621,11 @@ input UnpublishPageInput {
 
 input UnsetSiteCustomDomainInput {
   siteCustomDomainId: ID!
+}
+
+input UpdateBillingEmailInput {
+  billingEmail: String!
+  teamId: ID!
 }
 
 input UpdateCategoryInput {
