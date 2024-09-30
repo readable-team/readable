@@ -180,22 +180,25 @@
           <th class={css({ width: '160px' })}>
             <p class={css({ marginBottom: '4px', textStyle: '13m' })}>Basic</p>
             <span class={css({ textStyle: '20b' })}>무료</span>
-            <Button
-              style={flex.raw({ align: 'center', gap: '6px', marginTop: '40px', width: 'full' })}
-              disabled
-              size="sm"
-              variant="secondary"
+            <!-- TODO: 다운그레이드 툴팁 문구 수정 -->
+            <Tooltip
+              enabled={$query.team.plan.plan.id !== 'PLAN000000BASIC'}
+              message="플랜 다운그레이드는 문의해주세요"
             >
-              {#if $query.team.plan.plan.id === 'PLAN000000BASIC'}
-                <span>현재 플랜</span>
-              {:else}
-                <span>다운그레이드</span>
-                <!-- TODO: 다운그레이드 툴팁 문구 수정 -->
-                <Tooltip message="플랜 다운그레이드는 문의해주세요">
+              <Button
+                style={flex.raw({ align: 'center', gap: '6px', marginTop: '40px', width: 'full' })}
+                disabled
+                size="sm"
+                variant="secondary"
+              >
+                {#if $query.team.plan.plan.id === 'PLAN000000BASIC'}
+                  <span>현재 플랜</span>
+                {:else}
+                  <span>다운그레이드</span>
                   <Icon icon={InfoIcon} />
-                </Tooltip>
-              {/if}
-            </Button>
+                {/if}
+              </Button>
+            </Tooltip>
           </th>
           <th class={css({ borderTopRadius: '10px', backgroundColor: 'neutral.10', width: '160px' })}>
             <p class={flex({ align: 'center', justify: 'space-between', marginBottom: '4px', textStyle: '13m' })}>
