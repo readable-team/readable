@@ -28,7 +28,7 @@
     {
       icon: PersonStandingIcon,
       title: '웹 접근성 최적화',
-      description: '시맨틱한 마크업과 표준적인 설계 덕분에 검색 엔진에 최적화되어 있습니다',
+      description: '시맨틱 마크업과 표준적인 설계 덕분에 검색 엔진에 최적화되어 있습니다',
     },
   ];
 </script>
