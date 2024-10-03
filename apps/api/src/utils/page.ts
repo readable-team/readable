@@ -1,8 +1,8 @@
+import { schema } from '@readable/ui/tiptap/server';
 import { Node } from '@tiptap/pm/model';
 import stringify from 'fast-json-stable-stringify';
 import { prosemirrorToYXmlFragment } from 'y-prosemirror';
 import * as Y from 'yjs';
-import { schema } from '@/pm';
 import type { JSONContent } from '@tiptap/core';
 
 type HashPageContentParams = {

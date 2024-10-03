@@ -14,6 +14,7 @@
     "./notification": "./src/notification/index.ts",
     "./styles.css": "./styles/index.css",
     "./tiptap": "./src/tiptap/index.ts",
+    "./tiptap/server": "./src/tiptap/server.ts",
     "./utils": "./src/utils/index.ts"
   },
   "scripts": {

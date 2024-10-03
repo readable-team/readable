@@ -1,3 +1,4 @@
+import { schema } from '@readable/ui/tiptap/server';
 import { Node } from '@tiptap/pm/model';
 import dayjs from 'dayjs';
 import { and, desc, eq, gt, inArray, notInArray, sql } from 'drizzle-orm';
@@ -18,7 +19,6 @@ import {
 } from '@/db';
 import { PageState } from '@/enums';
 import * as openai from '@/external/openai';
-import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { searchIndex } from '@/search';
 import { hashPageContent } from '@/utils/page';

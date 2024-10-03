@@ -1,3 +1,4 @@
+import { schema } from '@readable/ui/tiptap/server';
 import dayjs from 'dayjs';
 import { and, asc, count, desc, eq, gt, inArray, isNull, ne, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
@@ -22,7 +23,6 @@ import {
 import { CategoryState, PageContentSyncKind, PageState, TeamRestrictionType } from '@/enums';
 import { ReadableError } from '@/errors';
 import { enqueueJob } from '@/jobs';
-import { schema } from '@/pm';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { invalidateSiteCache } from '@/utils/cache';
