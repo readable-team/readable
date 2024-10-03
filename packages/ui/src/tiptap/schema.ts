@@ -19,6 +19,10 @@ import { ListKeymap } from '@tiptap/extension-list-keymap';
 import { OrderedList } from '@tiptap/extension-ordered-list';
 import { Paragraph } from '@tiptap/extension-paragraph';
 import { Strike } from '@tiptap/extension-strike';
+import Table from '@tiptap/extension-table';
+import TableCell from '@tiptap/extension-table-cell';
+import TableHeader from '@tiptap/extension-table-header';
+import TableRow from '@tiptap/extension-table-row';
 import { Text } from '@tiptap/extension-text';
 import { TextAlign } from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
@@ -152,6 +156,37 @@ export const basicExtensions = [
   }),
   ListItem.extend({
     content: 'paragraph (paragraph | bulletList | orderedList)*',
+  }),
+  Table.configure({
+    resizable: false, // https://github.com/ueberdosis/tiptap/issues/1766
+    HTMLAttributes: {
+      class: css({
+        border: '1px solid',
+        borderColor: 'neutral.30',
+        borderCollapse: 'collapse',
+      }),
+    },
+  }),
+  TableRow,
+  TableHeader.configure({
+    HTMLAttributes: {
+      class: css({
+        border: '1px solid',
+        borderColor: 'neutral.30',
+        paddingX: '14px',
+        paddingY: '10px',
+      }),
+    },
+  }),
+  TableCell.configure({
+    HTMLAttributes: {
+      class: css({
+        border: '1px solid',
+        borderColor: 'neutral.30',
+        paddingX: '14px',
+        paddingY: '10px',
+      }),
+    },
   }),
 
   // marks
