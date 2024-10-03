@@ -10,6 +10,7 @@ import type { VirtualElement } from '@floating-ui/dom';
 import type { MenuItem } from './types';
 
 const pattern = /^\/(.*)$/;
+const menuItemTypeSet = new Set(menuItems.map((item) => item.type));
 
 export const SlashMenu = Extension.create({
   name: 'slashMenu',
@@ -41,12 +42,37 @@ export const SlashMenu = Extension.create({
 
         allow: ({ state }) => {
           const { $anchor, empty } = state.selection;
-          const block = $anchor.node(1);
-          return empty && block.type.name === 'paragraph';
+          if (!empty) {
+            return false;
+          }
+
+          const block = $anchor.node($anchor.depth - 1);
+
+          for (let i = 0; i < block.type.contentMatch.edgeCount; i++) {
+            const edge = block.type.contentMatch.edge(i);
+            if (menuItemTypeSet.has(edge.type.name)) {
+              return true;
+            }
+          }
+
+          return false;
         },
 
-        items: ({ query }) => {
-          return matchSorter(menuItems, disassemble(query), {
+        items: ({ editor, query }) => {
+          const { $anchor } = editor.state.selection;
+          const block = $anchor.node($anchor.depth - 1);
+          const typeSet = new Set<string>();
+
+          for (let i = 0; i < block.type.contentMatch.edgeCount; i++) {
+            const edge = block.type.contentMatch.edge(i);
+            if (menuItemTypeSet.has(edge.type.name)) {
+              typeSet.add(edge.type.name);
+            }
+          }
+
+          const items = menuItems.filter((item) => typeSet.has(item.type));
+
+          return matchSorter(items, disassemble(query), {
             keys: [(item) => disassemble(item.name), (item) => item.keywords.map((v) => disassemble(v))],
             sorter: (items) => items,
           });

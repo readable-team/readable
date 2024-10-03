@@ -8,6 +8,7 @@ type CommandParams = {
 
 export type MenuItem = {
   id: string;
+  type: string;
   name: string;
   group: MenuItemGroup;
   keywords: string[];

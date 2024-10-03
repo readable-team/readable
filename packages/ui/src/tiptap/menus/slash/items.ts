@@ -14,6 +14,7 @@ import type { MenuItem } from './types';
 export const menuItems: MenuItem[] = [
   {
     id: 'heading-1',
+    type: 'heading',
     group: 'heading',
     name: '제목 1',
     keywords: ['heading 1'],
@@ -24,6 +25,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'heading-2',
+    type: 'heading',
     group: 'heading',
     name: '제목 2',
     keywords: ['heading 2'],
@@ -34,6 +36,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'heading-3',
+    type: 'heading',
     group: 'heading',
     name: '제목 3',
     keywords: ['heading 3'],
@@ -44,6 +47,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'blockquote',
+    type: 'blockquote',
     group: 'block',
     name: '인용',
     keywords: ['blockquote'],
@@ -54,6 +58,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'divider',
+    type: 'horizontalRule',
     group: 'block',
     name: '구분선',
     keywords: ['divider'],
@@ -64,6 +69,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'bullet-list',
+    type: 'bulletList',
     group: 'block',
     name: '순서 없는 목록',
     keywords: ['bullet list'],
@@ -74,6 +80,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'ordered-list',
+    type: 'orderedList',
     group: 'block',
     name: '순서 있는 목록',
     keywords: ['ordered list'],
@@ -84,6 +91,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'callout',
+    type: 'callout',
     group: 'block',
     name: '콜아웃',
     keywords: ['callout'],
@@ -94,6 +102,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'image',
+    type: 'image',
     group: 'media',
     name: '이미지',
     keywords: ['image', 'picture'],
@@ -104,6 +113,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'file',
+    type: 'file',
     group: 'media',
     name: '파일',
     keywords: ['file', 'attachment'],
@@ -114,6 +124,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'embed',
+    type: 'embed',
     group: 'media',
     name: '임베드',
     keywords: ['embed', 'link'],
