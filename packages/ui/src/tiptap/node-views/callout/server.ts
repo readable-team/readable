@@ -8,7 +8,7 @@ export const Callout = createServerNodeView({
 
   addAttributes() {
     return {
-      emoji: { isRequired: true, default: 'alert' },
+      emoji: { default: 'bulb' },
     };
   },
 });

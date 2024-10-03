@@ -3,13 +3,11 @@
   import { flex } from '@readable/styled-system/patterns';
   import { createFloatingActions } from '@readable/ui/actions';
   import { NodeView, NodeViewContentEditable } from '@readable/ui/tiptap';
-  import LightBulbIcon from '../../../assets/light-bulb.svg?component';
-  import LoudspeakerIcon from '../../../assets/loudspeaker.svg?component';
-  import PushpinIcon from '../../../assets/pushpin.svg?component';
-  import RedExclamationMarkIcon from '../../../assets/red-exclamation-mark.svg?component';
-  import { Icon } from '../../../components';
+  import twitterEmojis from 'emoji-datasource-twitter';
+  import { matchSorter } from 'match-sorter';
+  import { HorizontalDivider } from '../../../components';
+  import Emoji from './Emoji.svelte';
   import type { NodeViewProps } from '@readable/ui/tiptap';
-  import type { ComponentType } from 'svelte';
 
   type $$Props = NodeViewProps;
   $$restProps;
@@ -21,16 +19,56 @@
   // export let getPos: NodeViewProps['getPos'];
   export let updateAttributes: NodeViewProps['updateAttributes'];
 
-  const EmojiMap = new Map<string, ComponentType>([
-    ['alert', RedExclamationMarkIcon],
-    ['pin', PushpinIcon],
-    ['lightbulb', LightBulbIcon],
-    ['loudspeaker', LoudspeakerIcon],
-  ] as const);
+  const presetEmojiNames = ['exclamation', 'pushpin', 'bulb', 'loudspeaker', ''];
 
-  $: emoji = EmojiMap.get(node.attrs.emoji);
+  const emojis = [
+    ...twitterEmojis,
+    {
+      short_name: '',
+      short_names: [''],
+      has_img_twitter: true,
+      sort_order: 0,
+      sheet_x: -1,
+      sheet_y: -1,
+    },
+  ]
+    .filter((emoji) => emoji.has_img_twitter)
+    .toSorted((a, b) => {
+      if (presetEmojiNames.includes(a.short_name) && presetEmojiNames.includes(b.short_name)) {
+        return presetEmojiNames.indexOf(a.short_name) - presetEmojiNames.indexOf(b.short_name);
+      }
+
+      if (presetEmojiNames.includes(a.short_name) && !presetEmojiNames.includes(b.short_name)) {
+        return -1;
+      }
+
+      if (presetEmojiNames.includes(b.short_name) && !presetEmojiNames.includes(a.short_name)) {
+        return 1;
+      }
+
+      return a.sort_order - b.sort_order;
+    });
+
+  $: emoji = findEmoji(node.attrs.emoji);
+
+  const findEmoji = (name: string) => {
+    return emojis.find((e) => e.short_name === name || e.short_names.includes(name));
+  };
 
   let emojiPickerOpened = false;
+  let pickerEl: HTMLDivElement | undefined;
+  let searchKeyword = '';
+
+  $: filteredEmojis = matchSorter(emojis, searchKeyword, {
+    keys: ['name', 'short_name', 'short_names', 'text', 'texts'],
+    sorter: (items) => items,
+  });
+
+  $: if (pickerEl) {
+    pickerEl.querySelector('[aria-pressed="true"]')?.scrollIntoView({
+      block: 'center',
+    });
+  }
 
   const { anchor, floating } = createFloatingActions({
     placement: 'bottom-end',
@@ -86,47 +124,60 @@
       }}
       use:anchor
     >
-      {#if emoji}
-        <Icon icon={emoji} size={20} />
+      {#if emoji?.short_name}
+        <Emoji style={css.raw({ size: '20px' })} {emoji} />
       {/if}
     </svelte:element>
 
     {#if emojiPickerOpened}
       <div
         class={flex({
+          direction: 'column',
           gap: '6px',
           borderRadius: '4px',
           padding: '5px',
           backgroundColor: 'surface.primary',
           boxShadow: 'emphasize',
+          width: '280px',
+          height: '280px',
         })}
         use:floating
       >
-        {#each EmojiMap as [emojiKey, emoji] (emojiKey)}
-          <button
-            class={flex({
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '2px',
-              size: '28px',
-              textStyle: '20m',
-              _pressed: {
-                backgroundColor: 'gray.1000/8',
-              },
-              _hover: {
-                backgroundColor: 'gray.1000/8',
-              },
-            })}
-            aria-pressed={emojiKey === node.attrs.emoji}
-            type="button"
-            on:click={() => {
-              updateAttributes({ emoji: emojiKey });
-              emojiPickerOpened = false;
-            }}
-          >
-            <Icon icon={emoji} size={20} />
-          </button>
-        {/each}
+        <input
+          class={css({ textStyle: '14m', padding: '6px' })}
+          placeholder="검색..."
+          type="text"
+          bind:value={searchKeyword}
+        />
+
+        <HorizontalDivider />
+
+        <div bind:this={pickerEl} class={flex({ gap: '6px', flexWrap: 'wrap', overflowY: 'auto' })}>
+          {#each filteredEmojis as emoji (emoji.short_name)}
+            <button
+              class={flex({
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '2px',
+                size: '28px',
+                _pressed: {
+                  backgroundColor: 'gray.1000/8',
+                },
+                _hover: {
+                  backgroundColor: 'gray.1000/8',
+                },
+              })}
+              aria-pressed={emoji.short_name === node.attrs.emoji}
+              type="button"
+              on:click={() => {
+                updateAttributes({ emoji: emoji.short_name });
+                emojiPickerOpened = false;
+              }}
+            >
+              <Emoji style={css.raw({ size: '20px' })} {emoji} />
+            </button>
+          {/each}
+        </div>
       </div>
     {/if}
     <div class={css({ paddingTop: '3px' })}>

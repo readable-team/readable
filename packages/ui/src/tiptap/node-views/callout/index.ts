@@ -20,7 +20,7 @@ export const Callout = createNodeView(Component, {
 
   addAttributes() {
     return {
-      emoji: { isRequired: true, default: 'alert' },
+      emoji: { default: 'bulb' },
     };
   },
 
