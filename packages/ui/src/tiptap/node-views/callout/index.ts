@@ -15,7 +15,7 @@ declare module '@tiptap/core' {
 export const Callout = createNodeView(Component, {
   name: 'callout',
   group: 'block',
-  content: 'paragraph+',
+  content: '(paragraph|orderedList|bulletList|image|file|embed)+',
   defining: true,
 
   addAttributes() {
