@@ -35,6 +35,7 @@ import { ReadableError } from '@/errors';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { generateRandomAvatar } from '@/utils/image-generation';
+import { getNextBillingDate } from '@/utils/payment';
 import { assertTeamPermission, throwableToBoolean } from '@/utils/permissions';
 import { assertTeamPlanRule } from '@/utils/plan';
 import { assertTeamRestriction } from '@/utils/restrictions';
@@ -234,12 +235,7 @@ TeamPlan.implement({
 
     nextPaymentAt: t.field({
       type: 'DateTime',
-      resolve: (teamPlan) => {
-        return match(teamPlan.billingCycle)
-          .with(BillingCycle.MONTHLY, () => teamPlan.enrolledAt.add(1, 'month')) // TODO: 31일 등일 경우 처리 필요
-          .with(BillingCycle.YEARLY, () => teamPlan.enrolledAt.add(1, 'year'))
-          .exhaustive();
-      },
+      resolve: (teamPlan) => getNextBillingDate(teamPlan.teamId),
     }),
   }),
 });
