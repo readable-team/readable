@@ -1,6 +1,6 @@
 <script lang="ts">
   import { css, cx } from '@readable/styled-system/css';
-  import { setContext } from 'svelte';
+  import { setContext, tick } from 'svelte';
   import { afterNavigate } from '$app/navigation';
   import { createFloatingActions } from '../actions/index';
   import type { OffsetOptions, Placement } from '@floating-ui/dom';
@@ -37,17 +37,27 @@
     open = false;
   });
 
+  const getMenuItems = () => {
+    return menuEl?.querySelectorAll('[role="menuitem"], [role="menuitemradio"]');
+  };
+
   const onKeydown = (e: KeyboardEvent) => {
     const target = e.target as HTMLElement;
     if (open) {
       if (e.key === 'Escape') {
         e.preventDefault();
         close();
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        close();
+        return;
       }
 
       const focusInList = menuEl?.contains(target);
 
-      const menuItems = menuEl?.querySelectorAll('[role="menuitem"], [role="menuitemradio"]');
+      const menuItems = getMenuItems();
       if (!menuItems || menuItems.length === 0) {
         return;
       }
@@ -56,29 +66,37 @@
       const pos = Array.from(menuItems).indexOf(target);
 
       if (focusInList) {
-        if (e.key === 'ArrowDown' || e.key === 'Tab') {
+        if (e.key === 'ArrowDown') {
           e.preventDefault();
           const next = (menuItems[pos + 1] || menuItems[0]) as HTMLElement;
           next?.focus();
         }
 
-        if (e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey)) {
+        if (e.key === 'ArrowUp') {
           e.preventDefault();
           // eslint-disable-next-line unicorn/prefer-at
           const prev = (menuItems[pos - 1] || menuItems[menuItems.length - 1]) as HTMLElement;
           prev?.focus();
         }
       } else {
-        if (['ArrowDown', 'ArrowUp', 'Tab'].includes(e.key)) {
+        if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
           e.preventDefault();
           (menuItems[0] as HTMLElement).focus();
         }
       }
     } else {
-      // 버튼에 포커스가 있을 때 아래 키로 메뉴를 열 수 있음
+      // 버튼에 포커스가 있을 때 아래 키로 메뉴를 열고 첫번째 항목에 포커스
       const focusInButton = buttonEl?.contains(target);
       if (focusInButton && e.key === 'ArrowDown') {
+        e.preventDefault();
         open = true;
+        tick().then(() => {
+          const menuItems = getMenuItems();
+          if (!menuItems || menuItems.length === 0) {
+            return;
+          }
+          (menuItems[0] as HTMLElement).focus();
+        });
       }
     }
   };

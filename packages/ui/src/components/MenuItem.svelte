@@ -35,12 +35,16 @@
     {};
 
   let close = getContext<undefined | (() => void)>('close');
+
+  let focused = false;
 </script>
 
 <svelte:element
   this={element}
   role="menuitem"
-  tabindex="0"
+  tabindex={focused ? 0 : -1}
+  on:focus={() => (focused = true)}
+  on:blur={() => (focused = false)}
   on:click
   on:click={close}
   {...external && {
