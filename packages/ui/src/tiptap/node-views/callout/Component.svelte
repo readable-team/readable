@@ -24,6 +24,7 @@
   const emojis = [
     ...twitterEmojis,
     {
+      name: '',
       short_name: '',
       short_names: [''],
       has_img_twitter: true,
@@ -167,7 +168,9 @@
                   backgroundColor: 'gray.1000/8',
                 },
               })}
+              aria-label={emoji.name}
               aria-pressed={emoji.short_name === node.attrs.emoji}
+              title={emoji.name}
               type="button"
               on:click={() => {
                 updateAttributes({ emoji: emoji.short_name });
