@@ -68,7 +68,7 @@
         })}
       >
         <div class={css({ textStyle: '15b', color: 'text.secondary' })}>청구 총액</div>
-        <div class={css({ fontWeight: '[800]' })}>{$paymentInvoice.amount}원</div>
+        <div class={css({ fontWeight: '[800]' })}>{$paymentInvoice.amount.toLocaleString()}원</div>
       </div>
 
       {#each $paymentInvoice.items as item (item.id)}
@@ -85,7 +85,7 @@
             })}
           >
             <div class={css({ textStyle: '14r' })}>{item.name} 플랜</div>
-            <div class={css({ textStyle: '14sb' })}>{item.amount}원</div>
+            <div class={css({ textStyle: '14sb' })}>{item.amount.toLocaleString()}원</div>
           </div>
         {/if}
       {/each}
