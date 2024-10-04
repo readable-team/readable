@@ -30,6 +30,7 @@ import { Underline } from '@tiptap/extension-underline';
 import { Behavior } from './extensions/behavior';
 import { BlockSelectionHelper } from './extensions/block-selection';
 import { Placeholder } from './extensions/placeholder';
+import { extendNodeToNodeView } from './lib/create';
 import { BubbleMenu } from './menus/bubble';
 import { FloatingMenu } from './menus/floating';
 import { SlashMenu } from './menus/slash';
@@ -37,6 +38,7 @@ import { Callout } from './node-views';
 import { Embed } from './node-views/embed';
 import { File } from './node-views/file';
 import { Image } from './node-views/image';
+import TableComponent from './node-views/table/Component.svelte';
 
 export const basicExtensions = [
   // special nodes
@@ -157,7 +159,7 @@ export const basicExtensions = [
   ListItem.extend({
     content: 'paragraph (paragraph | bulletList | orderedList)*',
   }),
-  Table.configure({
+  extendNodeToNodeView(Table, TableComponent).configure({
     resizable: false, // https://github.com/ueberdosis/tiptap/issues/1766
     HTMLAttributes: {
       class: css({

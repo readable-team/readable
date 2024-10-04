@@ -8,6 +8,7 @@ import ListIcon from '~icons/lucide/list';
 import ListOrderedIcon from '~icons/lucide/list-ordered';
 import MinusIcon from '~icons/lucide/minus';
 import PaperclipIcon from '~icons/lucide/paperclip';
+import TableIcon from '~icons/lucide/table';
 import TextQuoteIcon from '~icons/lucide/text-quote';
 import type { MenuItem } from './types';
 
@@ -98,6 +99,17 @@ export const menuItems: MenuItem[] = [
     icon: GalleryVerticalEndIcon,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setCallout().run();
+    },
+  },
+  {
+    id: 'table',
+    type: 'table',
+    group: 'block',
+    name: '표',
+    keywords: ['table'],
+    icon: TableIcon,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).insertTable({ withHeaderRow: false }).run();
     },
   },
   {

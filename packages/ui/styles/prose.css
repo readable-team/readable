@@ -46,6 +46,10 @@
       cursor: grab;
     }
   }
+
+  .selectedCell {
+    background-color: #b3d4fc66;
+  }
 }
 
 .ProseMirror-hideselection {

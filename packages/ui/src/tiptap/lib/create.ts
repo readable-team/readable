@@ -11,16 +11,25 @@ export const createNodeView = <Options = any, Storage = any>(
   component: NodeViewComponentType,
   options: CreateNodeViewOptions<Options, Storage>,
 ) => {
-  return Node.create<Options, Storage>({
+  return extendNodeToNodeView(Node.create<Options, Storage>(), component, options);
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const extendNodeToNodeView = <Options = any, Storage = any>(
+  node: Node,
+  component: NodeViewComponentType,
+  options?: Partial<CreateNodeViewOptions<Options, Storage>>,
+) => {
+  return node.extend({
     ...options,
 
     parseHTML() {
-      return [{ tag: `node-view[data-node-view-type=${options.name}]` }];
+      return [{ tag: `node-view[data-node-view-type=${options?.name ?? this.name}]` }];
     },
 
     renderHTML({ node, HTMLAttributes }) {
       const attributes = mergeAttributes(HTMLAttributes, {
-        'data-node-view-type': options.name,
+        'data-node-view-type': options?.name ?? this.name,
       });
 
       if (browser) {

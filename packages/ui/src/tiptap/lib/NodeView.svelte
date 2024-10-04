@@ -4,17 +4,19 @@
   import type { SystemStyleObject } from '@readable/styled-system/types';
   import type { DragEventHandler } from 'svelte/elements';
 
+  export let as: keyof HTMLElementTagNameMap = 'div';
   export let style: SystemStyleObject | undefined = undefined;
 
   const onDragStart = getContext<DragEventHandler<HTMLDivElement>>('onDragStart');
 </script>
 
-<div
-  {...$$restProps}
+<svelte:element
+  this={as}
   class={css({ whiteSpace: 'normal' }, style)}
   data-node-view
   role="presentation"
   on:dragstart={onDragStart}
+  {...$$restProps}
 >
   <slot />
-</div>
+</svelte:element>

@@ -6,6 +6,6 @@
   export let style: SystemStyleObject | undefined = undefined;
 </script>
 
-<svelte:element this={as} {...$$restProps} class={css(style)} data-node-view-content-editable>
+<svelte:element this={as} class={css(style)} data-node-view-content-editable {...$$restProps}>
   <slot />
 </svelte:element>
