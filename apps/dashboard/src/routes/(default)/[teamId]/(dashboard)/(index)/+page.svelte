@@ -106,7 +106,7 @@
           <Icon icon={PlusIcon} size={16} />
         </Button>
       {:else}
-        <Tooltip message="Lite 플랜부터 사이트를 더 만들 수 있어요" placement="bottom">
+        <Tooltip message="Pro 플랜부터 사이트를 더 만들 수 있어요" placement="bottom">
           <Button style={css.raw({ gap: '6px' })} disabled size="sm" type="button">
             <span>만들기</span>
             <Icon icon={InfoIcon} size={16} />

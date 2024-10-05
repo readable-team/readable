@@ -11,10 +11,10 @@
   import CirclePlusIcon from '~icons/lucide/circle-plus';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { LitePlan } from '$assets/plan';
+  import { ProPlan } from '$assets/plan';
   import { fragment, graphql } from '$graphql';
   import { Img, LiteBadge, TitledModal } from '$lib/components';
-  import { isLiteOrHigher, isPlanUpgradeModalOpen, selectedPlan } from '$lib/svelte/stores/ui';
+  import { isPlanUpgradeModalOpen, isPro, selectedPlan } from '$lib/svelte/stores/ui';
   import type { SiteSwitcher_team } from '$graphql';
 
   let _team: SiteSwitcher_team;
@@ -146,12 +146,12 @@
   <MenuItem
     style={flex.raw({ paddingX: '10px', color: 'text.tertiary', gap: '10px' })}
     on:click={() => {
-      if ($isLiteOrHigher) {
+      if ($isPro) {
         newSiteModalOpen = true;
       } else {
         mixpanel.track('plan:upgrade:show', { via: 'site-switcher:new-site-button' });
         isPlanUpgradeModalOpen.set(true);
-        selectedPlan.set(LitePlan);
+        selectedPlan.set(ProPlan);
       }
     }}
   >

@@ -11,7 +11,7 @@ export type PlanRules = {
 export const defaultPlanRules: PlanRules = {
   memberLimit: 1,
   siteLimit: 1,
-  pageViewLimit: 1000,
+  pageViewLimit: 500,
   themeColor: false,
   customDomain: false,
   aiSearch: false,

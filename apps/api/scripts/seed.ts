@@ -25,11 +25,11 @@ await db.transaction(async (tx) => {
   await tx.insert(Plans).values({
     id: PlanId.LITE,
     name: 'Lite',
-    fee: 3300,
+    fee: 2900,
     rules: {
       memberLimit: 3,
-      siteLimit: null,
-      pageViewLimit: null,
+      siteLimit: 1,
+      pageViewLimit: 100_000,
       themeColor: true,
       customDomain: true,
     },
@@ -39,7 +39,7 @@ await db.transaction(async (tx) => {
   await tx.insert(Plans).values({
     id: PlanId.PRO,
     name: 'Pro',
-    fee: 33_000,
+    fee: 19_000,
     rules: {
       memberLimit: 10,
       siteLimit: null,
@@ -90,6 +90,6 @@ await db.transaction(async (tx) => {
     teamId: team.id,
     name: 'TEMPLATE',
     slug: 'template',
-    themeColor: '#ff7b2e',
+    themeColor: '#27272a',
   });
 });
