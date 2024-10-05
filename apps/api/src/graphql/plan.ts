@@ -21,6 +21,7 @@ Plan.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
+    order: t.exposeInt('order'),
 
     rules: t.field({
       type: PlanRule,

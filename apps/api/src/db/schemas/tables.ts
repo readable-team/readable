@@ -380,17 +380,7 @@ export const Plans = pgTable('plans', {
   rules: jsonb('rules').notNull().$type<Partial<PlanRules>>(),
   fee: integer('fee').notNull().default(0),
   type: E._PlanType('type').notNull().default('PUBLIC'),
-  createdAt: datetime('created_at')
-    .notNull()
-    .default(sql`now()`),
-});
-
-export const Pubsubs = pgTable('pubsubs', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => createDbId('PS', { length: 'long' })),
-  channel: text('channel').notNull(),
-  payload: text('payload').notNull(),
+  order: integer('order').notNull().default(0),
   createdAt: datetime('created_at')
     .notNull()
     .default(sql`now()`),

@@ -714,7 +714,7 @@ const createTeam = async (userId: string, teamName: string) => {
 
     await tx.insert(TeamPlans).values({
       teamId: team.id,
-      planId: 'PLAN000000BASIC',
+      planId: 'PLAN0STARTER',
       billingCycle: BillingCycle.MONTHLY,
       billingEmail: user.email,
     });

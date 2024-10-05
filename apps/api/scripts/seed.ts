@@ -15,28 +15,42 @@ await db.transaction(async (tx) => {
   });
 
   await tx.insert(Plans).values({
-    id: 'PLAN000000BASIC',
-    name: 'Basic',
+    id: 'PLAN0STARTER',
+    name: 'Starter',
     rules: {},
+    order: 1,
   });
 
   await tx.insert(Plans).values({
-    id: 'PLAN00000000PRO',
+    id: 'PLAN0LITE',
+    name: 'Lite',
+    fee: 3300,
+    rules: {
+      memberLimit: 3,
+      siteLimit: null,
+      pageViewLimit: null,
+    },
+    order: 2,
+  });
+
+  await tx.insert(Plans).values({
+    id: 'PLAN0PRO',
     name: 'Pro',
     fee: 33_000,
     rules: {
-      memberLimit: null,
+      memberLimit: 10,
       siteLimit: null,
       pageViewLimit: null,
       aiSearch: true,
       addonsAvailable: ['ADD0WHITELABEL'],
     },
+    order: 3,
   });
 
   const plan = await tx
     .insert(Plans)
     .values({
-      id: 'PLAN0000PENXLE',
+      id: 'PLAN0PENXLE',
       name: 'PENXLE',
       rules: {
         memberLimit: null,

@@ -71,6 +71,13 @@
       "when": 1727580529660,
       "tag": "0009_shallow_wiccan",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1728127112275,
+      "tag": "0010_dashing_bloodaxe",
+      "breakpoints": true
     }
   ]
 }

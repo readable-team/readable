@@ -358,6 +358,7 @@ input PersistBlobAsImageInput {
 type Plan {
   id: ID!
   name: String!
+  order: Int!
   rules: PlanRule!
 }
 
