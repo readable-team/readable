@@ -159,13 +159,14 @@ Site.implement({
       },
     }),
 
-    whitelabel: t.field({
+    addon: t.field({
       type: SiteAddonResult,
-      resolve: async (site) => {
+      args: { addonId: t.arg.id() },
+      resolve: async (site, args) => {
         const addon = await db
           .select()
           .from(SiteAddons)
-          .where(and(eq(SiteAddons.siteId, site.id), eq(SiteAddons.addonId, 'ADD0WHITELABEL')))
+          .where(and(eq(SiteAddons.siteId, site.id), eq(SiteAddons.addonId, args.addonId)))
           .then(first);
 
         if (addon) {
@@ -174,13 +175,15 @@ Site.implement({
           const addonFee = await db
             .select({ fee: Addons.fee })
             .from(Addons)
-            .where(eq(Addons.id, 'ADD0WHITELABEL'))
+            .where(eq(Addons.id, args.addonId))
             .then(firstOrThrow)
             .then((addon) => addon.fee);
 
+          const proratedFee = await calculateProratedFee({ fee: addonFee, teamId: site.teamId });
+
           return {
-            id: 'ADD0WHITELABEL',
-            enrollmentFee: await calculateProratedFee({ fee: addonFee, teamId: site.teamId }),
+            id: args.addonId,
+            enrollmentFee: proratedFee,
           };
         }
       },
@@ -233,7 +236,7 @@ PublicSite.implement({
       },
     }),
 
-    whitelabelled: t.boolean({
+    whitelabelEnabled: t.boolean({
       resolve: async (site) => {
         const addon = await db
           .select({ id: SiteAddons.id })

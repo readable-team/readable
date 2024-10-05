@@ -1,3 +1,9 @@
+type Addon {
+  fee: Int!
+  id: ID!
+  name: String!
+}
+
 input AuthorizeSingleSignOnInput {
   params: JSON!
   provider: SingleSignOnProvider!
@@ -356,6 +362,7 @@ input PersistBlobAsImageInput {
 }
 
 type Plan {
+  fee: Int!
   id: ID!
   name: String!
   order: Int!
@@ -419,7 +426,7 @@ type PublicSite implements ISite {
   slug: String!
   themeColor: String!
   url: String!
-  whitelabelled: Boolean!
+  whitelabelEnabled: Boolean!
 }
 
 input PublishPageInput {
@@ -491,6 +498,7 @@ enum SingleSignOnProvider {
 }
 
 type Site implements ISite {
+  addon(addonId: ID!): SiteAddonResult!
   categories: [Category!]!
   customDomain: SiteCustomDomain
   firstPage: Page
@@ -504,7 +512,6 @@ type Site implements ISite {
   team: Team!
   themeColor: String!
   url: String!
-  whitelabel: SiteAddonResult!
 }
 
 type SiteAddon {

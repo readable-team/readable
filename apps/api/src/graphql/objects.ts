@@ -41,6 +41,7 @@ export const ICategory = createInterfaceRef('ICategory', T.Categories);
 export const IPage = createInterfaceRef('IPage', T.Pages);
 export const ISite = createInterfaceRef('ISite', T.Sites);
 
+export const Addon = createObjectRef('Addon', T.Addons);
 export const Category = createObjectRef('Category', T.Categories);
 export const Embed = createObjectRef('Embed', T.Embeds);
 export const File = createObjectRef('File', T.Files);

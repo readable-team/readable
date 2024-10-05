@@ -1,6 +1,6 @@
 import { builder } from '@/builder';
 import { defaultPlanRules } from '@/db/schemas/json';
-import { Plan } from './objects';
+import { Addon, Plan } from './objects';
 import type { PlanRules } from '@/db/schemas/json';
 
 /**
@@ -21,6 +21,7 @@ Plan.implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
+    fee: t.exposeInt('fee'),
     order: t.exposeInt('order'),
 
     rules: t.field({
@@ -32,5 +33,13 @@ Plan.implement({
         };
       },
     }),
+  }),
+});
+
+Addon.implement({
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    name: t.exposeString('name'),
+    fee: t.exposeInt('fee'),
   }),
 });
