@@ -29,6 +29,8 @@ await db.transaction(async (tx) => {
       memberLimit: 3,
       siteLimit: null,
       pageViewLimit: null,
+      themeColor: true,
+      customDomain: true,
     },
     order: 2,
   });
@@ -41,6 +43,8 @@ await db.transaction(async (tx) => {
       memberLimit: 10,
       siteLimit: null,
       pageViewLimit: null,
+      themeColor: true,
+      customDomain: true,
       aiSearch: true,
       addonsAvailable: ['ADD0WHITELABEL'],
     },

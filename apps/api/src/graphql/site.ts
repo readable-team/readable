@@ -511,15 +511,26 @@ builder.mutationFields((t) => ({
       }
 
       const site = await db
-        .update(Sites)
-        .set({ name: input.name, slug: input.slug, logoId: input.logoId, themeColor: input.themeColor })
+        .select({ teamId: Sites.teamId, themeColor: Sites.themeColor })
+        .from(Sites)
         .where(eq(Sites.id, input.siteId))
-        .returning()
         .then(firstOrThrow);
 
-      await invalidateSiteCache(site.id);
+      if (site.themeColor !== input.themeColor) {
+        await assertTeamPlanRule({
+          teamId: site.teamId,
+          rule: 'themeColor',
+        });
+      }
 
-      return site;
+      await db
+        .update(Sites)
+        .set({ name: input.name, slug: input.slug, logoId: input.logoId, themeColor: input.themeColor })
+        .where(eq(Sites.id, input.siteId));
+
+      await invalidateSiteCache(input.siteId);
+
+      return input.siteId;
     },
   }),
 
@@ -536,6 +547,17 @@ builder.mutationFields((t) => ({
       await assertTeamRestriction({
         siteId: input.siteId,
         type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
+      const site = await db
+        .select({ teamId: Sites.teamId })
+        .from(Sites)
+        .where(eq(Sites.id, input.siteId))
+        .then(firstOrThrow);
+
+      await assertTeamPlanRule({
+        teamId: site.teamId,
+        rule: 'customDomain',
       });
 
       const existingDomain = await db
@@ -713,6 +735,17 @@ builder.subscriptionFields((t) => ({
       await assertTeamRestriction({
         siteId: customDomain.siteId,
         type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
+      const site = await db
+        .select({ teamId: Sites.teamId })
+        .from(Sites)
+        .where(eq(Sites.id, customDomain.siteId))
+        .then(firstOrThrow);
+
+      await assertTeamPlanRule({
+        teamId: site.teamId,
+        rule: 'customDomain',
       });
 
       const repeater = new Repeater<string>(async (push, stop) => {
