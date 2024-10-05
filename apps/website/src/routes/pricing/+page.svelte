@@ -51,23 +51,39 @@
 
   $: plans = [
     {
-      name: 'Basic',
+      name: 'Starter',
       price: '무료',
       features: [
         { icon: UserRoundIcon, feature: '1명의 멤버' },
         { icon: MonitorSmartphone, feature: '1개의 사이트' },
         {
           icon: MousePointerClickIcon,
-          feature: '5,000 페이지뷰/월',
-          tooltipMessage: '1개월간 총 5,000회의 페이지 조회를 지원합니다',
+          feature: '1,000 페이지뷰/월',
+          tooltipMessage: '1개월간 총 1,000회의 페이지 조회를 지원합니다',
         },
         { icon: FileIcon, feature: '무제한 페이지' },
         { icon: SearchIcon, feature: '일반 검색' },
       ],
     },
     {
+      name: 'Lite',
+      price: selectedPrice === 'yearly' ? '2,030' : '2,900',
+      features: [
+        { icon: UsersRoundIcon, feature: '3명의 멤버' },
+        { icon: MonitorSmartphone, feature: '무제한 사이트' },
+        {
+          icon: MousePointerClickIcon,
+          feature: '무제한 페이지뷰',
+        },
+        { icon: FileIcon, feature: '무제한 페이지' },
+        { icon: PaintbrushIcon, feature: '브랜딩' },
+        { icon: SearchIcon, feature: '일반 검색' },
+        { icon: LinkIcon, feature: '커스텀 도메인' },
+      ],
+    },
+    {
       name: 'Pro',
-      price: selectedPrice === 'yearly' ? '27,500' : '33,000',
+      price: selectedPrice === 'yearly' ? '13,300' : '19,000',
       features: [
         { icon: UsersRoundIcon, feature: '무제한 멤버' },
         { icon: MonitorSmartphone, feature: '무제한 사이트' },
@@ -185,7 +201,7 @@
           color: 'text.primary',
         })}
       >
-        2달 무료
+        30% 할인
       </span>
     </div>
   </div>
@@ -246,7 +262,7 @@
 
         <p class={css({ textStyle: { base: '22eb', lg: '28eb' } })}>
           {plan.price}
-          {#if plan.name === 'Pro'}
+          {#if ['Lite', 'Pro'].includes(plan.name)}
             <span class={css({ textStyle: { base: '13sb', lg: '16sb' } })}>원 / 월</span>
           {/if}
         </p>
