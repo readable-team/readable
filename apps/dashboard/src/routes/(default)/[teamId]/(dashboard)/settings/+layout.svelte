@@ -49,41 +49,40 @@
 
 <div
   class={flex({
-    direction: 'column',
+    justifyContent: 'center',
     width: 'full',
     minHeight: 'full',
-    height: 'fit',
+    overflow: 'auto',
   })}
 >
-  <div class={flex({ grow: '1', width: 'full', maxWidth: '920px', marginX: 'auto', height: 'full' })}>
-    <aside
-      class={css({
-        borderRightWidth: '1px',
-        borderRightColor: 'border.secondary',
-        paddingTop: '60px',
-        paddingRight: '32px',
-        paddingBottom: '20px',
-        minWidth: '218px',
-      })}
-    >
-      <nav class={flex({ direction: 'column', gap: '2px' })}>
-        {#each settings as setting (setting.href)}
-          <SettingTabItem {setting} />
-        {/each}
-      </nav>
-    </aside>
+  <aside
+    class={css({
+      position: 'sticky',
+      top: '0',
+      borderRightWidth: '1px',
+      borderRightColor: 'border.secondary',
+      paddingTop: '60px',
+      paddingRight: '32px',
+      paddingBottom: '20px',
+      minWidth: '218px',
+    })}
+  >
+    <nav class={flex({ direction: 'column', gap: '2px' })}>
+      {#each settings as setting (setting.href)}
+        <SettingTabItem {setting} />
+      {/each}
+    </nav>
+  </aside>
 
-    <div
-      class={css({
-        paddingTop: '40px',
-        paddingLeft: '32px',
-        paddingBottom: '120px',
-        width: 'full',
-        overflow: 'auto',
-        scrollbar: 'hidden',
-      })}
-    >
-      <slot />
-    </div>
+  <div
+    class={css({
+      width: '702px',
+      paddingTop: '40px',
+      paddingLeft: '32px',
+      paddingBottom: '120px',
+      height: 'fit',
+    })}
+  >
+    <slot />
   </div>
 </div>
