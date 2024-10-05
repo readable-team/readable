@@ -3,6 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Button, Helmet, Icon, SegmentButtons, Tooltip } from '@readable/ui/components';
   import mixpanel from 'mixpanel-browser';
+  import { PlanId } from '@/const';
   import CheckIcon from '~icons/lucide/check';
   import InfoIcon from '~icons/lucide/info';
   import { LitePlan, ProPlan } from '$assets/plan';
@@ -135,7 +136,7 @@
       title: '화이트 라벨링',
       starter: '',
       lite: '',
-      pro: `${$selectedPlanCycle === 'YEARLY' ? '18,333' : '22,000'}원/사이트/월`,
+      pro: `${$selectedPlanCycle === 'YEARLY' ? '15,400' : '22,000'}원/사이트/월`,
       enterprise: CheckIcon,
     },
   ];
@@ -198,14 +199,14 @@
             <p class={css({ marginBottom: '4px', textStyle: '13m' })}>Starter</p>
             <span class={css({ textStyle: '20b' })}>무료</span>
             <!-- TODO: 다운그레이드 툴팁 문구 수정 -->
-            <Tooltip enabled={$query.team.plan.plan.id !== 'PLAN0STARTER'} message="플랜 다운그레이드는 문의해주세요">
+            <Tooltip enabled={$query.team.plan.plan.id !== PlanId.STARTER} message="플랜 다운그레이드는 문의해주세요">
               <Button
                 style={flex.raw({ align: 'center', gap: '6px', marginTop: '40px', width: 'full' })}
                 disabled
                 size="sm"
                 variant="secondary"
               >
-                {#if $query.team.plan.plan.id === 'PLAN0STARTER'}
+                {#if $query.team.plan.plan.id === PlanId.STARTER}
                   <span>현재 플랜</span>
                 {:else}
                   <span>다운그레이드</span>
@@ -229,7 +230,7 @@
                   size="sm"
                   variant="secondary"
                 >
-                  {#if $query.team.plan.plan.id === 'PLAN0LITE'}
+                  {#if $query.team.plan.plan.id === PlanId.LITE}
                     <span>현재 플랜</span>
                   {:else if $query.team.plan.plan.order > 2}
                     <span>다운그레이드</span>
@@ -274,19 +275,19 @@
             <span class={css({ textStyle: '13r' })}>원 / 월</span>
             <Button
               style={css.raw({ marginTop: '40px', width: 'full' })}
-              disabled={$query.team.plan.plan.id === 'PLAN0PRO'}
+              disabled={$query.team.plan.plan.id === PlanId.PRO}
               glossy
               size="sm"
               variant="primary"
               on:click={() => {
-                if ($query.team.plan.plan.id !== 'PLAN0PRO') {
+                if ($query.team.plan.plan.id !== PlanId.PRO) {
                   mixpanel.track('plan:upgrade:show', { via: 'plan' });
                   $isPlanUpgradeModalOpen = true;
                   $selectedPlan = ProPlan;
                 }
               }}
             >
-              {$query.team.plan.plan.id === 'PLAN0PRO' ? '현재 플랜' : '업그레이드'}
+              {$query.team.plan.plan.id === PlanId.PRO ? '현재 플랜' : '업그레이드'}
             </Button>
           </th>
           <th class={css({ width: '160px' })}>
@@ -328,7 +329,7 @@
             <td class={flex({ align: 'center', gap: '4px' })}>
               {usage.title}
               {#if usage.title === '페이지뷰'}
-                <Tooltip message="1개월간 총 1,000회의 페이지 조회를 지원합니다">
+                <Tooltip message="배포된 사이트의 1개월간 총 페이지 조회 수로 계산합니다">
                   <Icon icon={InfoIcon} size={14} />
                 </Tooltip>
               {/if}

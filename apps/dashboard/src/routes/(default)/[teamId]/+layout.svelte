@@ -2,10 +2,12 @@
   import { flex } from '@readable/styled-system/patterns';
   import mixpanel from 'mixpanel-browser';
   import { onDestroy } from 'svelte';
+  import { PlanId } from '@/const';
   import { browser } from '$app/environment';
   import { graphql } from '$graphql';
   import {
     isEnrollPlanWithCardModalOpen,
+    isLiteOrHigher,
     isPlanUpgradeModalOpen,
     isPro,
     selectedPlan,
@@ -63,7 +65,8 @@
     }
   `);
 
-  $: isPro.set($query.team.plan.plan.id === 'PLAN0PRO');
+  $: isLiteOrHigher.set($query.team.plan.plan.id !== PlanId.STARTER);
+  $: isPro.set($query.team.plan.plan.id === PlanId.PRO);
 
   let unsubscribe: (() => void) | null = null;
 

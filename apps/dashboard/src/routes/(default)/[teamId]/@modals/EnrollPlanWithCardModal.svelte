@@ -4,21 +4,18 @@
   import { Button, Checkbox, FormField, FormProvider, HorizontalDivider, TextInput } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import { toast } from '@readable/ui/notification';
+  import { calculatePaymentAmount } from '@readable/ui/utils';
   import mixpanel from 'mixpanel-browser';
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import { graphql } from '$graphql';
   import { TitledModal } from '$lib/components';
-  import { getDiscountedPrice } from '$lib/utils/plan';
+  import type { BillingCycle } from '@/enums';
 
   export let open = false;
   export let teamId: string;
-  export let plan: {
-    id: string;
-    name: string;
-    price: number;
-  };
-  export let planCycle: 'MONTHLY' | 'YEARLY' = 'MONTHLY';
+  export let plan: { id: string; name: string; price: number };
+  export let planCycle: BillingCycle = 'MONTHLY';
 
   const updateCard = graphql(`
     mutation EnrollPlanWithCardModal_UpdatePaymentMethod_Mutation($input: UpdatePaymentMethodInput!) {
@@ -133,7 +130,7 @@
     })}
   >
     <div>{plan.name} 플랜</div>
-    <div>{getDiscountedPrice(plan.price, planCycle).toLocaleString()}원</div>
+    <div>{calculatePaymentAmount({ fee: plan.price, billingCycle: planCycle }).final.toLocaleString()}원</div>
   </div>
 
   <FormProvider class={flex({ marginTop: '24px', flexDirection: 'column' })} {context} {form}>

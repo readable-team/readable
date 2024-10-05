@@ -2,18 +2,19 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Button } from '@readable/ui/components';
+  import { calculateDetailedAmount, calculatePaymentAmount } from '@readable/ui/utils';
   import { TitledModal } from '$lib/components';
-  import { getDiscountedPrice, getPriceWithoutVat, getVat } from '$lib/utils/plan';
   import PlanCycleToggle from './PlanCycleToggle.svelte';
+  import type { BillingCycle } from '@/enums';
 
   export let open = false;
-  export let confirm: (cycle: 'MONTHLY' | 'YEARLY') => void;
-  export let plan: {
-    id: string;
-    name: string;
-    price: number;
-  };
-  export let planCycle: 'MONTHLY' | 'YEARLY' = 'MONTHLY';
+  export let confirm: (cycle: BillingCycle) => void;
+  export let plan: { id: string; name: string; price: number };
+  export let planCycle: BillingCycle = 'MONTHLY';
+
+  $: finalPaymentAmount = calculateDetailedAmount(
+    calculatePaymentAmount({ fee: plan.price, billingCycle: planCycle }).final,
+  );
 </script>
 
 <TitledModal bind:open>
@@ -37,7 +38,7 @@
         <tr>
           <th class={css({ textAlign: 'left', color: 'text.primary', textStyle: '15b' })}>예상 요금</th>
           <td class={css({ textAlign: 'right', color: 'text.primary', textStyle: '16eb' })}>
-            {getDiscountedPrice(plan.price, planCycle).toLocaleString()}원
+            {finalPaymentAmount.total.toLocaleString()}원
           </td>
         </tr>
         <tr>
@@ -45,13 +46,13 @@
             {plan.name} 플랜
           </th>
           <td class={css({ textAlign: 'right', color: 'text.primary', textStyle: '14sb' })}>
-            {getPriceWithoutVat(getDiscountedPrice(plan.price, planCycle)).toLocaleString()}원
+            {finalPaymentAmount.supply.toLocaleString()}원
           </td>
         </tr>
         <tr>
           <th class={css({ textAlign: 'left', color: 'text.secondary', textStyle: '14r' })}>부가가치세</th>
           <td class={css({ textAlign: 'right', color: 'text.primary', textStyle: '14sb' })}>
-            {getVat(getDiscountedPrice(plan.price, planCycle)).toLocaleString()}원
+            {finalPaymentAmount.vat.toLocaleString()}원
           </td>
         </tr>
       </tbody>

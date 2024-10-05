@@ -98,7 +98,7 @@
         {
           icon: TagIcon,
           feature: '화이트 라벨링 애드온',
-          price: `${selectedPrice === 'yearly' ? '18,333' : '22,000'}원/사이트/월`,
+          price: `${selectedPrice === 'yearly' ? '15,400' : '22,000'}원/사이트/월`,
           tooltipMessage: '사이트에 보이는 리더블 워터마크(Powered by Readable)를 제거할 수 있습니다',
         },
       ],

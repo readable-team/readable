@@ -1,11 +1,13 @@
+import { PlanId } from '@/const';
+
 export const LitePlan = {
-  id: 'PLAN0LITE',
+  id: PlanId.LITE,
   name: 'Lite',
   price: 2900,
 };
 
 export const ProPlan = {
-  id: 'PLAN1PRO',
+  id: PlanId.PRO,
   name: 'Pro',
   price: 19_000,
 };
