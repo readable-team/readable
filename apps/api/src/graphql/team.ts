@@ -35,7 +35,7 @@ import { ReadableError } from '@/errors';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { generateRandomAvatar } from '@/utils/image-generation';
-import { getNextBillingDate } from '@/utils/payment';
+import { getNextBillingInfo } from '@/utils/payment';
 import { assertTeamPermission, throwableToBoolean } from '@/utils/permissions';
 import { assertTeamPlanRule } from '@/utils/plan';
 import { assertTeamRestriction } from '@/utils/restrictions';
@@ -235,7 +235,10 @@ TeamPlan.implement({
 
     nextPaymentAt: t.field({
       type: 'DateTime',
-      resolve: (teamPlan) => getNextBillingDate(teamPlan.teamId),
+      resolve: async (teamPlan) => {
+        const info = await getNextBillingInfo(teamPlan.teamId);
+        return info.nextPaymentAt;
+      },
     }),
   }),
 });

@@ -4,7 +4,18 @@ import { match } from 'ts-pattern';
 import { db, first, PaymentInvoices, TeamPlans } from '@/db';
 import { BillingCycle } from '@/enums';
 
-export const getNextBillingDate = async (teamId: string) => {
+const getLastInvoiceDate = async (teamId: string) => {
+  const lastInvoice = await db
+    .select({ createdAt: PaymentInvoices.createdAt })
+    .from(PaymentInvoices)
+    .where(eq(PaymentInvoices.teamId, teamId))
+    .orderBy(desc(PaymentInvoices.createdAt))
+    .then(first);
+
+  return lastInvoice?.createdAt;
+};
+
+export const getNextBillingInfo = async (teamId: string) => {
   const today = dayjs().utc().startOf('day');
 
   const planPaymentInfo = await db
@@ -17,7 +28,9 @@ export const getNextBillingDate = async (teamId: string) => {
     .then(first);
 
   if (!planPaymentInfo) {
-    return today;
+    return {
+      nextPaymentAt: today,
+    };
   }
 
   const unit = match(planPaymentInfo.billingCycle)
@@ -25,22 +38,42 @@ export const getNextBillingDate = async (teamId: string) => {
     .with(BillingCycle.YEARLY, () => 'year' as const)
     .exhaustive();
 
-  const lastInvoice = await db
-    .select({ createdAt: PaymentInvoices.createdAt })
-    .from(PaymentInvoices)
-    .where(eq(PaymentInvoices.teamId, teamId))
-    .orderBy(desc(PaymentInvoices.createdAt))
-    .then(first);
+  const lastInvoiceDate = await getLastInvoiceDate(teamId);
 
-  if (lastInvoice) {
-    const lastInvoiceDate = lastInvoice.createdAt.utc().startOf('day');
-
-    if (lastInvoiceDate.isBefore(today, 'day') || lastInvoiceDate.isSame(today, 'day')) {
-      return lastInvoiceDate;
-    }
+  if (lastInvoiceDate?.isAfter(today, 'day') || lastInvoiceDate?.isSame(today, 'day')) {
+    return {
+      nextPaymentAt: lastInvoiceDate,
+      billingCycle: planPaymentInfo.billingCycle,
+    };
   }
 
   const paymentSeq = Math.ceil(today.diff(planPaymentInfo.enrolledAt.utc(), unit, true));
 
-  return planPaymentInfo.enrolledAt.startOf('day').add(paymentSeq, unit);
+  return {
+    nextPaymentAt: planPaymentInfo.enrolledAt.utc().startOf('day').add(paymentSeq, unit),
+    billingCycle: planPaymentInfo.billingCycle,
+  };
+};
+
+type CalculateProratedFeeParams = {
+  fee: number;
+  teamId: string;
+};
+
+export const calculateProratedFee = async ({ fee, teamId }: CalculateProratedFeeParams) => {
+  const { nextPaymentAt, billingCycle } = await getNextBillingInfo(teamId);
+  const today = dayjs().utc();
+
+  if (nextPaymentAt.isBefore(today, 'day') || nextPaymentAt.isSame(today, 'day')) {
+    return fee;
+  }
+
+  const lastInvoiceDate = await getLastInvoiceDate(teamId);
+
+  const diff = nextPaymentAt.diff(today, 'day');
+  const invoiceDiff = nextPaymentAt.diff(lastInvoiceDate, 'day');
+
+  const proratedFee = fee * (diff / invoiceDiff) * (billingCycle === BillingCycle.YEARLY ? 10 : 1);
+
+  return Math.ceil(proratedFee);
 };

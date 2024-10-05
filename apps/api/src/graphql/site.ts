@@ -5,6 +5,7 @@ import { match } from 'ts-pattern';
 import * as Y from 'yjs';
 import { builder } from '@/builder';
 import {
+  Addons,
   Categories,
   db,
   extractTableCode,
@@ -33,6 +34,7 @@ import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { invalidateSiteCache } from '@/utils/cache';
 import { makeYDoc } from '@/utils/page';
+import { calculateProratedFee } from '@/utils/payment';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
 import { assertTeamPlanRule, getTeamPlanRule } from '@/utils/plan';
 import { assertTeamRestriction } from '@/utils/restrictions';
@@ -168,9 +170,16 @@ Site.implement({
         if (addon) {
           return addon;
         } else {
+          const addonFee = await db
+            .select({ fee: Addons.fee })
+            .from(Addons)
+            .where(eq(Addons.id, 'ADD0WHITELABEL'))
+            .then(firstOrThrow)
+            .then((addon) => addon.fee);
+
           return {
             id: 'ADD0WHITELABEL',
-            enrollmentFee: 0, // TODO: 계산 필요
+            enrollmentFee: await calculateProratedFee({ fee: addonFee, teamId: site.teamId }),
           };
         }
       },
