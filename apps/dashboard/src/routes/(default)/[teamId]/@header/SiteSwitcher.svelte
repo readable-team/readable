@@ -11,9 +11,10 @@
   import CirclePlusIcon from '~icons/lucide/circle-plus';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { LitePlan } from '$assets/plan';
   import { fragment, graphql } from '$graphql';
-  import { Img, ProBadge, TitledModal } from '$lib/components';
-  import { isPlanUpgradeModalOpen, isPro } from '$lib/svelte/stores/ui';
+  import { Img, LiteBadge, TitledModal } from '$lib/components';
+  import { isLiteOrHigher, isPlanUpgradeModalOpen, selectedPlan } from '$lib/svelte/stores/ui';
   import type { SiteSwitcher_team } from '$graphql';
 
   let _team: SiteSwitcher_team;
@@ -145,17 +146,18 @@
   <MenuItem
     style={flex.raw({ paddingX: '10px', color: 'text.tertiary', gap: '10px' })}
     on:click={() => {
-      if ($isPro) {
+      if ($isLiteOrHigher) {
         newSiteModalOpen = true;
       } else {
         mixpanel.track('plan:upgrade:show', { via: 'site-switcher:new-site-button' });
         isPlanUpgradeModalOpen.set(true);
+        selectedPlan.set(LitePlan);
       }
     }}
   >
     <Icon icon={CirclePlusIcon} size={16} />
     <span>새 사이트 만들기</span>
-    <ProBadge style={css.raw({ marginLeft: 'auto' })} via="site-switcher:pro-badge" />
+    <LiteBadge style={css.raw({ marginLeft: 'auto' })} via="site-switcher:pro-badge" />
   </MenuItem>
 </Menu>
 

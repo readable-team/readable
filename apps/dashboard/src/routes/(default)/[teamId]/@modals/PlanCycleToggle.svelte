@@ -89,7 +89,7 @@
           backgroundColor: 'accent.60',
         })}
       >
-        2달 무료
+        30% 할인
       </div>
     </div>
   </button>

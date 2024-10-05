@@ -27,10 +27,10 @@
   import TriangleAlertIcon from '~icons/lucide/triangle-alert';
   import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
-  import { Img, ProBadge } from '$lib/components';
+  import { Img, LiteBadge } from '$lib/components';
   import { invokeAlert } from '$lib/components/invoke-alert';
   import TitledModal from '$lib/components/TitledModal.svelte';
-  import { isPro } from '$lib/svelte/stores/ui';
+  import { isLiteOrHigher } from '$lib/svelte/stores/ui';
 
   let open = false;
 
@@ -253,8 +253,12 @@
   >
     <input name="siteId" type="hidden" />
     <FormField name="domain" label="커스텀 도메인 URL">
-      <ProBadge slot="label-suffix" via="site-custom-domain:pro-badge" />
-      <TextInput name="domain" disabled={!!$query.site.customDomain || !$isPro} placeholder="docs.example.com" />
+      <LiteBadge slot="label-suffix" via="site-custom-domain:pro-badge" />
+      <TextInput
+        name="domain"
+        disabled={!!$query.site.customDomain || !$isLiteOrHigher}
+        placeholder="docs.example.com"
+      />
     </FormField>
 
     <Button style={css.raw({ marginTop: '8px', marginLeft: 'auto' })} disabled={!$isValid} size="lg" type="submit">

@@ -3,19 +3,27 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Button } from '@readable/ui/components';
   import { TitledModal } from '$lib/components';
+  import { getDiscountedPrice, getPriceWithoutVat, getVat } from '$lib/utils/plan';
   import PlanCycleToggle from './PlanCycleToggle.svelte';
 
   export let open = false;
   export let confirm: (cycle: 'MONTHLY' | 'YEARLY') => void;
+  export let plan: {
+    id: string;
+    name: string;
+    price: number;
+  };
   export let planCycle: 'MONTHLY' | 'YEARLY' = 'MONTHLY';
 </script>
 
 <TitledModal bind:open>
-  <svelte:fragment slot="title">Pro 플랜으로 업그레이드</svelte:fragment>
+  <svelte:fragment slot="title">
+    {plan.name} 플랜으로 업그레이드
+  </svelte:fragment>
 
   <div class={flex({ flexDirection: 'column', gap: '20px' })}>
     <p class={css({ textStyle: '14r', color: 'text.tertiary' })}>
-      Pro 플랜으로 업그레이드하면 모든 기능을 이용할 수 있습니다.
+      {plan.name} 플랜으로 업그레이드하면 모든 기능을 이용할 수 있습니다.
     </p>
     <PlanCycleToggle defaultValue={planCycle} on:select={(cycle) => (planCycle = cycle.detail)} />
     <table
@@ -29,19 +37,21 @@
         <tr>
           <th class={css({ textAlign: 'left', color: 'text.primary', textStyle: '15b' })}>예상 요금</th>
           <td class={css({ textAlign: 'right', color: 'text.primary', textStyle: '16eb' })}>
-            {planCycle === 'MONTHLY' ? '33,000원' : '330,000원'}
+            {getDiscountedPrice(plan.price, planCycle).toLocaleString()}원
           </td>
         </tr>
         <tr>
-          <th class={css({ textAlign: 'left', color: 'text.secondary', textStyle: '14r' })}>Pro 플랜</th>
+          <th class={css({ textAlign: 'left', color: 'text.secondary', textStyle: '14r' })}>
+            {plan.name} 플랜
+          </th>
           <td class={css({ textAlign: 'right', color: 'text.primary', textStyle: '14sb' })}>
-            {planCycle === 'MONTHLY' ? '30,000원' : '300,000원'}
+            {getPriceWithoutVat(getDiscountedPrice(plan.price, planCycle)).toLocaleString()}원
           </td>
         </tr>
         <tr>
           <th class={css({ textAlign: 'left', color: 'text.secondary', textStyle: '14r' })}>부가가치세</th>
           <td class={css({ textAlign: 'right', color: 'text.primary', textStyle: '14sb' })}>
-            {planCycle === 'MONTHLY' ? '3,000원' : '30,000원'}
+            {getVat(getDiscountedPrice(plan.price, planCycle)).toLocaleString()}원
           </td>
         </tr>
       </tbody>

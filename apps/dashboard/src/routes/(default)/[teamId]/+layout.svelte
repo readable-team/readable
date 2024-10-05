@@ -8,6 +8,7 @@
     isEnrollPlanWithCardModalOpen,
     isPlanUpgradeModalOpen,
     isPro,
+    selectedPlan,
     selectedPlanCycle,
   } from '$lib/svelte/stores/ui';
   import Header from './@header/Header.svelte';
@@ -62,7 +63,7 @@
     }
   `);
 
-  $: isPro.set($query.team.plan.plan.id === 'PLAN00000000PRO');
+  $: isPro.set($query.team.plan.plan.id === 'PLAN0PRO');
 
   let unsubscribe: (() => void) | null = null;
 
@@ -98,11 +99,13 @@
 
     mixpanel.track('plan:upgrade:confirm');
   }}
+  plan={$selectedPlan}
   planCycle={$selectedPlanCycle}
   bind:open={$isPlanUpgradeModalOpen}
 />
 
 <EnrollPlanWithCardModal
+  plan={$selectedPlan}
   planCycle={$selectedPlanCycle}
   teamId={$query.team.id}
   bind:open={$isEnrollPlanWithCardModalOpen}

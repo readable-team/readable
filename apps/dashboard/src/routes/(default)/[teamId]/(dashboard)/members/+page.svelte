@@ -31,7 +31,7 @@
   import Img from '$lib/components/Img.svelte';
   import { invokeAlert } from '$lib/components/invoke-alert';
   import TitledModal from '$lib/components/TitledModal.svelte';
-  import { isPro } from '$lib/svelte/stores/ui';
+  import { isLiteOrHigher, isPro } from '$lib/svelte/stores/ui';
 
   let isInviteModalOpen = false;
 
@@ -168,13 +168,22 @@
     </h1>
 
     {#if $query.team.meAsMember?.role === 'ADMIN'}
-      {#if $isPro}
-        <Button style={css.raw({ gap: '6px' })} size="sm" type="button" on:click={() => (isInviteModalOpen = true)}>
-          <span>초대하기</span>
-          <Icon icon={PlusIcon} size={16} />
-        </Button>
+      {#if $isLiteOrHigher}
+        {#if !$isPro && $query.team.members.length >= 2}
+          <Tooltip message="Pro 플랜부터 멤버를 더 초대할 수 있어요" placement="bottom">
+            <Button style={css.raw({ gap: '6px' })} disabled size="sm" type="button">
+              <span>초대하기</span>
+              <Icon icon={InfoIcon} size={16} />
+            </Button>
+          </Tooltip>
+        {:else}
+          <Button style={css.raw({ gap: '6px' })} size="sm" type="button" on:click={() => (isInviteModalOpen = true)}>
+            <span>초대하기</span>
+            <Icon icon={PlusIcon} size={16} />
+          </Button>
+        {/if}
       {:else}
-        <Tooltip message="Pro 플랜부터 멤버를 초대할 수 있어요" placement="bottom">
+        <Tooltip message="Lite 플랜부터 멤버를 초대할 수 있어요" placement="bottom">
           <Button style={css.raw({ gap: '6px' })} disabled size="sm" type="button">
             <span>초대하기</span>
             <Icon icon={InfoIcon} size={16} />

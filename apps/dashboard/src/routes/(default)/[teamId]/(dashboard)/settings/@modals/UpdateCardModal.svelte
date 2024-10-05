@@ -80,7 +80,7 @@
 </script>
 
 <TitledModal bind:open>
-  <svelte:fragment slot="title">카드 추가 및 결제</svelte:fragment>
+  <svelte:fragment slot="title">카드 변경</svelte:fragment>
 
   <FormProvider class={flex({ flexDirection: 'column' })} {context} {form}>
     <div class={flex({ flexDirection: 'column', gap: '20px' })}>

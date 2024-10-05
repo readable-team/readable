@@ -9,9 +9,15 @@
   import { dataSchemas } from '@/schemas';
   import { graphql } from '$graphql';
   import { TitledModal } from '$lib/components';
+  import { getDiscountedPrice } from '$lib/utils/plan';
 
   export let open = false;
   export let teamId: string;
+  export let plan: {
+    id: string;
+    name: string;
+    price: number;
+  };
   export let planCycle: 'MONTHLY' | 'YEARLY' = 'MONTHLY';
 
   const updateCard = graphql(`
@@ -55,7 +61,7 @@
 
       enrollTeamPlan({
         teamId,
-        planId: 'PLAN00000000PRO',
+        planId: plan.id,
         billingCycle: planCycle,
       })
         .then(() => {
@@ -126,8 +132,8 @@
       borderRadius: '8px',
     })}
   >
-    <div>Pro 플랜</div>
-    <div>{planCycle === 'MONTHLY' ? '33,000원' : '330,000원'}</div>
+    <div>{plan.name} 플랜</div>
+    <div>{getDiscountedPrice(plan.price, planCycle).toLocaleString()}원</div>
   </div>
 
   <FormProvider class={flex({ marginTop: '24px', flexDirection: 'column' })} {context} {form}>

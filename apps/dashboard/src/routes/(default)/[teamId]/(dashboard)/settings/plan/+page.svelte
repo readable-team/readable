@@ -5,9 +5,10 @@
   import mixpanel from 'mixpanel-browser';
   import CheckIcon from '~icons/lucide/check';
   import InfoIcon from '~icons/lucide/info';
+  import { LitePlan, ProPlan } from '$assets/plan';
   import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
-  import { isPlanUpgradeModalOpen, selectedPlanCycle } from '$lib/svelte/stores/ui';
+  import { isPlanUpgradeModalOpen, selectedPlan, selectedPlanCycle } from '$lib/svelte/stores/ui';
 
   $: query = graphql(`
     query TeamSettingsPlanPage_Query($teamId: ID!) {
@@ -21,6 +22,7 @@
           plan {
             id
             name
+            order
           }
         }
       }
@@ -34,31 +36,36 @@
   const usages = [
     {
       title: '멤버',
-      basic: '1명',
+      starter: '1명',
+      lite: '3명',
       pro: '무제한',
       enterprise: '무제한',
     },
     {
       title: '사이트',
-      basic: '1개',
+      starter: '1개',
+      lite: '무제한',
       pro: '무제한',
       enterprise: '무제한',
     },
     {
       title: '페이지뷰',
-      basic: '5,000',
+      starter: '1,000',
+      lite: '무제한',
       pro: '무제한',
       enterprise: '무제한',
     },
     {
       title: '페이지',
-      basic: '무제한',
+      starter: '무제한',
+      lite: '무제한',
       pro: '무제한',
       enterprise: '무제한',
     },
     {
       title: '검색',
-      basic: '일반',
+      starter: '일반',
+      lite: '일반',
       pro: '일반 + AI',
       enterprise: '일반 + AI',
     },
@@ -67,49 +74,57 @@
   const premiums = [
     {
       title: '브랜딩',
-      basic: '',
+      starter: '',
+      lite: CheckIcon,
       pro: CheckIcon,
       enterprise: CheckIcon,
     },
     {
       title: '커스텀 도메인',
-      basic: '',
+      starter: '',
+      lite: CheckIcon,
       pro: CheckIcon,
       enterprise: CheckIcon,
     },
     {
       title: '콘텐츠 최신화(예정)',
-      basic: '',
+      starter: '',
+      lite: '',
       pro: '무제한',
       enterprise: '무제한',
     },
     {
       title: '커스텀 플랜',
-      basic: '',
+      starter: '',
+      lite: '',
       pro: '',
       enterprise: CheckIcon,
     },
     {
       title: '24/7 지원',
-      basic: '',
+      starter: '',
+      lite: '',
       pro: '',
       enterprise: CheckIcon,
     },
     {
       title: '감사 로그',
-      basic: '',
+      starter: '',
+      lite: '',
       pro: '',
       enterprise: CheckIcon,
     },
     {
       title: '맞춤형 기능 개발',
-      basic: '',
+      starter: '',
+      lite: '',
       pro: '',
       enterprise: CheckIcon,
     },
     {
       title: '전담 담당자 배정',
-      basic: '',
+      starter: '',
+      lite: '',
       pro: '',
       enterprise: CheckIcon,
     },
@@ -118,7 +133,8 @@
   $: addOns = [
     {
       title: '화이트 라벨링',
-      basic: '',
+      starter: '',
+      lite: '',
       pro: `${$selectedPlanCycle === 'YEARLY' ? '18,333' : '22,000'}원/사이트/월`,
       enterprise: CheckIcon,
     },
@@ -129,7 +145,7 @@
 
 <h1 class={css({ marginBottom: '20px', textStyle: '28b' })}>플랜</h1>
 
-<div class={flex({ flexDirection: 'column', gap: '8px' })}>
+<div class={flex({ flexDirection: 'column', gap: '8px', marginRight: '-160px' })}>
   <div
     class={css({
       borderWidth: '1px',
@@ -170,7 +186,7 @@
                   backgroundColor: 'neutral.80',
                 })}
               >
-                2달 무료
+                30% 할인
               </div>
             </div>
           </th>
@@ -179,20 +195,17 @@
         <tr class={css({ '& > th': { paddingX: '12px', paddingY: '20px', textAlign: 'left' } })}>
           <th />
           <th class={css({ width: '160px' })}>
-            <p class={css({ marginBottom: '4px', textStyle: '13m' })}>Basic</p>
+            <p class={css({ marginBottom: '4px', textStyle: '13m' })}>Starter</p>
             <span class={css({ textStyle: '20b' })}>무료</span>
             <!-- TODO: 다운그레이드 툴팁 문구 수정 -->
-            <Tooltip
-              enabled={$query.team.plan.plan.id !== 'PLAN000000BASIC'}
-              message="플랜 다운그레이드는 문의해주세요"
-            >
+            <Tooltip enabled={$query.team.plan.plan.id !== 'PLAN0STARTER'} message="플랜 다운그레이드는 문의해주세요">
               <Button
                 style={flex.raw({ align: 'center', gap: '6px', marginTop: '40px', width: 'full' })}
                 disabled
                 size="sm"
                 variant="secondary"
               >
-                {#if $query.team.plan.plan.id === 'PLAN000000BASIC'}
+                {#if $query.team.plan.plan.id === 'PLAN0STARTER'}
                   <span>현재 플랜</span>
                 {:else}
                   <span>다운그레이드</span>
@@ -200,6 +213,44 @@
                 {/if}
               </Button>
             </Tooltip>
+          </th>
+          <th class={css({ width: '160px' })}>
+            <p class={css({ marginBottom: '4px', textStyle: '13m' })}>Lite</p>
+            <span class={css({ textStyle: '20b' })}>
+              {($selectedPlanCycle === 'YEARLY' ? (LitePlan.price / 10) * 7 : LitePlan.price).toLocaleString()}
+            </span>
+            <span class={css({ textStyle: '13r' })}>원 / 월</span>
+            {#if $query.team.plan.plan.order >= 2}
+              <!-- TODO: 다운그레이드 툴팁 문구 수정 -->
+              <Tooltip enabled={$query.team.plan.plan.order > 2} message="플랜 다운그레이드는 문의해주세요">
+                <Button
+                  style={flex.raw({ align: 'center', gap: '6px', marginTop: '40px', width: 'full' })}
+                  disabled
+                  size="sm"
+                  variant="secondary"
+                >
+                  {#if $query.team.plan.plan.id === 'PLAN0LITE'}
+                    <span>현재 플랜</span>
+                  {:else if $query.team.plan.plan.order > 2}
+                    <span>다운그레이드</span>
+                    <Icon icon={InfoIcon} />
+                  {/if}
+                </Button>
+              </Tooltip>
+            {:else}
+              <Button
+                style={css.raw({ marginTop: '40px', width: 'full' })}
+                size="sm"
+                variant="secondary"
+                on:click={() => {
+                  mixpanel.track('plan:upgrade:show', { via: 'plan' });
+                  $isPlanUpgradeModalOpen = true;
+                  $selectedPlan = LitePlan;
+                }}
+              >
+                업그레이드
+              </Button>
+            {/if}
           </th>
           <th class={css({ borderTopRadius: '10px', backgroundColor: 'neutral.10', width: '160px' })}>
             <p class={flex({ align: 'center', justify: 'space-between', marginBottom: '4px', textStyle: '13m' })}>
@@ -218,23 +269,24 @@
               </span>
             </p>
             <span class={css({ textStyle: '20b' })}>
-              {$selectedPlanCycle === 'YEARLY' ? '27,500' : '33,000'}
+              {($selectedPlanCycle === 'YEARLY' ? (ProPlan.price / 10) * 7 : ProPlan.price).toLocaleString()}
             </span>
             <span class={css({ textStyle: '13r' })}>원 / 월</span>
             <Button
               style={css.raw({ marginTop: '40px', width: 'full' })}
-              disabled={$query.team.plan.plan.id === 'PLAN00000000PRO'}
+              disabled={$query.team.plan.plan.id === 'PLAN0PRO'}
               glossy
               size="sm"
               variant="primary"
               on:click={() => {
-                if ($query.team.plan.plan.id !== 'PLAN00000000PRO') {
+                if ($query.team.plan.plan.id !== 'PLAN0PRO') {
                   mixpanel.track('plan:upgrade:show', { via: 'plan' });
                   $isPlanUpgradeModalOpen = true;
+                  $selectedPlan = ProPlan;
                 }
               }}
             >
-              {$query.team.plan.plan.id === 'PLAN00000000PRO' ? '현재 플랜' : '업그레이드'}
+              {$query.team.plan.plan.id === 'PLAN0PRO' ? '현재 플랜' : '업그레이드'}
             </Button>
           </th>
           <th class={css({ width: '160px' })}>
@@ -267,6 +319,7 @@
         <tr class={css({ '& > td': { borderBottomWidth: '1px' } })}>
           <td class={css({ textStyle: '13sb' })}>Usage</td>
           <td />
+          <td />
           <td class={css({ backgroundColor: 'neutral.10' })} />
           <td />
         </tr>
@@ -275,12 +328,13 @@
             <td class={flex({ align: 'center', gap: '4px' })}>
               {usage.title}
               {#if usage.title === '페이지뷰'}
-                <Tooltip message="1개월간 총 5,000회의 페이지 조회를 지원합니다">
+                <Tooltip message="1개월간 총 1,000회의 페이지 조회를 지원합니다">
                   <Icon icon={InfoIcon} size={14} />
                 </Tooltip>
               {/if}
             </td>
-            <td>{usage.basic}</td>
+            <td>{usage.starter}</td>
+            <td>{usage.lite}</td>
             <td class={css({ backgroundColor: 'neutral.10' })}>{usage.pro}</td>
             <td>{usage.enterprise}</td>
           </tr>
@@ -288,11 +342,13 @@
         <tr>
           <td>&nbsp;</td>
           <td />
+          <td />
           <td class={css({ backgroundColor: 'neutral.10' })} />
           <td />
         </tr>
         <tr class={css({ '& > td': { borderBottomWidth: '1px' } })}>
           <td class={css({ textStyle: '13sb' })}>Premium</td>
+          <td />
           <td />
           <td class={css({ backgroundColor: 'neutral.10' })} />
           <td />
@@ -300,7 +356,14 @@
         {#each premiums as premium (premium.title)}
           <tr class={css({ '& > td': { borderBottomWidth: '1px', textStyle: '13r' } })}>
             <td>{premium.title}</td>
-            <td>{premium.basic}</td>
+            <td>{premium.starter}</td>
+            <td>
+              {#if typeof premium.lite === 'string'}
+                {premium.lite}
+              {:else}
+                <Icon icon={premium.lite} size={14} />
+              {/if}
+            </td>
             <td class={css({ backgroundColor: 'neutral.10' })}>
               {#if typeof premium.pro === 'string'}
                 {premium.pro}
@@ -320,11 +383,13 @@
         <tr>
           <td>&nbsp;</td>
           <td />
+          <td />
           <td class={css({ backgroundColor: 'neutral.10' })} />
           <td />
         </tr>
         <tr class={css({ '& > td': { borderBottomWidth: '1px' } })}>
           <td class={css({ textStyle: '13sb' })}>Add-on</td>
+          <td />
           <td />
           <td class={css({ backgroundColor: 'neutral.10' })} />
           <td />
@@ -332,7 +397,8 @@
         {#each addOns as addOn (addOn.title)}
           <tr class={css({ '& > td': { borderBottomWidth: '1px', textStyle: '13r' } })}>
             <td>{addOn.title}</td>
-            <td>{addOn.basic}</td>
+            <td>{addOn.starter}</td>
+            <td>{addOn.lite}</td>
             <td class={css({ backgroundColor: 'neutral.10' })}>
               {#if typeof addOn.pro === 'string'}
                 {addOn.pro}

@@ -8,8 +8,8 @@
   import { z } from 'zod';
   import { dataSchemas } from '@/schemas';
   import { graphql } from '$graphql';
-  import { ProBadge } from '$lib/components';
-  import { isPro } from '$lib/svelte/stores/ui';
+  import { LiteBadge } from '$lib/components';
+  import { isLiteOrHigher } from '$lib/svelte/stores/ui';
 
   $: query = graphql(`
     query SiteSettingsThemePage_Query($siteId: ID!) {
@@ -94,9 +94,9 @@
   {form}
 >
   <FormField name="themeColor" label="테마 색상">
-    <ProBadge slot="label-suffix" via="site-theme-color:pro-badge" />
+    <LiteBadge slot="label-suffix" via="site-theme-color:pro-badge" />
     <TextInput
-      disabled={!$isPro}
+      disabled={!$isLiteOrHigher}
       on:input={(e) => {
         if (e.currentTarget.value[0] !== '#') {
           e.currentTarget.value = `#${e.currentTarget.value}`;
