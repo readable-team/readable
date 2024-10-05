@@ -1,4 +1,5 @@
 import { and, asc, eq, isNull } from 'drizzle-orm';
+import { PlanId } from '@/const';
 import { db, first, TeamMembers, TeamPlans, Teams, Users } from '@/db';
 import { BillingCycle, TeamMemberRole } from '@/enums';
 
@@ -20,7 +21,7 @@ await db.transaction(async (tx) => {
 
     await tx.insert(TeamPlans).values({
       teamId: team.id,
-      planId: 'PLAN0STARTER',
+      planId: PlanId.STARTER,
       billingCycle: BillingCycle.MONTHLY,
       billingEmail: user?.email ?? 'user@example.com',
     });

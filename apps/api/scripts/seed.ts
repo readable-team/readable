@@ -1,3 +1,4 @@
+import { AddonId, PlanId } from '@/const';
 import { Addons, db, firstOrThrow, Plans, Sites, TeamPlans, Teams } from '@/db';
 import { BillingCycle, PlanType } from '@/enums';
 import { generateRandomAvatar } from '@/utils/image-generation';
@@ -9,20 +10,20 @@ const avatar = await persistBlobAsImage({
 
 await db.transaction(async (tx) => {
   await tx.insert(Addons).values({
-    id: 'ADD0WHITELABEL',
+    id: AddonId.WHITELABEL,
     name: '화이트라벨링',
     fee: 22_000,
   });
 
   await tx.insert(Plans).values({
-    id: 'PLAN0STARTER',
+    id: PlanId.STARTER,
     name: 'Starter',
     rules: {},
     order: 1,
   });
 
   await tx.insert(Plans).values({
-    id: 'PLAN0LITE',
+    id: PlanId.LITE,
     name: 'Lite',
     fee: 3300,
     rules: {
@@ -36,7 +37,7 @@ await db.transaction(async (tx) => {
   });
 
   await tx.insert(Plans).values({
-    id: 'PLAN0PRO',
+    id: PlanId.PRO,
     name: 'Pro',
     fee: 33_000,
     rules: {
@@ -46,7 +47,7 @@ await db.transaction(async (tx) => {
       themeColor: true,
       customDomain: true,
       aiSearch: true,
-      addonsAvailable: ['ADD0WHITELABEL'],
+      addonsAvailable: [AddonId.WHITELABEL],
     },
     order: 3,
   });

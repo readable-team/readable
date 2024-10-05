@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { and, asc, count, desc, eq, getTableColumns, ne } from 'drizzle-orm';
 import { match } from 'ts-pattern';
 import { builder } from '@/builder';
+import { PlanId } from '@/const';
 import {
   db,
   extractTableCode,
@@ -714,7 +715,7 @@ const createTeam = async (userId: string, teamName: string) => {
 
     await tx.insert(TeamPlans).values({
       teamId: team.id,
-      planId: 'PLAN0STARTER',
+      planId: PlanId.STARTER,
       billingCycle: BillingCycle.MONTHLY,
       billingEmail: user.email,
     });

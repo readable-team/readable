@@ -4,6 +4,7 @@ import { Repeater } from 'graphql-yoga';
 import { match } from 'ts-pattern';
 import * as Y from 'yjs';
 import { builder } from '@/builder';
+import { AddonId } from '@/const';
 import {
   Addons,
   Categories,
@@ -237,7 +238,7 @@ PublicSite.implement({
         const addon = await db
           .select({ id: SiteAddons.id })
           .from(SiteAddons)
-          .where(and(eq(SiteAddons.siteId, site.id), eq(SiteAddons.addonId, 'ADD0WHITELABEL')))
+          .where(and(eq(SiteAddons.siteId, site.id), eq(SiteAddons.addonId, AddonId.WHITELABEL)))
           .then(first);
 
         return !!addon;
