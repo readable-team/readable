@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { desc, eq } from 'drizzle-orm';
 import { match } from 'ts-pattern';
+import { PaymentDiscount } from '@/const';
 import { db, first, PaymentInvoices, TeamPlans } from '@/db';
 import { BillingCycle } from '@/enums';
 
@@ -53,6 +54,22 @@ export const getNextBillingInfo = async (teamId: string) => {
     nextPaymentAt: planPaymentInfo.enrolledAt.utc().startOf('day').add(paymentSeq, unit),
     billingCycle: planPaymentInfo.billingCycle,
   };
+};
+
+type CalculatePaymentAmountParams = {
+  fee: number;
+  billingCycle: BillingCycle;
+};
+
+export const calculatePaymentAmount = ({ fee, billingCycle }: CalculatePaymentAmountParams) => {
+  const base = match(billingCycle)
+    .with(BillingCycle.MONTHLY, () => fee)
+    .with(BillingCycle.YEARLY, () => fee * 12)
+    .exhaustive();
+
+  const discount = Math.floor(base * PaymentDiscount[billingCycle]);
+
+  return base - discount;
 };
 
 type CalculateProratedFeeParams = {

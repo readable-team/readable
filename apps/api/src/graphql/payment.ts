@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import { and, asc, desc, eq } from 'drizzle-orm';
-import { match } from 'ts-pattern';
 import { builder } from '@/builder';
 import {
   Addons,
@@ -31,6 +30,7 @@ import { ReadableError } from '@/errors';
 import * as portone from '@/external/portone';
 import { dataSchemas } from '@/schemas';
 import { invalidateSiteCache } from '@/utils/cache';
+import { calculatePaymentAmount } from '@/utils/payment';
 import { assertSitePermission, assertTeamPermission } from '@/utils/permissions';
 import { getTeamPlanRule } from '@/utils/plan';
 import { assertTeamRestriction } from '@/utils/restrictions';
@@ -205,10 +205,7 @@ builder.mutationFields((t) => ({
         .where(eq(Teams.id, input.teamId))
         .then(firstOrThrow);
 
-      const paymentAmount = match(input.billingCycle)
-        .with(BillingCycle.MONTHLY, () => plan.fee)
-        .with(BillingCycle.YEARLY, () => plan.fee * 10)
-        .exhaustive();
+      const paymentAmount = calculatePaymentAmount({ fee: plan.fee, billingCycle: input.billingCycle });
 
       await db.transaction(async (tx) => {
         const invoice = await tx
@@ -336,11 +333,7 @@ builder.mutationFields((t) => ({
         .where(eq(Teams.id, site.teamId))
         .then(firstOrThrow);
 
-      // TODO: 일할 계산 필요
-      const paymentAmount = match(teamPlan.billingCycle)
-        .with(BillingCycle.MONTHLY, () => addon.fee)
-        .with(BillingCycle.YEARLY, () => addon.fee * 10)
-        .exhaustive();
+      const paymentAmount = calculatePaymentAmount({ fee: addon.fee, billingCycle: teamPlan.billingCycle });
 
       await db.transaction(async (tx) => {
         const invoice = await tx
