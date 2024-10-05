@@ -11,8 +11,8 @@
     height: 'full',
     direction: 'column',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: '24px',
-    marginY: 'auto',
   })}
 >
   <Icon style={css.raw({ width: '60px', height: '60px' })} icon={FileSearchIcon} />

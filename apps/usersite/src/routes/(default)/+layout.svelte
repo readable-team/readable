@@ -230,10 +230,7 @@
 
   <SearchBar $publicSite={$query.publicSite} searchResults={$query.searchPublicPage.hits} />
 
-  <main
-    id="main-content"
-    class={flex({ maxWidth: '1280px', marginX: 'auto', alignItems: 'flex-start', grow: '1', width: 'full' })}
-  >
+  <div class={flex({ maxWidth: '1280px', marginX: 'auto', grow: '1', width: 'full' })}>
     {#if $query.publicSite.firstPage}
       <div
         class={css({
@@ -257,8 +254,10 @@
       </MobileSidebar>
     {/if}
 
-    <slot />
-  </main>
+    <main id="main-content" class={flex({ flex: '1', width: 'full', alignItems: 'flex-start' })} tabindex="-1">
+      <slot />
+    </main>
+  </div>
 </div>
 
 <!-- TODO: 결제하면 숨기기 -->
