@@ -13,6 +13,7 @@ export type MenuItem = {
   group: MenuItemGroup;
   keywords: string[];
   icon: ComponentType;
+  visible?: boolean;
   command: (params: CommandParams) => void;
 };
 

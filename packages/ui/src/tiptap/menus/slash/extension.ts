@@ -70,7 +70,7 @@ export const SlashMenu = Extension.create({
             }
           }
 
-          const items = menuItems.filter((item) => typeSet.has(item.type));
+          const items = menuItems.filter((item) => item.visible !== false && typeSet.has(item.type));
 
           return matchSorter(items, disassemble(query), {
             keys: [(item) => disassemble(item.name), (item) => item.keywords.map((v) => disassemble(v))],

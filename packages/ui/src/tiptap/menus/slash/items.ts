@@ -10,6 +10,7 @@ import MinusIcon from '~icons/lucide/minus';
 import PaperclipIcon from '~icons/lucide/paperclip';
 import TableIcon from '~icons/lucide/table';
 import TextQuoteIcon from '~icons/lucide/text-quote';
+import { dev } from '$app/environment';
 import type { MenuItem } from './types';
 
 export const menuItems: MenuItem[] = [
@@ -108,6 +109,7 @@ export const menuItems: MenuItem[] = [
     name: '표',
     keywords: ['table'],
     icon: TableIcon,
+    visible: dev,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).insertTable({ withHeaderRow: false }).run();
     },
