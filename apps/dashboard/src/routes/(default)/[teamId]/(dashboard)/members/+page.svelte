@@ -28,6 +28,7 @@
   import UserXIcon from '~icons/lucide/user-x';
   import { goto, invalidateAll } from '$app/navigation';
   import { graphql } from '$graphql';
+  import { ProBadge } from '$lib/components';
   import Img from '$lib/components/Img.svelte';
   import { invokeAlert } from '$lib/components/invoke-alert';
   import TitledModal from '$lib/components/TitledModal.svelte';
@@ -379,7 +380,7 @@
                   },
                 })}
                 aria-checked={member.role === 'MEMBER'}
-                disabled={member.role === 'ADMIN' && member.isSoleAdmin}
+                disabled={(member.role === 'ADMIN' && member.isSoleAdmin) || !$isPro}
                 on:click={async () => {
                   if (member.id === $query.team.meAsMember?.id) {
                     invokeAlert({
@@ -396,7 +397,10 @@
                 }}
               >
                 <div class={flex({ flexDirection: 'column', alignItems: 'start', gap: '2px', width: 'full' })}>
-                  <p class={css({ textStyle: '15sb', color: 'text.primary' })}>편집자</p>
+                  <div class={flex({ alignItems: 'center' })}>
+                    <p class={css({ textStyle: '15sb', color: 'text.primary' })}>편집자</p>
+                    <ProBadge via="team-member-role:pro-badge" />
+                  </div>
                   <p class={css({ textStyle: '13r', color: 'text.tertiary' })}>문서 편집, 발행 및 삭제</p>
                 </div>
 

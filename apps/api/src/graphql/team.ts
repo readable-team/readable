@@ -38,7 +38,7 @@ import { dataSchemas } from '@/schemas';
 import { generateRandomAvatar } from '@/utils/image-generation';
 import { getNextBillingInfo } from '@/utils/payment';
 import { assertTeamPermission, throwableToBoolean } from '@/utils/permissions';
-import { assertTeamPlanRule } from '@/utils/plan';
+import { assertTeamPlanRule, getTeamPlanRule } from '@/utils/plan';
 import { assertTeamRestriction } from '@/utils/restrictions';
 import { persistBlobAsImage } from '@/utils/user-contents';
 import {
@@ -413,12 +413,17 @@ builder.mutationFields((t) => ({
           throw new ReadableError({ code: 'team_member_exists' });
         }
 
+        const memberRole = await getTeamPlanRule({
+          teamId: input.teamId,
+          rule: 'memberRole',
+        });
+
         const member = await db
           .insert(TeamMembers)
           .values({
             teamId: input.teamId,
             userId: invitedUser.id,
-            role: TeamMemberRole.MEMBER,
+            role: memberRole ? TeamMemberRole.MEMBER : TeamMemberRole.ADMIN,
           })
           .onConflictDoNothing()
           .returning()
@@ -622,6 +627,11 @@ builder.mutationFields((t) => ({
       await assertTeamRestriction({
         teamId: input.teamId,
         type: TeamRestrictionType.DASHBOARD_WRITE,
+      });
+
+      await assertTeamPlanRule({
+        teamId: input.teamId,
+        rule: 'memberRole',
       });
 
       return await db.transaction(async (tx) => {

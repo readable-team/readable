@@ -5,12 +5,13 @@
   import CheckCircle2Icon from '~icons/lucide/check-circle-2';
   import CircleHelpIcon from '~icons/lucide/circle-help';
   import ClipboardListIcon from '~icons/lucide/clipboard-list';
+  import ContactIcon from '~icons/lucide/contact';
   import EllipsisIcon from '~icons/lucide/ellipsis';
-  import FileIcon from '~icons/lucide/file';
   import FileSignatureIcon from '~icons/lucide/file-signature';
+  import FilesIcon from '~icons/lucide/files';
   import HeadphonesIcon from '~icons/lucide/headphones';
   import LinkIcon from '~icons/lucide/link';
-  import MonitorSmartphone from '~icons/lucide/monitor-smartphone';
+  import MonitorSmartphoneIcon from '~icons/lucide/monitor-smartphone';
   import MousePointerClickIcon from '~icons/lucide/mouse-pointer-click';
   import PaintbrushIcon from '~icons/lucide/paintbrush';
   import RefreshCwIcon from '~icons/lucide/refresh-cw';
@@ -55,8 +56,8 @@
       price: '무료',
       features: [
         { icon: UserRoundIcon, feature: '1명의 멤버' },
-        { icon: MonitorSmartphone, feature: '1개의 사이트' },
-        { icon: FileIcon, feature: '무제한 페이지' },
+        { icon: MonitorSmartphoneIcon, feature: '1개의 사이트' },
+        { icon: FilesIcon, feature: '무제한 페이지' },
         {
           icon: MousePointerClickIcon,
           feature: '500 페이지뷰/월',
@@ -70,8 +71,8 @@
       price: selectedPrice === 'yearly' ? '2,030' : '2,900',
       features: [
         { icon: UsersRoundIcon, feature: '3명의 멤버' },
-        { icon: MonitorSmartphone, feature: '1개의 사이트' },
-        { icon: FileIcon, feature: '무제한 페이지' },
+        { icon: MonitorSmartphoneIcon, feature: '1개의 사이트' },
+        { icon: FilesIcon, feature: '무제한 페이지' },
         {
           icon: MousePointerClickIcon,
           feature: '100,000 페이지뷰/월',
@@ -87,13 +88,14 @@
       price: selectedPrice === 'yearly' ? '13,300' : '19,000',
       features: [
         { icon: UsersRoundIcon, feature: '무제한 멤버' },
-        { icon: MonitorSmartphone, feature: '무제한 사이트' },
-        { icon: FileIcon, feature: '무제한 페이지' },
+        { icon: MonitorSmartphoneIcon, feature: '무제한 사이트' },
+        { icon: FilesIcon, feature: '무제한 페이지' },
         { icon: MousePointerClickIcon, feature: '무제한 페이지뷰' },
         { icon: SearchIcon, feature: '일반 + AI 검색' },
         { icon: PaintbrushIcon, feature: '브랜딩' },
         { icon: LinkIcon, feature: '커스텀 도메인' },
-        { icon: RefreshCwIcon, feature: '콘텐츠 최신화 (지원예정)' },
+        { icon: UserCogIcon, feature: '멤버 권한 관리' },
+        { icon: RefreshCwIcon, feature: '콘텐츠 최신화 (예정)' },
       ],
       addOns: [
         {
@@ -114,7 +116,7 @@
         { icon: HeadphonesIcon, feature: '24/7 지원' },
         { icon: ClipboardListIcon, feature: '감사 로그' },
         { icon: SettingsIcon, feature: '맞춤형 기능 개발' },
-        { icon: UserCogIcon, feature: '전담 담당자 배정' },
+        { icon: ContactIcon, feature: '전담 담당자 배정' },
         { icon: EllipsisIcon, feature: '그리고 무엇이든 요청하세요' },
       ],
     },
@@ -230,7 +232,7 @@
           width: 'full',
           backgroundColor: 'white',
           boxShadow: 'emphasize',
-          height: { base: '518px', md: '555px' },
+          height: { base: '538px', md: '575px' },
           zIndex: '1',
         })}
       >

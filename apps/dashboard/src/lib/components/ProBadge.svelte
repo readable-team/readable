@@ -3,7 +3,8 @@
   import { Icon } from '@readable/ui/components';
   import mixpanel from 'mixpanel-browser';
   import ArrowUpRightIcon from '~icons/lucide/arrow-up-right';
-  import { isPlanUpgradeModalOpen, isPro } from '$lib/svelte/stores/ui';
+  import { ProPlan } from '$assets/plan';
+  import { isPlanUpgradeModalOpen, isPro, selectedPlan } from '$lib/svelte/stores/ui';
   import type { SystemStyleObject } from '@readable/styled-system/types';
 
   export let via: string;
@@ -32,6 +33,7 @@
     on:click={() => {
       mixpanel.track('plan:upgrade:show', { via });
       isPlanUpgradeModalOpen.set(true);
+      selectedPlan.set(ProPlan);
     }}
   >
     <span>PRO</span>

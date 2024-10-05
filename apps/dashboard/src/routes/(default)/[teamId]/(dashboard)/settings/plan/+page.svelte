@@ -88,6 +88,13 @@
       enterprise: CheckIcon,
     },
     {
+      title: '멤버 권한 관리',
+      starter: '',
+      lite: '',
+      pro: CheckIcon,
+      enterprise: CheckIcon,
+    },
+    {
       title: '콘텐츠 최신화(예정)',
       starter: '',
       lite: '',

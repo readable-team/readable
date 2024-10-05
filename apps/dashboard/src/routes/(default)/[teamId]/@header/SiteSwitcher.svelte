@@ -13,7 +13,7 @@
   import { page } from '$app/stores';
   import { ProPlan } from '$assets/plan';
   import { fragment, graphql } from '$graphql';
-  import { Img, LiteBadge, TitledModal } from '$lib/components';
+  import { Img, ProBadge, TitledModal } from '$lib/components';
   import { isPlanUpgradeModalOpen, isPro, selectedPlan } from '$lib/svelte/stores/ui';
   import type { SiteSwitcher_team } from '$graphql';
 
@@ -157,7 +157,7 @@
   >
     <Icon icon={CirclePlusIcon} size={16} />
     <span>새 사이트 만들기</span>
-    <LiteBadge style={css.raw({ marginLeft: 'auto' })} via="site-switcher:pro-badge" />
+    <ProBadge style={css.raw({ marginLeft: 'auto' })} via="site-switcher:pro-badge" />
   </MenuItem>
 </Menu>
 

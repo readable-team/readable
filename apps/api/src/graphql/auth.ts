@@ -18,6 +18,7 @@ import { SingleSignOnProvider, TeamMemberRole, UserState } from '@/enums';
 import { ReadableError } from '@/errors';
 import * as google from '@/external/google';
 import { createAccessToken } from '@/utils/access-token';
+import { getTeamPlanRule } from '@/utils/plan';
 import { persistBlobAsImage } from '@/utils/user-contents';
 import { User } from './objects';
 
@@ -116,14 +117,17 @@ builder.mutationFields((t) => ({
 
         const teamIds = new Set(invitations.map((invitation) => invitation.teamId));
 
-        if (teamIds.size > 0) {
-          await tx.insert(TeamMembers).values(
-            [...teamIds].map((teamId) => ({
-              teamId,
-              userId: user.id,
-              role: TeamMemberRole.MEMBER,
-            })),
-          );
+        for (const teamId of teamIds) {
+          const memberRole = await getTeamPlanRule({
+            teamId,
+            rule: 'memberRole',
+          });
+
+          await tx.insert(TeamMembers).values({
+            teamId,
+            userId: user.id,
+            role: memberRole ? TeamMemberRole.MEMBER : TeamMemberRole.ADMIN,
+          });
         }
 
         return user;
