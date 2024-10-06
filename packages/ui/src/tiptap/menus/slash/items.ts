@@ -127,7 +127,18 @@ export const menuItems: MenuItem[] = [
     keywords: ['image', 'picture'],
     icon: ImageIcon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).setImage().run();
+      chain(editor, range).setImage().run();
+    },
+  },
+  {
+    id: 'inline-image',
+    type: 'inlineImage',
+    group: 'media',
+    name: '인라인 이미지',
+    keywords: ['inline image'],
+    icon: ImageIcon,
+    command: ({ editor, range }) => {
+      chain(editor, range).setInlineImage().run();
     },
   },
   {

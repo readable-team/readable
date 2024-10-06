@@ -472,7 +472,11 @@ builder.queryFields((t) => ({
       const [categorySlug, parentSlug, pageSlug] = match(slugs.length)
         .with(2, () => [slugs[0], null, slugs[1]] as const)
         .with(3, () => [slugs[0], slugs[1], slugs[2]] as const)
-        .run();
+        .otherwise(() => [null] as const);
+
+      if (categorySlug === null) {
+        throw new ReadableError({ code: 'not_found' });
+      }
 
       const Pages2 = alias(Pages, 'p');
 

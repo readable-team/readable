@@ -9,6 +9,7 @@
   import { Embed } from '../node-views/embed';
   import { File } from '../node-views/file';
   import { Image } from '../node-views/image';
+  import { InlineImage } from '../node-views/inline-image';
   import { basicExtensions, editorExtensions } from '../schema';
   import type { SystemStyleObject } from '@readable/styled-system/types';
   import type * as YAwareness from 'y-protocols/awareness';
@@ -42,6 +43,7 @@
         ...editorExtensions,
         Embed.configure({ handleEmbed }),
         Image.configure({ handleImageUpload }),
+        InlineImage.configure({ handleImageUpload }),
         File.configure({ handleFileUpload }),
         LinkEditPopover.configure({ handleLink }),
         LinkTooltip.configure({ handleLink }),

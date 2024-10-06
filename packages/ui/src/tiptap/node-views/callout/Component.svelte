@@ -3,7 +3,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import { createFloatingActions } from '@readable/ui/actions';
   import { NodeView, NodeViewContentEditable } from '@readable/ui/tiptap';
-  import twitterEmojis from 'emoji-datasource-twitter';
+  import twitterEmojis from 'emoji-datasource-twitter/emoji.json';
   import { matchSorter } from 'match-sorter';
   import { HorizontalDivider } from '../../../components';
   import Emoji from './Emoji.svelte';

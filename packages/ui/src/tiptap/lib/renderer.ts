@@ -47,7 +47,7 @@ class SvelteNodeView extends NodeView<NodeViewComponentType> implements ProseMir
     const context = new Map();
     context.set('onDragStart', (event: DragEvent) => this.#onDragStart(event));
 
-    const target = document.createElement('div');
+    const target = document.createElement(this.node.isInline ? 'span' : 'div');
     this.#component = new this.component({
       target,
       props: {

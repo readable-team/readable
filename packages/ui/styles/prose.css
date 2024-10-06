@@ -59,3 +59,7 @@
     display: none;
   }
 }
+
+.ProseMirror-separator {
+  display: inline-block;
+}

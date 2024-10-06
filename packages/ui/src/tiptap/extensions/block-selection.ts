@@ -104,7 +104,7 @@ export const BlockSelectionHelper = Extension.create({
         appendTransaction: (_, __, newState) => {
           const { selection, tr } = newState;
 
-          if (selection instanceof NodeSelection) {
+          if (selection instanceof NodeSelection && selection.node.isBlock) {
             tr.setSelection(BlockSelection.create(newState.doc, selection.from, selection.to));
             return tr;
           }

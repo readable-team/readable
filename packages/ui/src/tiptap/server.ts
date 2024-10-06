@@ -26,6 +26,7 @@ import { Callout } from './node-views/callout/server';
 import { Embed } from './node-views/embed/server';
 import { File } from './node-views/file/server';
 import { Image } from './node-views/image/server';
+import { InlineImage } from './node-views/inline-image/server';
 
 export const serverExtensions = [
   // special nodes
@@ -122,6 +123,7 @@ export const serverExtensions = [
   Embed,
   File,
   Image,
+  InlineImage,
 ];
 
 export const schema = getSchema(serverExtensions);

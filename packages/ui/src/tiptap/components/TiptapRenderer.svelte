@@ -7,6 +7,7 @@
   import { Embed } from '../node-views/embed';
   import { File } from '../node-views/file';
   import { Image } from '../node-views/image';
+  import { InlineImage } from '../node-views/inline-image';
   import { basicExtensions } from '../schema';
   import type { SystemStyleObject } from '@readable/styled-system/types';
   import type { JSONContent } from '@tiptap/core';
@@ -22,7 +23,7 @@
     tocUpdate: { headings: { level: number; text: string; scrollTop: number }[] };
   }>();
 
-  $: html = renderHTML(content, [...basicExtensions, Embed, Image, File]);
+  $: html = renderHTML(content, [...basicExtensions, Embed, Image, InlineImage, File]);
   $: editor?.commands.setContent(content);
 
   onMount(() => {
@@ -34,6 +35,7 @@
         ...basicExtensions,
         Embed,
         Image,
+        InlineImage,
         File,
         TableOfContents.configure({
           onUpdate: (headings) => {

@@ -55,7 +55,7 @@ export const basicExtensions = [
     renderHTML({ node, HTMLAttributes }) {
       return [
         'p',
-        mergeAttributes(HTMLAttributes, { class: css({ textStyle: '16r' }) }),
+        mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
         !this.editor?.isEditable && node.content.size === 0 ? ['br'] : 0,
       ];
     },
