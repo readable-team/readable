@@ -31,6 +31,7 @@ export const Image = createNodeView<Options>(Component, {
       url: {},
       ratio: {},
       placeholder: {},
+      proportion: { default: 1 },
     };
   },
 

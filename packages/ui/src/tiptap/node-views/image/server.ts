@@ -11,6 +11,7 @@ export const Image = createServerNodeView({
       url: {},
       ratio: {},
       placeholder: {},
+      proportion: { default: 1 },
     };
   },
 });
