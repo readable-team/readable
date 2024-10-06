@@ -3,17 +3,15 @@
   import { flex } from '@readable/styled-system/patterns';
   import { HorizontalDivider, Icon } from '@readable/ui/components';
   import { createEventDispatcher } from 'svelte';
-  import type { Editor, Range } from '@tiptap/core';
+  import type { Editor } from '@tiptap/core';
   import type { MenuItem } from './types';
 
   export let editor: Editor;
-  export let range: Range;
   export let items: MenuItem[];
-  export let selectedIdx = 0;
 
-  const dispatch = createEventDispatcher<{ select: MenuItem; close: undefined }>();
+  let selectedIdx = 0;
 
-  $: dispatch('select', items[selectedIdx]);
+  const dispatch = createEventDispatcher<{ execute: MenuItem; close: undefined }>();
 
   let isOnKeyboardNavigation = false;
 
@@ -41,6 +39,12 @@
 
     if (event.key === 'Escape') {
       dispatch('close');
+    }
+
+    if (event.key === 'Enter' && items[selectedIdx]) {
+      event.preventDefault();
+      dispatch('execute', items[selectedIdx]);
+      return true;
     }
 
     return false;
@@ -91,8 +95,8 @@
           selectedIdx = idx;
         }
       }}
-      on:click={() => item.command({ editor, range })}
       on:keydown={handleKeyDown}
+      on:click={() => dispatch('execute', item)}
     >
       <div class={css({ padding: '4px' })}>
         <Icon icon={item.icon} />

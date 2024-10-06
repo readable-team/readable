@@ -1,6 +1,6 @@
 import { css } from '@readable/styled-system/css';
 import { createAnchorId } from '@readable/ui/utils';
-import { getSchema, mergeAttributes } from '@tiptap/core';
+import { mergeAttributes } from '@tiptap/core';
 import { Blockquote } from '@tiptap/extension-blockquote';
 import { Bold } from '@tiptap/extension-bold';
 import { BulletList } from '@tiptap/extension-bullet-list';
@@ -35,9 +35,6 @@ import { BubbleMenu } from './menus/bubble';
 import { FloatingMenu } from './menus/floating';
 import { SlashMenu } from './menus/slash';
 import { Callout } from './node-views';
-import { Embed } from './node-views/embed';
-import { File } from './node-views/file';
-import { Image } from './node-views/image';
 import TableComponent from './node-views/table/Component.svelte';
 
 export const basicExtensions = [
@@ -293,5 +290,3 @@ export const editorExtensions = [
   FloatingMenu,
   SlashMenu,
 ];
-
-export const schema = getSchema([...basicExtensions, Embed, Image, File]);

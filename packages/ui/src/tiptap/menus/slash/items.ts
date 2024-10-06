@@ -11,7 +11,12 @@ import PaperclipIcon from '~icons/lucide/paperclip';
 import TableIcon from '~icons/lucide/table';
 import TextQuoteIcon from '~icons/lucide/text-quote';
 import { dev } from '$app/environment';
+import type { Editor, Range } from '@tiptap/core';
 import type { MenuItem } from './types';
+
+export const chain = (editor: Editor, range: Range) => {
+  return editor.chain().focus().deleteRange(range);
+};
 
 export const menuItems: MenuItem[] = [
   {
@@ -22,7 +27,7 @@ export const menuItems: MenuItem[] = [
     keywords: ['heading 1'],
     icon: Heading1Icon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).setNode('heading', { level: 1 }).run();
+      chain(editor, range).setNode('heading', { level: 1 }).run();
     },
   },
   {
@@ -33,7 +38,7 @@ export const menuItems: MenuItem[] = [
     keywords: ['heading 2'],
     icon: Heading2Icon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).setNode('heading', { level: 2 }).run();
+      chain(editor, range).setNode('heading', { level: 2 }).run();
     },
   },
   {
@@ -44,7 +49,7 @@ export const menuItems: MenuItem[] = [
     keywords: ['heading 3'],
     icon: Heading3Icon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).setNode('heading', { level: 3 }).run();
+      chain(editor, range).setNode('heading', { level: 3 }).run();
     },
   },
   {
@@ -55,7 +60,7 @@ export const menuItems: MenuItem[] = [
     keywords: ['blockquote'],
     icon: TextQuoteIcon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).setBlockquote().run();
+      chain(editor, range).setBlockquote().run();
     },
   },
   {
@@ -66,7 +71,7 @@ export const menuItems: MenuItem[] = [
     keywords: ['divider'],
     icon: MinusIcon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).setHorizontalRule().run();
+      chain(editor, range).setHorizontalRule().run();
     },
   },
   {
@@ -77,7 +82,7 @@ export const menuItems: MenuItem[] = [
     keywords: ['bullet list'],
     icon: ListIcon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).toggleBulletList().run();
+      chain(editor, range).toggleBulletList().run();
     },
   },
   {
@@ -88,7 +93,7 @@ export const menuItems: MenuItem[] = [
     keywords: ['ordered list'],
     icon: ListOrderedIcon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).toggleOrderedList().run();
+      chain(editor, range).toggleOrderedList().run();
     },
   },
   {
@@ -99,7 +104,7 @@ export const menuItems: MenuItem[] = [
     keywords: ['callout'],
     icon: GalleryVerticalEndIcon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).setCallout().run();
+      chain(editor, range).setCallout().run();
     },
   },
   {
@@ -111,7 +116,7 @@ export const menuItems: MenuItem[] = [
     icon: TableIcon,
     visible: dev,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).insertTable({ withHeaderRow: false }).run();
+      chain(editor, range).insertTable({ withHeaderRow: false }).run();
     },
   },
   {
@@ -133,7 +138,7 @@ export const menuItems: MenuItem[] = [
     keywords: ['file', 'attachment'],
     icon: PaperclipIcon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).setFile().run();
+      chain(editor, range).setFile().run();
     },
   },
   {
@@ -144,7 +149,7 @@ export const menuItems: MenuItem[] = [
     keywords: ['embed', 'link'],
     icon: FileUpIcon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).setEmbed().run();
+      chain(editor, range).setEmbed().run();
     },
   },
 ];

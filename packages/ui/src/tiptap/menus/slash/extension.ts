@@ -1,206 +1,196 @@
 import { autoUpdate, computePosition, flip, hide } from '@floating-ui/dom';
 import { css } from '@readable/styled-system/css';
-import { Extension } from '@tiptap/core';
-import { Suggestion } from '@tiptap/suggestion';
+import { Extension, posToDOMRect } from '@tiptap/core';
+import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { disassemble } from 'es-hangul';
 import { matchSorter } from 'match-sorter';
 import Component from './Component.svelte';
 import { menuItems } from './items';
 import type { VirtualElement } from '@floating-ui/dom';
+import type { Range } from '@tiptap/core';
 import type { MenuItem } from './types';
 
-const pattern = /^\/(.*)$/;
+type State =
+  | { active: false }
+  | {
+      active: true;
+      range: Range;
+      items: MenuItem[];
+    };
+
+const pluginKey = new PluginKey<State>('slashMenu');
+const pattern = /\/(\S*)/g;
 const menuItemTypeSet = new Set(menuItems.map((item) => item.type));
 
 export const SlashMenu = Extension.create({
   name: 'slashMenu',
 
   addProseMirrorPlugins() {
+    let dom: HTMLElement | null = null;
+    let component: Component | null = null;
+    let cleanup: (() => void) | null = null;
+
     return [
-      Suggestion({
-        editor: this.editor,
-        char: '/',
-        startOfLine: true,
-        findSuggestionMatch: ({ $position }) => {
-          const node = $position.node();
-          const text = node.textContent;
-
-          const match = text.match(pattern);
-          if (!match) {
-            return null;
-          }
-
-          return {
-            text: match[0],
-            query: match[1],
-            range: {
-              from: $position.start(),
-              to: $position.end(),
-            },
-          };
-        },
-
-        allow: ({ state }) => {
-          const { $anchor, empty } = state.selection;
-          if (!empty) {
-            return false;
-          }
-
-          const block = $anchor.node($anchor.depth - 1);
-
-          for (let i = 0; i < block.type.contentMatch.edgeCount; i++) {
-            const edge = block.type.contentMatch.edge(i);
-            if (menuItemTypeSet.has(edge.type.name)) {
-              return true;
-            }
-          }
-
-          return false;
-        },
-
-        items: ({ editor, query }) => {
-          const { $anchor } = editor.state.selection;
-          const block = $anchor.node($anchor.depth - 1);
-          const typeSet = new Set<string>();
-
-          for (let i = 0; i < block.type.contentMatch.edgeCount; i++) {
-            const edge = block.type.contentMatch.edge(i);
-            if (menuItemTypeSet.has(edge.type.name)) {
-              typeSet.add(edge.type.name);
-            }
-          }
-
-          const items = menuItems.filter((item) => item.visible !== false && typeSet.has(item.type));
-
-          return matchSorter(items, disassemble(query), {
-            keys: [(item) => disassemble(item.name), (item) => item.keywords.map((v) => disassemble(v))],
-            sorter: (items) => items,
-          });
-        },
-
-        render: () => {
-          let dom: HTMLElement | null = null;
-          let component: Component | null = null;
-          let selectedItem: MenuItem | null = null;
-          let cleanup: (() => void) | null = null;
-
-          let initialRange: { from: number; to: number } | null = null;
-
-          const exitSlashMenu = () => {
-            this.editor.view.dom.classList.remove('has-slash-menu');
-
-            cleanup?.();
-            component?.$destroy();
-            dom?.remove();
-
-            cleanup = null;
-            component = null;
-            dom = null;
-          };
-
-          const updateSlashMenuPosition = async (domRectGetter: () => DOMRect | null) => {
-            if (!dom) {
-              return;
+      new Plugin<State>({
+        key: pluginKey,
+        state: {
+          init: () => {
+            return { active: false };
+          },
+          apply: (tr, prev, _, state) => {
+            const meta = tr.getMeta(pluginKey);
+            if (meta) {
+              return meta;
             }
 
-            const virtualEl: VirtualElement = {
-              getBoundingClientRect: () => domRectGetter() ?? new DOMRect(),
-              contextElement: this.editor.view.dom,
-            };
+            if (!tr.docChanged) {
+              return prev;
+            }
 
-            cleanup?.();
-            cleanup = autoUpdate(virtualEl, dom, async () => {
-              if (!dom) {
-                return;
+            const { $anchor, empty } = state.selection;
+            if (!empty) {
+              return { active: false };
+            }
+
+            const node = $anchor.node();
+            const text = node.textContent;
+
+            if (!text) {
+              return { active: false };
+            }
+
+            const matches = text.matchAll(pattern);
+            const match = matches.find(
+              (match) => $anchor.parentOffset > match.index && $anchor.parentOffset <= match.index + match[0].length,
+            );
+
+            if (!match) {
+              return { active: false };
+            }
+
+            const query = match[1];
+
+            const block = match.index === 0 ? $anchor.node($anchor.depth - 1) : $anchor.parent;
+            const typeSet = new Set<string>();
+
+            for (let i = 0; i < block.type.contentMatch.edgeCount; i++) {
+              const edge = block.type.contentMatch.edge(i);
+              if (menuItemTypeSet.has(edge.type.name)) {
+                typeSet.add(edge.type.name);
               }
+            }
 
-              const { x, y, middlewareData } = await computePosition(virtualEl, dom, {
-                placement: 'bottom-start',
-                middleware: [flip({ padding: 16 }), hide({ padding: 16 })],
-              });
+            const availableItems = menuItems.filter((item) => item.visible !== false && typeSet.has(item.type));
 
-              dom.style.left = `${x}px`;
-              dom.style.top = `${y}px`;
-              dom.style.visibility = middlewareData.hide?.referenceHidden ? 'hidden' : 'visible';
-              dom.style.zIndex = '1';
+            const items = matchSorter(availableItems, disassemble(query), {
+              keys: [(item) => disassemble(item.name), (item) => item.keywords.map((v) => disassemble(v))],
+              sorter: (items) => items,
             });
-          };
 
+            return {
+              active: true,
+              range: {
+                from: $anchor.start() + match.index,
+                to: $anchor.start() + match.index + match[0].length,
+              },
+              items,
+            };
+          },
+        },
+        view: () => {
           return {
-            onStart: async ({ clientRect, editor, range, items }) => {
-              initialRange = range;
-              selectedItem = items[0];
-              dom = document.createElement('div');
-              component = new Component({
-                target: dom,
-                props: {
-                  editor,
-                  range,
-                  items,
-                },
-              });
-
-              dom.className = css({
-                position: 'absolute',
-                top: '0',
-                left: '0',
-                width: 'max',
-                visibility: 'hidden',
-              });
-
-              component.$on('select', (event) => {
-                selectedItem = event.detail;
-              });
-
-              component.$on('close', () => {
-                exitSlashMenu();
-              });
-
-              if (!clientRect) {
+            update: (view, prevState) => {
+              const state = pluginKey.getState(view.state);
+              const prev = pluginKey.getState(prevState);
+              if (!state || !prev) {
                 return;
               }
 
-              document.body.append(dom);
+              if (state.active) {
+                if (!prev.active) {
+                  dom = document.createElement('div');
+                  component = new Component({
+                    target: dom,
+                    props: {
+                      editor: this.editor,
+                      items: [],
+                    },
+                  });
 
-              dom.style.position = 'absolute';
-              dom.style.visibility = 'visible';
+                  dom.className = css({
+                    position: 'absolute',
+                    top: '0',
+                    left: '0',
+                    width: 'max',
+                    visibility: 'hidden',
+                  });
 
-              await updateSlashMenuPosition(clientRect);
+                  component.$on('execute', (event) => {
+                    const state = pluginKey.getState(this.editor.state);
+                    if (!state?.active) {
+                      return;
+                    }
 
-              editor.view.dom.classList.add('has-slash-menu');
+                    event.detail.command({ editor: this.editor, range: state.range });
+                  });
+
+                  component.$on('close', () => {
+                    const { tr } = this.editor.state;
+                    tr.setMeta(pluginKey, { active: false });
+                    this.editor.view.dispatch(tr);
+                  });
+
+                  document.body.append(dom);
+                }
+
+                if (!dom || !component) {
+                  return;
+                }
+
+                component.$set({
+                  items: state.items,
+                });
+
+                const virtualEl: VirtualElement = {
+                  getBoundingClientRect: () => posToDOMRect(view, state.range.from, state.range.to),
+                  contextElement: this.editor.view.dom,
+                };
+
+                cleanup?.();
+                cleanup = autoUpdate(virtualEl, dom, async () => {
+                  if (!dom) {
+                    return;
+                  }
+
+                  const { x, y, middlewareData } = await computePosition(virtualEl, dom, {
+                    placement: 'bottom-start',
+                    middleware: [flip({ padding: 16 }), hide({ padding: 16 })],
+                  });
+
+                  dom.style.left = `${x}px`;
+                  dom.style.top = `${y}px`;
+                  dom.style.visibility = middlewareData.hide?.referenceHidden ? 'hidden' : 'visible';
+                  dom.style.zIndex = '1';
+                });
+              }
+
+              if (!state.active && prev.active) {
+                cleanup?.();
+                component?.$destroy();
+                dom?.remove();
+              }
             },
-
-            onUpdate: async ({ clientRect, editor, range, items }) => {
-              selectedItem = items[0];
-              component?.$set({ editor, range, items, selectedIdx: 0 });
-
-              if (initialRange?.from !== range.from) {
-                exitSlashMenu();
-              }
-
-              if (clientRect) {
-                await updateSlashMenuPosition(clientRect);
-              }
-            },
-
-            onKeyDown: ({ event, range }) => {
-              if (event.key === 'Escape') {
-                exitSlashMenu();
-                return true;
-              }
-
-              if (event.key === 'Enter' && selectedItem && dom && component) {
-                selectedItem.command({ editor: this.editor, range });
-                return true;
-              }
-
-              return component?.handleKeyDown?.(event) ?? false;
-            },
-
-            onExit: () => {
-              exitSlashMenu();
+            destroy: () => {
+              cleanup?.();
+              component?.$destroy();
+              dom?.remove();
             },
           };
+        },
+        props: {
+          handleKeyDown: (_, event) => {
+            return component?.handleKeyDown?.(event) ?? false;
+          },
         },
       }),
     ];
