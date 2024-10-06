@@ -4,6 +4,7 @@ import Heading1Icon from '~icons/lucide/heading-1';
 import Heading2Icon from '~icons/lucide/heading-2';
 import Heading3Icon from '~icons/lucide/heading-3';
 import ImageIcon from '~icons/lucide/image';
+import InfoIcon from '~icons/lucide/info';
 import ListIcon from '~icons/lucide/list';
 import ListOrderedIcon from '~icons/lucide/list-ordered';
 import MinusIcon from '~icons/lucide/minus';
@@ -94,6 +95,17 @@ export const menuItems: MenuItem[] = [
     icon: ListOrderedIcon,
     command: ({ editor, range }) => {
       chain(editor, range).toggleOrderedList().run();
+    },
+  },
+  {
+    id: 'hint',
+    type: 'hint',
+    group: 'block',
+    name: '힌트',
+    keywords: ['hint'],
+    icon: InfoIcon,
+    command: ({ editor, range }) => {
+      chain(editor, range).setHint().run();
     },
   },
   {

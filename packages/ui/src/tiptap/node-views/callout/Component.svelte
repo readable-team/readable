@@ -183,7 +183,7 @@
         </div>
       </div>
     {/if}
-    <div class={css({ paddingTop: '3px' })}>
+    <div class={css({ flexGrow: 1, paddingTop: '2px' })}>
       <NodeViewContentEditable />
     </div>
   </div>

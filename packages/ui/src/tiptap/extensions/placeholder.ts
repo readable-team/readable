@@ -57,6 +57,7 @@ export const Placeholder = Extension.create({
                 .with('blockquote', () => '인용구')
                 .with('bulletList', 'orderedList', () => '목록')
                 .with('callout', () => '콜아웃')
+                .with('hint', () => '힌트')
                 .otherwise(() => null);
 
               if (!placeholder) {

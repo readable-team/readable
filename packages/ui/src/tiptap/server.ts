@@ -25,6 +25,7 @@ import { Underline } from '@tiptap/extension-underline';
 import { Callout } from './node-views/callout/server';
 import { Embed } from './node-views/embed/server';
 import { File } from './node-views/file/server';
+import { Hint } from './node-views/hint/server';
 import { Image } from './node-views/image/server';
 import { InlineImage } from './node-views/inline-image/server';
 
@@ -122,6 +123,7 @@ export const serverExtensions = [
   Callout,
   Embed,
   File,
+  Hint,
   Image,
   InlineImage,
 ];
