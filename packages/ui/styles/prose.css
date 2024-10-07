@@ -5,6 +5,7 @@
   --prosemirror-color-yellow: #eab308;
   --prosemirror-color-green: #22c55e;
   --prosemirror-color-blue: #3b82f6;
+  --prosemirror-block-gap: 1rem;
 }
 
 .ProseMirror {
@@ -13,8 +14,21 @@
   /* gray.1000 */
   caret-color: #09090b;
 
-  & > * + * {
-    margin-top: 4px;
+  & > * + *,
+  & [data-node-view-content-editable] > * + * {
+    margin-top: var(--prosemirror-block-gap);
+  }
+
+  & > * + h1 {
+    margin-top: calc(var(--prosemirror-block-gap) + 1em);
+  }
+
+  & > * + h2 {
+    margin-top: calc(var(--prosemirror-block-gap) + 0.75em);
+  }
+
+  & > * + h3 {
+    margin-top: calc(var(--prosemirror-block-gap) + 0.5em);
   }
 
   & [data-color='gray'] {
