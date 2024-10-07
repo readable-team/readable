@@ -13,7 +13,9 @@ REQUEST FORMAT:
   title?: string,
   subtitle?: string,
   text: string,
-  changes: string,
+}
+{
+  change: string,
 }
 
 - The "service changes" mentioned above is only the "changes" property in the request, not the changes in the documentation.

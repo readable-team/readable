@@ -1,6 +1,7 @@
 import { and, cosineDistance, desc, eq, gt, sql } from 'drizzle-orm';
 import DOMPurify from 'isomorphic-dompurify';
 import { zodResponseFormat } from 'openai/helpers/zod';
+import { uniqueBy } from 'remeda';
 import { z } from 'zod';
 import { builder } from '@/builder';
 import { db, PageContentChunks, PageContents, Pages } from '@/db';
@@ -223,7 +224,8 @@ builder.queryFields((t) => ({
         .innerJoin(PageContents, eq(PageContents.pageId, PageContentChunks.pageId))
         .where(and(eq(Pages.siteId, args.siteId), eq(Pages.state, PageState.PUBLISHED), gt(similarity, 0.35)))
         .orderBy(desc(similarity))
-        .limit(10);
+        .limit(20)
+        .then((rows) => uniqueBy(rows, (row) => row.pageId));
 
       return await Promise.all(
         result.map(async (page) => {
@@ -255,6 +257,11 @@ builder.queryFields((t) => ({
                     title: page.title,
                     subtitle: page.subtitle,
                     text: page.text,
+                  }),
+                },
+                {
+                  role: 'user',
+                  content: JSON.stringify({
                     change: args.query,
                   }),
                 },
