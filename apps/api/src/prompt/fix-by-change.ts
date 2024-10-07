@@ -22,15 +22,16 @@ RESPONSE FORMAT:
 {
   fixes: [
     {
-      severity: "ERROR" | "WARNING",
+      relevance: number,
       text: string,
       reason: string,
     }
   ]
 }
 
-- "severity" is the classification of the fix ("ERROR" if it's 100% error, "WARNING" if it's likely to be an error but not 100%).
+- "relevance" is a measure of how relevant the changes are to the content in the documentation. The value is a float type between 0.0 and 10.0, and step is 0.1. Under normal circumstances, the average value of “relevance” is 5.0.
 - "text" is the text of the inconsistency in the document.
 - "reason" is the reason for the inconsistency.
-- If there are no error, you should output an empty array.
+- If there are no error, "fixes" must be empty array.
+- If the changes are not related to the content in the documentation, "fixes" must be empty array. NO EXCEPTION.
 `;

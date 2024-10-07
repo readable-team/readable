@@ -124,15 +124,10 @@ type SearchPageByChangeHit = {
   pageId: string;
   fixes: {
     text: string;
-    severity: 'WARNING' | 'ERROR';
+    relevance: number;
     reason: string;
-    completion: string;
   }[];
 };
-
-const FixSeverity = builder.enumType('FixSeverity', {
-  values: ['WARNING', 'ERROR'],
-});
 
 const SearchPageByChangeHit = builder.objectRef<SearchPageByChangeHit>('SearchPageByChangeHit');
 SearchPageByChangeHit.implement({
@@ -143,9 +138,8 @@ SearchPageByChangeHit.implement({
         builder.simpleObject('SearchPageByChangeFix', {
           fields: (t) => ({
             text: t.string(),
-            severity: t.field({ type: FixSeverity }),
+            relevance: t.float(),
             reason: t.string(),
-            completion: t.string(),
           }),
         }),
       ],
@@ -235,17 +229,16 @@ builder.queryFields((t) => ({
         result.map(async (page) => {
           const llmResult = await openai.client.beta.chat.completions
             .parse({
-              model: 'gpt-4o-2024-08-06',
+              model: 'gpt-4o-mini',
               temperature: 0.5,
               max_tokens: 4096,
               response_format: zodResponseFormat(
                 z.object({
                   fixes: z.array(
                     z.object({
-                      severity: z.enum(['WARNING', 'ERROR']),
+                      relevance: z.number(),
                       text: z.string(),
                       reason: z.string(),
-                      completion: z.string(),
                     }),
                   ),
                 }),
@@ -274,7 +267,7 @@ builder.queryFields((t) => ({
             fixes: llmResult,
           };
         }),
-      ).then((pageFixes) => pageFixes.filter((page) => page.fixes.length > 0));
+      ).then((pageFixes) => pageFixes.filter((page) => page.fixes.some((fix) => fix.relevance > 2.5)));
     },
   }),
 

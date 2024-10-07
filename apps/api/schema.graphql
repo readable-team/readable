@@ -109,11 +109,6 @@ type File implements Blob {
   url: String!
 }
 
-enum FixSeverity {
-  ERROR
-  WARNING
-}
-
 input GenerateSingleSignOnAuthorizationUrlInput {
   email: String
   provider: SingleSignOnProvider!
@@ -462,9 +457,8 @@ input RevokeInvitationInput {
 }
 
 type SearchPageByChangeFix {
-  completion: String!
   reason: String!
-  severity: FixSeverity!
+  relevance: Float!
   text: String!
 }
 
