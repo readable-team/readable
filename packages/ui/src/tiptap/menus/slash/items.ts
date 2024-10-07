@@ -128,7 +128,7 @@ export const menuItems: MenuItem[] = [
     icon: TableIcon,
     visible: dev,
     command: ({ editor, range }) => {
-      chain(editor, range).insertTable({ withHeaderRow: false }).run();
+      chain(editor, range).insertTable({ rows: 2, cols: 2, withHeaderRow: false }).run();
     },
   },
   {
