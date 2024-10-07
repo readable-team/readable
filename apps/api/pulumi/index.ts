@@ -30,7 +30,7 @@ const site = new readable.Site('api', {
   },
 
   autoscale: {
-    minCount: 3,
+    minCount: 2,
     maxCount: 20,
     averageCpuUtilization: 50,
   },

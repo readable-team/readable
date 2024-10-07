@@ -35,7 +35,7 @@ const site = new readable.Site('usersite', {
   },
 
   autoscale: {
-    minCount: 3,
+    minCount: 2,
     maxCount: 20,
     averageCpuUtilization: 50,
   },
@@ -115,7 +115,7 @@ https:// {
   },
 
   autoscale: {
-    minCount: 3,
+    minCount: 2,
     maxCount: 20,
     averageCpuUtilization: 50,
   },
