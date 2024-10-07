@@ -199,7 +199,7 @@
         <div
           class={css({
             position: 'absolute',
-            zIndex: '1',
+            zIndex: '30',
             backgroundColor: 'surface.primary',
             width: 'full',
             pointerEvents: 'none',

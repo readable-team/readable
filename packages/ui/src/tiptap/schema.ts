@@ -158,14 +158,10 @@ export const basicExtensions = [
     content: 'paragraph (paragraph | bulletList | orderedList)*',
   }),
   extendNodeToNodeView(Table, TableComponent).configure({
-    resizable: false, // https://github.com/ueberdosis/tiptap/issues/1766
-    HTMLAttributes: {
-      class: css({
-        border: '1px solid',
-        borderColor: 'neutral.30',
-        borderCollapse: 'collapse',
-      }),
-    },
+    resizable: true,
+    lastColumnResizable: false,
+    cellMinWidth: 50,
+    allowTableNodeSelection: true,
   }),
   TableRow,
   TableHeader.configure({

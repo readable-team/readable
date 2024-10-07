@@ -140,6 +140,7 @@
     backgroundColor: 'background.overlay',
     height: '42px',
     boxShadow: 'strong',
+    zIndex: '20',
   })}
 >
   {#if selectedBlocks.length === 1}

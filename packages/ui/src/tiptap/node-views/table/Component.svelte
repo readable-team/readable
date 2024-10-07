@@ -3,7 +3,7 @@
   import { center } from '@readable/styled-system/patterns';
   import { mergeAttributes } from '@tiptap/core';
   import { createColGroup } from '@tiptap/extension-table';
-  import { NodeView, NodeViewContentEditable } from '../../lib';
+  import { DomOutputSpecRenderer, NodeView, NodeViewContentEditable } from '../../lib';
   import type { NodeViewProps } from '../../lib';
 
   type $$Props = NodeViewProps;
@@ -18,42 +18,78 @@
   // export let getPos: NodeViewProps['getPos'];
   // export let updateAttributes: NodeViewProps['updateAttributes'];
 
-  $: props = createColGroup(node, extension.options.cellMinWidth);
+  $: ({ colgroup, tableWidth, tableMinWidth } = createColGroup(node, extension.options.cellMinWidth));
 </script>
 
-<NodeView style={css.raw({ position: 'relative' })}>
+<NodeView>
   <table
     {...mergeAttributes(extension.options.HTMLAttributes, HTMLAttributes, {
-      class: css({ width: 'full' }),
-      style: props.tableWidth ? `width: ${props.tableWidth}` : `min-width: ${props.tableMinWidth}`,
+      class: css({ position: 'relative', border: '1px solid', borderColor: 'neutral.30', borderBottom: 'none' }),
+      style: tableWidth ? `width: ${tableWidth}` : `min-width: ${tableMinWidth}`,
     })}
   >
+    <DomOutputSpecRenderer contenteditable={false} domOutputSpec={colgroup} />
     <NodeViewContentEditable as="tbody" />
+    <div
+      class={center({
+        position: 'absolute',
+        zIndex: '10',
+        left: '1/2',
+        bottom: '0',
+        translate: 'auto',
+        translateX: '-1/2',
+        translateY: '1/2',
+      })}
+      contenteditable={false}
+    >
+      <button
+        class={css({
+          borderWidth: '1px',
+          borderRadius: '4px',
+          textStyle: '14m',
+          paddingX: '4px',
+          paddingY: '2px',
+          backgroundColor: 'surface.primary',
+          _hover: {
+            backgroundColor: 'surface.secondary',
+          },
+        })}
+        type="button"
+        on:click={() => editor?.chain().addRowAfter().run()}
+      >
+        추가
+      </button>
+    </div>
+
+    <div
+      class={center({
+        position: 'absolute',
+        zIndex: '10',
+        top: '1/2',
+        right: '0',
+        translate: 'auto',
+        translateX: '1/2',
+        translateY: '-1/2',
+      })}
+      contenteditable={false}
+    >
+      <button
+        class={css({
+          borderWidth: '1px',
+          borderRadius: '4px',
+          textStyle: '14m',
+          paddingX: '4px',
+          paddingY: '2px',
+          backgroundColor: 'surface.primary',
+          _hover: {
+            backgroundColor: 'surface.secondary',
+          },
+        })}
+        type="button"
+        on:click={() => editor?.commands.addColumnAfter()}
+      >
+        추가
+      </button>
+    </div>
   </table>
-
-  <div
-    class={center({ position: 'absolute', left: '0', right: '0', bottom: '0', translate: 'auto', translateY: '1/2' })}
-    contenteditable={false}
-  >
-    <button
-      class={css({ borderWidth: '1px', borderRadius: '4px', textStyle: '14m' })}
-      type="button"
-      on:click={() => editor?.chain().addRowAfter().run()}
-    >
-      추가
-    </button>
-  </div>
-
-  <div
-    class={center({ position: 'absolute', top: '0', bottom: '0', right: '0', translate: 'auto', translateX: '1/2' })}
-    contenteditable={false}
-  >
-    <button
-      class={css({ borderWidth: '1px', borderRadius: '4px', textStyle: '14m' })}
-      type="button"
-      on:click={() => editor?.commands.addColumnAfter()}
-    >
-      추가
-    </button>
-  </div>
 </NodeView>
