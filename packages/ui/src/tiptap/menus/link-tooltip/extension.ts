@@ -35,8 +35,10 @@ export const LinkTooltip = Extension.create<Options>({
             pointermove: (view, event) => {
               const target = event.target as HTMLElement;
 
-              if (target.nodeName === 'A') {
-                const pos = view.posAtDOM(target, 0);
+              const anchor = target.closest('a');
+
+              if (anchor) {
+                const pos = view.posAtDOM(anchor, 0);
                 const node = view.state.doc.nodeAt(pos);
 
                 if (node) {
