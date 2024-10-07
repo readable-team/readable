@@ -6,8 +6,8 @@ import * as Y from 'yjs';
 import type { JSONContent } from '@tiptap/core';
 
 type HashPageContentParams = {
-  title: string | null;
-  subtitle: string | null;
+  title?: string | null;
+  subtitle?: string | null;
   content: JSONContent;
 };
 
@@ -22,8 +22,8 @@ export const hashPageContent = ({ title, subtitle, content }: HashPageContentPar
 };
 
 type MakeYDocParams = {
-  title: string | null;
-  subtitle: string | null;
+  title?: string | null;
+  subtitle?: string | null;
   content: JSONContent;
 };
 export const makeYDoc = ({ title, subtitle, content }: MakeYDocParams) => {
