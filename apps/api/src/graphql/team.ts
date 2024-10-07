@@ -36,7 +36,7 @@ import { ReadableError } from '@/errors';
 import { pubsub } from '@/pubsub';
 import { dataSchemas } from '@/schemas';
 import { generateRandomAvatar } from '@/utils/image-generation';
-import { getNextBillingInfo } from '@/utils/payment';
+import { calculatePaymentAmount, getNextBillingInfo } from '@/utils/payment';
 import { assertTeamPermission, throwableToBoolean } from '@/utils/permissions';
 import { assertTeamPlanRule, getTeamPlanRule } from '@/utils/plan';
 import { assertTeamRestriction } from '@/utils/restrictions';
@@ -227,10 +227,7 @@ TeamPlan.implement({
           .where(eq(Plans.id, teamPlan.planId))
           .then(firstOrThrow);
 
-        return match(teamPlan.billingCycle)
-          .with(BillingCycle.MONTHLY, () => plan.fee)
-          .with(BillingCycle.YEARLY, () => plan.fee * 10)
-          .exhaustive();
+        return calculatePaymentAmount({ fee: plan.fee, billingCycle: teamPlan.billingCycle });
       },
     }),
 
