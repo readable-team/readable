@@ -30,66 +30,68 @@
   >
     <DomOutputSpecRenderer contenteditable={false} domOutputSpec={colgroup} />
     <NodeViewContentEditable as="tbody" />
-    <div
-      class={center({
-        position: 'absolute',
-        zIndex: '10',
-        left: '1/2',
-        bottom: '0',
-        translate: 'auto',
-        translateX: '-1/2',
-        translateY: '1/2',
-      })}
-      contenteditable={false}
-    >
-      <button
-        class={css({
-          borderWidth: '1px',
-          borderRadius: '4px',
-          textStyle: '14m',
-          paddingX: '4px',
-          paddingY: '2px',
-          backgroundColor: 'surface.primary',
-          _hover: {
-            backgroundColor: 'surface.secondary',
-          },
+    {#if editor?.isEditable}
+      <div
+        class={center({
+          position: 'absolute',
+          zIndex: '10',
+          left: '1/2',
+          bottom: '0',
+          translate: 'auto',
+          translateX: '-1/2',
+          translateY: '1/2',
         })}
-        type="button"
-        on:click={() => editor?.chain().addRowAfter().run()}
+        contenteditable={false}
       >
-        추가
-      </button>
-    </div>
+        <button
+          class={css({
+            borderWidth: '1px',
+            borderRadius: '4px',
+            textStyle: '14m',
+            paddingX: '4px',
+            paddingY: '2px',
+            backgroundColor: 'surface.primary',
+            _hover: {
+              backgroundColor: 'surface.secondary',
+            },
+          })}
+          type="button"
+          on:click={() => editor?.chain().addRowAfter().run()}
+        >
+          추가
+        </button>
+      </div>
 
-    <div
-      class={center({
-        position: 'absolute',
-        zIndex: '10',
-        top: '1/2',
-        right: '0',
-        translate: 'auto',
-        translateX: '1/2',
-        translateY: '-1/2',
-      })}
-      contenteditable={false}
-    >
-      <button
-        class={css({
-          borderWidth: '1px',
-          borderRadius: '4px',
-          textStyle: '14m',
-          paddingX: '4px',
-          paddingY: '2px',
-          backgroundColor: 'surface.primary',
-          _hover: {
-            backgroundColor: 'surface.secondary',
-          },
+      <div
+        class={center({
+          position: 'absolute',
+          zIndex: '10',
+          top: '1/2',
+          right: '0',
+          translate: 'auto',
+          translateX: '1/2',
+          translateY: '-1/2',
         })}
-        type="button"
-        on:click={() => editor?.commands.addColumnAfter()}
+        contenteditable={false}
       >
-        추가
-      </button>
-    </div>
+        <button
+          class={css({
+            borderWidth: '1px',
+            borderRadius: '4px',
+            textStyle: '14m',
+            paddingX: '4px',
+            paddingY: '2px',
+            backgroundColor: 'surface.primary',
+            _hover: {
+              backgroundColor: 'surface.secondary',
+            },
+          })}
+          type="button"
+          on:click={() => editor?.commands.addColumnAfter()}
+        >
+          추가
+        </button>
+      </div>
+    {/if}
   </table>
 </NodeView>
