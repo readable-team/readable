@@ -1,11 +1,13 @@
 <script lang="ts">
+  import { document } from 'zeed-dom';
   import type { DOMOutputSpec } from '@tiptap/pm/model';
+  import type { VElement } from 'zeed-dom';
 
   export let domOutputSpec: DOMOutputSpec | undefined;
 
-  let element: HTMLElement;
+  let element: VElement;
 
-  function createElementFromSpec(spec: DOMOutputSpec): HTMLElement {
+  function createElementFromSpec(spec: DOMOutputSpec): VElement {
     const [tag, attrs, ...children] = spec as [string, Record<string, string>, ...DOMOutputSpec[]];
     const el = document.createElement(tag as string);
 
@@ -37,7 +39,7 @@
 </script>
 
 {#if element}
-  <svelte:element this={tag} bind:this={element} {...$$restProps}>
+  <svelte:element this={tag} {...element.attributes} {...$$restProps}>
     {@html element.innerHTML}
   </svelte:element>
 {/if}
