@@ -68,6 +68,7 @@
     fontFamily: 'prose',
     whiteSpace: 'pre-wrap',
     overflowWrap: 'break-word',
+    wordBreak: 'break-all',
   })}
 >
   {#if !loaded}
