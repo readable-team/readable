@@ -97,6 +97,22 @@
     });
   };
 
+  const defaultIndent = 12;
+  let indents: number[] = [];
+  $: if (headings.length > 1) {
+    let currentIndent = defaultIndent;
+    let prevLevel = headings[0]?.level;
+
+    for (const item of headings) {
+      const indent = Math.max(defaultIndent, currentIndent + (item.level - prevLevel) * 20);
+      indents.push(indent);
+      currentIndent = indent;
+      prevLevel = item.level;
+    }
+
+    indents = indents;
+  }
+
   onMount(() => {
     // FIXME: 마운트 시점에 처음 들어오는 scrollTop 값이 이상해서 임시로 setTimeout 사용
     setTimeout(() => {
@@ -141,7 +157,7 @@
       {#each headings as item, index (index)}
         <li>
           <a
-            style:padding-left={`${(item.level - 1) * 20 + 12}px`}
+            style:padding-left={`${indents[index]}px`}
             class={css(
               {
                 marginLeft: '-1px',
