@@ -28,6 +28,24 @@
   };
 
   $: tabs = getTabs(editor, node);
+
+  let renamingTabIdx: number | null = null;
+  let renamingTabTitle = '';
+
+  const handleRenameTab = () => {
+    if (renamingTabIdx === null) {
+      return;
+    }
+
+    editor
+      ?.chain()
+      .setTextSelection(getPos() + 1)
+      .renameTab(renamingTabIdx, renamingTabTitle)
+      .run();
+
+    renamingTabIdx = null;
+    renamingTabTitle = '';
+  };
 </script>
 
 <NodeView>
@@ -50,16 +68,34 @@
           role="tab"
           on:keydown={null}
           on:click={() => {
-            editor
-              ?.chain()
-              .setTextSelection(getPos() + 1)
-              .selectTab(i)
-              .run();
+            if (tab.selected) {
+              renamingTabIdx = i;
+              renamingTabTitle = tab.title;
+            } else {
+              editor
+                ?.chain()
+                .setTextSelection(getPos() + 1)
+                .selectTab(i)
+                .run();
+            }
           }}
         >
-          <span>
-            {tab.title}
-          </span>
+          {#if renamingTabIdx === i}
+            <input
+              type="text"
+              bind:value={renamingTabTitle}
+              on:blur={handleRenameTab}
+              on:keydown={(e) => {
+                if (e.key === 'Enter') {
+                  handleRenameTab();
+                }
+              }}
+            />
+          {:else}
+            <span>
+              {tab.title}
+            </span>
+          {/if}
 
           <button
             type="button"

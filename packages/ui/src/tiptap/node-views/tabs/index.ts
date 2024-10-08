@@ -12,6 +12,7 @@ declare module '@tiptap/core' {
       setTabs: () => ReturnType;
       addTab: () => ReturnType;
       deleteTab: (idx: number) => ReturnType;
+      renameTab: (idx: number, title: string) => ReturnType;
       selectTab: (idx: number) => ReturnType;
     };
   }
@@ -119,6 +120,36 @@ export const Tabs = createNodeView(Component, {
               }
               tr.delete(pos, pos + child.nodeSize);
             }
+          }
+
+          return true;
+        },
+      renameTab:
+        (idx, title) =>
+        ({ state, tr, dispatch }) => {
+          const tabs = getTabs(state.selection);
+          if (!tabs) {
+            return false;
+          }
+
+          if (title.trim() === '') {
+            return false;
+          }
+
+          let offset = 0;
+          for (let i = 0; i < idx; i++) {
+            const child = tabs.node.maybeChild(i);
+            if (!child) {
+              return false;
+            }
+
+            offset += child.nodeSize;
+          }
+
+          const pos = tabs.pos + offset + 1;
+
+          if (dispatch) {
+            tr.setNodeAttribute(pos, 'title', title);
           }
 
           return true;
