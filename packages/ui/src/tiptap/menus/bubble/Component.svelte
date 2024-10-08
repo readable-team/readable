@@ -16,6 +16,7 @@
   import LinkIcon from '~icons/lucide/link';
   import StrikethroughIcon from '~icons/lucide/strikethrough';
   import TableCellsMergeIcon from '~icons/lucide/table-cells-merge';
+  import TableCellsSplitIcon from '~icons/lucide/table-cells-split';
   import TypeIcon from '~icons/lucide/type';
   import UnderlineIcon from '~icons/lucide/underline';
   import { createFloatingActions } from '../../../actions';
@@ -78,11 +79,19 @@
   let activeNodeTypeId: string | null | undefined = null;
   let cellSelection: CellSelection | null = null;
 
+  $: showCellSplitButton =
+    cellSelection?.ranges &&
+    cellSelection.ranges.length === 1 &&
+    selectedBlocks.find(
+      (block) => (block.type.name === 'tableCell' && (block.attrs.colspan ?? 1) > 1) || (block.attrs.rowspan ?? 1) > 1,
+    );
   $: showCellMergeButton = cellSelection?.ranges && cellSelection.ranges.length > 1;
+
+  $: showCellButtons = showCellSplitButton || showCellMergeButton;
   $: showBlockSwitchButton = selectedBlocks.length === 1;
   $: showMarksMenu = isInlineContentSelected;
 
-  $: showBubbleMenu = showCellMergeButton || showBlockSwitchButton || showMarksMenu;
+  $: showBubbleMenu = showCellButtons || showBlockSwitchButton || showMarksMenu;
 
   const bubbleMenuButtonStyle = flex({
     alignItems: 'center',
@@ -175,18 +184,33 @@
   })}
   hidden={!showBubbleMenu}
 >
-  {#if showCellMergeButton}
-    <Tooltip message="셀 병합" placement="top">
-      <button
-        class={bubbleMenuButtonStyle}
-        type="button"
-        on:click={() => {
-          editor.chain().focus().mergeCells().run();
-        }}
-      >
-        <Icon icon={TableCellsMergeIcon} size={16} />
-      </button>
-    </Tooltip>
+  {#if showCellButtons}
+    {#if showCellMergeButton}
+      <Tooltip message="셀 병합" placement="top">
+        <button
+          class={bubbleMenuButtonStyle}
+          type="button"
+          on:click={() => {
+            editor.chain().focus().mergeCells().run();
+          }}
+        >
+          <Icon icon={TableCellsMergeIcon} size={16} />
+        </button>
+      </Tooltip>
+    {/if}
+    {#if showCellSplitButton}
+      <Tooltip message="셀 분할" placement="top">
+        <button
+          class={bubbleMenuButtonStyle}
+          type="button"
+          on:click={() => {
+            editor.chain().focus().splitCell().run();
+          }}
+        >
+          <Icon icon={TableCellsSplitIcon} size={16} />
+        </button>
+      </Tooltip>
+    {/if}
     {#if showBlockSwitchButton || showMarksMenu}
       <VerticalDivider style={css.raw({ marginX: '2px' })} />
     {/if}
