@@ -46,7 +46,7 @@ export const BubbleMenu = Extension.create({
                 this.editor.commands.showLinkEditPopoverForActiveSelection();
               };
 
-              bubbleComponent?.$set({ from: selection.from, to: selection.to, openLinkEditPopover });
+              bubbleComponent?.$set({ openLinkEditPopover });
 
               if (
                 selection.empty ||

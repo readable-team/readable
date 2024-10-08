@@ -23,8 +23,6 @@
   import type { Node } from '@tiptap/pm/model';
 
   export let editor: Editor;
-  export let from: number | null = null;
-  export let to: number | null = null;
   export let openLinkEditPopover: () => void;
 
   let topLevelNodeTypePickerOpened = false;
@@ -76,8 +74,15 @@
   let activeNode: Node | null = null;
   let activeColor: string | null = null;
   let selectedBlocks: Node[] = [];
+  let isInlineContentSelected = false;
   let activeNodeTypeId: string | null | undefined = null;
   let cellSelection: CellSelection | null = null;
+
+  $: showCellMergeButton = cellSelection?.ranges && cellSelection.ranges.length > 1;
+  $: showBlockSwitchButton = selectedBlocks.length === 1;
+  $: showMarksMenu = isInlineContentSelected;
+
+  $: showBubbleMenu = showCellMergeButton || showBlockSwitchButton || showMarksMenu;
 
   const bubbleMenuButtonStyle = flex({
     alignItems: 'center',
@@ -105,15 +110,36 @@
     activeColor = editor.getAttributes('textStyle').class;
 
     selectedBlocks = [];
-    if (from !== null && to !== null) {
-      editor.state.doc.nodesBetween(from, to, (node) => {
-        if (node.isBlock) {
-          selectedBlocks.push(node);
-        }
-      });
-    }
+    isInlineContentSelected = false;
 
-    cellSelection = editor.state.selection instanceof CellSelection ? (editor.state.selection as CellSelection) : null;
+    cellSelection = editor.state.selection instanceof CellSelection ? editor.state.selection : null;
+
+    if (cellSelection?.ranges) {
+      for (const range of cellSelection.ranges) {
+        editor.state.doc.nodesBetween(range.$from.pos, range.$to.pos, (node) => {
+          if (node && node.isBlock) {
+            selectedBlocks.push(node);
+          }
+
+          if (node.inlineContent && node.content.size > 0) {
+            isInlineContentSelected = true;
+          }
+        });
+      }
+    } else {
+      const { from, to } = editor.state.selection;
+      if (from !== null && to !== null) {
+        editor.state.doc.nodesBetween(from, to, (node) => {
+          if (node.isBlock) {
+            selectedBlocks.push(node);
+          }
+
+          if (node.inlineContent && node.content.size > 0) {
+            isInlineContentSelected = true;
+          }
+        });
+      }
+    }
 
     selectedBlocks = selectedBlocks;
   };
@@ -147,8 +173,9 @@
     boxShadow: 'strong',
     zIndex: '20',
   })}
+  hidden={!showBubbleMenu}
 >
-  {#if cellSelection?.ranges && cellSelection.ranges.length > 1}
+  {#if showCellMergeButton}
     <Tooltip message="셀 병합" placement="top">
       <button
         class={bubbleMenuButtonStyle}
@@ -160,9 +187,11 @@
         <Icon icon={TableCellsMergeIcon} size={16} />
       </button>
     </Tooltip>
-    <VerticalDivider style={css.raw({ marginX: '2px' })} />
+    {#if showBlockSwitchButton || showMarksMenu}
+      <VerticalDivider style={css.raw({ marginX: '2px' })} />
+    {/if}
   {/if}
-  {#if selectedBlocks.length === 1}
+  {#if showBlockSwitchButton}
     <button
       class={flex({
         paddingLeft: '8px',
@@ -265,60 +294,62 @@
       </div>
     {/if}
   {/if}
-  {#each marks as { name, icon } (name)}
+  {#if showMarksMenu}
+    {#each marks as { name, icon } (name)}
+      <button
+        class={bubbleMenuButtonStyle}
+        aria-pressed={activeMarks.includes(name)}
+        type="button"
+        on:click={() => {
+          editor.chain().focus().toggleMark(name).run();
+        }}
+      >
+        <Icon {icon} size={16} />
+      </button>
+    {/each}
     <button
       class={bubbleMenuButtonStyle}
-      aria-pressed={activeMarks.includes(name)}
       type="button"
       on:click={() => {
-        editor.chain().focus().toggleMark(name).run();
+        openLinkEditPopover();
       }}
     >
-      <Icon {icon} size={16} />
+      <Icon icon={LinkIcon} size={16} />
     </button>
-  {/each}
-  <button
-    class={bubbleMenuButtonStyle}
-    type="button"
-    on:click={() => {
-      openLinkEditPopover();
-    }}
-  >
-    <Icon icon={LinkIcon} size={16} />
-  </button>
-  <button
-    class={flex({
-      alignItems: 'center',
-      gap: '4px',
-      height: '30px',
-      borderRadius: '4px',
-      paddingLeft: '8px',
-      paddingRight: '4px',
-      _hover: {
-        backgroundColor: 'neutral.20',
-      },
-      _active: {
-        // theme=pressed
-        backgroundColor: 'neutral.30',
-      },
-    })}
-    aria-pressed={colorPickerOpened}
-    type="button"
-    on:click={() => {
-      colorPickerOpened = true;
-    }}
-    use:colorPickerAnchor
-  >
-    <div
-      style:background-color={activeColor && `var(--prosemirror-color-${activeColor})`}
-      class={css({
-        borderRadius: 'full',
-        backgroundColor: 'text.primary',
-        size: '16px',
+    <button
+      class={flex({
+        alignItems: 'center',
+        gap: '4px',
+        height: '30px',
+        borderRadius: '4px',
+        paddingLeft: '8px',
+        paddingRight: '4px',
+        _hover: {
+          backgroundColor: 'neutral.20',
+        },
+        _active: {
+          // theme=pressed
+          backgroundColor: 'neutral.30',
+        },
       })}
-    />
-    <Icon style={css.raw({ color: 'neutral.50' })} icon={ChevronDownIcon} />
-  </button>
+      aria-pressed={colorPickerOpened}
+      type="button"
+      on:click={() => {
+        colorPickerOpened = true;
+      }}
+      use:colorPickerAnchor
+    >
+      <div
+        style:background-color={activeColor && `var(--prosemirror-color-${activeColor})`}
+        class={css({
+          borderRadius: 'full',
+          backgroundColor: 'text.primary',
+          size: '16px',
+        })}
+      />
+      <Icon style={css.raw({ color: 'neutral.50' })} icon={ChevronDownIcon} />
+    </button>
+  {/if}
 
   {#if colorPickerOpened}
     <div
