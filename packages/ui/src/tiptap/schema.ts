@@ -64,6 +64,12 @@ export const basicExtensions = [
   Heading.configure({
     levels: [1, 2, 3],
   }).extend({
+    parseHTML() {
+      return this.options.levels.map((level) => ({
+        tag: `h${level + 1}`,
+        attrs: { level },
+      }));
+    },
     renderHTML({ node, HTMLAttributes }) {
       const hasLevel = node.attrs.level;
       const level = hasLevel ? node.attrs.level : 1;
@@ -71,7 +77,7 @@ export const basicExtensions = [
       const textStyle = node.attrs.level === 1 ? '26b' : node.attrs.level === 2 ? '22b' : '18b';
 
       return [
-        `h${level}`,
+        `h${level + 1}`,
         mergeAttributes(HTMLAttributes, { id, class: css({ textStyle }) }),
         !this.editor?.isEditable && node.content.size === 0 ? ['br'] : 0,
       ];
