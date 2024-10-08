@@ -67,7 +67,7 @@
       alt="본문 이미지"
       placeholder={node.attrs.placeholder}
       ratio={node.attrs.ratio}
-      size="full"
+      size={1024}
       url={node.attrs.url}
     />
   {:else}

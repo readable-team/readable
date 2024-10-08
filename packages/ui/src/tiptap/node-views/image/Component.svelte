@@ -107,7 +107,7 @@
           placeholder={node.attrs.placeholder}
           progressive
           ratio={node.attrs.ratio}
-          size="full"
+          size={1024}
           url={node.attrs.url}
         />
 
