@@ -56,14 +56,14 @@
 </script>
 
 <NodeView
-  style={css.raw({ display: 'inline-flex', alignItems: 'center', verticalAlign: 'middle' })}
+  style={css.raw({ display: 'inline-flex', alignItems: 'center', verticalAlign: 'top' })}
   as="span"
   data-drag-handle
   draggable
 >
   {#if node.attrs.id}
     <Img
-      style={css.raw({ borderRadius: '2px', height: '[1.2em]' })}
+      style={css.raw({ borderRadius: '2px', height: '[1lh]' })}
       alt="본문 이미지"
       placeholder={node.attrs.placeholder}
       ratio={node.attrs.ratio}
@@ -82,7 +82,7 @@
           borderColor: 'border.primary',
           borderRadius: '4px',
           backgroundColor: 'neutral.10',
-          height: '[1.5em]',
+          height: '[1lh]',
         },
         pickerOpened && { backgroundColor: 'neutral.20' },
       )}
