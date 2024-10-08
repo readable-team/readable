@@ -1,6 +1,6 @@
 import { css } from '@readable/styled-system/css';
 import { findParentNode, mergeAttributes, Node } from '@tiptap/core';
-import { Plugin, PluginKey } from '@tiptap/pm/state';
+import { EditorState, Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { createNodeView } from '../../lib';
 import Component from './Component.svelte';
@@ -11,12 +11,38 @@ declare module '@tiptap/core' {
     tabs: {
       setTabs: () => ReturnType;
       addTab: () => ReturnType;
+      deleteTab: (idx: number) => ReturnType;
       selectTab: (idx: number) => ReturnType;
     };
   }
 }
 
-const key = new PluginKey();
+type State = {
+  pos: number;
+  idx: number;
+}[];
+
+type Meta = {
+  pos: number;
+  idx: number | null;
+};
+
+const key = new PluginKey<State>();
+
+const getTabs = findParentNode((node) => node.type.name === 'tabs');
+export const getSelectedTabIdx = (state: EditorState, pos: number) => {
+  const s = key.getState(state);
+  if (!s) {
+    return 0;
+  }
+
+  const e = s.find((v) => v.pos === pos);
+  if (!e) {
+    return 0;
+  }
+
+  return e.idx;
+};
 
 export const Tabs = createNodeView(Component, {
   name: 'tabs',
@@ -42,16 +68,57 @@ export const Tabs = createNodeView(Component, {
       addTab:
         () =>
         ({ state, tr, dispatch }) => {
-          const tab = findParentNode((node) => node.type === this.type)(state.selection);
-          if (!tab) {
+          const tabs = getTabs(state.selection);
+          if (!tabs) {
             return false;
           }
 
-          const pos = tab.pos + tab.node.nodeSize - 1;
+          const pos = tabs.pos + tabs.node.nodeSize - 1;
           const tabNode = state.schema.nodes.tab.createChecked(null, state.schema.nodes.paragraph.createAndFill());
 
           if (dispatch) {
+            tr.setMeta(key, { pos: tabs.pos, idx: tabs.node.childCount });
             tr.insert(pos, tabNode);
+          }
+
+          return true;
+        },
+      deleteTab:
+        (idx) =>
+        ({ state, tr, dispatch }) => {
+          const tabs = getTabs(state.selection);
+          if (!tabs) {
+            return false;
+          }
+
+          let offset = 0;
+          for (let i = 0; i < idx; i++) {
+            const child = tabs.node.maybeChild(i);
+            if (!child) {
+              return false;
+            }
+
+            offset += child.nodeSize;
+          }
+
+          const child = tabs.node.maybeChild(idx);
+          if (!child) {
+            return false;
+          }
+
+          const pos = tabs.pos + offset + 1;
+
+          if (dispatch) {
+            if (tabs.node.childCount === 1) {
+              tr.setMeta(key, { pos: tabs.pos, idx: null });
+              tr.delete(tabs.pos, tabs.node.nodeSize);
+            } else {
+              const selectedIdx = getSelectedTabIdx(state, tabs.pos);
+              if (selectedIdx >= idx) {
+                tr.setMeta(key, { pos: tabs.pos, idx: Math.max(0, selectedIdx - 1) });
+              }
+              tr.delete(pos, pos + child.nodeSize);
+            }
           }
 
           return true;
@@ -59,13 +126,13 @@ export const Tabs = createNodeView(Component, {
       selectTab:
         (idx) =>
         ({ state, tr, dispatch }) => {
-          const tab = findParentNode((node) => node.type === this.type)(state.selection);
-          if (!tab) {
+          const tabs = getTabs(state.selection);
+          if (!tabs) {
             return false;
           }
 
           if (dispatch) {
-            tr.setMeta(key, { tabPos: tab.pos, selectedTabIdx: idx });
+            tr.setMeta(key, { pos: tabs.pos, idx });
           }
 
           return true;
@@ -75,73 +142,95 @@ export const Tabs = createNodeView(Component, {
 
   addProseMirrorPlugins() {
     return [
-      new Plugin({
+      new Plugin<State>({
         key,
         state: {
           init: (_, state) => {
             const { doc } = state;
-            const decorations: Decoration[] = [];
+            const s: State = [];
 
-            doc.descendants((node, pos, parent, index) => {
-              if (parent?.type !== this.type) {
-                return;
-              }
-
-              if (index === 0) {
-                const decoration = Decoration.node(pos, pos + node.nodeSize, {
-                  'data-tab-selected': '',
-                });
-
-                decorations.push(decoration);
+            doc.descendants((node, pos) => {
+              if (node.type === this.type) {
+                s.push({ pos, idx: 0 });
               }
             });
 
-            return DecorationSet.create(doc, decorations);
+            return s;
           },
-          apply: (tr, decorations, _, state) => {
-            const noop = () => {
-              if (tr.docChanged) {
-                // eslint-disable-next-line unicorn/no-array-callback-reference, unicorn/no-array-method-this-argument
-                return decorations.map(tr.mapping, state.doc);
-              }
+          apply: (tr, s) => {
+            if (tr.docChanged) {
+              // eslint-disable-next-line unicorn/no-array-callback-reference
+              s = s.map((v) => ({ pos: tr.mapping.map(v.pos), idx: v.idx }));
+            }
 
-              return decorations;
-            };
-
-            const meta = tr.getMeta(key);
+            const meta = tr.getMeta(key) as Meta | undefined;
             if (!meta) {
-              return noop();
+              return s;
             }
 
-            const { tabPos, selectedTabIdx } = meta as { tabPos: number; selectedTabIdx: number };
-            const { doc } = state;
-
-            const tab = doc.nodeAt(tabPos);
-            if (tab?.type !== this.type) {
-              return noop();
-            }
-
-            // eslint-disable-next-line unicorn/no-array-callback-reference, unicorn/no-array-method-this-argument
-            decorations = decorations.remove(decorations.find(tabPos, tabPos + tab.nodeSize));
-
-            // eslint-disable-next-line unicorn/no-array-for-each
-            tab.forEach((node, offset, index) => {
-              const pos = tabPos + offset + 1;
-
-              if (index === selectedTabIdx) {
-                const decoration = Decoration.node(pos, pos + node.nodeSize, {
-                  'data-tab-selected': '',
-                });
-
-                decorations = decorations.add(doc, [decoration]);
+            if (meta.idx === null) {
+              s = s.filter((v) => v.pos !== meta.pos);
+            } else {
+              const e = s.find((v) => v.pos === meta.pos);
+              if (e) {
+                e.idx = meta.idx;
+              } else {
+                s.push({ pos: meta.pos, idx: meta.idx });
               }
-            });
+            }
 
-            return decorations;
+            return s;
           },
         },
         props: {
-          decorations: (state) => key.getState(state),
+          decorations: (state) => {
+            const s = key.getState(state);
+            if (!s) {
+              return null;
+            }
+
+            const decorations: Decoration[] = [];
+            const visited = new Set<number>();
+
+            for (const { pos, idx } of s) {
+              const node = state.doc.nodeAt(pos);
+              if (!node) {
+                continue;
+              }
+
+              // eslint-disable-next-line unicorn/no-array-for-each
+              node.forEach((node, offset, index) => {
+                if (index === idx) {
+                  const decoration = Decoration.node(pos + offset + 1, pos + offset + 1 + node.nodeSize, {
+                    'data-tab-selected': '',
+                  });
+
+                  decorations.push(decoration);
+                }
+              });
+
+              visited.add(pos);
+            }
+
+            state.doc.descendants((node, pos) => {
+              if (node.type !== this.type || visited.has(pos)) {
+                return;
+              }
+
+              // eslint-disable-next-line unicorn/no-array-for-each
+              node.forEach((node, offset, index) => {
+                if (index === 0) {
+                  const decoration = Decoration.node(pos + offset + 1, pos + offset + 1 + node.nodeSize, {
+                    'data-tab-selected': '',
+                  });
+
+                  decorations.push(decoration);
+                }
+              });
+            });
+
+            return DecorationSet.create(state.doc, decorations);
+          },
         },
       }),
     ];

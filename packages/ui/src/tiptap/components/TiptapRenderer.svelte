@@ -24,7 +24,6 @@
   }>();
 
   $: html = renderHTML(content, [...basicExtensions, Embed, Image, InlineImage, File]);
-  $: editor?.commands.setContent(content);
 
   onMount(() => {
     editor = new Editor({
