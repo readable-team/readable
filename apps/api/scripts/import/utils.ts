@@ -59,15 +59,17 @@ export const insertSite = async ({ tx, name, slug }: InsertSiteParams) => {
 type InsertCategoryParams = {
   tx: Transaction;
   siteId: string;
+  slug?: string;
   name: string;
 };
-export const insertCategory = async ({ tx, siteId, name }: InsertCategoryParams) => {
+export const insertCategory = async ({ tx, siteId, slug, name }: InsertCategoryParams) => {
   const order = nextOrder('');
 
   const category = await tx
     .insert(Categories)
     .values({
       siteId,
+      slug,
       name,
       order,
       state: 'ACTIVE',
@@ -83,11 +85,12 @@ type InsertPageParams = {
   siteId: string;
   categoryId: string;
   parentId: string | null;
+  slug?: string;
   title: string;
   html: string;
   rules: ParseRule[];
 };
-export const insertPage = async ({ tx, siteId, categoryId, parentId, title, html, rules }: InsertPageParams) => {
+export const insertPage = async ({ tx, siteId, categoryId, parentId, slug, title, html, rules }: InsertPageParams) => {
   const order = nextOrder(parentId ?? categoryId);
 
   const window = new GlobalWindow();
@@ -113,6 +116,7 @@ export const insertPage = async ({ tx, siteId, categoryId, parentId, title, html
       siteId,
       categoryId,
       parentId,
+      slug,
       order,
       state: 'PUBLISHED',
     })
@@ -147,7 +151,7 @@ export const insertPage = async ({ tx, siteId, categoryId, parentId, title, html
 };
 
 export const cloneAssets = async (content: JSONContent) => {
-  if (content.type === 'image' && !content.attrs?.id && content.attrs?.url) {
+  if ((content.type === 'image' || content.type === 'inlineImage') && !content.attrs?.id && content.attrs?.url) {
     const resp = await fetch(content.attrs.url);
     const blob = await resp.blob();
     const image = await persistBlobAsImage({ file: new File([blob], content.attrs.url) });

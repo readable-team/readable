@@ -35,6 +35,28 @@ const rules: ParseRule[] = [
     },
   },
   {
+    node: 'inlineImage',
+    tag: 'span',
+    getAttrs: (node) => {
+      const img = node.querySelector('> img');
+      if (!img) {
+        return false;
+      }
+
+      const src = img.getAttribute('src');
+      if (!src) {
+        return false;
+      }
+
+      const srcUrl = new URL(src);
+      const url = srcUrl.searchParams.get('url');
+
+      return {
+        url,
+      };
+    },
+  },
+  {
     node: 'file',
     tag: 'div',
     getAttrs: (node) => {
@@ -115,9 +137,15 @@ await db.transaction(async (tx) => {
     const name = node.find('> div').text();
     const elements = node.find('> ul > li > div');
 
+    let slug = $(elements[0]).find('> a').attr('href')?.split('/')[2];
+    if (!slug) {
+      slug = $(elements[1]).find('> a').attr('href')?.split('/')[2];
+    }
+
     const category = await insertCategory({
       tx,
       siteId: site.id,
+      slug,
       name,
     });
 
@@ -130,11 +158,14 @@ await db.transaction(async (tx) => {
       const title = $$('main > header > h1').text();
       const html = $$('main > div.whitespace-pre-wrap').html()!;
 
+      const slug = url.split('/').pop()!;
+
       const page = await insertPage({
         tx,
         siteId: site.id,
         categoryId: category.id,
         parentId: null,
+        slug,
         title,
         html,
         rules,
@@ -148,11 +179,14 @@ await db.transaction(async (tx) => {
         const title = $$('main > header > h1').text();
         const html = $$('main > div.whitespace-pre-wrap').html()!;
 
+        const slug = url.split('/').pop()!;
+
         await insertPage({
           tx,
           siteId: site.id,
           categoryId: category.id,
           parentId: page.id,
+          slug,
           title,
           html,
           rules,
