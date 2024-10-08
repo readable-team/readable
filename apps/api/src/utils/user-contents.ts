@@ -3,7 +3,7 @@ import mime from 'mime-types';
 import { base64 } from 'rfc4648';
 import sharp from 'sharp';
 import { rgbaToThumbHash } from 'thumbhash';
-import { db, firstOrThrow, Images } from '@/db';
+import { db, Files, firstOrThrow, Images } from '@/db';
 import * as aws from '@/external/aws';
 
 type PersistBlobAsImageParams = { userId?: string; file: File };
@@ -47,6 +47,45 @@ export const persistBlobAsImage = async ({ userId, file }: PersistBlobAsImagePar
         Key: `images/${key}`,
         Body: Buffer.from(buffer),
         ContentType: mimetype,
+        Metadata: {
+          'name': encodeURIComponent(file.name),
+          'user-id': userId ?? '',
+        },
+      }),
+    );
+
+    return image;
+  });
+};
+
+type PersistBlobAsFileParams = { userId?: string; file: File };
+export const persistBlobAsFile = async ({ userId, file }: PersistBlobAsFileParams) => {
+  const buffer = await file.arrayBuffer();
+  const mimetype = mime.lookup(file.name) || 'application/octet-stream';
+
+  const ext = mime.extension(mimetype) || 'bin';
+  const key = `${aws.createFragmentedS3ObjectKey()}.${ext}`;
+
+  return await db.transaction(async (tx) => {
+    const image = await tx
+      .insert(Files)
+      .values({
+        userId,
+        name: file.name,
+        size: file.size,
+        format: mimetype,
+        path: key,
+      })
+      .returning()
+      .then(firstOrThrow);
+
+    await aws.s3.send(
+      new PutObjectCommand({
+        Bucket: 'readable-usercontents',
+        Key: `files/${key}`,
+        Body: Buffer.from(buffer),
+        ContentType: mimetype,
+        ContentDisposition: `attachment; filename="${encodeURIComponent(file.name)}"`,
         Metadata: {
           'name': encodeURIComponent(file.name),
           'user-id': userId ?? '',

@@ -9,7 +9,7 @@ import * as Y from 'yjs';
 import { Categories, firstOrThrow, PageContents, PageContentSnapshots, PageContentStates, Pages, Sites } from '@/db';
 import { env } from '@/env';
 import { hashPageContent, makeYDoc } from '@/utils/page';
-import { persistBlobAsImage } from '@/utils/user-contents';
+import { persistBlobAsFile, persistBlobAsImage } from '@/utils/user-contents';
 import type { JSONContent } from '@tiptap/core';
 import type { Transaction } from '@/db';
 
@@ -18,8 +18,9 @@ const browser = await puppeteer.launch();
 export const $fetch = async (base: string, url: string) => {
   const page = await browser.newPage();
 
-  await page.goto(new URL(url, base).toString());
-  await page.waitForNetworkIdle();
+  await page.goto(new URL(url, base).toString(), {
+    waitUntil: 'networkidle2',
+  });
 
   const html = await page.content();
   await page.close();
@@ -141,19 +142,24 @@ export const insertPage = async ({ tx, siteId, categoryId, parentId, title, html
   return page;
 };
 
-const cloneAssets = async (content: JSONContent) => {
+export const cloneAssets = async (content: JSONContent) => {
   if (content.type === 'image' && !content.attrs?.id && content.attrs?.url) {
     const resp = await fetch(content.attrs.url);
     const blob = await resp.blob();
-    const file = new File([blob], content.attrs.url);
-    const image = await persistBlobAsImage({ file });
+    const image = await persistBlobAsImage({ file: new File([blob], content.attrs.url) });
 
     content.attrs.id = image.id;
     content.attrs.placeholder = image.placeholder;
     content.attrs.ratio = image.width / image.height;
     content.attrs.url = `${env.PUBLIC_USERCONTENTS_URL}/images/${image.path}`;
   } else if (content.type === 'file' && !content.attrs?.id && content.attrs?.url) {
-    // download file and persist to s3
+    const resp = await fetch(content.attrs.url);
+    const blob = await resp.blob();
+    const file = await persistBlobAsFile({ file: new File([blob], content.attrs.name) });
+
+    content.attrs.id = file.id;
+    content.attrs.size = file.size;
+    content.attrs.url = `${env.PUBLIC_USERCONTENTS_URL}/files/${file.path}`;
   }
 
   await Promise.all(content.content?.map(async (child) => cloneAssets(child)) ?? []);
