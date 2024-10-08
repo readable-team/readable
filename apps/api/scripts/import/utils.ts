@@ -11,6 +11,7 @@ import { env } from '@/env';
 import { hashPageContent, makeYDoc } from '@/utils/page';
 import { persistBlobAsFile, persistBlobAsImage } from '@/utils/user-contents';
 import type { JSONContent } from '@tiptap/core';
+import type { ParseRule } from '@tiptap/pm/model';
 import type { Transaction } from '@/db';
 
 const browser = await puppeteer.launch();
@@ -84,14 +85,17 @@ type InsertPageParams = {
   parentId: string | null;
   title: string;
   html: string;
+  rules: ParseRule[];
 };
-export const insertPage = async ({ tx, siteId, categoryId, parentId, title, html }: InsertPageParams) => {
+export const insertPage = async ({ tx, siteId, categoryId, parentId, title, html, rules }: InsertPageParams) => {
   const order = nextOrder(parentId ?? categoryId);
 
   const window = new GlobalWindow();
   window.document.body.innerHTML = html;
 
-  const node = DOMParser.fromSchema(schema).parse(window.document.body as never);
+  const parser = new DOMParser(schema, [...rules, ...DOMParser.fromSchema(schema).rules]);
+
+  const node = parser.parse(window.document.body as never);
   const text = node.content.textBetween(0, node.content.size, '\n');
   const content: JSONContent = node.toJSON();
 

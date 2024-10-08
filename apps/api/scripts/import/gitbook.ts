@@ -1,13 +1,104 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import { match } from 'ts-pattern';
 import { db } from '@/db';
 import { $fetch, insertCategory, insertPage, insertSite } from './utils';
+import type { ParseRule } from '@tiptap/pm/model';
 
 const config = {
   name: '',
   slug: '',
   url: '',
 };
+
+const rules: ParseRule[] = [
+  {
+    node: 'image',
+    tag: 'div',
+    getAttrs: (node) => {
+      const img = node.querySelector('> div > img');
+      if (!img) {
+        return false;
+      }
+
+      const src = img.getAttribute('src');
+      if (!src) {
+        return false;
+      }
+
+      const srcUrl = new URL(src);
+      const url = srcUrl.searchParams.get('url');
+
+      return {
+        url,
+      };
+    },
+  },
+  {
+    node: 'file',
+    tag: 'div',
+    getAttrs: (node) => {
+      const anchor = node.querySelector('> a');
+      if (!anchor) {
+        return false;
+      }
+
+      const svg = anchor.querySelector('> div:nth-child(1) > div:nth-child(1) > svg');
+      if (!svg) {
+        return false;
+      }
+
+      const style = svg.getAttribute('style');
+      if (!style) {
+        return false;
+      }
+
+      if (!style.includes('file-download.svg')) {
+        return false;
+      }
+
+      const name = anchor.querySelector('> div:nth-child(2) > div:nth-child(1)');
+      if (!name) {
+        return false;
+      }
+
+      return {
+        name: name.textContent,
+        url: anchor.getAttribute('href'),
+      };
+    },
+  },
+  {
+    node: 'hint',
+    tag: 'div',
+    getAttrs: (node) => {
+      const svg = node.querySelector('> div:nth-child(1) > div:nth-child(1) > svg');
+      if (!svg) {
+        return false;
+      }
+
+      const style = svg.getAttribute('style');
+      if (!style) {
+        return false;
+      }
+
+      const icon = style.match(/\/([^/]+)\.svg/)?.[1];
+      const type = match(icon)
+        .with('circle-info', () => 'info')
+        .with('circle-check', () => 'success')
+        .with('circle-exclamation', () => 'warning')
+        .with('triangle-exclamation', () => 'danger')
+        .otherwise(() => null);
+
+      if (!type) {
+        return false;
+      }
+
+      return { type };
+    },
+    contentElement: '> div:nth-child(1) > div:nth-child(2)',
+  },
+];
 
 await db.transaction(async (tx) => {
   const site = await insertSite({
@@ -46,6 +137,7 @@ await db.transaction(async (tx) => {
         parentId: null,
         title,
         html,
+        rules,
       });
 
       for (const subelement of subelements) {
@@ -63,6 +155,7 @@ await db.transaction(async (tx) => {
           parentId: page.id,
           title,
           html,
+          rules,
         });
       }
     }
