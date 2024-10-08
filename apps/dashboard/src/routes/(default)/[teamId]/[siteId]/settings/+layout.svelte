@@ -4,6 +4,7 @@
   import IconLink2 from '~icons/lucide/link-2';
   import IconPaintbrushVertical from '~icons/lucide/paintbrush-vertical';
   import IconSettings from '~icons/lucide/settings';
+  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import { SettingTabItem } from '$lib/components';
 
@@ -29,9 +30,16 @@
       selected: $page.url.pathname === `/${data.props.teamId}/${data.props.siteId}/settings/domain`,
     },
   ];
+
+  let container: HTMLDivElement;
+
+  afterNavigate(() => {
+    container.scrollTo({ top: 0, behavior: 'auto' });
+  });
 </script>
 
 <div
+  bind:this={container}
   class={flex({
     justifyContent: 'center',
     backgroundColor: 'surface.secondary',

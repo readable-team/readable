@@ -4,6 +4,7 @@
   import CreditCardIcon from '~icons/lucide/credit-card';
   import MapIcon from '~icons/lucide/map';
   import SettingsIcon from '~icons/lucide/settings';
+  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import { graphql } from '$graphql';
   import { SettingTabItem } from '$lib/components';
@@ -45,9 +46,16 @@
         ]
       : []),
   ];
+
+  let container: HTMLDivElement;
+
+  afterNavigate(() => {
+    container.scrollTo({ top: 0, behavior: 'auto' });
+  });
 </script>
 
 <div
+  bind:this={container}
   class={flex({
     justifyContent: 'center',
     width: 'full',
