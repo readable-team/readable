@@ -37,6 +37,7 @@ import { SlashMenu } from './menus/slash';
 import { Callout } from './node-views';
 import { Hint } from './node-views/hint';
 import TableComponent from './node-views/table/Component.svelte';
+import { Tab, Tabs } from './node-views/tabs';
 
 export const basicExtensions = [
   // special nodes
@@ -280,6 +281,9 @@ export const basicExtensions = [
   // node views
   Callout,
   Hint,
+
+  Tabs,
+  Tab,
 ];
 
 export const editorExtensions = [

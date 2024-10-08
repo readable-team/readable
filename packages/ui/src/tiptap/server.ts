@@ -28,6 +28,7 @@ import { File } from './node-views/file/server';
 import { Hint } from './node-views/hint/server';
 import { Image } from './node-views/image/server';
 import { InlineImage } from './node-views/inline-image/server';
+import { Tab, Tabs } from './node-views/tabs/server';
 
 export const serverExtensions = [
   // special nodes
@@ -133,6 +134,8 @@ export const serverExtensions = [
   Hint,
   Image,
   InlineImage,
+  Tabs,
+  Tab,
 ];
 
 export const schema = getSchema(serverExtensions);

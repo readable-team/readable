@@ -8,6 +8,7 @@ import InfoIcon from '~icons/lucide/info';
 import ListIcon from '~icons/lucide/list';
 import ListOrderedIcon from '~icons/lucide/list-ordered';
 import MinusIcon from '~icons/lucide/minus';
+import PanelTopIcon from '~icons/lucide/panel-top';
 import PaperclipIcon from '~icons/lucide/paperclip';
 import TableIcon from '~icons/lucide/table';
 import TextQuoteIcon from '~icons/lucide/text-quote';
@@ -129,6 +130,17 @@ export const menuItems: MenuItem[] = [
     visible: dev,
     command: ({ editor, range }) => {
       chain(editor, range).insertTable({ rows: 2, cols: 2, withHeaderRow: false }).run();
+    },
+  },
+  {
+    id: 'tabs',
+    type: 'tabs',
+    group: 'block',
+    name: '탭',
+    keywords: ['tabs'],
+    icon: PanelTopIcon,
+    command: ({ editor, range }) => {
+      chain(editor, range).setTabs().run();
     },
   },
   {
