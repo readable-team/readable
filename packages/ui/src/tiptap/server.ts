@@ -38,7 +38,14 @@ export const serverExtensions = [
 
   // nodes
   Paragraph,
-  Heading,
+  Heading.extend({
+    parseHTML() {
+      return this.options.levels.map((level) => ({
+        tag: `h${level + 1}`,
+        attrs: { level },
+      }));
+    },
+  }),
   HardBreak,
   HorizontalRule,
   Blockquote,
