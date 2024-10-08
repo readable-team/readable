@@ -6,7 +6,16 @@ import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { GlobalWindow } from 'happy-dom';
 import puppeteer from 'puppeteer';
 import * as Y from 'yjs';
-import { Categories, firstOrThrow, PageContents, PageContentSnapshots, PageContentStates, Pages, Sites } from '@/db';
+import {
+  Categories,
+  createDbId,
+  firstOrThrow,
+  PageContents,
+  PageContentSnapshots,
+  PageContentStates,
+  Pages,
+  Sites,
+} from '@/db';
 import { env } from '@/env';
 import { hashPageContent, makeYDoc } from '@/utils/page';
 import { persistBlobAsFile, persistBlobAsImage } from '@/utils/user-contents';
@@ -82,6 +91,7 @@ export const insertCategory = async ({ tx, siteId, slug, name }: InsertCategoryP
 
 type InsertPageParams = {
   tx: Transaction;
+  id?: string;
   siteId: string;
   categoryId: string;
   parentId: string | null;
@@ -90,7 +100,17 @@ type InsertPageParams = {
   html: string;
   rules: ParseRule[];
 };
-export const insertPage = async ({ tx, siteId, categoryId, parentId, slug, title, html, rules }: InsertPageParams) => {
+export const insertPage = async ({
+  tx,
+  id,
+  siteId,
+  categoryId,
+  parentId,
+  slug,
+  title,
+  html,
+  rules,
+}: InsertPageParams) => {
   const order = nextOrder(parentId ?? categoryId);
 
   const window = new GlobalWindow();
@@ -113,6 +133,7 @@ export const insertPage = async ({ tx, siteId, categoryId, parentId, slug, title
   const page = await tx
     .insert(Pages)
     .values({
+      id,
       siteId,
       categoryId,
       parentId,
@@ -172,3 +193,5 @@ export const cloneAssets = async (content: JSONContent) => {
 
   await Promise.all(content.content?.map(async (child) => cloneAssets(child)) ?? []);
 };
+
+export const generatePageId = () => createDbId('P', { length: 'short' });

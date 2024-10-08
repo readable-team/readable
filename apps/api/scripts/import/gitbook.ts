@@ -2,7 +2,7 @@
 
 import { match } from 'ts-pattern';
 import { db } from '@/db';
-import { $fetch, insertCategory, insertPage, insertSite } from './utils';
+import { $fetch, generatePageId, insertCategory, insertPage, insertSite } from './utils';
 import type { ParseRule } from '@tiptap/pm/model';
 
 const config = {
@@ -130,6 +130,28 @@ await db.transaction(async (tx) => {
   });
 
   const $ = await $fetch(config.url, '/');
+  const pathToIds = Object.fromEntries(
+    $('aside > div > ul > li div > a').map((_, el) => [[$(el).attr('href')!, generatePageId()]]),
+  );
+
+  rules.push({
+    mark: 'link',
+    tag: 'a',
+    getAttrs: (node) => {
+      const href = node.getAttribute('href');
+      if (!href) {
+        return false;
+      }
+
+      const id = pathToIds[href.split('#')[0]];
+      if (!id) {
+        return { href };
+      }
+
+      return { href: `page:///${id}` };
+    },
+  });
+
   const elements = $('aside > div > ul > li');
 
   for (const element of elements) {
@@ -158,9 +180,11 @@ await db.transaction(async (tx) => {
       const title = $$('main > header > h1').text();
       const html = $$('main > div.whitespace-pre-wrap').html()!;
 
+      const id = pathToIds[url];
       const slug = url.split('/').pop()!;
 
       const page = await insertPage({
+        id,
         tx,
         siteId: site.id,
         categoryId: category.id,
@@ -179,10 +203,12 @@ await db.transaction(async (tx) => {
         const title = $$('main > header > h1').text();
         const html = $$('main > div.whitespace-pre-wrap').html()!;
 
+        const id = pathToIds[url];
         const slug = url.split('/').pop()!;
 
         await insertPage({
           tx,
+          id,
           siteId: site.id,
           categoryId: category.id,
           parentId: page.id,
