@@ -2,6 +2,7 @@ import { init } from '@paralleldrive/cuid2';
 import { schema } from '@readable/ui/tiptap/server';
 import { DOMParser } from '@tiptap/pm/model';
 import { load } from 'cheerio';
+import { eq } from 'drizzle-orm';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { GlobalWindow } from 'happy-dom';
 import puppeteer from 'puppeteer';
@@ -9,6 +10,8 @@ import * as Y from 'yjs';
 import {
   Categories,
   createDbId,
+  db,
+  Embeds,
   firstOrThrow,
   PageContents,
   PageContentSnapshots,
@@ -17,6 +20,7 @@ import {
   Sites,
 } from '@/db';
 import { env } from '@/env';
+import * as iframely from '@/external/iframely';
 import { hashPageContent, makeYDoc } from '@/utils/page';
 import { persistBlobAsFile, persistBlobAsImage } from '@/utils/user-contents';
 import type { JSONContent } from '@tiptap/core';
@@ -189,6 +193,29 @@ export const cloneAssets = async (content: JSONContent) => {
     content.attrs.id = file.id;
     content.attrs.size = file.size;
     content.attrs.url = `${env.PUBLIC_USERCONTENTS_URL}/files/${file.path}`;
+  } else if (content.type === 'embed' && !content.attrs?.id && content.attrs?.url) {
+    const meta = await iframely.unfurl(content.attrs.url);
+
+    await db.delete(Embeds).where(eq(Embeds.url, content.attrs.url));
+    const embed = await db
+      .insert(Embeds)
+      .values({
+        type: meta.type,
+        url: content.attrs.url,
+        title: meta.title,
+        description: meta.description,
+        thumbnailUrl: meta.thumbnailUrl,
+        html: meta.html,
+      })
+      .returning()
+      .then(firstOrThrow);
+
+    content.attrs.id = embed.id;
+    content.attrs.url = embed.url;
+    content.attrs.title = embed.title;
+    content.attrs.description = embed.description;
+    content.attrs.thumbnailUrl = embed.thumbnailUrl;
+    content.attrs.html = embed.html;
   }
 
   await Promise.all(content.content?.map(async (child) => cloneAssets(child)) ?? []);

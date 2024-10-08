@@ -114,6 +114,25 @@ const rules: ParseRule[] = [
     },
     contentElement: '> div:nth-child(1) > div:nth-child(2)',
   },
+  {
+    node: 'embed',
+    tag: 'div',
+    getAttrs: (node) => {
+      const iframe = node.querySelector('> iframe');
+      if (!iframe) {
+        return false;
+      }
+
+      const src = iframe.getAttribute('src');
+      if (!src) {
+        return false;
+      }
+
+      return {
+        url: src,
+      };
+    },
+  },
 ];
 
 await db.transaction(async (tx) => {
