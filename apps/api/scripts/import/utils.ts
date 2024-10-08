@@ -194,28 +194,32 @@ export const cloneAssets = async (content: JSONContent) => {
     content.attrs.size = file.size;
     content.attrs.url = `${env.PUBLIC_USERCONTENTS_URL}/files/${file.path}`;
   } else if (content.type === 'embed' && !content.attrs?.id && content.attrs?.url) {
-    const meta = await iframely.unfurl(content.attrs.url);
+    try {
+      const meta = await iframely.unfurl(content.attrs.url);
 
-    await db.delete(Embeds).where(eq(Embeds.url, content.attrs.url));
-    const embed = await db
-      .insert(Embeds)
-      .values({
-        type: meta.type,
-        url: content.attrs.url,
-        title: meta.title,
-        description: meta.description,
-        thumbnailUrl: meta.thumbnailUrl,
-        html: meta.html,
-      })
-      .returning()
-      .then(firstOrThrow);
+      await db.delete(Embeds).where(eq(Embeds.url, content.attrs.url));
+      const embed = await db
+        .insert(Embeds)
+        .values({
+          type: meta.type,
+          url: content.attrs.url,
+          title: meta.title,
+          description: meta.description,
+          thumbnailUrl: meta.thumbnailUrl,
+          html: meta.html,
+        })
+        .returning()
+        .then(firstOrThrow);
 
-    content.attrs.id = embed.id;
-    content.attrs.url = embed.url;
-    content.attrs.title = embed.title;
-    content.attrs.description = embed.description;
-    content.attrs.thumbnailUrl = embed.thumbnailUrl;
-    content.attrs.html = embed.html;
+      content.attrs.id = embed.id;
+      content.attrs.url = embed.url;
+      content.attrs.title = embed.title;
+      content.attrs.description = embed.description;
+      content.attrs.thumbnailUrl = embed.thumbnailUrl;
+      content.attrs.html = embed.html;
+    } catch {
+      // pass
+    }
   }
 
   await Promise.all(content.content?.map(async (child) => cloneAssets(child)) ?? []);
