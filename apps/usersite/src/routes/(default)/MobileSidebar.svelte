@@ -1,7 +1,6 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { scrollLock } from '@readable/ui/actions';
   import { Icon } from '@readable/ui/components';
   import { fade, fly } from 'svelte/transition';
   import CloseIcon from '~icons/lucide/x';
@@ -54,7 +53,6 @@
         borderRightWidth: '1px',
         borderRightColor: 'border.primary',
       })}
-      use:scrollLock
       in:fly={{ x: -200, duration: 200 }}
       out:fly={{ x: -200, duration: 200 }}
     >
@@ -81,8 +79,8 @@
           justifyContent: 'space-between',
           flex: '1',
           overflow: 'auto',
+          overscrollBehavior: 'contain',
         })}
-        data-scroll-lock-ignore
       >
         <div class={css({ padding: '16px', paddingBottom: '80px' })}>
           <slot name="navigation" />
