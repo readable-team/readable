@@ -4,15 +4,26 @@ import { DOMParser } from '@tiptap/pm/model';
 import { load } from 'cheerio';
 import { generateJitteredKeyBetween } from 'fractional-indexing-jittered';
 import { GlobalWindow } from 'happy-dom';
+import puppeteer from 'puppeteer';
 import * as Y from 'yjs';
 import { Categories, firstOrThrow, PageContents, PageContentSnapshots, PageContentStates, Pages, Sites } from '@/db';
+import { env } from '@/env';
 import { hashPageContent, makeYDoc } from '@/utils/page';
+import { persistBlobAsImage } from '@/utils/user-contents';
 import type { JSONContent } from '@tiptap/core';
 import type { Transaction } from '@/db';
 
+const browser = await puppeteer.launch();
+
 export const $fetch = async (base: string, url: string) => {
-  const resp = await fetch(new URL(url, base));
-  const html = await resp.text();
+  const page = await browser.newPage();
+
+  await page.goto(new URL(url, base).toString());
+  await page.waitForNetworkIdle();
+
+  const html = await page.content();
+  await page.close();
+
   return load(html);
 };
 
@@ -83,6 +94,8 @@ export const insertPage = async ({ tx, siteId, categoryId, parentId, title, html
   const text = node.content.textBetween(0, node.content.size, '\n');
   const content: JSONContent = node.toJSON();
 
+  await cloneAssets(content);
+
   const yDoc = makeYDoc({ title, content });
 
   const update = Y.encodeStateAsUpdateV2(yDoc);
@@ -126,4 +139,22 @@ export const insertPage = async ({ tx, siteId, categoryId, parentId, title, html
   });
 
   return page;
+};
+
+const cloneAssets = async (content: JSONContent) => {
+  if (content.type === 'image' && !content.attrs?.id && content.attrs?.url) {
+    const resp = await fetch(content.attrs.url);
+    const blob = await resp.blob();
+    const file = new File([blob], content.attrs.url);
+    const image = await persistBlobAsImage({ file });
+
+    content.attrs.id = image.id;
+    content.attrs.placeholder = image.placeholder;
+    content.attrs.ratio = image.width / image.height;
+    content.attrs.url = `${env.PUBLIC_USERCONTENTS_URL}/images/${image.path}`;
+  } else if (content.type === 'file' && !content.attrs?.id && content.attrs?.url) {
+    // download file and persist to s3
+  }
+
+  await Promise.all(content.content?.map(async (child) => cloneAssets(child)) ?? []);
 };

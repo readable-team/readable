@@ -1,5 +1,5 @@
-import path from 'node:path';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
+import mime from 'mime-types';
 import { base64 } from 'rfc4648';
 import sharp from 'sharp';
 import { rgbaToThumbHash } from 'thumbhash';
@@ -20,8 +20,8 @@ export const persistBlobAsImage = async ({ userId, file }: PersistBlobAsImagePar
     .toBuffer({ resolveWithObject: true });
   const placeholder = rgbaToThumbHash(raw.info.width, raw.info.height, raw.data);
 
-  const ext = path.extname(file.name);
-  const key = `${aws.createFragmentedS3ObjectKey()}${ext}`;
+  const ext = mime.extension(mimetype) || 'bin';
+  const key = `${aws.createFragmentedS3ObjectKey()}.${ext}`;
 
   return await db.transaction(async (tx) => {
     /* eslint-disable @typescript-eslint/no-non-null-assertion */
