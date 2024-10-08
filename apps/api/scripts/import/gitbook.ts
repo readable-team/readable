@@ -26,11 +26,8 @@ const rules: ParseRule[] = [
         return false;
       }
 
-      const srcUrl = new URL(src);
-      const url = srcUrl.searchParams.get('url');
-
       return {
-        url,
+        url: new URL(src).searchParams.get('url') ?? src,
       };
     },
   },
@@ -48,11 +45,8 @@ const rules: ParseRule[] = [
         return false;
       }
 
-      const srcUrl = new URL(src);
-      const url = srcUrl.searchParams.get('url');
-
       return {
-        url,
+        url: new URL(src).searchParams.get('url') ?? src,
       };
     },
   },
