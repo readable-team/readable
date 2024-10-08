@@ -1,7 +1,8 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Icon } from '@readable/ui/components';
+  import { Icon, Tooltip, VerticalDivider } from '@readable/ui/components';
+  import { CellSelection } from '@tiptap/pm/tables';
   import { onMount } from 'svelte';
   import BoldIcon from '~icons/lucide/bold';
   import CheckIcon from '~icons/lucide/check';
@@ -14,6 +15,7 @@
   import LetterTextIcon from '~icons/lucide/letter-text';
   import LinkIcon from '~icons/lucide/link';
   import StrikethroughIcon from '~icons/lucide/strikethrough';
+  import TableCellsMergeIcon from '~icons/lucide/table-cells-merge';
   import TypeIcon from '~icons/lucide/type';
   import UnderlineIcon from '~icons/lucide/underline';
   import { createFloatingActions } from '../../../actions';
@@ -75,6 +77,7 @@
   let activeColor: string | null = null;
   let selectedBlocks: Node[] = [];
   let activeNodeTypeId: string | null | undefined = null;
+  let cellSelection: CellSelection | null = null;
 
   const bubbleMenuButtonStyle = flex({
     alignItems: 'center',
@@ -110,6 +113,8 @@
       });
     }
 
+    cellSelection = editor.state.selection instanceof CellSelection ? (editor.state.selection as CellSelection) : null;
+
     selectedBlocks = selectedBlocks;
   };
 
@@ -143,6 +148,20 @@
     zIndex: '20',
   })}
 >
+  {#if cellSelection?.ranges && cellSelection.ranges.length > 1}
+    <Tooltip message="셀 병합" placement="top">
+      <button
+        class={bubbleMenuButtonStyle}
+        type="button"
+        on:click={() => {
+          editor.chain().focus().mergeCells().run();
+        }}
+      >
+        <Icon icon={TableCellsMergeIcon} size={16} />
+      </button>
+    </Tooltip>
+    <VerticalDivider style={css.raw({ marginX: '2px' })} />
+  {/if}
   {#if selectedBlocks.length === 1}
     <button
       class={flex({
