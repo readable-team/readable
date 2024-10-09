@@ -5,13 +5,14 @@
   import { setContext } from 'svelte';
   import { writable } from 'svelte/store';
   import { swipe } from 'svelte-gestures';
+  import CommandIcon from '~icons/lucide/command';
   import SearchIcon from '~icons/lucide/search';
   import ReadableIcon from '~icons/rdbl/readable';
   import { browser } from '$app/environment';
   import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
   import { Img } from '$lib/components';
-  import { mobileNavOpen, searchBarOpen } from '$lib/stores/ui';
+  import { hasCmd, mobileNavOpen, searchBarOpen } from '$lib/stores/ui';
   import MobileSidebar from './MobileSidebar.svelte';
   import Navigation from './Navigation.svelte';
   import SearchBar from './SearchBar.svelte';
@@ -226,9 +227,26 @@
               {/if}
             </span>
           </div>
-          <!-- <div class={flex({ alignItems: 'center', gap: '1ch' })}>
-            TODO: 키보드 단축키 표시
-          </div> -->
+          <div
+            class={flex({
+              borderRadius: '4px',
+              paddingX: '6px',
+              paddingY: '2px',
+              alignItems: 'center',
+              gap: '4px',
+              backgroundColor: 'surface.tertiary',
+              color: 'text.tertiary',
+              textStyle: '12sb',
+              borderWidth: '1px',
+            })}
+          >
+            {#if $hasCmd}
+              <Icon icon={CommandIcon} size={12} />
+            {:else}
+              <span>Ctrl</span>
+            {/if}
+            <span>K</span>
+          </div>
         </button>
       </div>
       <button
