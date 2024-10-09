@@ -41,3 +41,11 @@ new aws.route53.Record('stb._domainkey.rdbl.io', {
   records: ['dkim.stibee.com'],
   ttl: 300,
 });
+
+new aws.route53.Record('blog.rdbl.io', {
+  zoneId: zones.rdbl_io.zoneId,
+  type: 'CNAME',
+  name: 'blog.rdbl.io',
+  records: ['readable.ghost.io'],
+  ttl: 300,
+});
