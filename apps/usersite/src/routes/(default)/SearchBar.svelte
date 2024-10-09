@@ -310,7 +310,7 @@
     class={css({
       position: 'fixed',
       zIndex: '50',
-      paddingTop: '48px',
+      paddingTop: '80px',
       paddingX: '80px',
       smOnly: {
         padding: '0',

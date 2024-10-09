@@ -24,6 +24,7 @@
         name
         url
         themeColor
+        aiSearchEnabled
 
         logo {
           id
@@ -190,22 +191,24 @@
         class={css({
           flexShrink: 0,
           hideBelow: 'md',
-          width: '[30%]',
-          minWidth: '260px',
-          maxWidth: '380px',
+          width: '260px',
         })}
       >
         <button
           class={flex({
             width: 'full',
             alignItems: 'center',
-            gap: '8px',
+            justifyContent: 'space-between',
             paddingX: '14px',
             height: '41px',
             borderRadius: '10px',
             borderWidth: '1px',
             borderColor: 'border.secondary',
-            backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
+            backgroundColor: 'surface.primary',
+            _hover: {
+              borderColor: 'border.primary',
+              backgroundColor: 'surface.secondary',
+            },
             color: 'text.tertiary',
             textStyle: '14r',
           })}
@@ -213,8 +216,19 @@
           type="button"
           on:click={openSearchBar}
         >
-          <Icon icon={SearchIcon} size={16} />
-          <span>검색어를 입력해주세요</span>
+          <div class={flex({ alignItems: 'center', gap: '8px' })}>
+            <Icon icon={SearchIcon} size={16} />
+            <span>
+              {#if $query.publicSite.aiSearchEnabled}
+                묻거나 검색하기
+              {:else}
+                검색하기
+              {/if}
+            </span>
+          </div>
+          <!-- <div class={flex({ alignItems: 'center', gap: '1ch' })}>
+            TODO: 키보드 단축키 표시
+          </div> -->
         </button>
       </div>
       <button
