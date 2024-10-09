@@ -503,8 +503,9 @@
 
                 <div class={css({ flexDirection: 'column', truncate: true })}>
                   <p class={css({ fontSize: '0' })}>
+                    <span class={css({ textStyle: '16sb' })}>AI에게 물어보기: "</span>
                     <em class={css({ textStyle: '16sb', color: 'var(--usersite-theme-color)' })}>{$searchQuery}</em>
-                    <span class={css({ textStyle: '16sb' })}>를 AI에게 물어보세요</span>
+                    <span class={css({ textStyle: '16sb' })}>"</span>
                   </p>
                   <p class={css({ textStyle: '14r', truncate: true })}>
                     사이트의 내용을 기반으로 가장 도움이 되는 정보를 찾아드릴게요
