@@ -12,7 +12,7 @@ import PanelTopIcon from '~icons/lucide/panel-top';
 import PaperclipIcon from '~icons/lucide/paperclip';
 import TableIcon from '~icons/lucide/table';
 import TextQuoteIcon from '~icons/lucide/text-quote';
-import { dev } from '$app/environment';
+import { env } from '$env/dynamic/public';
 import type { Editor, Range } from '@tiptap/core';
 import type { MenuItem } from './types';
 
@@ -127,7 +127,7 @@ export const menuItems: MenuItem[] = [
     name: '표',
     keywords: ['table'],
     icon: TableIcon,
-    visible: dev,
+    visible: env.PUBLIC_PULUMI_STACK !== 'prod',
     command: ({ editor, range }) => {
       chain(editor, range).insertTable({ rows: 2, cols: 2, withHeaderRow: false }).run();
     },
@@ -139,6 +139,7 @@ export const menuItems: MenuItem[] = [
     name: '탭',
     keywords: ['tabs'],
     icon: PanelTopIcon,
+    visible: env.PUBLIC_PULUMI_STACK !== 'prod',
     command: ({ editor, range }) => {
       chain(editor, range).setTabs().run();
     },
