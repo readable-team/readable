@@ -41,7 +41,7 @@ export const transformGraphQLPlugin = (contextHolder: ContextHolder): Plugin => 
               if (artifact.kind === 'fragment') {
                 p.replace(AST.b.nullLiteral());
               } else if (artifact.kind === 'query' && artifact.meta.mode !== 'manual') {
-                p.replace(AST.b.identifier(`__gql_data.__gql_${artifact.name}`));
+                p.replace(AST.b.identifier(`data.__gql_${artifact.name}`));
                 needDataProp = true;
               } else {
                 p.replace(
@@ -68,20 +68,34 @@ export const transformGraphQLPlugin = (contextHolder: ContextHolder): Plugin => 
         },
       });
 
+      // data prop이 이미 정의되어 있다면 추가할 필요가 없다
+      AST.walk(program, {
+        visitExportNamedDeclaration(p) {
+          const { node } = p;
+          if (node.declaration?.type === 'VariableDeclaration' && node.declaration.declarations) {
+            for (const declaration of node.declaration.declarations) {
+              if (
+                declaration.type === 'VariableDeclarator' &&
+                'name' in declaration.id &&
+                declaration.id.name === 'data'
+              ) {
+                needDataProp = false;
+                break;
+              }
+            }
+          }
+
+          this.traverse(p);
+        },
+      });
+
       if (needDataProp) {
         program.body.unshift(
-          AST.b.variableDeclaration.from({
-            kind: 'let',
-            declarations: [AST.b.identifier('__gql_data')],
-          }),
           AST.b.exportNamedDeclaration.from({
-            declaration: null,
-            specifiers: [
-              AST.b.exportSpecifier.from({
-                local: AST.b.identifier('__gql_data'),
-                exported: AST.b.identifier('data'),
-              }),
-            ],
+            declaration: AST.b.variableDeclaration.from({
+              kind: 'let',
+              declarations: [AST.b.identifier('data')],
+            }),
           }),
         );
       }
