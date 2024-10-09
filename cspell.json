@@ -15,7 +15,8 @@
     "*.svg",
     "CODEOWNERS",
     "drizzle",
-    "packages/styled-system/styled-system"
+    "packages/styled-system/styled-system",
+    "naver*.html"
   ],
   "words": [
     "amazonses",
