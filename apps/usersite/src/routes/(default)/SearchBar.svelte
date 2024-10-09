@@ -14,7 +14,7 @@
   import { beforeNavigate, goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
-  import { searchBarOpen } from '$lib/stores/ui';
+  import { hasCmd, searchBarOpen } from '$lib/stores/ui';
   import { pageUrl } from '$lib/utils/url';
   import AiIcon from './@ai/AiIcon.svelte';
   import AiLoading from './@ai/AiLoading.svelte';
@@ -290,8 +290,11 @@
         }
       }
     } else {
-      const metaKeyOnly = event.metaKey && !event.ctrlKey && !event.altKey && !event.shiftKey;
-      if (!$searchBarOpen && event.key === 'k' && metaKeyOnly) {
+      const metaOrCtrlKeyOnly =
+        ($hasCmd ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey) &&
+        !event.altKey &&
+        !event.shiftKey;
+      if (!$searchBarOpen && event.key === 'k' && metaOrCtrlKeyOnly) {
         event.preventDefault();
         searchBarOpen.set(true);
       }
