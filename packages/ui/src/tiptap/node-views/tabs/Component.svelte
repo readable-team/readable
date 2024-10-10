@@ -85,7 +85,7 @@
                 '_hover': { '& > button': { display: 'flex' } },
                 '& + &': { marginLeft: '-1px' },
               },
-              tab.selected && { backgroundColor: 'neutral.0' },
+              tab.selected ? { backgroundColor: 'neutral.0' } : { color: 'text.secondary' },
               !editor?.isEditable && { _last: { borderRightWidth: '0' } },
             )}
             role="tab"
@@ -137,7 +137,7 @@
                   right: '14px',
                   display: tab.selected ? 'flex' : 'none',
                   size: '24px',
-                  borderRadius: '2px',
+                  borderRadius: '4px',
                   color: 'gray.500',
                   _hover: { backgroundColor: 'gray.300/40' },
                 })}
@@ -176,7 +176,7 @@
         <button
           class={center({
             size: '24px',
-            borderRadius: '2px',
+            borderRadius: '4px',
             color: 'gray.500',
             _hover: { backgroundColor: 'gray.300/40' },
           })}
