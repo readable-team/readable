@@ -287,7 +287,7 @@ export const Tab = Node.create({
       'div',
       mergeAttributes(HTMLAttributes, {
         role: 'tabpanel',
-        class: css({ display: 'none', marginTop: '0', borderWidth: '1px', borderColor: 'red.500' }),
+        class: css({ display: 'none', marginTop: '0' }),
       }),
       0,
     ];

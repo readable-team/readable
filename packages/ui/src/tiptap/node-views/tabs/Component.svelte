@@ -1,7 +1,8 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
+  import { center, flex } from '@readable/styled-system/patterns';
   import { NodeView, NodeViewContentEditable } from '@readable/ui/tiptap';
+  import PlusIcon from '~icons/lucide/plus';
   import XIcon from '~icons/lucide/x';
   import { Icon } from '../../../components';
   import { getSelectedTabIdx } from './index';
@@ -49,8 +50,8 @@
 </script>
 
 <NodeView>
-  <div class={flex({ align: 'center', gap: '4px', borderWidth: '1px' })} contenteditable="false">
-    <ul class={css({ display: 'flex', gap: '4px' })} role="tablist">
+  <div class={flex({ align: 'center' })} contenteditable="false">
+    <ul class={css({ display: 'flex' })} role="tablist">
       {#each tabs as tab, i (i)}
         <li
           class={css(
@@ -58,19 +59,25 @@
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '4px',
+              gap: '8px',
               borderWidth: '1px',
-              paddingX: '4px',
-              paddingY: '2px',
+              borderColor: 'border.primary',
+              paddingX: '12px',
+              paddingY: '6px',
+              backgroundColor: 'neutral.10',
+              cursor: 'pointer',
             },
-            tab.selected && { backgroundColor: 'accent.50' },
+            tab.selected && { backgroundColor: 'neutral.0' },
           )}
           role="tab"
+          tabindex={0}
           on:keydown={null}
           on:click={() => {
             if (tab.selected) {
-              renamingTabIdx = i;
-              renamingTabTitle = tab.title;
+              if (editor?.isEditable) {
+                renamingTabIdx = i;
+                renamingTabTitle = tab.title;
+              }
             } else {
               editor
                 ?.chain()
@@ -97,39 +104,61 @@
             </span>
           {/if}
 
-          <button
-            type="button"
-            on:click|stopPropagation={() => {
-              editor
-                ?.chain()
-                .setTextSelection(getPos() + 1)
-                .deleteTab(i)
-                .run();
-            }}
-          >
-            <Icon icon={XIcon} />
-          </button>
+          {#if editor?.isEditable}
+            <button
+              class={center({
+                size: '24px',
+                borderRadius: '4px',
+                color: 'text.secondary',
+                _hover: { backgroundColor: 'neutral.20', borderWidth: '1px', borderColor: 'border.primary' },
+              })}
+              type="button"
+              on:click|stopPropagation={() => {
+                editor
+                  ?.chain()
+                  .setTextSelection(getPos() + 1)
+                  .deleteTab(i)
+                  .run();
+              }}
+            >
+              <Icon icon={XIcon} />
+            </button>
+          {/if}
         </li>
       {/each}
     </ul>
 
-    <button
-      type="button"
-      on:click={() => {
-        editor
-          ?.chain()
-          .setTextSelection(getPos() + 1)
-          .addTab()
-          .run();
-      }}
-    >
-      +
-    </button>
+    {#if editor?.isEditable}
+      <button
+        class={center({
+          size: '24px',
+          borderRadius: '4px',
+          marginLeft: '8px',
+          borderWidth: '1px',
+          borderColor: 'border.primary',
+          backgroundColor: 'neutral.10',
+          color: 'text.secondary',
+          _hover: { backgroundColor: 'neutral.20' },
+        })}
+        type="button"
+        on:click={() => {
+          editor
+            ?.chain()
+            .setTextSelection(getPos() + 1)
+            .addTab()
+            .run();
+        }}
+      >
+        <Icon icon={PlusIcon} size={16} />
+      </button>
+    {/if}
   </div>
 
   <div
     class={css({
       'borderWidth': '1px',
+      'borderColor': 'neutral.30',
+      'padding': '16px',
       '&:not(:has([data-tab-selected])) [role="tabpanel"]:first-child': { display: 'block' },
       '& [role="tabpanel"][data-tab-selected]': { display: 'block' },
     })}
