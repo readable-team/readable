@@ -133,6 +133,45 @@ const rules: ParseRule[] = [
       };
     },
   },
+  {
+    node: 'tabs',
+    tag: 'div',
+    getAttrs: (node) => {
+      const tablist = node.querySelector('> [role="tablist"]');
+      if (!tablist) {
+        return false;
+      }
+
+      return null;
+    },
+  },
+  {
+    tag: '[role="tablist"]',
+    ignore: true,
+  },
+  {
+    node: 'tab',
+    tag: '[role="tabpanel"]',
+    getAttrs: (node) => {
+      if (node.getAttribute('role') !== 'tabpanel') {
+        return false;
+      }
+
+      const labelledby = node.getAttribute('aria-labelledby');
+      const tablist = node.parentElement?.querySelector('> [role="tablist"]');
+      const tab = tablist?.querySelector(`> #${labelledby}`);
+
+      if (!tab) {
+        return false;
+      }
+
+      const title = tab.textContent;
+
+      return {
+        title,
+      };
+    },
+  },
 ];
 
 await db.transaction(async (tx) => {
