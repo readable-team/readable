@@ -106,14 +106,14 @@
           class={flex({ borderWidth: '1px', borderColor: 'border.primary', borderRadius: '6px' })}
           {...!editor?.isEditable && { href: node.attrs.url, target: '_blank', rel: 'noopener noreferrer' }}
         >
-          <div class={flex({ direction: 'column', grow: '1', paddingX: '16px', paddingY: '15px', truncate: true })}>
-            <p class={css({ marginBottom: '3px', textStyle: '14m', truncate: true })}>
+          <div class={flex({ direction: 'column', grow: '1', paddingX: '16px', paddingY: '15px' })}>
+            <p class={css({ marginBottom: '3px', textStyle: '14m', lineClamp: 1 })}>
               {node.attrs.title ?? '(제목 없음)'}
             </p>
             <p class={css({ textStyle: '12m', color: 'text.secondary', lineClamp: 2, whiteSpace: 'pre-wrap' })}>
               {node.attrs.description ?? ''}
             </p>
-            <p class={css({ marginTop: 'auto', textStyle: '12m', truncate: true })}>{new URL(node.attrs.url).origin}</p>
+            <p class={css({ marginTop: 'auto', textStyle: '12m', lineClamp: 1 })}>{new URL(node.attrs.url).origin}</p>
           </div>
           {#if node.attrs.thumbnailUrl}
             <img
