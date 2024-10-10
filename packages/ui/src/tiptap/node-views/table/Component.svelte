@@ -6,11 +6,15 @@
   import { createColGroup } from '@tiptap/extension-table';
   import { CellSelection, TableMap } from '@tiptap/pm/tables';
   import { tick } from 'svelte';
+  import ArrowDownToLineIcon from '~icons/lucide/arrow-down-to-line';
   import ArrowLeftToLineIcon from '~icons/lucide/arrow-left-to-line';
   import ArrowRightToLineIcon from '~icons/lucide/arrow-right-to-line';
+  import ArrowUpToLineIcon from '~icons/lucide/arrow-up-to-line';
   import EllipsisIcon from '~icons/lucide/ellipsis';
+  import MoveDownIcon from '~icons/lucide/move-down';
   import MoveLeftIcon from '~icons/lucide/move-left';
   import MoveRightIcon from '~icons/lucide/move-right';
+  import MoveUpIcon from '~icons/lucide/move-up';
   import Trash2Icon from '~icons/lucide/trash-2';
   import { NodeView, NodeViewContentEditable } from '../../lib';
   import type { Node } from '@tiptap/pm/model';
@@ -51,6 +55,39 @@
       }
     });
   }
+
+  let rowElems: HTMLElement[] = [];
+
+  async function getRows(tableNode: Node) {
+    if (!editor || !tableNode) {
+      return;
+    }
+
+    const { state, view } = editor;
+    const { tr } = state;
+
+    const map = TableMap.get(tableNode);
+    const rowsLength = map.height;
+    const tablePos = getPos();
+    const tableStart = tablePos + 1;
+
+    // table row가 렌더링되길 기다림
+    await tick();
+
+    rowElems = [];
+    for (let i = 0; i < rowsLength; i++) {
+      const pos = map.positionAt(i, 0, tableNode);
+      const cellPos = tableStart + pos;
+      const rowPos = tr.doc.resolve(cellPos - 1);
+      const row = view.nodeDOM(rowPos.pos);
+      if (row) {
+        rowElems.push(row as HTMLElement);
+      }
+    }
+  }
+
+  // eslint-disable-next-line unicorn/prefer-top-level-await
+  $: getRows(node);
 
   function addRowAtEnd(tableNode: Node) {
     if (!editor) {
@@ -100,6 +137,38 @@
     return result;
   }
 
+  function selectRow(rowIndex: number) {
+    if (!editor) {
+      return;
+    }
+
+    const { tr } = editor.state;
+
+    const tablePos = getPos();
+    const map = TableMap.get(node);
+    const tableStart = tablePos + 1;
+
+    if (rowIndex < 0 || rowIndex >= map.height) {
+      return false;
+    }
+
+    const rowCells = map.cellsInRect({
+      left: 0,
+      right: map.width,
+      top: rowIndex,
+      bottom: rowIndex + 1,
+    });
+
+    const $anchorCell = tr.doc.resolve(tableStart + rowCells[0]);
+    // eslint-disable-next-line unicorn/prefer-at
+    const $headCell = tr.doc.resolve(tableStart + rowCells[rowCells.length - 1]);
+
+    const rowSelection = CellSelection.rowSelection($anchorCell, $headCell);
+    editor.view.dispatch(tr.setSelection(rowSelection));
+
+    return true;
+  }
+
   function selectColumn(colIndex: number) {
     if (!editor) {
       return;
@@ -128,6 +197,50 @@
 
     const colSelection = CellSelection.colSelection($anchorCell, $headCell);
     editor.view.dispatch(tr.setSelection(colSelection));
+
+    return true;
+  }
+
+  function swapRows(a: number, b: number) {
+    if (!editor) {
+      return false;
+    }
+
+    const { tr } = editor.state;
+
+    let tableNode = node;
+    let tablePos = getPos();
+
+    if (hasSpan) {
+      return false;
+    }
+
+    let map = TableMap.get(tableNode);
+
+    if (a < 0 || a >= map.height || b < 0 || b >= map.height) {
+      return false;
+    }
+
+    if (a === b) {
+      return false;
+    }
+
+    const rowNodes = [];
+    for (let rowIndex = 0; rowIndex < map.height; rowIndex++) {
+      const row = tableNode.child(rowIndex);
+      rowNodes.push(row);
+    }
+
+    const tempRow = rowNodes[a];
+    rowNodes[a] = rowNodes[b];
+    rowNodes[b] = tempRow;
+
+    const tableType = tableNode.type;
+    const newTable = tableType.createChecked(tableNode.attrs, rowNodes, tableNode.marks);
+
+    tr.replaceWith(tablePos, tablePos + tableNode.nodeSize, newTable);
+
+    editor.view.dispatch(tr);
 
     return true;
   }
@@ -201,6 +314,127 @@
       {/each}
     </colgroup>
 
+    <div
+      class={css({
+        position: 'absolute',
+        inset: '0',
+      })}
+      contenteditable={false}
+      role="rowgroup"
+    >
+      {#each rowElems as row, i (row)}
+        <div
+          style:height={`${row.clientHeight}px`}
+          style:top={`${row.offsetTop}px`}
+          class={cx(
+            'group',
+            flex({
+              position: 'absolute',
+              left: '0',
+              width: '30px',
+              translateX: '-1/2',
+              translate: 'auto',
+              zIndex: '10',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }),
+          )}
+          role="row"
+        >
+          <Menu
+            onOpen={() => {
+              selectRow(i);
+            }}
+            placement="right-start"
+            let:close
+          >
+            <div
+              slot="button"
+              class={center({
+                display: open ? 'flex' : 'none',
+                _groupHover: {
+                  display: 'flex',
+                },
+                _hover: {
+                  backgroundColor: 'neutral.20',
+                },
+                size: '24px',
+                color: 'text.tertiary',
+                borderRadius: '4px',
+                backgroundColor: 'neutral.10',
+                borderWidth: '1px',
+                borderColor: 'border.primary',
+              })}
+              let:open
+            >
+              <Icon icon={EllipsisIcon} size={20} />
+            </div>
+
+            {#if i !== 0}
+              <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
+                <MenuItem
+                  disabled={hasSpan}
+                  on:click={() => {
+                    close();
+                    swapRows(i, i - 1);
+                  }}
+                >
+                  <Icon icon={MoveUpIcon} size={14} />
+                  <span>위로 이동</span>
+                </MenuItem>
+              </Tooltip>
+            {/if}
+
+            {#if i !== cols.length - 1}
+              <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
+                <MenuItem
+                  disabled={hasSpan}
+                  on:click={() => {
+                    close();
+                    swapRows(i, i + 1);
+                  }}
+                >
+                  <Icon icon={MoveDownIcon} size={14} />
+                  <span>아래로 이동</span>
+                </MenuItem>
+              </Tooltip>
+            {/if}
+
+            <MenuItem
+              on:click={() => {
+                close();
+                editor?.commands.addRowBefore();
+              }}
+            >
+              <Icon icon={ArrowUpToLineIcon} size={14} />
+              <span>위에 행 추가</span>
+            </MenuItem>
+
+            <MenuItem
+              on:click={() => {
+                close();
+                editor?.commands.addRowAfter();
+              }}
+            >
+              <Icon icon={ArrowDownToLineIcon} size={14} />
+              <span>아래에 행 추가</span>
+            </MenuItem>
+
+            <MenuItem
+              variant="danger"
+              on:click={() => {
+                close();
+                editor?.commands.deleteRow();
+              }}
+            >
+              <Icon icon={Trash2Icon} size={14} />
+              <span>행 삭제</span>
+            </MenuItem>
+          </Menu>
+        </div>
+      {/each}
+    </div>
+
     {#if colgroupRendered}
       {#each colElems as col, i (i)}
         <div
@@ -234,15 +468,15 @@
                 _groupHover: {
                   display: 'flex',
                 },
+                _hover: {
+                  backgroundColor: 'neutral.20',
+                },
                 size: '24px',
-                color: 'text.secondary',
+                color: 'text.tertiary',
                 borderRadius: '4px',
                 backgroundColor: 'neutral.10',
                 borderWidth: '1px',
                 borderColor: 'border.primary',
-                _hover: {
-                  backgroundColor: 'neutral.20',
-                },
               })}
               let:open
             >
