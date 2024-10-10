@@ -1,5 +1,5 @@
 import { css } from '@readable/styled-system/css';
-import { Extension } from '@tiptap/core';
+import { Extension, findParentNode } from '@tiptap/core';
 import { Plugin } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { match } from 'ts-pattern';
@@ -31,7 +31,15 @@ export const Placeholder = Extension.create({
               $anchor.parent.type.name === 'paragraph' &&
               $anchor.parent.childCount === 0;
 
-            if (currentDocumentEmpty || currentParagraphEmpty) {
+            // NOTE: 어째선지 탭 전환 시에는 동작하지 않는다
+            const currentTabPanelEmpty =
+              this.editor.isFocused &&
+              empty &&
+              findParentNode((node) => node.type.name === 'tab')(selection) &&
+              $anchor.parent.type.name === 'paragraph' &&
+              $anchor.parent.childCount === 0;
+
+            if (currentDocumentEmpty || currentParagraphEmpty || currentTabPanelEmpty) {
               decorations.push(
                 createDecoration(
                   $anchor.pos === 0 ? 0 : $anchor.before(),
