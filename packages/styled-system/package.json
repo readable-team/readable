@@ -29,6 +29,6 @@
   "devDependencies": {
     "@pandacss/dev": "^0.46.1",
     "@readable/tsconfig": "workspace:*",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   }
 }
