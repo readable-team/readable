@@ -314,239 +314,242 @@
       {/each}
     </colgroup>
 
-    <div
-      class={css({
-        position: 'absolute',
-        inset: '0',
-      })}
-      contenteditable={false}
-      role="rowgroup"
-    >
-      {#each rowElems as row, i (row)}
-        <div
-          style:height={`${row.clientHeight}px`}
-          style:top={`${row.offsetTop}px`}
-          class={cx(
-            'group',
-            flex({
-              position: 'absolute',
-              left: '0',
-              width: '30px',
-              translateX: '-1/2',
-              translate: 'auto',
-              zIndex: '10',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }),
-          )}
-          role="row"
-        >
-          <Menu
-            onOpen={() => {
-              selectRow(i);
-            }}
-            placement="right-start"
-            let:close
+    {#if editor?.isEditable}
+      <div
+        class={css({
+          position: 'absolute',
+          inset: '0',
+        })}
+        contenteditable={false}
+        role="rowgroup"
+      >
+        {#each rowElems as row, i (row)}
+          <div
+            style:height={`${row.clientHeight}px`}
+            style:top={`${row.offsetTop}px`}
+            class={cx(
+              'group',
+              flex({
+                position: 'absolute',
+                left: '0',
+                width: '30px',
+                translateX: '-1/2',
+                translate: 'auto',
+                zIndex: '10',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }),
+            )}
+            role="row"
           >
-            <div
-              slot="button"
-              class={center({
-                display: open ? 'flex' : 'none',
-                _groupHover: {
-                  display: 'flex',
-                },
-                _hover: {
-                  backgroundColor: 'neutral.20',
-                },
-                size: '24px',
-                color: 'text.tertiary',
-                borderRadius: '4px',
-                backgroundColor: 'neutral.10',
-                borderWidth: '1px',
-                borderColor: 'border.primary',
-              })}
-              let:open
-            >
-              <Icon icon={EllipsisIcon} size={20} />
-            </div>
-
-            {#if i !== 0}
-              <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
-                <MenuItem
-                  disabled={hasSpan}
-                  on:click={() => {
-                    close();
-                    swapRows(i, i - 1);
-                  }}
-                >
-                  <Icon icon={MoveUpIcon} size={14} />
-                  <span>위로 이동</span>
-                </MenuItem>
-              </Tooltip>
-            {/if}
-
-            {#if i !== cols.length - 1}
-              <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
-                <MenuItem
-                  disabled={hasSpan}
-                  on:click={() => {
-                    close();
-                    swapRows(i, i + 1);
-                  }}
-                >
-                  <Icon icon={MoveDownIcon} size={14} />
-                  <span>아래로 이동</span>
-                </MenuItem>
-              </Tooltip>
-            {/if}
-
-            <MenuItem
-              on:click={() => {
-                close();
-                editor?.commands.addRowBefore();
+            <Menu
+              onOpen={() => {
+                selectRow(i);
               }}
+              placement="right-start"
+              let:close
             >
-              <Icon icon={ArrowUpToLineIcon} size={14} />
-              <span>위에 행 추가</span>
-            </MenuItem>
+              <div
+                slot="button"
+                class={center({
+                  display: open ? 'flex' : 'none',
+                  _groupHover: {
+                    display: 'flex',
+                  },
+                  _hover: {
+                    backgroundColor: 'neutral.20',
+                  },
+                  size: '24px',
+                  color: 'text.tertiary',
+                  borderRadius: '4px',
+                  backgroundColor: 'neutral.10',
+                  borderWidth: '1px',
+                  borderColor: 'border.primary',
+                })}
+                let:open
+              >
+                <Icon icon={EllipsisIcon} size={20} />
+              </div>
 
-            <MenuItem
-              on:click={() => {
-                close();
-                editor?.commands.addRowAfter();
-              }}
-            >
-              <Icon icon={ArrowDownToLineIcon} size={14} />
-              <span>아래에 행 추가</span>
-            </MenuItem>
+              {#if i !== 0}
+                <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
+                  <MenuItem
+                    disabled={hasSpan}
+                    on:click={() => {
+                      close();
+                      swapRows(i, i - 1);
+                    }}
+                  >
+                    <Icon icon={MoveUpIcon} size={14} />
+                    <span>위로 이동</span>
+                  </MenuItem>
+                </Tooltip>
+              {/if}
 
-            <MenuItem
-              variant="danger"
-              on:click={() => {
-                close();
-                editor?.commands.deleteRow();
-              }}
-            >
-              <Icon icon={Trash2Icon} size={14} />
-              <span>행 삭제</span>
-            </MenuItem>
-          </Menu>
-        </div>
-      {/each}
-    </div>
+              {#if i !== cols.length - 1}
+                <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
+                  <MenuItem
+                    disabled={hasSpan}
+                    on:click={() => {
+                      close();
+                      swapRows(i, i + 1);
+                    }}
+                  >
+                    <Icon icon={MoveDownIcon} size={14} />
+                    <span>아래로 이동</span>
+                  </MenuItem>
+                </Tooltip>
+              {/if}
 
-    {#if colgroupRendered}
-      {#each colElems as col, i (i)}
-        <div
-          style:left={`${col.offsetLeft}px`}
-          style:width={`${col.clientWidth}px`}
-          class={cx(
-            'group',
-            flex({
-              position: 'absolute',
-              top: '0',
-              height: '30px',
-              translateY: '-1/2',
-              translate: 'auto',
-              zIndex: '10',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }),
-          )}
-        >
-          <Menu
-            onOpen={() => {
-              selectColumn(i);
-            }}
-            placement="bottom-start"
-            let:close
+              <MenuItem
+                on:click={() => {
+                  close();
+                  editor?.commands.addRowBefore();
+                }}
+              >
+                <Icon icon={ArrowUpToLineIcon} size={14} />
+                <span>위에 행 추가</span>
+              </MenuItem>
+
+              <MenuItem
+                on:click={() => {
+                  close();
+                  editor?.commands.addRowAfter();
+                }}
+              >
+                <Icon icon={ArrowDownToLineIcon} size={14} />
+                <span>아래에 행 추가</span>
+              </MenuItem>
+
+              <MenuItem
+                variant="danger"
+                on:click={() => {
+                  close();
+                  editor?.commands.deleteRow();
+                }}
+              >
+                <Icon icon={Trash2Icon} size={14} />
+                <span>행 삭제</span>
+              </MenuItem>
+            </Menu>
+          </div>
+        {/each}
+      </div>
+
+      {#if colgroupRendered}
+        {#each colElems as col, i (i)}
+          <div
+            style:left={`${col.offsetLeft}px`}
+            style:width={`${col.clientWidth}px`}
+            class={cx(
+              'group',
+              flex({
+                position: 'absolute',
+                top: '0',
+                height: '30px',
+                translateY: '-1/2',
+                translate: 'auto',
+                zIndex: '10',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }),
+            )}
           >
-            <div
-              slot="button"
-              class={center({
-                display: open ? 'flex' : 'none',
-                _groupHover: {
-                  display: 'flex',
-                },
-                _hover: {
-                  backgroundColor: 'neutral.20',
-                },
-                size: '24px',
-                color: 'text.tertiary',
-                borderRadius: '4px',
-                backgroundColor: 'neutral.10',
-                borderWidth: '1px',
-                borderColor: 'border.primary',
-              })}
-              let:open
-            >
-              <Icon icon={EllipsisIcon} size={20} />
-            </div>
-
-            {#if i !== 0}
-              <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
-                <MenuItem
-                  disabled={hasSpan}
-                  on:click={() => {
-                    close();
-                    swapColumns(i, i - 1);
-                  }}
-                >
-                  <Icon icon={MoveLeftIcon} size={14} />
-                  <span>왼쪽으로 이동</span>
-                </MenuItem>
-              </Tooltip>
-            {/if}
-
-            {#if i !== cols.length - 1}
-              <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
-                <MenuItem
-                  disabled={hasSpan}
-                  on:click={() => {
-                    close();
-                    swapColumns(i, i + 1);
-                  }}
-                >
-                  <Icon icon={MoveRightIcon} size={14} />
-                  <span>오른쪽으로 이동</span>
-                </MenuItem>
-              </Tooltip>
-            {/if}
-
-            <MenuItem
-              on:click={() => {
-                close();
-                editor?.commands.addColumnBefore();
+            <Menu
+              onOpen={() => {
+                selectColumn(i);
               }}
+              placement="bottom-start"
+              let:close
             >
-              <Icon icon={ArrowLeftToLineIcon} size={14} />
-              <span>왼쪽에 열 추가</span>
-            </MenuItem>
+              <div
+                slot="button"
+                class={center({
+                  display: open ? 'flex' : 'none',
+                  _groupHover: {
+                    display: 'flex',
+                  },
+                  _hover: {
+                    backgroundColor: 'neutral.20',
+                  },
+                  size: '24px',
+                  color: 'text.tertiary',
+                  borderRadius: '4px',
+                  backgroundColor: 'neutral.10',
+                  borderWidth: '1px',
+                  borderColor: 'border.primary',
+                })}
+                let:open
+              >
+                <Icon icon={EllipsisIcon} size={20} />
+              </div>
 
-            <MenuItem
-              on:click={() => {
-                close();
-                editor?.commands.addColumnAfter();
-              }}
-            >
-              <Icon icon={ArrowRightToLineIcon} size={14} />
-              <span>오른쪽에 열 추가</span>
-            </MenuItem>
+              {#if i !== 0}
+                <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
+                  <MenuItem
+                    disabled={hasSpan}
+                    on:click={() => {
+                      close();
+                      swapColumns(i, i - 1);
+                    }}
+                  >
+                    <Icon icon={MoveLeftIcon} size={14} />
+                    <span>왼쪽으로 이동</span>
+                  </MenuItem>
+                </Tooltip>
+              {/if}
 
-            <MenuItem
-              variant="danger"
-              on:click={() => {
-                close();
-                editor?.commands.deleteColumn();
-              }}
-            >
-              <Icon icon={Trash2Icon} size={14} />
-              <span>열 삭제</span>
-            </MenuItem>
-          </Menu>
-        </div>
-      {/each}
+              {#if i !== cols.length - 1}
+                <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
+                  <MenuItem
+                    disabled={hasSpan}
+                    on:click={() => {
+                      close();
+                      swapColumns(i, i + 1);
+                    }}
+                  >
+                    <Icon icon={MoveRightIcon} size={14} />
+                    <span>오른쪽으로 이동</span>
+                  </MenuItem>
+                </Tooltip>
+              {/if}
+
+              <MenuItem
+                on:click={() => {
+                  close();
+                  editor?.commands.addColumnBefore();
+                }}
+              >
+                <Icon icon={ArrowLeftToLineIcon} size={14} />
+                <span>왼쪽에 열 추가</span>
+              </MenuItem>
+
+              <MenuItem
+                on:click={() => {
+                  close();
+                  editor?.commands.addColumnAfter();
+                }}
+              >
+                <Icon icon={ArrowRightToLineIcon} size={14} />
+                <span>오른쪽에 열 추가</span>
+              </MenuItem>
+
+              <MenuItem
+                variant="danger"
+                on:click={() => {
+                  close();
+                  editor?.commands.deleteColumn();
+                }}
+              >
+                <Icon icon={Trash2Icon} size={14} />
+                <span>열 삭제</span>
+              </MenuItem>
+            </Menu>
+          </div>
+        {/each}
+      {/if}
     {/if}
+
     <NodeViewContentEditable as="tbody" />
     {#if editor?.isEditable}
       <div
