@@ -303,7 +303,13 @@
 <NodeView>
   <table
     {...mergeAttributes(extension.options.HTMLAttributes, HTMLAttributes, {
-      class: css({ position: 'relative', border: '1px solid', borderColor: 'neutral.30', borderBottom: 'none' }),
+      class: css({
+        position: 'relative',
+        borderRadius: '4px',
+        borderStyle: 'hidden',
+        outline: '1px solid',
+        outlineColor: 'neutral.30',
+      }),
       style: tableWidth ? `width: ${tableWidth}` : `min-width: ${tableMinWidth}`,
     })}
   >

@@ -170,10 +170,19 @@ export const basicExtensions = [
     cellMinWidth: 50,
     allowTableNodeSelection: true,
   }),
-  TableRow,
+  TableRow.configure({
+    HTMLAttributes: {
+      class: css({
+        '&:last-child :is(td, th)': {
+          borderBottom: 'none',
+        },
+      }),
+    },
+  }),
   TableHeader.configure({
     HTMLAttributes: {
       class: css({
+        borderTop: 'none',
         border: '1px solid',
         borderColor: 'neutral.30',
         paddingX: '14px',
@@ -184,6 +193,7 @@ export const basicExtensions = [
   TableCell.configure({
     HTMLAttributes: {
       class: css({
+        borderTop: 'none',
         border: '1px solid',
         borderColor: 'neutral.30',
         paddingX: '14px',
