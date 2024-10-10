@@ -72,22 +72,21 @@
               {
                 'position': 'relative',
                 'borderWidth': '1px',
+                'borderBottomWidth': '0',
                 'borderColor': 'border.secondary',
-                'marginBottom': '-1px',
                 'paddingLeft': '16px',
                 'paddingRight': editor?.isEditable ? '44px' : '16px',
                 'paddingY': '5px',
                 'flex': 'none',
                 'textStyle': '14m',
-                'height': '35px',
+                'height': '34px',
                 'cursor': 'pointer',
                 '_first': { borderLeftWidth: '0', borderTopLeftRadius: '2px' },
                 '_hover': { '& > button': { display: 'flex' } },
                 '& + &': { marginLeft: '-1px' },
               },
-              tab.selected
-                ? { borderBottomWidth: '0', backgroundColor: 'neutral.0' }
-                : { maxWidth: '95px', truncate: true },
+              tab.selected && { backgroundColor: 'neutral.0' },
+              !editor?.isEditable && { _last: { borderRightWidth: '0' } },
             )}
             role="tab"
             tabindex={0}
