@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
   import { NodeView, NodeViewContentEditable } from '@readable/ui/tiptap';
+  import { tick } from 'svelte';
   import PlusIcon from '~icons/lucide/plus';
   import XIcon from '~icons/lucide/x';
   import { Icon } from '../../../components';
@@ -32,6 +33,7 @@
 
   let renamingTabIdx: number | null = null;
   let renamingTabTitle = '';
+  let renamingTabInput: HTMLInputElement | undefined;
 
   const handleRenameTab = () => {
     if (renamingTabIdx === null) {
@@ -77,6 +79,9 @@
               if (editor?.isEditable) {
                 renamingTabIdx = i;
                 renamingTabTitle = tab.title;
+                tick().then(() => {
+                  renamingTabInput?.focus();
+                });
               }
             } else {
               editor
@@ -89,6 +94,7 @@
         >
           {#if renamingTabIdx === i}
             <input
+              bind:this={renamingTabInput}
               type="text"
               bind:value={renamingTabTitle}
               on:blur={handleRenameTab}
