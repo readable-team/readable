@@ -73,6 +73,18 @@
           id
           email
         }
+
+        plan {
+          id
+
+          plan {
+            id
+
+            rules {
+              memberLimit
+            }
+          }
+        }
       }
     }
   `);
@@ -170,7 +182,7 @@
 
     {#if $query.team.meAsMember?.role === 'ADMIN'}
       {#if $isLiteOrHigher}
-        {#if !$isPro && $query.team.members.length >= 2}
+        {#if !$isPro && $query.team.plan.plan.rules.memberLimit && $query.team.members.length >= $query.team.plan.plan.rules.memberLimit}
           <Tooltip message="Pro 플랜부터 멤버를 더 초대할 수 있어요" placement="bottom">
             <Button style={css.raw({ gap: '6px' })} disabled size="sm" type="button">
               <span>초대하기</span>
