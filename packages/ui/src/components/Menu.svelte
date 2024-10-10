@@ -14,6 +14,8 @@
   export let setFullWidth = false;
   export let disableAutoUpdate = false;
 
+  export let onOpen: (() => void) | undefined = undefined;
+
   let buttonEl: HTMLButtonElement | undefined;
   let menuEl: HTMLUListElement | undefined;
 
@@ -109,7 +111,12 @@
   class={cx(css(style), 'menu-button')}
   aria-expanded={open}
   type="button"
-  on:click|preventDefault={() => (open = !open)}
+  on:click|preventDefault={() => {
+    open = !open;
+    if (open) {
+      onOpen?.();
+    }
+  }}
   use:anchor
 >
   <slot name="button" {open} />
@@ -147,7 +154,7 @@
         </ul>
       </li>
     {:else}
-      <slot />
+      <slot {close} />
     {/if}
 
     {#if $$slots.action}
