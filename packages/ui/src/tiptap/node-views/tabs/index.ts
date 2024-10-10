@@ -112,7 +112,7 @@ export const Tabs = createNodeView(Component, {
           if (dispatch) {
             if (tabs.node.childCount === 1) {
               tr.setMeta(key, { pos: tabs.pos, idx: null });
-              tr.delete(tabs.pos, tabs.node.nodeSize);
+              tr.delete(tabs.pos, tabs.pos + tabs.node.nodeSize);
             } else {
               const selectedIdx = getSelectedTabIdx(state, tabs.pos);
               if (selectedIdx >= idx) {
