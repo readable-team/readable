@@ -60,7 +60,7 @@
       borderBottomWidth: '0',
       borderColor: 'border.secondary',
       borderTopRadius: '4px',
-      backgroundColor: 'gray.200',
+      backgroundColor: 'neutral.20',
       overflow: 'hidden',
     })}
     contenteditable="false"
@@ -148,8 +148,8 @@
                 display: tab.selected ? 'flex' : 'none',
                 size: '24px',
                 borderRadius: '4px',
-                color: 'gray.500',
-                _hover: { backgroundColor: 'gray.300/40' },
+                color: 'neutral.50',
+                _hover: { backgroundColor: 'neutral.30/40' },
               })}
               type="button"
               on:click|stopPropagation={() => {
@@ -182,7 +182,7 @@
           borderColor: 'border.secondary',
           borderTopRightRadius: '4px',
           height: '34px',
-          backgroundColor: 'gray.200',
+          backgroundColor: 'neutral.20',
         },
         editor?.isEditable && { paddingX: '5px', minWidth: '34px' },
       )}
@@ -192,8 +192,8 @@
           class={center({
             size: '24px',
             borderRadius: '4px',
-            color: 'gray.500',
-            _hover: { backgroundColor: 'gray.300/40' },
+            color: 'neutral.50',
+            _hover: { backgroundColor: 'neutral.30/40' },
           })}
           type="button"
           on:click={() => {
