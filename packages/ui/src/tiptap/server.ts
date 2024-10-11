@@ -72,8 +72,12 @@ export const serverExtensions = [
   }),
   Table,
   TableRow,
-  TableHeader,
-  TableCell,
+  TableHeader.extend({
+    content: 'paragraph+',
+  }),
+  TableCell.extend({
+    content: 'paragraph+',
+  }),
 
   // marks
   Bold,

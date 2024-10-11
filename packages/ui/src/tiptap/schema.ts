@@ -190,7 +190,7 @@ export const basicExtensions = [
       }),
     },
   }).extend({
-    content: 'paragraph*',
+    content: 'paragraph+',
   }),
   TableCell.configure({
     HTMLAttributes: {
@@ -203,7 +203,7 @@ export const basicExtensions = [
       }),
     },
   }).extend({
-    content: 'paragraph*',
+    content: 'paragraph+',
   }),
 
   // marks
