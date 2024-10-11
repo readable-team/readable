@@ -86,8 +86,14 @@
               paddingY: '5px',
               flex: 'none',
               textStyle: '14m',
-              cursor: 'pointer',
-              _hover: { '& > button': { display: 'flex' } },
+              cursor: tab.selected ? 'default' : 'pointer',
+              _hover: tab.selected
+                ? {}
+                : {
+                    'color': 'text.primary',
+                    'backgroundColor': 'neutral.10',
+                    '& > button': { display: 'flex' },
+                  },
             },
             tab.selected ? { backgroundColor: 'neutral.0' } : { borderBottomWidth: '1px', color: 'text.secondary' },
             !editor?.isEditable && { _last: { borderRightWidth: '0' } },
