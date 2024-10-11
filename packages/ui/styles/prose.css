@@ -5,7 +5,7 @@
   --prosemirror-color-yellow: #eab308;
   --prosemirror-color-green: #22c55e;
   --prosemirror-color-blue: #3b82f6;
-  --prosemirror-color-selection: #407fff;
+  --prosemirror-color-selection: #90baf8;
   --prosemirror-block-gap: 1rem;
 }
 
@@ -81,8 +81,8 @@
   .column-resize-handle {
     position: absolute;
     right: -2px;
-    top: 0;
-    bottom: 0;
+    top: -1px;
+    bottom: -1px;
     width: 4px;
     z-index: 5;
     background-color: var(--prosemirror-color-selection);
