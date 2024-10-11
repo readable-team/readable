@@ -1,4 +1,4 @@
-import { css } from '@readable/styled-system/css';
+import { css, cx } from '@readable/styled-system/css';
 import { Extension } from '@tiptap/core';
 import { NodeSelection, Plugin, PluginKey, Selection } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
@@ -76,22 +76,25 @@ export const BlockSelectionHelper = Extension.create({
               decorations.push(
                 Decoration.node(pos, pos + node.nodeSize, {
                   nodeName: 'div',
-                  class: css({
-                    position: 'relative',
+                  class: cx(
+                    'block-selection-decoration',
+                    css({
+                      position: 'relative',
 
-                    _after: {
-                      content: '""',
-                      position: 'absolute',
-                      inset: '0',
-                      borderRadius: '4px',
-                      backgroundColor: '[#b3d4fc]',
-                      opacity: '40',
-                      transition: 'common',
-                      transitionTimingFunction: 'ease',
-                      willChange: 'background-color',
-                      pointerEvents: 'none',
-                    },
-                  }),
+                      _after: {
+                        content: '""',
+                        position: 'absolute',
+                        inset: '0',
+                        borderRadius: '4px',
+                        backgroundColor: '[#b3d4fc]',
+                        opacity: '40',
+                        transition: 'common',
+                        transitionTimingFunction: 'ease',
+                        willChange: 'background-color',
+                        pointerEvents: 'none',
+                      },
+                    }),
+                  ),
                 }),
               );
 
