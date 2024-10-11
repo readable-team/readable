@@ -11,6 +11,7 @@
   import ArrowRightToLineIcon from '~icons/lucide/arrow-right-to-line';
   import ArrowUpToLineIcon from '~icons/lucide/arrow-up-to-line';
   import EllipsisIcon from '~icons/lucide/ellipsis';
+  import EllipsisVerticalIcon from '~icons/lucide/ellipsis-vertical';
   import MoveDownIcon from '~icons/lucide/move-down';
   import MoveLeftIcon from '~icons/lucide/move-left';
   import MoveRightIcon from '~icons/lucide/move-right';
@@ -357,16 +358,19 @@
             class={flex({
               position: 'absolute',
               left: '0',
-              width: '30px',
+              width: '18px',
+              height: '24px',
               translateX: '-1/2',
               translate: 'auto',
               zIndex: '10',
               justifyContent: 'center',
               alignItems: 'center',
+              pointerEvents: hoveredRowIndex === i ? 'auto' : 'none',
             })}
             role="row"
           >
             <Menu
+              offset={4}
               onOpen={() => {
                 selectRow(i);
               }}
@@ -380,16 +384,27 @@
                   _hover: {
                     backgroundColor: 'neutral.20',
                   },
-                  size: '24px',
-                  color: 'text.tertiary',
+                  _pressed: {
+                    color: 'white',
+                    backgroundColor: '[var(--prosemirror-color-selection)]',
+                    borderWidth: '0',
+                    _hover: {
+                      backgroundColor: '[var(--prosemirror-color-selection)]',
+                    },
+                  },
+                  width: '18px',
+                  height: '24px',
+                  color: 'neutral.50',
                   borderRadius: '4px',
-                  backgroundColor: 'neutral.10',
+                  backgroundColor: 'white',
                   borderWidth: '1px',
-                  borderColor: 'border.primary',
+                  borderColor: 'neutral.30',
+                  boxShadow: 'normal',
                 })}
+                aria-pressed={open}
                 let:open
               >
-                <Icon icon={EllipsisIcon} size={20} />
+                <Icon icon={EllipsisVerticalIcon} size={14} />
               </div>
 
               {#if i !== 0}
@@ -465,15 +480,18 @@
             class={flex({
               position: 'absolute',
               top: '0',
-              height: '30px',
+              width: '24px',
+              height: '18px',
               translateY: '-1/2',
               translate: 'auto',
               zIndex: '10',
               justifyContent: 'center',
               alignItems: 'center',
+              pointerEvents: hoveredColumnIndex === i ? 'auto' : 'none',
             })}
           >
             <Menu
+              offset={4}
               onOpen={() => {
                 selectColumn(i);
               }}
@@ -487,16 +505,27 @@
                   _hover: {
                     backgroundColor: 'neutral.20',
                   },
-                  size: '24px',
-                  color: 'text.tertiary',
+                  _pressed: {
+                    color: 'white',
+                    backgroundColor: '[var(--prosemirror-color-selection)]',
+                    borderWidth: '0',
+                    _hover: {
+                      backgroundColor: '[var(--prosemirror-color-selection)]',
+                    },
+                  },
+                  width: '24px',
+                  height: '18px',
+                  color: 'neutral.50',
                   borderRadius: '4px',
-                  backgroundColor: 'neutral.10',
+                  backgroundColor: 'white',
                   borderWidth: '1px',
-                  borderColor: 'border.primary',
+                  borderColor: 'neutral.30',
+                  boxShadow: 'normal',
                 })}
+                aria-pressed={open}
                 let:open
               >
-                <Icon icon={EllipsisIcon} size={20} />
+                <Icon icon={EllipsisIcon} size={14} />
               </div>
 
               {#if i !== 0}
@@ -579,29 +608,31 @@
           bottom: '0',
           right: '0',
           width: 'full',
-          height: '18px',
+          height: '23px',
           translate: 'auto',
-          translateY: '[calc(100% + 5px)]',
+          translateY: 'full',
+          paddingTop: '5px',
         }),
       )}
       contenteditable={false}
     >
       <button
         class={center({
-          width: 'full',
-          height: 'full',
-          borderWidth: '1px',
+          size: 'full',
           borderRadius: '4px',
           textStyle: '14m',
-          paddingX: '4px',
-          paddingY: '2px',
-          backgroundColor: 'surface.primary',
+          color: 'neutral.50',
+          backgroundColor: 'neutral.20',
           display: isLastRowHovered ? 'flex' : 'none',
           _groupHover: {
             display: 'flex',
           },
           _hover: {
-            backgroundColor: 'surface.secondary',
+            backgroundColor: 'neutral.30',
+          },
+          _active: {
+            color: 'white',
+            backgroundColor: '[var(--prosemirror-color-selection)]',
           },
         })}
         type="button"
@@ -620,30 +651,32 @@
           top: '0',
           right: '0',
           bottom: '0',
-          width: '18px',
+          width: '23px',
           height: 'full',
           translate: 'auto',
-          translateX: '[calc(100% + 5px)]',
+          translateX: 'full',
+          paddingLeft: '5px',
         }),
       )}
       contenteditable={false}
     >
       <button
         class={center({
-          width: 'full',
-          height: 'full',
-          borderWidth: '1px',
+          size: 'full',
           borderRadius: '4px',
           textStyle: '14m',
-          paddingX: '4px',
-          paddingY: '2px',
-          backgroundColor: 'surface.primary',
+          color: 'neutral.50',
+          backgroundColor: 'neutral.20',
           display: isLastColumnHovered ? 'flex' : 'none',
-          _hover: {
-            backgroundColor: 'surface.secondary',
-          },
           _groupHover: {
             display: 'flex',
+          },
+          _hover: {
+            backgroundColor: 'neutral.30',
+          },
+          _active: {
+            color: 'white',
+            backgroundColor: '[var(--prosemirror-color-selection)]',
           },
         })}
         type="button"
@@ -663,10 +696,12 @@
           zIndex: '10',
           right: '0',
           bottom: '0',
-          size: '18px',
+          size: '23px',
           translate: 'auto',
-          translateX: '[calc(100% + 5px)]',
-          translateY: '[calc(100% + 5px)]',
+          translateX: 'full',
+          translateY: 'full',
+          paddingLeft: '5px',
+          paddingTop: '5px',
         }),
       )}
       contenteditable={false}
@@ -674,18 +709,20 @@
       <button
         class={center({
           size: 'full',
-          borderWidth: '1px',
-          borderRadius: '4px',
+          borderRadius: 'full',
           textStyle: '14m',
-          paddingX: '4px',
-          paddingY: '2px',
-          backgroundColor: 'surface.primary',
+          color: 'neutral.50',
+          backgroundColor: 'neutral.20',
           display: isLastRowHovered && isLastColumnHovered ? 'flex' : 'none',
-          _hover: {
-            backgroundColor: 'surface.secondary',
-          },
           _groupHover: {
             display: 'flex',
+          },
+          _hover: {
+            backgroundColor: 'neutral.30',
+          },
+          _active: {
+            color: 'white',
+            backgroundColor: '[var(--prosemirror-color-selection)]',
           },
         })}
         type="button"
