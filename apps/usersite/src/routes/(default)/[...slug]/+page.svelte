@@ -161,7 +161,8 @@
       <Toc {headings} />
     </div>
 
-    <div class={css({ gridArea: 'content', paddingBottom: '120px', maxWidth: '720px' })}>
+    <!-- NOTE: width 이렇게 넣어주지 않으면 큰 표가 가로 스크롤을 만듦 -->
+    <div class={css({ gridArea: 'content', paddingBottom: '120px', maxWidth: '720px', width: '[calc(100vw - 40px)]' })}>
       {#key $query.publicPage.id}
         <TiptapRenderer
           content={$query.publicPage.content.content}
