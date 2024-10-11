@@ -1,6 +1,6 @@
 import { autoUpdate, computePosition, hide, inline, offset, shift } from '@floating-ui/dom';
 import { center } from '@readable/styled-system/patterns';
-import { Extension, isNodeActive, posToDOMRect } from '@tiptap/core';
+import { Extension, posToDOMRect } from '@tiptap/core';
 import { NodeSelection, Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
 import { BlockSelection } from '../../extensions/block-selection';
 import Component from './Component.svelte';
@@ -52,8 +52,7 @@ export const BubbleMenu = Extension.create({
                 selection.empty ||
                 selection.from === selection.to ||
                 selection instanceof BlockSelection ||
-                view.composing ||
-                isNodeActive(view.state, 'codeBlock')
+                view.composing
               ) {
                 hideBubble();
                 return;

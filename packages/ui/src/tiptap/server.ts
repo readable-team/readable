@@ -23,7 +23,6 @@ import { TextAlign } from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
 import { Callout } from './node-views/callout/server';
-import { CodeBlock } from './node-views/code-block/server';
 import { Embed } from './node-views/embed/server';
 import { File } from './node-views/file/server';
 import { Hint } from './node-views/hint/server';
@@ -130,7 +129,6 @@ export const serverExtensions = [
 
   // node views
   Callout,
-  CodeBlock,
   Embed,
   File,
   Hint,

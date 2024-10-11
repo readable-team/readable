@@ -1,4 +1,3 @@
-import CodeIcon from '~icons/lucide/code';
 import FileUpIcon from '~icons/lucide/file-up';
 import GalleryVerticalEndIcon from '~icons/lucide/gallery-vertical-end';
 import Heading1Icon from '~icons/lucide/heading-1';
@@ -145,18 +144,18 @@ export const menuItems: MenuItem[] = [
       chain(editor, range).setTabs().run();
     },
   },
-  {
-    id: 'code-block',
-    type: 'codeBlock',
-    group: 'block',
-    name: '코드 블록',
-    keywords: ['code block'],
-    icon: CodeIcon,
-    visible: env.PUBLIC_PULUMI_STACK !== 'prod',
-    command: ({ editor, range }) => {
-      chain(editor, range).setCodeBlock().run();
-    },
-  },
+  // {
+  //   id: 'code-block',
+  //   type: 'codeBlock',
+  //   group: 'block',
+  //   name: '코드 블록',
+  //   keywords: ['code block'],
+  //   icon: CodeIcon,
+  //   visible: env.PUBLIC_PULUMI_STACK !== 'prod',
+  //   command: ({ editor, range }) => {
+  //     chain(editor, range).setCodeBlock().run();
+  //   },
+  // },
   {
     id: 'image',
     type: 'image',
