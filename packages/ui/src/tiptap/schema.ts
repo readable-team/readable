@@ -297,7 +297,7 @@ export const basicExtensions = [
 ];
 
 export const editorExtensions = [
-  Dropcursor.configure({ width: 4, class: css({ color: 'accent.60/40' }) }),
+  Dropcursor.configure({ width: 4, class: css({ color: '[var(--prosemirror-color-selection)/40]' }) }),
   History,
   Placeholder,
   ListKeymap,

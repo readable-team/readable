@@ -5,6 +5,7 @@
   --prosemirror-color-yellow: #eab308;
   --prosemirror-color-green: #22c55e;
   --prosemirror-color-blue: #3b82f6;
+  --prosemirror-color-selection: #407fff;
   --prosemirror-block-gap: 1rem;
 }
 
@@ -84,13 +85,13 @@
     bottom: 0;
     width: 4px;
     z-index: 5;
-    background-color: #adf;
+    background-color: var(--prosemirror-color-selection);
     cursor: ew-resize;
     cursor: col-resize;
   }
 
   .selectedCell {
-    background-color: #b3d4fc66;
+    background-color: color-mix(in srgb, var(--prosemirror-color-selection) 14%, transparent);
   }
 }
 
