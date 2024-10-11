@@ -182,7 +182,7 @@ export const basicExtensions = [
   TableHeader.configure({
     HTMLAttributes: {
       class: css({
-        borderTop: 'none',
+        borderTopWidth: '0',
         border: '1px solid',
         borderColor: 'neutral.30',
         paddingX: '14px',
@@ -193,7 +193,7 @@ export const basicExtensions = [
   TableCell.configure({
     HTMLAttributes: {
       class: css({
-        borderTop: 'none',
+        borderTopWidth: '0',
         border: '1px solid',
         borderColor: 'neutral.30',
         paddingX: '14px',
