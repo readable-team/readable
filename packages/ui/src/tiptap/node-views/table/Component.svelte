@@ -15,6 +15,7 @@
   import MoveLeftIcon from '~icons/lucide/move-left';
   import MoveRightIcon from '~icons/lucide/move-right';
   import MoveUpIcon from '~icons/lucide/move-up';
+  import PlusIcon from '~icons/lucide/plus';
   import Trash2Icon from '~icons/lucide/trash-2';
   import { NodeView, NodeViewContentEditable } from '../../lib';
   import type { Node } from '@tiptap/pm/model';
@@ -88,6 +89,21 @@
 
   // eslint-disable-next-line unicorn/prefer-top-level-await
   $: getRows(node);
+
+  let hoveredRowIndex: number | null = null;
+  let hoveredColumnIndex: number | null = null;
+  $: isLastRowHovered = hoveredRowIndex === rowElems.length - 1;
+  $: isLastColumnHovered = hoveredColumnIndex === cols.length - 1;
+  function handlePointerover(event: PointerEvent) {
+    const target = event.target as HTMLElement;
+
+    const cell = target.closest('td,th');
+
+    if (cell) {
+      hoveredColumnIndex = (cell as HTMLTableCellElement).cellIndex;
+      hoveredRowIndex = (cell.parentElement as HTMLTableRowElement).rowIndex;
+    }
+  }
 
   function addRowAtEnd(tableNode: Node) {
     if (!editor) {
@@ -300,8 +316,13 @@
   }
 </script>
 
-<NodeView>
+<NodeView style={css.raw({ position: 'relative' })}>
   <table
+    on:pointerover={handlePointerover}
+    on:pointerleave={() => {
+      hoveredRowIndex = null;
+      hoveredColumnIndex = null;
+    }}
     {...mergeAttributes(extension.options.HTMLAttributes, HTMLAttributes, {
       class: css({
         position: 'relative',
@@ -333,19 +354,16 @@
           <div
             style:height={`${row.clientHeight}px`}
             style:top={`${row.offsetTop}px`}
-            class={cx(
-              'group',
-              flex({
-                position: 'absolute',
-                left: '0',
-                width: '30px',
-                translateX: '-1/2',
-                translate: 'auto',
-                zIndex: '10',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }),
-            )}
+            class={flex({
+              position: 'absolute',
+              left: '0',
+              width: '30px',
+              translateX: '-1/2',
+              translate: 'auto',
+              zIndex: '10',
+              justifyContent: 'center',
+              alignItems: 'center',
+            })}
             role="row"
           >
             <Menu
@@ -358,10 +376,7 @@
               <div
                 slot="button"
                 class={center({
-                  display: open ? 'flex' : 'none',
-                  _groupHover: {
-                    display: 'flex',
-                  },
+                  display: open || hoveredRowIndex === i ? 'flex' : 'none',
                   _hover: {
                     backgroundColor: 'neutral.20',
                   },
@@ -447,19 +462,16 @@
           <div
             style:left={`${col.offsetLeft}px`}
             style:width={`${col.clientWidth}px`}
-            class={cx(
-              'group',
-              flex({
-                position: 'absolute',
-                top: '0',
-                height: '30px',
-                translateY: '-1/2',
-                translate: 'auto',
-                zIndex: '10',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }),
-            )}
+            class={flex({
+              position: 'absolute',
+              top: '0',
+              height: '30px',
+              translateY: '-1/2',
+              translate: 'auto',
+              zIndex: '10',
+              justifyContent: 'center',
+              alignItems: 'center',
+            })}
           >
             <Menu
               onOpen={() => {
@@ -471,10 +483,7 @@
               <div
                 slot="button"
                 class={center({
-                  display: open ? 'flex' : 'none',
-                  _groupHover: {
-                    display: 'flex',
-                  },
+                  display: open || hoveredColumnIndex === i ? 'flex' : 'none',
                   _hover: {
                     backgroundColor: 'neutral.20',
                   },
@@ -557,86 +566,136 @@
     {/if}
 
     <NodeViewContentEditable as="tbody" />
-    {#if editor?.isEditable}
-      <div
-        class={cx(
-          'group',
-          center({
-            position: 'absolute',
-            zIndex: '10',
-            left: '0',
-            bottom: '0',
-            right: '0',
-            height: '30px',
-            translate: 'auto',
-            translateY: '1/2',
-          }),
-        )}
-        contenteditable={false}
-      >
-        <button
-          class={css({
-            borderWidth: '1px',
-            borderRadius: '4px',
-            textStyle: '14m',
-            paddingX: '4px',
-            paddingY: '2px',
-            backgroundColor: 'surface.primary',
-            _hover: {
-              backgroundColor: 'surface.secondary',
-            },
-            display: 'none',
-            _groupHover: {
-              display: 'block',
-            },
-          })}
-          type="button"
-          on:click={() => addRowAtEnd(node)}
-        >
-          추가
-        </button>
-      </div>
-
-      <div
-        class={cx(
-          'group',
-          center({
-            position: 'absolute',
-            zIndex: '10',
-            top: '0',
-            right: '0',
-            bottom: '0',
-            width: '35px',
-            translate: 'auto',
-            translateX: '1/2',
-          }),
-        )}
-        contenteditable={false}
-      >
-        <button
-          class={css({
-            borderWidth: '1px',
-            borderRadius: '4px',
-            textStyle: '14m',
-            paddingX: '4px',
-            paddingY: '2px',
-            backgroundColor: 'surface.primary',
-            _hover: {
-              backgroundColor: 'surface.secondary',
-            },
-            display: 'none',
-            _groupHover: {
-              display: 'block',
-            },
-          })}
-          type="button"
-          on:click={() => {
-            addColumnAtEnd(node);
-          }}
-        >
-          추가
-        </button>
-      </div>
-    {/if}
   </table>
+
+  {#if editor?.isEditable}
+    <div
+      class={cx(
+        'group',
+        css({
+          position: 'absolute',
+          zIndex: '10',
+          left: '0',
+          bottom: '0',
+          right: '0',
+          width: 'full',
+          height: '18px',
+          translate: 'auto',
+          translateY: '[calc(100% + 5px)]',
+        }),
+      )}
+      contenteditable={false}
+    >
+      <button
+        class={center({
+          width: 'full',
+          height: 'full',
+          borderWidth: '1px',
+          borderRadius: '4px',
+          textStyle: '14m',
+          paddingX: '4px',
+          paddingY: '2px',
+          backgroundColor: 'surface.primary',
+          display: isLastRowHovered ? 'flex' : 'none',
+          _groupHover: {
+            display: 'flex',
+          },
+          _hover: {
+            backgroundColor: 'surface.secondary',
+          },
+        })}
+        type="button"
+        on:click={() => addRowAtEnd(node)}
+      >
+        <Icon icon={PlusIcon} size={14} />
+      </button>
+    </div>
+
+    <div
+      class={cx(
+        'group',
+        css({
+          position: 'absolute',
+          zIndex: '10',
+          top: '0',
+          right: '0',
+          bottom: '0',
+          width: '18px',
+          height: 'full',
+          translate: 'auto',
+          translateX: '[calc(100% + 5px)]',
+        }),
+      )}
+      contenteditable={false}
+    >
+      <button
+        class={center({
+          width: 'full',
+          height: 'full',
+          borderWidth: '1px',
+          borderRadius: '4px',
+          textStyle: '14m',
+          paddingX: '4px',
+          paddingY: '2px',
+          backgroundColor: 'surface.primary',
+          display: isLastColumnHovered ? 'flex' : 'none',
+          _hover: {
+            backgroundColor: 'surface.secondary',
+          },
+          _groupHover: {
+            display: 'flex',
+          },
+        })}
+        type="button"
+        on:click={() => {
+          addColumnAtEnd(node);
+        }}
+      >
+        <Icon icon={PlusIcon} size={14} />
+      </button>
+    </div>
+
+    <div
+      class={cx(
+        'group',
+        css({
+          position: 'absolute',
+          zIndex: '10',
+          right: '0',
+          bottom: '0',
+          size: '18px',
+          translate: 'auto',
+          translateX: '[calc(100% + 5px)]',
+          translateY: '[calc(100% + 5px)]',
+        }),
+      )}
+      contenteditable={false}
+    >
+      <button
+        class={center({
+          size: 'full',
+          borderWidth: '1px',
+          borderRadius: '4px',
+          textStyle: '14m',
+          paddingX: '4px',
+          paddingY: '2px',
+          backgroundColor: 'surface.primary',
+          display: isLastRowHovered && isLastColumnHovered ? 'flex' : 'none',
+          _hover: {
+            backgroundColor: 'surface.secondary',
+          },
+          _groupHover: {
+            display: 'flex',
+          },
+        })}
+        type="button"
+        on:click={() => {
+          addRowAtEnd(node);
+          addColumnAtEnd(node);
+        }}
+      >
+        <Icon icon={PlusIcon} size={14} />
+      </button>
+    </div>
+  {/if}
 </NodeView>
