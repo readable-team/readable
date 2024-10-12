@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "tsup",
+    "build": "BUILD=1 vite build",
     "dev": "bun --watch src/server.ts",
     "lint:typecheck": "tsc"
   },
