@@ -20,6 +20,25 @@ new aws.s3.BucketPolicy('cdn', {
   },
 });
 
+const sdk = new aws.s3.Bucket('sdk', {
+  bucket: 'readable-sdk',
+});
+
+new aws.s3.BucketPolicy('sdk', {
+  bucket: sdk.bucket,
+  policy: {
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Effect: 'Allow',
+        Principal: { Service: 'cloudfront.amazonaws.com' },
+        Action: ['s3:GetObject'],
+        Resource: [pulumi.interpolate`${sdk.arn}/*`],
+      },
+    ],
+  },
+});
+
 const usercontents = new aws.s3.Bucket('usercontents', {
   bucket: 'readable-usercontents',
 
@@ -72,9 +91,10 @@ const uploads = new aws.s3.Bucket('uploads', {
   ],
 });
 
-export const buckets = { cdn, usercontents, uploads };
+export const buckets = { cdn, sdk, usercontents, uploads };
 
 export const outputs = {
+  AWS_S3_BUCKET_SDK_ARN: sdk.arn,
   AWS_S3_BUCKET_USERCONTENTS_ARN: usercontents.arn,
   AWS_S3_BUCKET_UPLOADS_ARN: uploads.arn,
 };

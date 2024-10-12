@@ -14,9 +14,11 @@ const app = createYoga({
   context: createContext,
   graphqlEndpoint: '/graphql',
   batching: true,
+  cors: false,
   maskedErrors: false,
   landingPage: false,
   plugins: [useExecutionCancellation(), useLogger(), useError(), useCache()],
 });
 
-yoga.all('/', (ctx) => app(ctx.request, { ip: getClientAddress(ctx.request, ctx.server) }));
+yoga.get('/', (ctx) => app(ctx.request, { ip: getClientAddress(ctx.request, ctx.server) }));
+yoga.post('/', (ctx) => app(ctx.request, { ip: getClientAddress(ctx.request, ctx.server) }));

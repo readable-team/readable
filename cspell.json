@@ -27,6 +27,7 @@
     "dmarc",
     "dotenv",
     "elysia",
+    "elysiajs",
     "felte",
     "fira",
     "healthz",

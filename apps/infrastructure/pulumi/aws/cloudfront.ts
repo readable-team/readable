@@ -120,6 +120,28 @@ const staticResponseHeadersPolicy = new aws.cloudfront.ResponseHeadersPolicy('st
   },
 });
 
+const scriptResponseHeadersPolicy = new aws.cloudfront.ResponseHeadersPolicy('script', {
+  name: 'Scripts',
+  comment: 'Response headers policy for scripts',
+
+  corsConfig: {
+    accessControlAllowOrigins: { items: ['*'] },
+    accessControlAllowHeaders: { items: ['*'] },
+    accessControlAllowMethods: { items: ['GET'] },
+    accessControlAllowCredentials: false,
+    originOverride: true,
+  },
+
+  securityHeadersConfig: {
+    strictTransportSecurity: {
+      override: true,
+      accessControlMaxAgeSec: 31_536_000,
+      includeSubdomains: true,
+      preload: true,
+    },
+  },
+});
+
 const cdn = new aws.cloudfront.Distribution('cdn', {
   enabled: true,
   aliases: ['cdn.rdbl.app'],
@@ -247,7 +269,60 @@ new aws.route53.Record('usercontents.rdbl.app', {
   ],
 });
 
-export const distributions = { cdn, usercontents };
+const sdk = new aws.cloudfront.Distribution('sdk', {
+  enabled: true,
+  aliases: ['sdk.rdbl.io'],
+  httpVersion: 'http2and3',
+
+  origins: [
+    {
+      originId: 'sdk',
+      domainName: buckets.sdk.bucketRegionalDomainName,
+      originAccessControlId: s3OriginAccessControl.id,
+      originShield: { enabled: true, originShieldRegion: 'ap-northeast-2' },
+    },
+  ],
+
+  defaultCacheBehavior: {
+    targetOriginId: 'sdk',
+    compress: true,
+    viewerProtocolPolicy: 'redirect-to-https',
+    allowedMethods: ['GET', 'HEAD', 'OPTIONS'],
+    cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
+    cachePolicyId: dynamicCachePolicy.id,
+    originRequestPolicyId: staticOriginRequestPolicy.id,
+    responseHeadersPolicyId: scriptResponseHeadersPolicy.id,
+  },
+
+  restrictions: {
+    geoRestriction: {
+      restrictionType: 'none',
+    },
+  },
+
+  viewerCertificate: {
+    acmCertificateArn: cloudfrontCertificates.rdbl_io.arn,
+    sslSupportMethod: 'sni-only',
+    minimumProtocolVersion: 'TLSv1.2_2021',
+  },
+
+  waitForDeployment: false,
+});
+
+new aws.route53.Record('sdk.rdbl.io', {
+  zoneId: zones.rdbl_io.zoneId,
+  type: 'A',
+  name: 'sdk.rdbl.io',
+  aliases: [
+    {
+      name: sdk.domainName,
+      zoneId: sdk.hostedZoneId,
+      evaluateTargetHealth: false,
+    },
+  ],
+});
+
+export const distributions = { cdn, sdk, usercontents };
 
 export const outputs = {
   AWS_CLOUDFRONT_DYNAMIC_CACHE_POLICY_ID: dynamicCachePolicy.id,
