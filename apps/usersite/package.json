@@ -18,6 +18,7 @@
     "@sentry/sveltekit": "^8.33.1",
     "dayjs": "^1.11.13",
     "nanoid": "^5.0.7",
+    "query-string": "^9.1.1",
     "remeda": "^2.15.0",
     "svelte-gestures": "^5.0.6",
     "svelte-markdown": "^0.4.1",

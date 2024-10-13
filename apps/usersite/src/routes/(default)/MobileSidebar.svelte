@@ -2,11 +2,15 @@
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
+  import qs from 'query-string';
   import { fade, fly } from 'svelte/transition';
   import CloseIcon from '~icons/lucide/x';
   import ReadableIcon from '~icons/rdbl/readable';
   import { env } from '$env/dynamic/public';
   import { mobileNavOpen } from '$lib/stores/ui';
+
+  export let siteId: string;
+  export let siteUrl: string;
 </script>
 
 <svelte:window
@@ -95,6 +99,7 @@
             paddingBottom: '32px',
           })}
         >
+          <!-- eslint-disable svelte/no-target-blank -->
           <a
             class={flex({
               alignItems: 'center',
@@ -102,10 +107,18 @@
               textStyle: '13b',
               color: 'text.tertiary',
             })}
-            href={env.PUBLIC_WEBSITE_URL}
-            rel="noopener noreferrer"
+            href={qs.stringifyUrl({
+              url: env.PUBLIC_WEBSITE_URL,
+              query: {
+                utm_source: 'usersite',
+                utm_medium: 'madewithreadable',
+                utm_content: new URL(siteUrl).hostname,
+                utm_site_id: siteId,
+              },
+            })}
             target="_blank"
           >
+            <!-- eslint-enable svelte/no-target-blank -->
             <div class={css({ padding: '4px', backgroundColor: 'text.tertiary', borderRadius: '6px' })}>
               <Icon style={css.raw({ '& path': { fill: 'neutral.0' } })} icon={ReadableIcon} size={18} />
             </div>

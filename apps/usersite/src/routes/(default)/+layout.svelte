@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex, visuallyHidden } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
+  import qs from 'query-string';
   import { setContext } from 'svelte';
   import { writable } from 'svelte/store';
   import { swipe } from 'svelte-gestures';
@@ -281,7 +282,7 @@
         <Navigation $publicSite={$query.publicSite} />
       </div>
 
-      <MobileSidebar>
+      <MobileSidebar siteId={$query.publicSite.id} siteUrl={$query.publicSite.url}>
         <Navigation slot="navigation" $publicSite={$query.publicSite} />
       </MobileSidebar>
     {/if}
@@ -293,6 +294,7 @@
 </div>
 
 <!-- TODO: 결제하면 숨기기 -->
+<!-- eslint-disable svelte/no-target-blank -->
 <a
   class={flex({
     'position': 'fixed',
@@ -314,10 +316,18 @@
     },
     'textStyle': '13b',
   })}
-  href={env.PUBLIC_WEBSITE_URL}
-  rel="noopener noreferrer"
+  href={qs.stringifyUrl({
+    url: env.PUBLIC_WEBSITE_URL,
+    query: {
+      utm_source: 'usersite',
+      utm_medium: 'madewithreadable',
+      utm_content: new URL($query.publicSite.url).hostname,
+      utm_site_id: $query.publicSite.id,
+    },
+  })}
   target="_blank"
 >
   <Icon icon={ReadableIcon} size={18} />
   <span>Made with Readable</span>
 </a>
+<!-- eslint-enable svelte/no-target-blank -->
