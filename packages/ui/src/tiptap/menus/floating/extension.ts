@@ -119,11 +119,11 @@ export const FloatingMenu = Extension.create({
               cleanup?.();
               cleanup = autoUpdate(element, dom, async () => {
                 const style = window.getComputedStyle(element);
-                const marginLeft = Number.parseInt(style.marginLeft, 10) || 0;
-                const paddingLeft = Number.parseInt(style.paddingLeft, 10) || 0;
-                const paddingTop = Number.parseInt(style.paddingTop, 10) || 0;
+                const marginLeft = Number.parseFloat(style.marginLeft) || 0;
+                const paddingLeft = Number.parseFloat(style.paddingLeft) || 0;
+                const paddingTop = Number.parseFloat(style.paddingTop) || 0;
                 const scrollLeft = element.scrollLeft;
-                const lineHeight = Number.parseInt(style.lineHeight, 10) || Number.parseInt(style.fontSize, 10) * 1.5;
+                const lineHeight = Number.parseFloat(style.lineHeight) || Number.parseFloat(style.fontSize) * 1.5;
 
                 const { x, y } = await computePosition(element, dom, {
                   placement: 'left-start',
