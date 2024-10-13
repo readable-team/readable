@@ -46,15 +46,18 @@
 
   const blurEffect = getContext<Writable<boolean>>('blurEffect');
 
-  $: if (browser) {
-    const deviceId = sessionStorage?.getItem('readable-did');
+  const reportPageView = async (pageId: string) => {
+    const { getFingerprint } = await import('$lib/utils/fingerprint');
+    const deviceId = await getFingerprint();
 
-    if (deviceId) {
-      updatePageView({
-        pageId: $query.publicPage.id,
-        deviceId,
-      });
-    }
+    await updatePageView({
+      pageId,
+      deviceId,
+    });
+  };
+
+  $: if (browser) {
+    reportPageView($query.publicPage.id);
   }
 </script>
 

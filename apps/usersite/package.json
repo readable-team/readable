@@ -10,6 +10,7 @@
     "lint:svelte": "svelte-check --fail-on-warnings"
   },
   "dependencies": {
+    "@fingerprintjs/fingerprintjs": "^4.5.0",
     "@readable/gql": "workspace:*",
     "@readable/lib": "workspace:*",
     "@readable/styled-system": "workspace:*",

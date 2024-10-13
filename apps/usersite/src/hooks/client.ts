@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid';
-
-sessionStorage.getItem('readable-did') ?? sessionStorage.setItem('readable-did', nanoid());
+import '$lib/utils/fingerprint';
 
 export { handleError } from './common';
