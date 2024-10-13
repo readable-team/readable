@@ -95,8 +95,11 @@ export const BlockSelectionHelper = Extension.create({
                       },
                       ...(this.editor.isEditable && {
                         '&:has(table)': {
-                          marginBottom: '[calc(var(--prosemirror-block-gap) * -1)]',
-                          paddingBottom: '23px',
+                          '&:last-child': {
+                            marginBottom: '-23px',
+                          },
+                          'marginBottom': '[calc(var(--prosemirror-block-gap) * -1)]',
+                          'paddingBottom': '23px',
                         },
                       }),
                     }),
