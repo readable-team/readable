@@ -319,5 +319,5 @@
   target="_blank"
 >
   <Icon icon={ReadableIcon} size={18} />
-  <span>Powered by Readable</span>
+  <span>Made with Readable</span>
 </a>

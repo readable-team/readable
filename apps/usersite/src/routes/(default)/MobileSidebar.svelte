@@ -109,7 +109,7 @@
             <div class={css({ padding: '4px', backgroundColor: 'text.tertiary', borderRadius: '6px' })}>
               <Icon style={css.raw({ '& path': { fill: 'neutral.0' } })} icon={ReadableIcon} size={18} />
             </div>
-            <span>Powered by Readable</span>
+            <span>Made with Readable</span>
           </a>
         </div>
       </div>
