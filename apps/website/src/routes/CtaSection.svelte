@@ -4,6 +4,7 @@
   import { Button, Icon } from '@readable/ui/components';
   import ChevronRightIcon from '~icons/lucide/chevron-right';
   import { env } from '$env/dynamic/public';
+  import { withUtm } from '$lib/utm';
 </script>
 
 <div
@@ -52,7 +53,7 @@
 
     <div class={flex({ align: 'center', gap: { base: '16px', lg: '32px' }, lgDown: { flexDirection: 'column' } })}>
       <Button
-        href={env.PUBLIC_DASHBOARD_URL}
+        href={withUtm(env.PUBLIC_DASHBOARD_URL)}
         rel="noopener noreferrer"
         size="lg"
         target="_blank"

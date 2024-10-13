@@ -14,7 +14,8 @@
     "@readable/styled-system": "workspace:*",
     "@readable/ui": "workspace:*",
     "@sentry/sveltekit": "^8.33.1",
-    "@supabase/supabase-js": "^2.45.4"
+    "@supabase/supabase-js": "^2.45.4",
+    "query-string": "^9.1.1"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.8",

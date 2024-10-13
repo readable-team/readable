@@ -24,6 +24,7 @@
   import WrenchIcon from '~icons/lucide/wrench';
   import HeroLight from '$assets/hero/light.svg?component';
   import { env } from '$env/dynamic/public';
+  import { withUtm } from '$lib/utm';
   import Header from '../Header.svelte';
   import SegmentButtons from '../SegmentButtons.svelte';
   import type { ComponentType } from 'svelte';
@@ -319,7 +320,7 @@
           <Button
             style={css.raw({ marginTop: 'auto', width: 'full' })}
             glossy
-            href={env.PUBLIC_DASHBOARD_URL}
+            href={withUtm(env.PUBLIC_DASHBOARD_URL)}
             size="lg"
             type="link"
             variant={plan.name === 'Pro' ? 'primary' : 'secondary'}

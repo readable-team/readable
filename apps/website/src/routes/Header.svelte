@@ -12,6 +12,7 @@
   import FullLogo from '$assets/logos/full.svg';
   import FullWhiteLogo from '$assets/logos/full-white.svg';
   import { env } from '$env/dynamic/public';
+  import { withUtm } from '$lib/utm';
   import type { ColorToken } from '@readable/styled-system/tokens';
 
   export let theme: HeaderTheme;
@@ -178,7 +179,7 @@
           _active: { backgroundColor: 'brand.700' },
           _pressed: { backgroundColor: 'brand.700' },
         })}
-        href={env.PUBLIC_DASHBOARD_URL}
+        href={withUtm(env.PUBLIC_DASHBOARD_URL)}
       >
         로그인
       </a>
@@ -286,7 +287,7 @@
         })}
       >
         <Button href="/contact" size="lg" type="link" variant="secondary">도입 문의</Button>
-        <Button href={env.PUBLIC_DASHBOARD_URL} size="lg" type="link">로그인</Button>
+        <Button href={withUtm(env.PUBLIC_DASHBOARD_URL)} size="lg" type="link">로그인</Button>
       </div>
     </div>
   </div>

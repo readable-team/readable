@@ -8,6 +8,7 @@
   import EditorMockupImage from '$assets/hero/editor-mockup.webp';
   import SiteMockupImage from '$assets/hero/site-mockup.webp';
   import { env } from '$env/dynamic/public';
+  import { withUtm } from '$lib/utm';
   import SegmentButtons from './SegmentButtons.svelte';
 
   export let section: HTMLElement;
@@ -122,7 +123,7 @@
           _active: { backgroundColor: 'brand.700' },
           _pressed: { backgroundColor: 'brand.700' },
         })}
-        href={env.PUBLIC_DASHBOARD_URL}
+        href={withUtm(env.PUBLIC_DASHBOARD_URL)}
         rel="noopener noreferrer"
         target="_blank"
       >
