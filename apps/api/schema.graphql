@@ -4,6 +4,10 @@ type Addon {
   name: String!
 }
 
+input AuthorizeEmailInput {
+  code: String!
+}
+
 input AuthorizeSingleSignOnInput {
   params: JSON!
   provider: SingleSignOnProvider!
@@ -179,6 +183,7 @@ enum JobState {
 }
 
 type Mutation {
+  authorizeEmail(input: AuthorizeEmailInput!): UserWithAccessToken!
   authorizeSingleSignOn(input: AuthorizeSingleSignOnInput!): UserWithAccessToken!
   createCategory(input: CreateCategoryInput!): Category!
   createDefaultTeam: Team!
@@ -204,6 +209,7 @@ type Mutation {
   removeTeamMember(input: RemoveTeamMemberInput!): TeamMember!
   resendInvitationEmail(input: ResendInvitationEmailInput!): TeamMemberInvitation!
   revokeInvitation(input: RevokeInvitationInput!): TeamMemberInvitation!
+  sendAuthorizationEmail(input: SendAuthorizationEmailInput!): Boolean!
   setSiteCustomDomain(input: SetSiteCustomDomainInput!): SiteCustomDomain!
   syncPageContent(input: SyncPageContentInput!): [SyncPageContentPayload!]!
   unfurlEmbed(input: UnfurlEmbedInput!): Embed!
@@ -480,6 +486,10 @@ type SearchPublicPageByNaturalLanguageResult {
 type SearchPublicPageResult {
   estimatedTotalHits: Int!
   hits: [PublicPageSearchHit!]!
+}
+
+input SendAuthorizationEmailInput {
+  email: String!
 }
 
 input SetSiteCustomDomainInput {

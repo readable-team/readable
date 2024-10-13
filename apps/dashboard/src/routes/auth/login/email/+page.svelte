@@ -1,22 +1,38 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
-  import { Button, Icon } from '@readable/ui/components';
+  import { Button, FormField, FormProvider, Icon, TextInput } from '@readable/ui/components';
+  import { createMutationForm } from '@readable/ui/forms';
   import mixpanel from 'mixpanel-browser';
-  import { SingleSignOnProvider } from '@/enums';
+  import { z } from 'zod';
+  import { dataSchemas } from '@/schemas';
+  import MailIcon from '~icons/lucide/mail';
   import IconGithub from '~icons/simple-icons/github';
-  import { page } from '$app/stores';
-  import GoogleLogo from '$assets/icons/google.svg?component';
   import FullLogo from '$assets/logos/full.svg?component';
   import { graphql } from '$graphql';
 
-  const generateSingleSignOnAuthorizationUrl = graphql(`
-    mutation LoginPage_GenerateSingleSignOnAuthorizationUrl_Mutation(
-      $input: GenerateSingleSignOnAuthorizationUrlInput!
-    ) {
-      generateSingleSignOnAuthorizationUrl(input: $input)
-    }
-  `);
+  const { form, context } = createMutationForm({
+    schema: z.object({
+      email: dataSchemas.email,
+    }),
+    mutation: graphql(`
+      mutation LoginPage_SendAuthorizationEmail_Mutation($input: SendAuthorizationEmailInput!) {
+        sendAuthorizationEmail(input: $input)
+      }
+    `),
+    onSuccess: () => {
+      mixpanel.track('user:login:start', {
+        provider: 'EMAIL',
+      });
+
+      sent = true;
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  let sent = false;
 </script>
 
 <div
@@ -32,38 +48,39 @@
     minHeight: 'screen',
   })}
 >
-  <FullLogo class={css({ marginBottom: '20px', color: 'text.accent', height: '30px' })} />
+  {#if sent}
+    <Icon icon={MailIcon} size={32} />
+    <p class={css({ marginTop: '12px', textStyle: '15m', color: 'text.secondary' })}>
+      인증 메일을 보냈습니다.
+      <br />
+      메일함을 확인해 주세요.
+    </p>
+    <button
+      class={css({ textStyle: '14r', color: 'neutral.70', marginTop: '16px' })}
+      type="button"
+      on:click={() => (sent = false)}
+    >
+      돌아가기
+    </button>
+  {:else}
+    <FullLogo class={css({ marginBottom: '20px', color: 'text.accent', height: '30px' })} />
 
-  <p class={css({ marginBottom: '32px', textStyle: '15m', color: 'text.secondary' })}>
-    제품과 문서를 동기화하고
-    <br />
-    신뢰할 수 있는 가이드 문서를 만들어 보세요
-  </p>
+    <p class={css({ marginBottom: '32px', textStyle: '15m', color: 'text.secondary' })}>
+      제품과 문서를 동기화하고
+      <br />
+      신뢰할 수 있는 가이드 문서를 만들어 보세요
+    </p>
 
-  <Button
-    style={flex.raw({ gap: '6px', width: '240px' })}
-    size="lg"
-    variant="secondary"
-    on:click={async () => {
-      const url = await generateSingleSignOnAuthorizationUrl({
-        provider: SingleSignOnProvider.GOOGLE,
-        email: $page.url.searchParams.get('email'),
-      });
+    <FormProvider {context} {form}>
+      <div class={flex({ direction: 'column', gap: '4px', width: '320px' })}>
+        <FormField name="email" label="이메일">
+          <TextInput name="email" placeholder="me@example.com" />
+        </FormField>
 
-      mixpanel.track('user:login:start', {
-        provider: SingleSignOnProvider.GOOGLE,
-      });
-
-      location.href = url;
-    }}
-  >
-    <GoogleLogo class={css({ size: '16px' })} />
-    <span>구글로 시작하기</span>
-  </Button>
-
-  <a class={css({ textStyle: '14r', color: 'neutral.70', marginTop: '16px' })} href="/auth/login/email">
-    이메일로 시작하기
-  </a>
+        <Button style={flex.raw({ gap: '6px', width: 'full' })} size="lg" type="submit">인증 메일 보내기</Button>
+      </div>
+    </FormProvider>
+  {/if}
 </div>
 
 <footer class={css({ backgroundColor: 'neutral.0', width: 'full' })}>
