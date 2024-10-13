@@ -111,8 +111,7 @@ export const basicExtensions = [
   BulletList.configure({
     HTMLAttributes: {
       class: css({
-        '&:not(ul ul)': { marginLeft: '9px' }, // ul 루트 노드
-        'marginLeft': '3px',
+        '&:not(ul ul)': { paddingLeft: '30px' }, // ul 루트 노드
         'paddingLeft': '15px',
         'listStylePosition': 'outside',
         'listStyleType': 'disc',
@@ -130,8 +129,7 @@ export const basicExtensions = [
   OrderedList.configure({
     HTMLAttributes: {
       class: css({
-        '&:not(ol ol)': { marginLeft: '9px' }, // ol 루트 노드
-        'marginLeft': '3px',
+        '&:not(ol ol)': { paddingLeft: '30px' }, // ol 루트 노드
         'paddingLeft': '15px',
         'listStylePosition': 'outside',
         'listStyleType': 'decimal',
