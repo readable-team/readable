@@ -424,7 +424,8 @@ PublicPageContent.implement({
 
     excerpt: t.string({
       resolve: (content) => {
-        return content.text.slice(0, 200);
+        const text = content.text.replaceAll(/\s+/g, ' ').trim();
+        return text.length <= 200 ? text : text.slice(0, 200) + '...';
       },
     }),
 
