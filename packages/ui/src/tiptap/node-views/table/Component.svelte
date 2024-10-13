@@ -1,24 +1,14 @@
 <script lang="ts">
-  import { css, cx } from '@readable/styled-system/css';
-  import { center, flex } from '@readable/styled-system/patterns';
-  import { Icon, Menu, MenuItem, Tooltip } from '@readable/ui/components';
+  import { css } from '@readable/styled-system/css';
+  import { flex } from '@readable/styled-system/patterns';
   import { mergeAttributes } from '@tiptap/core';
   import { createColGroup } from '@tiptap/extension-table';
-  import { CellSelection, TableMap } from '@tiptap/pm/tables';
+  import { TableMap } from '@tiptap/pm/tables';
   import { tick } from 'svelte';
-  import ArrowDownToLineIcon from '~icons/lucide/arrow-down-to-line';
-  import ArrowLeftToLineIcon from '~icons/lucide/arrow-left-to-line';
-  import ArrowRightToLineIcon from '~icons/lucide/arrow-right-to-line';
-  import ArrowUpToLineIcon from '~icons/lucide/arrow-up-to-line';
-  import EllipsisIcon from '~icons/lucide/ellipsis';
-  import EllipsisVerticalIcon from '~icons/lucide/ellipsis-vertical';
-  import MoveDownIcon from '~icons/lucide/move-down';
-  import MoveLeftIcon from '~icons/lucide/move-left';
-  import MoveRightIcon from '~icons/lucide/move-right';
-  import MoveUpIcon from '~icons/lucide/move-up';
-  import PlusIcon from '~icons/lucide/plus';
-  import Trash2Icon from '~icons/lucide/trash-2';
   import { NodeView, NodeViewContentEditable } from '../../lib';
+  import AddRowColButton from './AddRowColButton.svelte';
+  import ColHandle from './ColHandle.svelte';
+  import RowHandle from './RowHandle.svelte';
   import type { Node } from '@tiptap/pm/model';
   import type { NodeViewProps } from '../../lib';
 
@@ -105,223 +95,32 @@
       hoveredRowIndex = (cell.parentElement as HTMLTableRowElement).rowIndex;
     }
   }
-
-  function addRowAtEnd(tableNode: Node) {
-    if (!editor) {
-      return;
-    }
-
-    const { state } = editor;
-    const { tr } = state;
-
-    const map = TableMap.get(tableNode);
-    const lastRowIndex = map.height - 1;
-
-    const tablePos = getPos();
-    const tableStart = tablePos + 1;
-
-    const cellPos = map.positionAt(lastRowIndex, 0, tableNode);
-    const cellResolvedPos = tr.doc.resolve(tableStart + cellPos);
-
-    editor.commands.setTextSelection(cellResolvedPos.pos);
-
-    const result = editor.commands.addRowAfter();
-
-    return result;
-  }
-
-  function addColumnAtEnd(tableNode: Node) {
-    if (!editor) {
-      return;
-    }
-
-    const { state } = editor;
-    const { tr } = state;
-
-    const map = TableMap.get(tableNode);
-    const lastColumnIndex = map.width - 1;
-
-    const tablePos = getPos();
-    const tableStart = tablePos + 1;
-
-    const cellPos = map.positionAt(0, lastColumnIndex, tableNode);
-    const cellResolvedPos = tr.doc.resolve(tableStart + cellPos);
-
-    editor.commands.setTextSelection(cellResolvedPos.pos);
-
-    const result = editor.commands.addColumnAfter();
-
-    return result;
-  }
-
-  function selectRow(rowIndex: number) {
-    if (!editor) {
-      return;
-    }
-
-    const { tr } = editor.state;
-
-    const tablePos = getPos();
-    const map = TableMap.get(node);
-    const tableStart = tablePos + 1;
-
-    if (rowIndex < 0 || rowIndex >= map.height) {
-      return false;
-    }
-
-    const rowCells = map.cellsInRect({
-      left: 0,
-      right: map.width,
-      top: rowIndex,
-      bottom: rowIndex + 1,
-    });
-
-    const $anchorCell = tr.doc.resolve(tableStart + rowCells[0]);
-    // eslint-disable-next-line unicorn/prefer-at
-    const $headCell = tr.doc.resolve(tableStart + rowCells[rowCells.length - 1]);
-
-    const rowSelection = CellSelection.rowSelection($anchorCell, $headCell);
-    editor.view.dispatch(tr.setSelection(rowSelection));
-
-    return true;
-  }
-
-  function selectColumn(colIndex: number) {
-    if (!editor) {
-      return;
-    }
-
-    const { tr } = editor.state;
-
-    const tablePos = getPos();
-    const map = TableMap.get(node);
-    const tableStart = tablePos + 1;
-
-    if (colIndex < 0 || colIndex >= map.width) {
-      return false;
-    }
-
-    const colCells = map.cellsInRect({
-      left: colIndex,
-      right: colIndex + 1,
-      top: 0,
-      bottom: map.height,
-    });
-
-    const $anchorCell = tr.doc.resolve(tableStart + colCells[0]);
-    // eslint-disable-next-line unicorn/prefer-at
-    const $headCell = tr.doc.resolve(tableStart + colCells[colCells.length - 1]);
-
-    const colSelection = CellSelection.colSelection($anchorCell, $headCell);
-    editor.view.dispatch(tr.setSelection(colSelection));
-
-    return true;
-  }
-
-  function swapRows(a: number, b: number) {
-    if (!editor) {
-      return false;
-    }
-
-    const { tr } = editor.state;
-
-    let tableNode = node;
-    let tablePos = getPos();
-
-    if (hasSpan) {
-      return false;
-    }
-
-    let map = TableMap.get(tableNode);
-
-    if (a < 0 || a >= map.height || b < 0 || b >= map.height) {
-      return false;
-    }
-
-    if (a === b) {
-      return false;
-    }
-
-    const rowNodes = [];
-    for (let rowIndex = 0; rowIndex < map.height; rowIndex++) {
-      const row = tableNode.child(rowIndex);
-      rowNodes.push(row);
-    }
-
-    const tempRow = rowNodes[a];
-    rowNodes[a] = rowNodes[b];
-    rowNodes[b] = tempRow;
-
-    const tableType = tableNode.type;
-    const newTable = tableType.createChecked(tableNode.attrs, rowNodes, tableNode.marks);
-
-    tr.replaceWith(tablePos, tablePos + tableNode.nodeSize, newTable);
-
-    editor.view.dispatch(tr);
-
-    return true;
-  }
-
-  function swapColumns(a: number, b: number) {
-    if (!editor) {
-      return false;
-    }
-
-    const { tr } = editor.state;
-
-    let tableNode = node;
-    let tablePos = getPos();
-
-    if (hasSpan) {
-      return false;
-    }
-
-    let map = TableMap.get(tableNode);
-
-    if (a < 0 || a >= map.width || b < 0 || b >= map.width) {
-      return false;
-    }
-
-    if (a === b) {
-      return false;
-    }
-
-    let rows = [];
-
-    for (let rowIndex = 0; rowIndex < map.height; rowIndex++) {
-      let row = tableNode.child(rowIndex);
-      let cells = [];
-
-      for (let cellIndex = 0; cellIndex < row.childCount; cellIndex++) {
-        cells.push(row.child(cellIndex));
-      }
-
-      let temp = cells[a];
-      cells[a] = cells[b];
-      cells[b] = temp;
-
-      let rowType = row.type;
-      let newRow = rowType.createChecked(row.attrs, cells, row.marks);
-
-      rows.push(newRow);
-    }
-
-    let tableType = tableNode.type;
-    let newTable = tableType.createChecked(tableNode.attrs, rows, tableNode.marks);
-
-    tr.replaceWith(tablePos, tablePos + tableNode.nodeSize, newTable);
-
-    editor.view.dispatch(tr);
-
-    return true;
-  }
 </script>
 
-<NodeView style={css.raw({ position: 'relative' })}>
+<NodeView
+  style={css.raw({
+    'position': 'relative',
+    'width': editor?.isEditable ? 'fit' : 'full',
+
+    // 바깥으로 튀어나온 행/열 핸들과 행/열 추가 버튼이 보일 수 있도록 함
+    'marginTop': '[calc(-10px + var(--prosemirror-block-gap))]',
+    'paddingTop': '10px',
+    'marginBottom': '-23px',
+    'paddingBottom': '23px',
+
+    '.block-selection-decoration &': {
+      marginTop: '0',
+      paddingTop: '0',
+      marginBottom: '0',
+      paddingBottom: '0',
+    },
+  })}
+>
   <div
     class={css({
       position: 'relative',
-      overflowX: editor?.isEditable ? 'visible' : 'auto',
+      width: editor?.isEditable ? 'fit' : 'full',
+      overflowX: editor?.isEditable ? 'unset' : 'auto',
     })}
   >
     <table
@@ -375,100 +174,7 @@
               })}
               role="row"
             >
-              <Menu
-                offset={4}
-                onOpen={() => {
-                  selectRow(i);
-                }}
-                placement="right-start"
-                let:close
-              >
-                <div
-                  slot="button"
-                  class={center({
-                    display: open || hoveredRowIndex === i ? 'flex' : 'none',
-                    _hover: {
-                      backgroundColor: 'neutral.20',
-                    },
-                    _pressed: {
-                      color: 'white',
-                      backgroundColor: '[var(--prosemirror-color-selection)]',
-                      borderWidth: '0',
-                      _hover: {
-                        backgroundColor: '[var(--prosemirror-color-selection)]',
-                      },
-                    },
-                    width: '18px',
-                    height: '24px',
-                    color: 'neutral.50',
-                    borderRadius: '4px',
-                    backgroundColor: 'white',
-                    borderWidth: '1px',
-                    borderColor: 'neutral.30',
-                    boxShadow: 'normal',
-                  })}
-                  aria-pressed={open}
-                  let:open
-                >
-                  <Icon icon={EllipsisVerticalIcon} size={14} />
-                </div>
-                {#if i !== 0}
-                  <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
-                    <MenuItem
-                      disabled={hasSpan}
-                      on:click={() => {
-                        close();
-                        swapRows(i, i - 1);
-                      }}
-                    >
-                      <Icon icon={MoveUpIcon} size={14} />
-                      <span>위로 이동</span>
-                    </MenuItem>
-                  </Tooltip>
-                {/if}
-                {#if i !== cols.length - 1}
-                  <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
-                    <MenuItem
-                      disabled={hasSpan}
-                      on:click={() => {
-                        close();
-                        swapRows(i, i + 1);
-                      }}
-                    >
-                      <Icon icon={MoveDownIcon} size={14} />
-                      <span>아래로 이동</span>
-                    </MenuItem>
-                  </Tooltip>
-                {/if}
-                <MenuItem
-                  on:click={() => {
-                    close();
-                    editor?.commands.addRowBefore();
-                  }}
-                >
-                  <Icon icon={ArrowUpToLineIcon} size={14} />
-                  <span>위에 행 추가</span>
-                </MenuItem>
-                <MenuItem
-                  on:click={() => {
-                    close();
-                    editor?.commands.addRowAfter();
-                  }}
-                >
-                  <Icon icon={ArrowDownToLineIcon} size={14} />
-                  <span>아래에 행 추가</span>
-                </MenuItem>
-                <MenuItem
-                  variant="danger"
-                  on:click={() => {
-                    close();
-                    editor?.commands.deleteRow();
-                  }}
-                >
-                  <Icon icon={Trash2Icon} size={14} />
-                  <span>행 삭제</span>
-                </MenuItem>
-              </Menu>
+              <RowHandle {editor} {hasSpan} {hoveredRowIndex} {i} tableNode={node} tablePos={getPos()} />
             </div>
           {/each}
         </div>
@@ -478,255 +184,30 @@
               style:left={`${col.offsetLeft}px`}
               style:width={`${col.clientWidth}px`}
               class={flex({
-                position: 'absolute',
-                top: '0',
-                width: '24px',
-                height: '18px',
-                translateY: '-1/2',
-                translate: 'auto',
-                zIndex: '10',
-                justifyContent: 'center',
-                alignItems: 'center',
-                pointerEvents: hoveredColumnIndex === i ? 'auto' : 'none',
+                'position': 'absolute',
+                'top': '0',
+                'width': '24px',
+                'height': '18px',
+                'translateY': '-1/2',
+                'translate': 'auto',
+                'zIndex': '10',
+                'justifyContent': 'center',
+                'alignItems': 'center',
+                'pointerEvents': hoveredColumnIndex === i ? 'auto' : 'none',
+                '.block-selection-decoration &': {
+                  display: 'none',
+                },
               })}
             >
-              <Menu
-                offset={4}
-                onOpen={() => {
-                  selectColumn(i);
-                }}
-                placement="bottom-start"
-                let:close
-              >
-                <div
-                  slot="button"
-                  class={center({
-                    display: open || hoveredColumnIndex === i ? 'flex' : 'none',
-                    _hover: {
-                      backgroundColor: 'neutral.20',
-                    },
-                    _pressed: {
-                      color: 'white',
-                      backgroundColor: '[var(--prosemirror-color-selection)]',
-                      borderWidth: '0',
-                      _hover: {
-                        backgroundColor: '[var(--prosemirror-color-selection)]',
-                      },
-                    },
-                    width: '24px',
-                    height: '18px',
-                    color: 'neutral.50',
-                    borderRadius: '4px',
-                    backgroundColor: 'white',
-                    borderWidth: '1px',
-                    borderColor: 'neutral.30',
-                    boxShadow: 'normal',
-                  })}
-                  aria-pressed={open}
-                  let:open
-                >
-                  <Icon icon={EllipsisIcon} size={14} />
-                </div>
-                {#if i !== 0}
-                  <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
-                    <MenuItem
-                      disabled={hasSpan}
-                      on:click={() => {
-                        close();
-                        swapColumns(i, i - 1);
-                      }}
-                    >
-                      <Icon icon={MoveLeftIcon} size={14} />
-                      <span>왼쪽으로 이동</span>
-                    </MenuItem>
-                  </Tooltip>
-                {/if}
-                {#if i !== cols.length - 1}
-                  <Tooltip enabled={hasSpan} message="표에 병합된 셀이 없을 때만 이동할 수 있습니다.">
-                    <MenuItem
-                      disabled={hasSpan}
-                      on:click={() => {
-                        close();
-                        swapColumns(i, i + 1);
-                      }}
-                    >
-                      <Icon icon={MoveRightIcon} size={14} />
-                      <span>오른쪽으로 이동</span>
-                    </MenuItem>
-                  </Tooltip>
-                {/if}
-                <MenuItem
-                  on:click={() => {
-                    close();
-                    editor?.commands.addColumnBefore();
-                  }}
-                >
-                  <Icon icon={ArrowLeftToLineIcon} size={14} />
-                  <span>왼쪽에 열 추가</span>
-                </MenuItem>
-                <MenuItem
-                  on:click={() => {
-                    close();
-                    editor?.commands.addColumnAfter();
-                  }}
-                >
-                  <Icon icon={ArrowRightToLineIcon} size={14} />
-                  <span>오른쪽에 열 추가</span>
-                </MenuItem>
-                <MenuItem
-                  variant="danger"
-                  on:click={() => {
-                    close();
-                    editor?.commands.deleteColumn();
-                  }}
-                >
-                  <Icon icon={Trash2Icon} size={14} />
-                  <span>열 삭제</span>
-                </MenuItem>
-              </Menu>
+              <ColHandle {editor} {hasSpan} {hoveredColumnIndex} {i} tableNode={node} tablePos={getPos()} />
             </div>
           {/each}
         {/if}
       {/if}
       <NodeViewContentEditable as="tbody" />
+      {#if editor?.isEditable}
+        <AddRowColButton {editor} {isLastColumnHovered} {isLastRowHovered} tableNode={node} tablePos={getPos()} />
+      {/if}
     </table>
   </div>
-  {#if editor?.isEditable}
-    <div
-      class={cx(
-        'group',
-        css({
-          position: 'absolute',
-          zIndex: '10',
-          left: '0',
-          bottom: '0',
-          right: '0',
-          width: 'full',
-          height: '23px',
-          translate: 'auto',
-          translateY: 'full',
-          paddingTop: '5px',
-        }),
-      )}
-      contenteditable={false}
-    >
-      <button
-        class={center({
-          size: 'full',
-          borderRadius: '4px',
-          textStyle: '14m',
-          color: 'neutral.50',
-          backgroundColor: 'neutral.20',
-          display: isLastRowHovered ? 'flex' : 'none',
-          _groupHover: {
-            display: 'flex',
-          },
-          _hover: {
-            backgroundColor: 'neutral.30',
-          },
-          _active: {
-            color: 'white',
-            backgroundColor: '[var(--prosemirror-color-selection)]',
-          },
-        })}
-        type="button"
-        on:click={() => addRowAtEnd(node)}
-      >
-        <Icon icon={PlusIcon} size={14} />
-      </button>
-    </div>
-
-    <div
-      class={cx(
-        'group',
-        css({
-          position: 'absolute',
-          zIndex: '10',
-          top: '0',
-          right: '0',
-          bottom: '0',
-          width: '23px',
-          height: 'full',
-          translate: 'auto',
-          translateX: 'full',
-          paddingLeft: '5px',
-        }),
-      )}
-      contenteditable={false}
-    >
-      <button
-        class={center({
-          size: 'full',
-          borderRadius: '4px',
-          textStyle: '14m',
-          color: 'neutral.50',
-          backgroundColor: 'neutral.20',
-          display: isLastColumnHovered ? 'flex' : 'none',
-          _groupHover: {
-            display: 'flex',
-          },
-          _hover: {
-            backgroundColor: 'neutral.30',
-          },
-          _active: {
-            color: 'white',
-            backgroundColor: '[var(--prosemirror-color-selection)]',
-          },
-        })}
-        type="button"
-        on:click={() => {
-          addColumnAtEnd(node);
-        }}
-      >
-        <Icon icon={PlusIcon} size={14} />
-      </button>
-    </div>
-
-    <div
-      class={cx(
-        'group',
-        css({
-          position: 'absolute',
-          zIndex: '10',
-          right: '0',
-          bottom: '0',
-          size: '23px',
-          translate: 'auto',
-          translateX: 'full',
-          translateY: 'full',
-          paddingLeft: '5px',
-          paddingTop: '5px',
-        }),
-      )}
-      contenteditable={false}
-    >
-      <button
-        class={center({
-          size: 'full',
-          borderRadius: 'full',
-          textStyle: '14m',
-          color: 'neutral.50',
-          backgroundColor: 'neutral.20',
-          display: isLastRowHovered && isLastColumnHovered ? 'flex' : 'none',
-          _groupHover: {
-            display: 'flex',
-          },
-          _hover: {
-            backgroundColor: 'neutral.30',
-          },
-          _active: {
-            color: 'white',
-            backgroundColor: '[var(--prosemirror-color-selection)]',
-          },
-        })}
-        type="button"
-        on:click={() => {
-          addRowAtEnd(node);
-          addColumnAtEnd(node);
-        }}
-      >
-        <Icon icon={PlusIcon} size={14} />
-      </button>
-    </div>
-  {/if}
 </NodeView>

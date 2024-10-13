@@ -120,6 +120,9 @@ export const FloatingMenu = Extension.create({
               cleanup = autoUpdate(element, dom, async () => {
                 const style = window.getComputedStyle(element);
                 const marginLeft = Number.parseInt(style.marginLeft, 10) || 0;
+                const paddingLeft = Number.parseInt(style.paddingLeft, 10) || 0;
+                const paddingTop = Number.parseInt(style.paddingTop, 10) || 0;
+                const scrollLeft = element.scrollLeft;
                 const lineHeight = Number.parseInt(style.lineHeight, 10) || Number.parseInt(style.fontSize, 10) * 1.5;
 
                 const { x, y } = await computePosition(element, dom, {
@@ -127,8 +130,8 @@ export const FloatingMenu = Extension.create({
                   middleware: [offset(8 + marginLeft)],
                 });
 
-                const effectiveX = x;
-                const effectiveY = y + lineHeight / 2;
+                const effectiveX = x + paddingLeft - scrollLeft;
+                const effectiveY = y + lineHeight / 2 + paddingTop;
 
                 dom.style.left = `${effectiveX}px`;
                 dom.style.top = `${effectiveY}px`;

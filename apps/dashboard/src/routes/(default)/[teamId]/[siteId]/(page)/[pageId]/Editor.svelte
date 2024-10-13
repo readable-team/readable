@@ -379,7 +379,9 @@
         'alignItems': 'center',
 
         '& > *': {
-          width: '720px',
+          width: 'full',
+          paddingX: '[calc((100% - 720px) / 2)]',
+          overflowX: 'auto',
         },
       })}
       {awareness}

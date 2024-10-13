@@ -170,6 +170,8 @@
 
 <aside
   class={flex({
+    position: 'relative',
+    zIndex: '50',
     flexDirection: 'column',
     flex: 'none',
     backgroundColor: 'surface.secondary',

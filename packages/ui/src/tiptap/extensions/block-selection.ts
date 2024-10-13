@@ -79,18 +79,19 @@ export const BlockSelectionHelper = Extension.create({
                   class: cx(
                     'block-selection-decoration',
                     css({
-                      position: 'relative',
-
-                      _after: {
-                        content: '""',
-                        position: 'absolute',
-                        inset: '0',
-                        borderRadius: '4px',
-                        backgroundColor: '[var(--prosemirror-color-selection)/14]',
-                        transition: 'common',
-                        transitionTimingFunction: 'ease',
-                        willChange: 'background-color',
-                        pointerEvents: 'none',
+                      '& > *': {
+                        position: 'relative',
+                        _after: {
+                          content: '""',
+                          position: 'absolute',
+                          inset: '0',
+                          borderRadius: '4px',
+                          backgroundColor: '[var(--prosemirror-color-selection)/14]',
+                          transition: 'common',
+                          transitionTimingFunction: 'ease',
+                          willChange: 'background-color',
+                          pointerEvents: 'none',
+                        },
                       },
                     }),
                   ),
