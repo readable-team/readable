@@ -103,10 +103,12 @@
     'width': editor?.isEditable ? 'fit' : 'full',
 
     // 바깥으로 튀어나온 행/열 핸들과 행/열 추가 버튼이 보일 수 있도록 함
-    'marginTop': '[calc(-10px + var(--prosemirror-block-gap))]',
-    'paddingTop': '10px',
-    'marginBottom': '-23px',
-    'paddingBottom': '23px',
+    ...(editor?.isEditable && {
+      marginTop: '[calc(-10px + var(--prosemirror-block-gap))]',
+      paddingTop: '10px',
+      marginBottom: '[calc(var(--prosemirror-block-gap) * -1)]',
+      paddingBottom: '23px',
+    }),
 
     '.block-selection-decoration &': {
       marginTop: '0',
