@@ -379,9 +379,13 @@
         'alignItems': 'center',
 
         '& > *': {
+          width: '720px',
+          overflowX: 'auto',
+        },
+
+        '& > [data-node-view]:has(table)': {
           width: 'full',
           paddingX: '[calc((100% - 720px) / 2)]',
-          overflowX: 'auto',
         },
       })}
       {awareness}
