@@ -8,10 +8,11 @@
   import { dataSchemas } from '@/schemas';
   import MailIcon from '~icons/lucide/mail';
   import IconGithub from '~icons/simple-icons/github';
+  import { page } from '$app/stores';
   import FullLogo from '$assets/logos/full.svg?component';
   import { graphql } from '$graphql';
 
-  const { form, context } = createMutationForm({
+  const { form, context, setInitialValues } = createMutationForm({
     schema: z.object({
       email: dataSchemas.email,
     }),
@@ -30,6 +31,10 @@
     onError: (error) => {
       console.log(error);
     },
+  });
+
+  $: setInitialValues({
+    email: $page.url.searchParams.get('email') ?? '',
   });
 
   let sent = false;

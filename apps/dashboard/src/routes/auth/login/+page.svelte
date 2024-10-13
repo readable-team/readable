@@ -17,6 +17,8 @@
       generateSingleSignOnAuthorizationUrl(input: $input)
     }
   `);
+
+  $: email = $page.url.searchParams.get('email');
 </script>
 
 <div
@@ -47,7 +49,7 @@
     on:click={async () => {
       const url = await generateSingleSignOnAuthorizationUrl({
         provider: SingleSignOnProvider.GOOGLE,
-        email: $page.url.searchParams.get('email'),
+        email,
       });
 
       mixpanel.track('user:login:start', {
@@ -61,7 +63,10 @@
     <span>구글로 시작하기</span>
   </Button>
 
-  <a class={css({ textStyle: '14r', color: 'neutral.70', marginTop: '16px' })} href="/auth/login/email">
+  <a
+    class={css({ textStyle: '14r', color: 'neutral.70', marginTop: '16px' })}
+    href={`/auth/login/email${email ? `?email=${email}` : ''}`}
+  >
     이메일로 시작하기
   </a>
 </div>
