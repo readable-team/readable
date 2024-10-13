@@ -24,7 +24,6 @@ import { ReadableError } from '@/errors';
 import * as google from '@/external/google';
 import { createAccessToken } from '@/utils/access-token';
 import { generateRandomAvatar } from '@/utils/image-generation';
-import { generateRandomName } from '@/utils/name';
 import { getTeamPlanRule } from '@/utils/plan';
 import { persistBlobAsImage } from '@/utils/user-contents';
 import { User } from './objects';
@@ -106,7 +105,7 @@ builder.mutationFields((t) => ({
       const newUser = await db.transaction(async (tx) => {
         return await createUser(tx, {
           email,
-          name: generateRandomName(),
+          name: email.split('@')[0],
           avatarId: avatar.id,
         });
       });
