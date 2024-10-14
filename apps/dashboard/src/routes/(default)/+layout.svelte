@@ -2,7 +2,7 @@
   import { flex } from '@readable/styled-system/patterns';
   import mixpanel from 'mixpanel-browser';
   import qs from 'query-string';
-  import { browser } from '$app/environment';
+  import { browser, dev } from '$app/environment';
   import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
 
@@ -34,7 +34,12 @@
 
 <svelte:head>
   {#if env.PUBLIC_PULUMI_STACK !== 'prod'}
-    <script data-site-id="S0000000DOCS" defer src="https://sdk.rdbl.io/script.js"></script>
+    <!-- FIXME: env var? -->
+    <script
+      data-site-id="S0000000DOCS"
+      defer
+      src={dev ? 'http://localhost:3100/script.js' : 'https://sdk.rdbl.io/script.js'}
+    ></script>
   {/if}
 </svelte:head>
 
