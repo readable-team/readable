@@ -8,23 +8,34 @@
   $$restProps;
 
   export let node: NodeViewProps['node'];
-  // export let editor: NodeViewProps['editor'] | undefined;
+  export let editor: NodeViewProps['editor'] | undefined;
   // export let selected: NodeViewProps['selected'];
   export let updateAttributes: NodeViewProps['updateAttributes'];
 </script>
 
 <NodeView style={css.raw({ position: 'relative' })}>
-  <div class={css({ position: 'absolute', top: '0', left: '0', translate: 'auto' })}>
-    <Menu {node} {updateAttributes} />
-  </div>
+  {#if editor?.isEditable}
+    <div
+      class={css({
+        position: 'absolute',
+        top: '4px',
+        right: '4px',
+        translate: 'auto',
+      })}
+      contentEditable={false}
+    >
+      <Menu {node} {updateAttributes} />
+    </div>
+  {/if}
 
   <NodeViewContentEditable
     style={css.raw({
-      paddingY: '8px',
-      paddingX: '12px',
-      fontSize: '13px',
+      paddingY: '18px',
+      paddingX: '16px',
+      textStyle: '14m',
       fontFamily: 'mono',
-      backgroundColor: 'gray.100',
+      backgroundColor: 'neutral.20',
+      borderRadius: '4px',
       overflowX: 'auto',
     })}
     as="pre"

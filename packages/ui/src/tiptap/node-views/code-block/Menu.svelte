@@ -7,7 +7,7 @@
   import IconChevronUp from '~icons/lucide/chevron-up';
   import IconSearch from '~icons/lucide/search';
   import { createFloatingActions } from '../../../actions';
-  import { Icon } from '../../../components';
+  import { HorizontalDivider, Icon } from '../../../components';
   import type { NodeViewProps } from '../../lib';
 
   export let open = false;
@@ -16,11 +16,25 @@
   export let updateAttributes: NodeViewProps['updateAttributes'];
 
   let query = '';
+  let inputElem: HTMLInputElement | undefined;
+  let buttonEl: HTMLButtonElement | undefined;
+  let menuEl: HTMLUListElement | undefined;
+  let selectedIndex: number | null = null;
+
+  $: if (open && inputElem) {
+    inputElem.focus();
+  }
+
+  const close = () => {
+    open = false;
+    query = '';
+    buttonEl?.focus();
+  };
 
   const { anchor, floating } = createFloatingActions({
-    placement: 'bottom',
-    offset: 6,
-    onClickOutside: () => (open = false),
+    placement: 'bottom-end',
+    offset: 4,
+    onClickOutside: close,
   });
 
   const languages = [
@@ -29,14 +43,77 @@
   ].toSorted((a, b) => a.name.localeCompare(b.name));
 
   $: currentLanguage = languages.find((language) => language.id === node.attrs.language)?.name ?? '?';
+  $: filteredLanguages = languages.filter((language) => language.name.toLowerCase().includes(query.toLowerCase()));
+
+  // FIXME: refactor
+  const handleKeyDown = (e: KeyboardEvent) => {
+    const target = e.target as HTMLElement;
+    if (open) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close();
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        close();
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (selectedIndex !== null) {
+          const language = filteredLanguages[selectedIndex];
+          if (language) {
+            updateAttributes({ language: language.id });
+            close();
+          }
+        }
+      }
+
+      if (e.key === 'ArrowDown') {
+        selectedIndex = Math.min(selectedIndex ?? -1, filteredLanguages.length - 2) + 1;
+      } else if (e.key === 'ArrowUp') {
+        selectedIndex = Math.max((selectedIndex ?? filteredLanguages.length) - 1, 0);
+      }
+
+      if (selectedIndex !== null) {
+        const menuItems = menuEl?.querySelectorAll('button');
+        if (!menuItems || menuItems.length === 0) {
+          return;
+        }
+        menuItems[selectedIndex]?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+      }
+    } else {
+      const focusInButton = buttonEl?.contains(target);
+      if (focusInButton && e.key === 'ArrowDown') {
+        e.preventDefault();
+        open = true;
+      }
+    }
+  };
 </script>
 
 <button
+  bind:this={buttonEl}
   class={css({
-    display: 'flex',
-    alignItems: 'center',
-    gap: '2px',
-    fontSize: '14px',
+    'display': 'flex',
+    'alignItems': 'center',
+    'gap': '4px',
+    'textStyle': '14sb',
+    'paddingX': '10px',
+    'paddingY': '2px',
+    'borderWidth': '1px',
+    'borderRadius': '4px',
+    'visibility': open ? 'visible' : 'hidden',
+    'color': 'text.secondary',
+    '[data-node-view]:hover &': {
+      visibility: 'visible',
+    },
+    '_hover': {
+      backgroundColor: 'neutral.10',
+      borderColor: 'border.secondary',
+    },
   })}
   type="button"
   on:click={() => (open = true)}
@@ -51,74 +128,90 @@
   {/if}
 </button>
 
+<svelte:window on:keydown={handleKeyDown} />
+
 {#if open}
   <div
-    class={css({
+    class={flex({
+      direction: 'column',
       position: 'relative',
-      paddingBottom: '8px',
-      backgroundColor: '[#292D3E]',
+      backgroundColor: 'surface.primary',
+      borderRadius: '8px',
       maxHeight: '360px',
       overflowY: 'auto',
       scrollbar: 'hidden',
       zIndex: '50',
-      boxShadow: '[2px 2px 8px 0 {colors.gray.900/15}]',
+      boxShadow: 'strong',
     })}
+    role="menu"
     use:floating
   >
-    <div class={css({ position: 'sticky', top: '0', padding: '14px', backgroundColor: '[#292D3E]' })}>
+    <div class={css({ padding: '8px', backgroundColor: 'surface.primary' })}>
       <label
         class={flex({
           align: 'center',
-          gap: '4px',
+          gap: '8px',
           paddingY: '7px',
-          paddingLeft: '8px',
-          paddingRight: '10px',
-          backgroundColor: 'gray.600',
+          paddingX: '10px',
+          borderRadius: '4px',
+          borderColor: 'border.secondary',
+          borderWidth: '1px',
         })}
       >
-        <Icon style={css.raw({ color: 'gray.400' })} icon={IconSearch} />
+        <Icon style={css.raw({})} icon={IconSearch} size={14} />
         <input
-          class={css({ fontSize: '13px', color: 'gray.100' })}
+          bind:this={inputElem}
+          class={css({ fontSize: '14px' })}
           placeholder="언어를 검색하세요"
           type="text"
           bind:value={query}
         />
       </label>
     </div>
+    <HorizontalDivider />
+    <ul bind:this={menuEl} class={css({ padding: '8px', flex: '1', overflowY: 'auto' })}>
+      {#if filteredLanguages.length > 0}
+        {#each filteredLanguages as language, index (language.id)}
+          <li>
+            <button
+              class={flex({
+                align: 'center',
+                justify: 'space-between',
+                gap: '4px',
+                paddingX: '14px',
+                paddingY: '6px',
+                fontSize: '14px',
+                width: 'full',
+                borderRadius: '4px',
+                backgroundColor: {
+                  base: selectedIndex === index ? 'neutral.20' : 'transparent',
+                  _hover: 'neutral.20',
+                  _focus: 'neutral.20',
+                  _selected: 'neutral.20',
+                },
+              })}
+              aria-pressed={node.attrs.language === language.id}
+              tabIndex={selectedIndex === index ? 0 : -1}
+              type="button"
+              on:click={() => {
+                updateAttributes({ language: language.id });
+                open = false;
+              }}
+              on:pointerover={() => (selectedIndex = index)}
+            >
+              {language.name}
 
-    <ul>
-      {#each languages.filter((language) => language.name
-          .toLowerCase()
-          .includes(query.toLowerCase())) as language (language.id)}
+              {#if node.attrs.language === language.id}
+                <Icon style={css.raw({ 'color': 'brand.400', '& *': { strokeWidth: '[2]' } })} icon={IconCheck} />
+              {/if}
+            </button>
+          </li>
+        {/each}
+      {:else}
         <li>
-          <button
-            class={flex({
-              align: 'center',
-              justify: 'space-between',
-              gap: '4px',
-              paddingX: '14px',
-              paddingY: '6px',
-              fontSize: '13px',
-              color: 'gray.100',
-              width: 'full',
-              backgroundColor: { _hover: 'gray.600', _focus: 'gray.600' },
-            })}
-            aria-pressed={node.attrs.language === language.id}
-            tabIndex={0}
-            type="button"
-            on:click={() => {
-              updateAttributes({ language: language.id });
-              open = false;
-            }}
-          >
-            {language.name}
-
-            {#if node.attrs.language === language.id}
-              <Icon style={css.raw({ 'color': 'brand.400', '& *': { strokeWidth: '[2]' } })} icon={IconCheck} />
-            {/if}
-          </button>
+          <div class={css({ padding: '8px', fontSize: '14px', color: 'neutral.50' })}>검색 결과가 없습니다</div>
         </li>
-      {/each}
+      {/if}
     </ul>
   </div>
 {/if}
