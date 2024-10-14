@@ -18,7 +18,7 @@ type State =
       items: MenuItem[];
     };
 
-const pluginKey = new PluginKey<State>('slashMenu');
+export const pluginKey = new PluginKey<State>('slashMenu');
 const pattern = /\/(\S*)/g;
 const menuItemTypeSet = new Set(menuItems.map((item) => item.type));
 
@@ -70,7 +70,7 @@ export const SlashMenu = Extension.create({
 
             const query = match[1];
 
-            const block = match.index === 0 ? $anchor.node($anchor.depth - 1) : $anchor.parent;
+            const block = match.index === 0 ? $anchor.node(Math.max(0, $anchor.depth - 1)) : $anchor.parent;
             const typeSet = new Set<string>();
 
             for (let i = 0; i < block.type.contentMatch.edgeCount; i++) {

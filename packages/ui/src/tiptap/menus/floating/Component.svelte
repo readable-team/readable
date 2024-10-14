@@ -3,7 +3,9 @@
   import { flex } from '@readable/styled-system/patterns';
   import GripVerticalIcon from '~icons/lucide/grip-vertical';
   import PlusIcon from '~icons/lucide/plus';
-  import Icon from '../../../components/Icon.svelte';
+  import { Icon } from '../../../components';
+  import { pluginKey as slashPluginKey } from '../slash/extension';
+  import { menuItems } from '../slash/items';
   import type { Editor } from '@tiptap/core';
   import type { Node } from '@tiptap/pm/model';
 
@@ -24,15 +26,33 @@
     }
 
     if (block.type.name === 'paragraph' && block.childCount === 0) {
-      editor.chain().deleteCurrentNode().insertContentAt(pos, '/').focus().run();
+      editor
+        .chain()
+        .setMeta(slashPluginKey, {
+          active: true,
+          range: {
+            from: pos,
+            to: pos + 1,
+          },
+          items: menuItems,
+        })
+        .focus(pos + 1)
+        .run();
     } else {
       editor
         .chain()
         .insertContentAt(pos + node.nodeSize, {
           type: 'paragraph',
-          content: [{ type: 'text', text: '/' }],
         })
-        .focus()
+        .setMeta(slashPluginKey, {
+          active: true,
+          range: {
+            from: pos + node.nodeSize + 1,
+            to: pos + node.nodeSize + 1,
+          },
+          items: menuItems,
+        })
+        .focus(pos + node.nodeSize + 1)
         .run();
     }
   };
