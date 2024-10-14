@@ -88,7 +88,9 @@
   $: showCellMergeButton = cellSelection?.ranges && cellSelection.ranges.length > 1;
 
   $: showCellButtons = showCellSplitButton || showCellMergeButton;
-  $: showBlockSwitchButton = selectedBlocks.length === 1;
+  $: showBlockSwitchButton =
+    selectedBlocks.length === 1 && activeNodeTypeId && topLevelNodeTypes.some((node) => node.id === activeNodeTypeId);
+
   $: showMarksMenu = isInlineContentSelected;
 
   $: showBubbleMenu = showCellButtons || showBlockSwitchButton || showMarksMenu;
