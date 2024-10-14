@@ -22,9 +22,15 @@
 
   let loading = false;
   let pages: string[] = [];
+  let lastQueriedKeywords: string[] = [];
 
   const observe = async () => {
     try {
+      // NOTE: 위젯이 열려있지 않으면 쿼리하지 않도록 임시 처리
+      if (!open) {
+        return;
+      }
+
       loading = true;
 
       const elements = [...document.querySelectorAll(selectors.join(','))];
@@ -39,6 +45,13 @@
         return;
       }
 
+      // 간단한 캐싱
+      if (JSON.stringify(lastQueriedKeywords) === JSON.stringify(texts)) {
+        return;
+      }
+
+      lastQueriedKeywords = texts;
+
       const resp = await fetch('https://api.rdbl.io/widget/query', {
         method: 'POST',
         body: JSON.stringify({ keywords: texts, siteId }),
@@ -46,6 +59,11 @@
           'Content-Type': 'application/json',
         },
       });
+
+      // 쿼리 결과가 한번에 여러개 들어오는 경우 마지막 쿼리 결과만 사용하도록 함
+      if (lastQueriedKeywords !== texts) {
+        return;
+      }
 
       const data = await resp.json();
       const pages_ = [];
