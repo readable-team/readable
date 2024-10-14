@@ -24,6 +24,10 @@
   let pages: string[] = [];
   let lastQueriedKeywords: string[] = [];
 
+  $: if (open) {
+    observe();
+  }
+
   const observe = async () => {
     try {
       // NOTE: 위젯이 열려있지 않으면 쿼리하지 않도록 임시 처리
