@@ -35,6 +35,7 @@ import { BubbleMenu } from './menus/bubble';
 import { FloatingMenu } from './menus/floating';
 import { SlashMenu } from './menus/slash';
 import { Callout } from './node-views';
+import { CodeBlock } from './node-views/code-block';
 import { Hint } from './node-views/hint';
 import TableComponent from './node-views/table/Component.svelte';
 import { Tab, Tabs } from './node-views/tabs';
@@ -292,6 +293,7 @@ export const basicExtensions = [
 
   // node views
   Callout,
+  CodeBlock,
   Hint,
 
   Tabs,

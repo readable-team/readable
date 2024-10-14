@@ -1,7 +1,7 @@
-import { findChildren } from '@tiptap/core';
+import { Editor, findChildren } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
-import { bundledLanguages, createHighlighter, getTokenStyleObject, stringifyTokenStyle } from 'shiki';
+import { createHighlighter, getTokenStyleObject, stringifyTokenStyle } from 'shiki';
 import { createNodeView } from '../../lib';
 import Component from './Component.svelte';
 import type { Node } from '@tiptap/pm/model';
@@ -23,6 +23,8 @@ type Options = {
 type Storage = {
   highlighter: Highlighter | undefined;
 };
+
+const key = new PluginKey('codeBlock');
 
 export const CodeBlock = createNodeView<Options, Storage>(Component, {
   name: 'codeBlock',
@@ -100,8 +102,6 @@ export const CodeBlock = createNodeView<Options, Storage>(Component, {
   },
 
   addProseMirrorPlugins() {
-    const key = new PluginKey('codeBlock');
-
     return [
       new Plugin({
         key,
@@ -109,7 +109,7 @@ export const CodeBlock = createNodeView<Options, Storage>(Component, {
           init: () => {
             createHighlighter({
               themes: [this.options.theme],
-              langs: Object.keys(bundledLanguages),
+              langs: [],
             }).then((highlighter) => {
               this.storage.highlighter = highlighter;
 
@@ -126,7 +126,7 @@ export const CodeBlock = createNodeView<Options, Storage>(Component, {
             }
 
             if (tr.getMeta(key) === true || tr.docChanged) {
-              return getDecorations(this.storage.highlighter, this.options.theme, tr.doc);
+              return getDecorations(this.editor, this.storage.highlighter, this.options.theme, tr.doc);
             }
 
             // eslint-disable-next-line unicorn/no-array-callback-reference, unicorn/no-array-method-this-argument
@@ -147,12 +147,22 @@ const themedTokenToStyle = (token: TokenStyles) => {
   return stringifyTokenStyle(token.htmlStyle || getTokenStyleObject(token));
 };
 
-const getDecorations = (highlighter: Highlighter, theme: BundledTheme, doc: Node) => {
+const getDecorations = (editor: Editor, highlighter: Highlighter, theme: BundledTheme, doc: Node) => {
   const decorations: Decoration[] = [];
+  const languages = new Set(['text', ...highlighter.getLoadedLanguages()]);
 
   const children = findChildren(doc, (node) => node.type.name === 'codeBlock');
   for (const child of children) {
     const lang = child.node.attrs.language;
+    if (!languages.has(lang)) {
+      highlighter.loadLanguage(lang).then(() => {
+        const { tr } = editor.state;
+        tr.setMeta(key, true);
+        editor.view.dispatch(tr);
+      });
+
+      continue;
+    }
 
     const result = highlighter.codeToTokens(child.node.textContent, { theme, lang });
 

@@ -14,7 +14,7 @@
 </script>
 
 <NodeView style={css.raw({ position: 'relative' })}>
-  <div class={css({ position: 'absolute', top: '0', left: '0', translate: 'auto', translateY: '-full' })}>
+  <div class={css({ position: 'absolute', top: '0', left: '0', translate: 'auto' })}>
     <Menu {node} {updateAttributes} />
   </div>
 

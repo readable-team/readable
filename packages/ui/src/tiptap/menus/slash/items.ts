@@ -1,3 +1,4 @@
+import CodeIcon from '~icons/lucide/code';
 import FileUpIcon from '~icons/lucide/file-up';
 import GalleryVerticalEndIcon from '~icons/lucide/gallery-vertical-end';
 import Heading1Icon from '~icons/lucide/heading-1';
@@ -12,6 +13,7 @@ import PanelTopIcon from '~icons/lucide/panel-top';
 import PaperclipIcon from '~icons/lucide/paperclip';
 import TableIcon from '~icons/lucide/table';
 import TextQuoteIcon from '~icons/lucide/text-quote';
+import { env } from '$env/dynamic/public';
 import type { Editor, Range } from '@tiptap/core';
 import type { MenuItem } from './types';
 
@@ -141,18 +143,18 @@ export const menuItems: MenuItem[] = [
       chain(editor, range).setTabs().run();
     },
   },
-  // {
-  //   id: 'code-block',
-  //   type: 'codeBlock',
-  //   group: 'block',
-  //   name: '코드 블록',
-  //   keywords: ['code block'],
-  //   icon: CodeIcon,
-  //   visible: env.PUBLIC_PULUMI_STACK !== 'prod',
-  //   command: ({ editor, range }) => {
-  //     chain(editor, range).setCodeBlock().run();
-  //   },
-  // },
+  {
+    id: 'code-block',
+    type: 'codeBlock',
+    group: 'block',
+    name: '코드 블록',
+    keywords: ['code block'],
+    icon: CodeIcon,
+    visible: env.PUBLIC_PULUMI_STACK !== 'prod',
+    command: ({ editor, range }) => {
+      chain(editor, range).setCodeBlock().run();
+    },
+  },
   {
     id: 'image',
     type: 'image',
