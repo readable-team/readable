@@ -141,6 +141,7 @@
           boxShadow: 'emphasize',
           width: '280px',
           height: '280px',
+          zIndex: '50',
         })}
         use:floating
       >
