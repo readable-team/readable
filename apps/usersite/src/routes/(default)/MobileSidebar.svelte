@@ -21,6 +21,15 @@
     }
   }}
 />
+<svelte:head>
+  {#if $mobileNavOpen}
+    <style>
+      body {
+        overflow: hidden;
+      }
+    </style>
+  {/if}
+</svelte:head>
 
 {#if $mobileNavOpen}
   <div
