@@ -3,7 +3,6 @@ import { createServerNodeView } from '../../lib/server';
 export const CodeBlock = createServerNodeView({
   name: 'codeBlock',
   group: 'block',
-  draggable: true,
   content: 'text*',
   marks: '',
   code: true,

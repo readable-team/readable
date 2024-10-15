@@ -29,7 +29,6 @@ const key = new PluginKey('codeBlock');
 export const CodeBlock = createNodeView<Options, Storage>(Component, {
   name: 'codeBlock',
   group: 'block',
-  draggable: true,
   content: 'text*',
   marks: '',
   code: true,
