@@ -103,6 +103,7 @@
     let currentIndent = defaultIndent;
     let prevLevel = headings[0]?.level;
 
+    indents = [];
     for (const item of headings) {
       const indent = Math.max(defaultIndent, currentIndent + (item.level - prevLevel) * 20);
       indents.push(indent);
