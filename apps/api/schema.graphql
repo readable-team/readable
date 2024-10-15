@@ -113,6 +113,18 @@ type File implements Blob {
   url: String!
 }
 
+type FindOutdatedContent {
+  fixes: [FindOutdatedContentFix!]!
+  page: Page!
+}
+
+type FindOutdatedContentFix {
+  nodeId: String!
+  reason: String!
+  relevance: Float!
+  suggestion: String!
+}
+
 input GenerateSingleSignOnAuthorizationUrlInput {
   email: String
   provider: SingleSignOnProvider!
@@ -435,6 +447,7 @@ input PublishPageInput {
 }
 
 type Query {
+  findOutdatedContent(query: String!, siteId: String!): [FindOutdatedContent!]!
   image(id: ID!): Image!
   me: User
   page(pageId: ID!): Page!
@@ -442,7 +455,6 @@ type Query {
   publicPageById(pageId: ID!): PublicPage!
   publicSite: PublicSite!
   searchPage(query: String!, siteId: String!): SearchPageResult!
-  searchPageByChange(query: String!, siteId: String!): [SearchPageByChangeHit!]!
   searchPublicPage(query: String!): SearchPublicPageResult!
   searchPublicPageByNaturalLanguage(query: String!): SearchPublicPageByNaturalLanguageResult!
   site(siteId: ID!): Site!
@@ -460,18 +472,6 @@ input ResendInvitationEmailInput {
 
 input RevokeInvitationInput {
   invitationId: ID!
-}
-
-type SearchPageByChangeFix {
-  nodeId: String!
-  reason: String!
-  relevance: Float!
-  suggestion: String!
-}
-
-type SearchPageByChangeHit {
-  fixes: [SearchPageByChangeFix!]!
-  page: Page!
 }
 
 type SearchPageResult {

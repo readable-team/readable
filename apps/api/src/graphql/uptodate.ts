@@ -10,7 +10,7 @@ import { fixByChangePrompt } from '@/prompt/fix-by-change';
 import { assertSitePermission } from '@/utils/permissions';
 import { Page } from './objects';
 
-type SearchPageByChangeHit = {
+type FindOutdatedContent = {
   pageId: string;
   fixes: {
     nodeId: string;
@@ -20,13 +20,13 @@ type SearchPageByChangeHit = {
   }[];
 };
 
-const SearchPageByChangeHit = builder.objectRef<SearchPageByChangeHit>('SearchPageByChangeHit');
-SearchPageByChangeHit.implement({
+const FindOutdatedContent = builder.objectRef<FindOutdatedContent>('FindOutdatedContent');
+FindOutdatedContent.implement({
   fields: (t) => ({
     page: t.field({ type: Page, resolve: (hit) => hit.pageId }),
     fixes: t.field({
       type: [
-        builder.simpleObject('SearchPageByChangeFix', {
+        builder.simpleObject('FindOutdatedContentFix', {
           fields: (t) => ({
             nodeId: t.string(),
             suggestion: t.string(),
@@ -41,8 +41,8 @@ SearchPageByChangeHit.implement({
 });
 
 builder.queryFields((t) => ({
-  searchPageByChange: t.withAuth({ session: true }).field({
-    type: [SearchPageByChangeHit],
+  findOutdatedContent: t.withAuth({ session: true }).field({
+    type: [FindOutdatedContent],
     args: {
       siteId: t.arg.string(),
       query: t.arg.string(),
