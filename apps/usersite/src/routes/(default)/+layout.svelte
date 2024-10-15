@@ -28,6 +28,12 @@
         themeColor
         aiSearchEnabled
 
+        headerLink {
+          id
+          label
+          url
+        }
+
         logo {
           id
           url
@@ -189,30 +195,27 @@
           <span class={css({ textStyle: '18b', truncate: true })}>{$query.publicSite.name}</span>
         </h1>
       </a>
-      <div
-        class={css({
-          flexShrink: 0,
-          hideBelow: 'md',
-          width: '260px',
-        })}
-      >
+
+      <div class={flex({ align: 'center', justify: 'flex-end', gap: '8px' })}>
         <button
           class={flex({
-            width: 'full',
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingX: '14px',
-            height: '41px',
+            shrink: 0,
             borderRadius: '10px',
             borderWidth: '1px',
             borderColor: 'border.secondary',
+            paddingX: '14px',
             backgroundColor: 'surface.primary',
+            color: 'text.tertiary',
+            textStyle: '14r',
+            height: '41px',
+            width: '260px',
             _hover: {
               borderColor: 'border.primary',
               backgroundColor: 'surface.secondary',
             },
-            color: 'text.tertiary',
-            textStyle: '14r',
+            hideBelow: 'md',
           })}
           aria-label="검색"
           type="button"
@@ -249,15 +252,33 @@
             <span>K</span>
           </div>
         </button>
+        <button
+          class={flex({ hideFrom: 'md', marginLeft: 'auto', color: 'neutral.60' })}
+          aria-label="검색"
+          type="button"
+          on:click={openSearchBar}
+        >
+          <Icon icon={SearchIcon} size={24} />
+        </button>
+
+        {#if $query.publicSite.headerLink}
+          <a
+            class={flex({
+              align: 'center',
+              flex: 'none',
+              borderRadius: { base: '8px', md: '10px' },
+              paddingX: '14px',
+              textStyle: '14sb',
+              color: 'white',
+              backgroundColor: { base: 'var(--usersite-theme-color)', _hover: 'var(--usersite-theme-color)/80' },
+              height: { base: '31px', md: '41px' },
+            })}
+            href={$query.publicSite.headerLink.url}
+          >
+            {$query.publicSite.headerLink.label}
+          </a>
+        {/if}
       </div>
-      <button
-        class={flex({ hideFrom: 'md', marginLeft: 'auto', color: 'neutral.60' })}
-        aria-label="검색"
-        type="button"
-        on:click={openSearchBar}
-      >
-        <Icon icon={SearchIcon} size={24} />
-      </button>
     </div>
   </header>
 

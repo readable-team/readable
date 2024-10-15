@@ -1,6 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import IconExternalLink from '~icons/lucide/external-link';
   import IconLink2 from '~icons/lucide/link-2';
   import IconPaintbrushVertical from '~icons/lucide/paintbrush-vertical';
   import IconSettings from '~icons/lucide/settings';
@@ -28,6 +29,12 @@
       href: `/${data.props.teamId}/${data.props.siteId}/settings/domain`,
       icon: IconLink2,
       selected: $page.url.pathname === `/${data.props.teamId}/${data.props.siteId}/settings/domain`,
+    },
+    {
+      name: '헤더 링크 버튼',
+      href: `/${data.props.teamId}/${data.props.siteId}/settings/link`,
+      icon: IconExternalLink,
+      selected: $page.url.pathname === `/${data.props.teamId}/${data.props.siteId}/settings/link`,
     },
   ];
 

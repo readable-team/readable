@@ -2,6 +2,7 @@
   import { Alert } from '@readable/ui/components';
 
   export let open = false;
+  export let cancel: (() => void) | undefined = undefined;
   export let action: () => void;
   export let title: string;
   export let content: string;
@@ -10,7 +11,7 @@
   export let variant: 'primary' | 'danger' = 'danger';
 </script>
 
-<Alert onAction={action} {variant} bind:open>
+<Alert onAction={action} onCancel={cancel} {variant} bind:open>
   <svelte:fragment slot="title">{title}</svelte:fragment>
   <svelte:fragment slot="content">
     {content}

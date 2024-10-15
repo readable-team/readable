@@ -9,6 +9,7 @@
   export let open: boolean;
   export let containerStyle: SystemStyleObject | undefined = undefined;
   export let actionStyle: SystemStyleObject | undefined = undefined;
+  export let onCancel: (() => void) | undefined = undefined;
   export let onAction: () => void;
   export let variant: 'primary' | 'danger' = 'danger';
 </script>
@@ -94,7 +95,15 @@
           actionStyle,
         )}
       >
-        <Button style={css.raw({ minWidth: '95px' })} size="lg" variant="secondary" on:click={() => (open = false)}>
+        <Button
+          style={css.raw({ minWidth: '95px' })}
+          size="lg"
+          variant="secondary"
+          on:click={() => {
+            if (onCancel) onCancel();
+            open = false;
+          }}
+        >
           <slot name="cancel" />
         </Button>
         <Button
