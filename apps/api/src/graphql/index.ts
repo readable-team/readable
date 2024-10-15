@@ -10,6 +10,7 @@ import './search';
 import './site';
 import './team';
 import './unfurl';
+import './uptodate';
 import './user';
 
 import { builder } from '@/builder';

@@ -463,9 +463,10 @@ input RevokeInvitationInput {
 }
 
 type SearchPageByChangeFix {
+  nodeId: String!
   reason: String!
   relevance: Float!
-  text: String!
+  suggestion: String!
 }
 
 type SearchPageByChangeHit {

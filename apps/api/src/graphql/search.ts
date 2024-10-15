@@ -1,14 +1,12 @@
 import { and, cosineDistance, desc, eq, gt, sql } from 'drizzle-orm';
 import DOMPurify from 'isomorphic-dompurify';
 import { zodResponseFormat } from 'openai/helpers/zod';
-import { uniqueBy } from 'remeda';
 import { z } from 'zod';
 import { builder } from '@/builder';
 import { db, PageContentChunks, PageContents, Pages } from '@/db';
 import { PageState } from '@/enums';
 import { ReadableError } from '@/errors';
 import * as openai from '@/external/openai';
-import { fixByChangePrompt } from '@/prompt/fix-by-change';
 import { keywordExtractionPrompt, naturalLanguageSearchPrompt } from '@/prompt/natural-language-search';
 import { searchIndex } from '@/search';
 import { assertSitePermission } from '@/utils/permissions';
@@ -121,34 +119,6 @@ SearchPublicPageResult.implement({
   }),
 });
 
-type SearchPageByChangeHit = {
-  pageId: string;
-  fixes: {
-    text: string;
-    relevance: number;
-    reason: string;
-  }[];
-};
-
-const SearchPageByChangeHit = builder.objectRef<SearchPageByChangeHit>('SearchPageByChangeHit');
-SearchPageByChangeHit.implement({
-  fields: (t) => ({
-    page: t.field({ type: Page, resolve: (hit) => hit.pageId }),
-    fixes: t.field({
-      type: [
-        builder.simpleObject('SearchPageByChangeFix', {
-          fields: (t) => ({
-            text: t.string(),
-            relevance: t.float(),
-            reason: t.string(),
-          }),
-        }),
-      ],
-      resolve: (hit) => hit.fixes,
-    }),
-  }),
-});
-
 type SearchPublicPageByNaturalLanguageResult = {
   answer: string;
   pageIds: string[];
@@ -187,94 +157,6 @@ builder.queryFields((t) => ({
       });
 
       return result;
-    },
-  }),
-
-  searchPageByChange: t.withAuth({ session: true }).field({
-    type: [SearchPageByChangeHit],
-    args: {
-      siteId: t.arg.string(),
-      query: t.arg.string(),
-    },
-    resolve: async (_, args, ctx) => {
-      await assertSitePermission({
-        siteId: args.siteId,
-        userId: ctx.session.userId,
-      });
-
-      const queryVector = await openai.client.embeddings
-        .create({
-          model: 'text-embedding-3-small',
-          input: args.query,
-        })
-        .then((response) => response.data[0].embedding);
-
-      const similarity = sql<number>`1 - (${cosineDistance(PageContentChunks.vector, queryVector)})`;
-
-      const result = await db
-        .select({
-          pageId: PageContentChunks.pageId,
-          similarity,
-          title: PageContents.title,
-          subtitle: PageContents.subtitle,
-          text: PageContents.text,
-        })
-        .from(PageContentChunks)
-        .innerJoin(Pages, eq(Pages.id, PageContentChunks.pageId))
-        .innerJoin(PageContents, eq(PageContents.pageId, PageContentChunks.pageId))
-        .where(and(eq(Pages.siteId, args.siteId), eq(Pages.state, PageState.PUBLISHED), gt(similarity, 0.35)))
-        .orderBy(desc(similarity))
-        .limit(20)
-        .then((rows) => uniqueBy(rows, (row) => row.pageId));
-
-      return await Promise.all(
-        result.map(async (page) => {
-          const llmResult = await openai.client.beta.chat.completions
-            .parse({
-              model: 'gpt-4o-mini',
-              temperature: 0.5,
-              max_tokens: 4096,
-              response_format: zodResponseFormat(
-                z.object({
-                  fixes: z.array(
-                    z.object({
-                      relevance: z.number(),
-                      text: z.string(),
-                      reason: z.string(),
-                    }),
-                  ),
-                }),
-                'fixes',
-              ),
-              messages: [
-                {
-                  role: 'system',
-                  content: fixByChangePrompt,
-                },
-                {
-                  role: 'user',
-                  content: JSON.stringify({
-                    title: page.title,
-                    subtitle: page.subtitle,
-                    text: page.text,
-                  }),
-                },
-                {
-                  role: 'user',
-                  content: JSON.stringify({
-                    change: args.query,
-                  }),
-                },
-              ],
-            })
-            .then((response) => response.choices[0].message.parsed?.fixes ?? []);
-
-          return {
-            pageId: page.pageId,
-            fixes: llmResult,
-          };
-        }),
-      ).then((pageFixes) => pageFixes.filter((page) => page.fixes.some((fix) => fix.relevance > 2.5)));
     },
   }),
 
