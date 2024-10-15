@@ -90,10 +90,9 @@
   $: showCellButtons = showCellSplitButton || showCellMergeButton;
   $: showBlockSwitchButton =
     selectedBlocks.length === 1 && activeNodeTypeId && topLevelNodeTypes.some((node) => node.id === activeNodeTypeId);
-
   $: showMarksMenu = isInlineContentSelected;
-
-  $: showBubbleMenu = showCellButtons || showBlockSwitchButton || showMarksMenu;
+  $: isInCodeblock = activeNode?.type.name === 'codeBlock';
+  $: showBubbleMenu = !isInCodeblock && (showCellButtons || showBlockSwitchButton || showMarksMenu);
 
   const bubbleMenuButtonStyle = flex({
     alignItems: 'center',
