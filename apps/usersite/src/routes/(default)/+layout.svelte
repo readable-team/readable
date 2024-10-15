@@ -2,6 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { flex, visuallyHidden } from '@readable/styled-system/patterns';
   import { Icon } from '@readable/ui/components';
+  import { getAccessibleTextColor, hexToRgb } from '@readable/ui/utils';
   import qs from 'query-string';
   import { setContext } from 'svelte';
   import { writable } from 'svelte/store';
@@ -263,13 +264,13 @@
 
         {#if $query.publicSite.headerLink}
           <a
+            style:color={getAccessibleTextColor(hexToRgb($query.publicSite.themeColor))}
             class={flex({
               align: 'center',
               flex: 'none',
               borderRadius: { base: '8px', md: '10px' },
               paddingX: '14px',
               textStyle: '14sb',
-              color: 'white',
               backgroundColor: { base: 'var(--usersite-theme-color)', _hover: 'var(--usersite-theme-color)/80' },
               height: { base: '31px', md: '41px' },
             })}
