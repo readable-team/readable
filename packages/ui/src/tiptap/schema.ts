@@ -29,6 +29,7 @@ import { TextStyle } from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
 import { Behavior } from './extensions/behavior';
 import { BlockSelectionHelper } from './extensions/block-selection';
+import { withNodeId } from './extensions/node-id';
 import { Placeholder } from './extensions/placeholder';
 import { extendNodeToNodeView } from './lib/create';
 import { BubbleMenu } from './menus/bubble';
@@ -40,7 +41,7 @@ import { Hint } from './node-views/hint';
 import TableComponent from './node-views/table/Component.svelte';
 import { Tab, Tabs } from './node-views/tabs';
 
-export const basicExtensions = [
+const extensions = [
   // special nodes
   Document.extend({
     content: 'block+',
@@ -299,6 +300,8 @@ export const basicExtensions = [
   Tabs,
   Tab,
 ];
+
+export const basicExtensions = withNodeId(extensions);
 
 export const editorExtensions = [
   Dropcursor.configure({ width: 4, class: css({ color: '[var(--prosemirror-color-selection)/40]' }) }),

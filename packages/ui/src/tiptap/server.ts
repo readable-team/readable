@@ -22,6 +22,7 @@ import { Text } from '@tiptap/extension-text';
 import { TextAlign } from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
+import { withNodeId } from './extensions/node-id';
 import { Callout } from './node-views/callout/server';
 import { CodeBlock } from './node-views/code-block/server';
 import { Embed } from './node-views/embed/server';
@@ -31,7 +32,7 @@ import { Image } from './node-views/image/server';
 import { InlineImage } from './node-views/inline-image/server';
 import { Tab, Tabs } from './node-views/tabs/server';
 
-export const serverExtensions = [
+const extensions = [
   // special nodes
   Document.extend({
     content: 'block+',
@@ -143,5 +144,7 @@ export const serverExtensions = [
   Tabs,
   Tab,
 ];
+
+export const serverExtensions = withNodeId(extensions);
 
 export const schema = getSchema(serverExtensions);
