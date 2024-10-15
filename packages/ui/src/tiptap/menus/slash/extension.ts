@@ -52,6 +52,10 @@ export const SlashMenu = Extension.create({
               return { active: false };
             }
 
+            if ($anchor.parent.type.name === 'codeBlock') {
+              return { active: false };
+            }
+
             const node = $anchor.node();
             const text = node.textContent;
 

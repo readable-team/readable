@@ -1,6 +1,7 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import { matchSorter } from 'match-sorter';
   import { bundledLanguagesInfo } from 'shiki';
   import IconCheck from '~icons/lucide/check';
   import IconChevronDown from '~icons/lucide/chevron-down';
@@ -38,12 +39,15 @@
   });
 
   const languages = [
-    ...bundledLanguagesInfo.map((language) => ({ id: language.id, name: language.name })),
-    { id: 'text', name: 'Plain Text' },
+    ...bundledLanguagesInfo.map((language) => ({ id: language.id, name: language.name, aliases: language.aliases })),
+    { id: 'text', name: 'Plain Text', aliases: [] },
   ].toSorted((a, b) => a.name.localeCompare(b.name));
 
   $: currentLanguage = languages.find((language) => language.id === node.attrs.language)?.name ?? '?';
-  $: filteredLanguages = languages.filter((language) => language.name.toLowerCase().includes(query.toLowerCase()));
+  $: filteredLanguages = matchSorter(languages, query, {
+    keys: ['name', 'aliases'],
+    sorter: (items) => items,
+  });
 
   // FIXME: refactor
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -101,9 +105,11 @@
     'alignItems': 'center',
     'gap': '4px',
     'textStyle': '14sb',
-    'paddingX': '10px',
+    'paddingLeft': '10px',
+    'paddingRight': '6px',
     'paddingY': '2px',
     'borderWidth': '1px',
+    'borderColor': 'transparent',
     'borderRadius': '4px',
     'visibility': open ? 'visible' : 'hidden',
     'color': 'text.secondary',
