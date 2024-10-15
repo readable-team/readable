@@ -457,6 +457,22 @@ export const SiteCustomDomains = pgTable(
   }),
 );
 
+export const SiteHeaderLinks = pgTable('site_header_links', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('SHDL')),
+  siteId: text('site_id')
+    .notNull()
+    .unique()
+    .references(() => Sites.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+  state: E._SiteHeaderLinkState('state').notNull().default('ACTIVE'),
+  label: text('label').notNull(),
+  url: text('url').notNull(),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
+
 export const Teams = pgTable(
   'teams',
   {

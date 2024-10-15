@@ -17,12 +17,14 @@ import {
   Pages,
   SiteAddons,
   SiteCustomDomains,
+  SiteHeaderLinks,
   Sites,
 } from '@/db';
 import {
   CategoryState,
   PageState,
   SiteCustomDomainState,
+  SiteHeaderLinkState,
   SiteState,
   TeamMemberRole,
   TeamRestrictionType,
@@ -50,6 +52,7 @@ import {
   Site,
   SiteAddon,
   SiteCustomDomain,
+  SiteHeaderLink,
   Team,
 } from './objects';
 
@@ -188,6 +191,14 @@ Site.implement({
         }
       },
     }),
+
+    headerLink: t.field({
+      type: SiteHeaderLink,
+      nullable: true,
+      resolve: async (site) => {
+        return await db.select().from(SiteHeaderLinks).where(eq(SiteHeaderLinks.siteId, site.id)).then(first);
+      },
+    }),
   }),
 });
 
@@ -256,6 +267,18 @@ PublicSite.implement({
         });
       },
     }),
+
+    headerLink: t.field({
+      type: SiteHeaderLink,
+      nullable: true,
+      resolve: async (site) => {
+        return await db
+          .select()
+          .from(SiteHeaderLinks)
+          .where(and(eq(SiteHeaderLinks.siteId, site.id), eq(SiteHeaderLinks.state, SiteHeaderLinkState.ACTIVE)))
+          .then(first);
+      },
+    }),
   }),
 });
 
@@ -270,6 +293,15 @@ SiteCustomDomain.implement({
     id: t.exposeID('id'),
     domain: t.exposeString('domain'),
     state: t.expose('state', { type: SiteCustomDomainState }),
+  }),
+});
+
+SiteHeaderLink.implement({
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    state: t.expose('state', { type: SiteHeaderLinkState }),
+    label: t.exposeString('label'),
+    url: t.exposeString('url'),
   }),
 });
 
@@ -630,6 +662,56 @@ builder.mutationFields((t) => ({
       await invalidateSiteCache(site.siteId);
 
       return site;
+    },
+  }),
+
+  setSiteHeaderLink: t.withAuth({ session: true }).fieldWithInput({
+    type: SiteHeaderLink,
+    input: { siteId: t.input.id(), label: t.input.string(), url: t.input.string({ validate: { url: true } }) },
+    resolve: async (_, { input }, ctx) => {
+      await assertSitePermission({
+        siteId: input.siteId,
+        userId: ctx.session.userId,
+        role: TeamMemberRole.ADMIN,
+      });
+
+      return await db
+        .insert(SiteHeaderLinks)
+        .values({ siteId: input.siteId, label: input.label, url: input.url })
+        .returning()
+        .onConflictDoUpdate({
+          target: [SiteHeaderLinks.siteId],
+          set: { label: input.label, url: input.url, state: SiteHeaderLinkState.ACTIVE },
+        })
+        .then(firstOrThrow);
+    },
+  }),
+
+  disableSiteHeaderLink: t.withAuth({ session: true }).fieldWithInput({
+    type: SiteHeaderLink,
+    input: { siteHeaderLinkId: t.input.id() },
+    resolve: async (_, { input }, ctx) => {
+      const site = await db
+        .select({
+          id: Sites.id,
+        })
+        .from(Sites)
+        .innerJoin(SiteHeaderLinks, eq(Sites.id, SiteHeaderLinks.siteId))
+        .where(eq(SiteHeaderLinks.id, input.siteHeaderLinkId))
+        .then(firstOrThrow);
+
+      await assertSitePermission({
+        siteId: site.id,
+        userId: ctx.session.userId,
+        role: TeamMemberRole.ADMIN,
+      });
+
+      return await db
+        .update(SiteHeaderLinks)
+        .set({ state: SiteHeaderLinkState.DISABLED })
+        .where(eq(SiteHeaderLinks.id, input.siteHeaderLinkId))
+        .returning()
+        .then(firstOrThrow);
     },
   }),
 

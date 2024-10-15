@@ -74,6 +74,12 @@ export const SiteCustomDomainState = {
   PENDING: 'PENDING',
 } as const;
 
+export type SiteHeaderLinkState = keyof typeof SiteHeaderLinkState;
+export const SiteHeaderLinkState = {
+  ACTIVE: 'ACTIVE',
+  DISABLED: 'DISABLED',
+} as const;
+
 export type SiteState = keyof typeof SiteState;
 export const SiteState = {
   ACTIVE: 'ACTIVE',

@@ -82,6 +82,10 @@ input DeleteTeamInput {
   teamId: ID!
 }
 
+input DisableSiteHeaderLinkInput {
+  siteHeaderLinkId: ID!
+}
+
 input DuplicatePageInput {
   pageId: ID!
 }
@@ -208,6 +212,7 @@ type Mutation {
   deletePage(input: DeletePageInput!): Page!
   deleteSite(input: DeleteSiteInput!): Site!
   deleteTeam(input: DeleteTeamInput!): Team!
+  disableSiteHeaderLink(input: DisableSiteHeaderLinkInput!): SiteHeaderLink!
   duplicatePage(input: DuplicatePageInput!): Page!
   enrollSiteAddon(input: EnrollSiteAddonInput!): Site!
   enrollTeamPlan(input: EnrollTeamPlanInput!): Team!
@@ -223,6 +228,7 @@ type Mutation {
   revokeInvitation(input: RevokeInvitationInput!): TeamMemberInvitation!
   sendAuthorizationEmail(input: SendAuthorizationEmailInput!): Boolean!
   setSiteCustomDomain(input: SetSiteCustomDomainInput!): SiteCustomDomain!
+  setSiteHeaderLink(input: SetSiteHeaderLinkInput!): SiteHeaderLink!
   syncPageContent(input: SyncPageContentInput!): [SyncPageContentPayload!]!
   unfurlEmbed(input: UnfurlEmbedInput!): Embed!
   unfurlLink(input: UnfurlLinkInput!): UnfurlLinkResult!
@@ -432,6 +438,7 @@ type PublicSite implements ISite {
   aiSearchEnabled: Boolean!
   categories: [PublicCategory!]!
   firstPage: PublicPage
+  headerLink: SiteHeaderLink
   id: ID!
   logo: Image
   name: String!
@@ -498,6 +505,12 @@ input SetSiteCustomDomainInput {
   siteId: ID!
 }
 
+input SetSiteHeaderLinkInput {
+  label: String!
+  siteId: ID!
+  url: String!
+}
+
 enum SingleSignOnProvider {
   GOOGLE
 }
@@ -508,6 +521,7 @@ type Site implements ISite {
   customDomain: SiteCustomDomain
   firstPage: Page
   hasPage: Boolean!
+  headerLink: SiteHeaderLink
   id: ID!
   logo: Image
   name: String!
@@ -539,6 +553,18 @@ type SiteCustomDomain {
 enum SiteCustomDomainState {
   ACTIVE
   PENDING
+}
+
+type SiteHeaderLink {
+  id: ID!
+  label: String!
+  state: SiteHeaderLinkState!
+  url: String!
+}
+
+enum SiteHeaderLinkState {
+  ACTIVE
+  DISABLED
 }
 
 enum SiteState {

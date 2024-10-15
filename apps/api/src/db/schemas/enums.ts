@@ -16,6 +16,7 @@ export const _PaymentRecordType = createPgEnum('_payment_record_type', E.Payment
 export const _PlanType = createPgEnum('_plan_type', E.PlanType);
 export const _SingleSignOnProvider = createPgEnum('_single_sign_on_provider', E.SingleSignOnProvider);
 export const _SiteCustomDomainState = createPgEnum('_site_custom_domain_state', E.SiteCustomDomainState);
+export const _SiteHeaderLinkState = createPgEnum('_site_header_link_state', E.SiteHeaderLinkState);
 export const _SiteState = createPgEnum('_site_state', E.SiteState);
 export const _TeamMemberRole = createPgEnum('_team_member_role', E.TeamMemberRole);
 export const _TeamRestrictionType = createPgEnum('_team_restriction_type', E.TeamRestrictionType);

@@ -78,6 +78,13 @@
       "when": 1728127112275,
       "tag": "0010_dashing_bloodaxe",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1728988716826,
+      "tag": "0011_lame_snowbird",
+      "breakpoints": true
     }
   ]
 }
