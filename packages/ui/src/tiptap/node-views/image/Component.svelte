@@ -7,6 +7,7 @@
   import ImageIcon from '~icons/lucide/image';
   import Trash2Icon from '~icons/lucide/trash-2';
   import { Button, Icon, Img, Menu, MenuItem, RingSpinner } from '../../../components';
+  import Enlarge from './Enlarge.svelte';
   import type { NodeViewProps } from '@readable/ui/tiptap';
 
   type $$Props = NodeViewProps;
@@ -22,6 +23,8 @@
   let inflight = false;
   let pickerOpened = false;
   $: pickerOpened = selected;
+
+  let enlarged = false;
 
   const { anchor, floating } = createFloatingActions({
     placement: 'bottom',
@@ -100,14 +103,22 @@
 <NodeView style={css.raw({ display: 'flex', justifyContent: 'center' })}>
   <div bind:this={containerEl} style:width={`${proportion * 100}%`} data-drag-handle draggable>
     {#if node.attrs.id}
-      <div class={css({ position: 'relative', width: 'full', _hover: { '& button': { display: 'flex' } } })}>
+      <div
+        class={css({
+          position: 'relative',
+          width: 'full',
+          _hover: { '& button': { display: 'flex' } },
+        })}
+        role="presentation"
+        on:click={() => !editor?.isEditable && (enlarged = true)}
+      >
         <Img
-          style={css.raw({ width: 'full', borderRadius: '4px' })}
+          style={css.raw({ width: 'full', borderRadius: '4px' }, !editor?.isEditable && { cursor: 'zoom-in' })}
           alt="본문 이미지"
           placeholder={node.attrs.placeholder}
           progressive
           ratio={node.attrs.ratio}
-          size={1024}
+          size="full"
           url={node.attrs.url}
         />
 
@@ -259,4 +270,8 @@
       이미지 선택
     </Button>
   </div>
+{/if}
+
+{#if enlarged}
+  <Enlarge {node} referenceEl={containerEl} on:close={() => (enlarged = false)} />
 {/if}
