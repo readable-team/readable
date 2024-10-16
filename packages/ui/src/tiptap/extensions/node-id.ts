@@ -9,6 +9,7 @@ export const withNodeId = (extensions: Extensions) => {
   const types = extensions
     .filter((extension) => extension.type === 'node' && !['doc', 'text'].includes(extension.name))
     .map((extension) => extension.name);
+  types.push('image', 'inlineImage', 'file', 'embed');
 
   const nodeId = Extension.create({
     name: 'nodeId',
@@ -21,8 +22,7 @@ export const withNodeId = (extensions: Extensions) => {
           attributes: {
             nodeId: {
               default: null,
-              parseHTML: (element) => element.dataset.nodeId,
-              renderHTML: ({ nodeId }) => ({ 'data-node-id': nodeId }),
+              rendered: false,
             },
           },
         },

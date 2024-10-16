@@ -56,7 +56,6 @@
     }
 
     const { state, view } = editor;
-    const { tr } = state;
 
     const map = TableMap.get(tableNode);
     const rowsLength = map.height;
@@ -70,7 +69,7 @@
     for (let i = 0; i < rowsLength; i++) {
       const pos = map.positionAt(i, 0, tableNode);
       const cellPos = tableStart + pos;
-      const rowPos = tr.doc.resolve(cellPos - 1);
+      const rowPos = state.doc.resolve(cellPos - 1);
       const row = view.nodeDOM(rowPos.pos);
       if (row) {
         rowElems.push(row as HTMLElement);

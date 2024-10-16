@@ -60,7 +60,7 @@ class SvelteNodeView extends NodeView<NodeViewComponentType> implements ProseMir
         extension: this.extension,
         selected: false,
 
-        getPos: () => this.getPos() as number,
+        getPos: () => this.getPos(),
         updateAttributes: (attrs) => this.updateAttributes(attrs),
         deleteNode: () => this.deleteNode(),
       },
