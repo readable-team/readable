@@ -12,3 +12,5 @@ styled-system/
 !packages/styled-system/
 
 vite.config.ts.timestamp-*
+
+apps/api/import-files/
