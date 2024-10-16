@@ -13,7 +13,6 @@ import PanelTopIcon from '~icons/lucide/panel-top';
 import PaperclipIcon from '~icons/lucide/paperclip';
 import TableIcon from '~icons/lucide/table';
 import TextQuoteIcon from '~icons/lucide/text-quote';
-import { env } from '$env/dynamic/public';
 import type { Editor, Range } from '@tiptap/core';
 import type { MenuItem } from './types';
 
@@ -150,7 +149,6 @@ export const menuItems: MenuItem[] = [
     name: '코드 블록',
     keywords: ['code block'],
     icon: CodeIcon,
-    visible: env.PUBLIC_PULUMI_STACK !== 'prod',
     command: ({ editor, range }) => {
       chain(editor, range).setCodeBlock().run();
     },
