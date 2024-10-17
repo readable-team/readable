@@ -98,14 +98,14 @@
 
     <div
       class={flex({
-        'gap': '48px',
+        gap: '48px',
         '& a': {
           textStyle: '15b',
           color: $headerTheme === 'dark' ? '[#E4E4E7]' : 'text.secondary',
           paddingX: '16px',
           paddingY: '13px',
         },
-        'lgDown': {
+        lgDown: {
           display: 'none',
         },
       })}
@@ -247,7 +247,7 @@
     >
       <nav
         class={flex({
-          'flexDirection': 'column',
+          flexDirection: 'column',
           '& > a': {
             textStyle: '16sb',
             paddingX: '16px',

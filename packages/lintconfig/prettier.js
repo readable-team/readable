@@ -4,7 +4,6 @@ export default {
   htmlWhitespaceSensitivity: 'ignore',
   printWidth: 120,
   singleQuote: true,
-  quoteProps: 'consistent',
 
   xmlWhitespaceSensitivity: 'ignore',
   xmlQuoteAttributes: 'double',

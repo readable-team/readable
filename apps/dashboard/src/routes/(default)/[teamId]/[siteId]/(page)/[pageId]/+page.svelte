@@ -160,11 +160,11 @@
 {:else}
   <div
     class={flex({
-      'direction': 'column',
-      'grow': 1,
-      'position': 'relative',
-      'backgroundColor': 'surface.primary',
-      'overflowY': 'auto',
+      direction: 'column',
+      grow: 1,
+      position: 'relative',
+      backgroundColor: 'surface.primary',
+      overflowY: 'auto',
 
       '&:has(.has-slash-menu)': {
         overflowY: 'hidden',

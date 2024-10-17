@@ -21,7 +21,7 @@
 
   const getTabs = (editor: NodeViewProps['editor'] | undefined, node: NodeViewProps['node']) => {
     const tabs: { title: string; selected: boolean }[] = [];
-    // eslint-disable-next-line unicorn/no-array-for-each
+
     node.forEach((node, _, index) => {
       const selected = index === (editor ? getSelectedTabIdx(editor.state, getPos()) : 0);
       tabs.push({ title: node.attrs.title, selected });
@@ -90,8 +90,8 @@
               _hover: tab.selected
                 ? {}
                 : {
-                    'color': 'text.primary',
-                    'backgroundColor': 'neutral.10',
+                    color: 'text.primary',
+                    backgroundColor: 'neutral.10',
                     '& > button': { display: 'flex' },
                   },
             },
@@ -212,11 +212,11 @@
 
   <div
     class={css({
-      'borderWidth': '1px',
-      'borderTopWidth': '0',
-      'borderColor': 'border.secondary',
-      'borderBottomRadius': '4px',
-      'padding': '16px',
+      borderWidth: '1px',
+      borderTopWidth: '0',
+      borderColor: 'border.secondary',
+      borderBottomRadius: '4px',
+      padding: '16px',
       '&:not(:has([data-tab-selected])) [role="tabpanel"]:first-child': { display: 'block' },
       '& [role="tabpanel"][data-tab-selected]': { display: 'block' },
     })}

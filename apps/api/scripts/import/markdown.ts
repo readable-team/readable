@@ -92,5 +92,4 @@ await db.transaction(async (tx) => {
   }
 });
 
-// eslint-disable-next-line unicorn/no-process-exit
 process.exit(0);

@@ -14,7 +14,7 @@ export const zIndex = defineTokens.zIndex({
   40: { value: '40' },
   50: { value: '50' },
   100: { value: '100' },
-  'tooltip': {
+  tooltip: {
     body: { value: '200' },
     arrow: { value: '205' },
     content: { value: '210' },

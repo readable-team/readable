@@ -123,17 +123,17 @@
       <FormField name="content" label="문의사항">
         <label
           class={flex({
-            'align': 'center',
-            'borderWidth': '1px',
-            'borderColor': { base: 'gray.300', _dark: 'darkgray.700' },
-            'borderRadius': '10px',
-            'paddingX': '16px',
-            'paddingY': '10px',
-            'textStyle': '16r',
-            'color': 'gray.1000',
-            'backgroundColor': 'white',
-            'transition': 'common',
-            '_hover': {
+            align: 'center',
+            borderWidth: '1px',
+            borderColor: { base: 'gray.300', _dark: 'darkgray.700' },
+            borderRadius: '10px',
+            paddingX: '16px',
+            paddingY: '10px',
+            textStyle: '16r',
+            color: 'gray.1000',
+            backgroundColor: 'white',
+            transition: 'common',
+            _hover: {
               borderColor: 'brand.400',
             },
             '&:has(textarea:focus)': {

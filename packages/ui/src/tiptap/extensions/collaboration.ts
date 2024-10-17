@@ -104,18 +104,18 @@ export const Collaboration = Extension.create<CollaborationOptions>({
     const cursorBuilder = (user: User) => {
       const cursor = document.createElement('span');
       cursor.className = css({
-        'position': 'relative',
-        'marginX': '-1px',
-        'borderXWidth': '1px',
-        'borderColor': '[var(--user-color)]',
-        'pointerEvents': 'none',
+        position: 'relative',
+        marginX: '-1px',
+        borderXWidth: '1px',
+        borderColor: '[var(--user-color)]',
+        pointerEvents: 'none',
         '& + .ProseMirror-separator': {
           display: 'none',
         },
         '& + .ProseMirror-separator + .ProseMirror-trailingBreak': {
           display: 'none',
         },
-        '_before': {
+        _before: {
           content: 'var(--user-name)',
           position: 'absolute',
           top: '0',

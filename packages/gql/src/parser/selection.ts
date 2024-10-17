@@ -12,7 +12,6 @@ export const buildSelections = (
   const selections: Selection[] = [];
 
   for (const selection of selectionSet.selections) {
-    // eslint-disable-next-line unicorn/prefer-switch
     if (selection.kind === 'Field') {
       if (selection.name.value === '__typename') {
         selections.push({

@@ -71,7 +71,6 @@
 
     let page = null;
     for (const slug of pageSlugs) {
-      // eslint-disable-next-line unicorn/prefer-ternary
       if (page) {
         page = page.children.find((p) => p.slug === slug);
       } else {
@@ -156,9 +155,9 @@
                   backgroundColor: 'var(--usersite-theme-color)/3',
                 },
                 _currentPage: {
-                  'color': 'var(--usersite-theme-color)',
-                  'textStyle': '15b',
-                  'backgroundColor': 'var(--usersite-theme-color)/3',
+                  color: 'var(--usersite-theme-color)',
+                  textStyle: '15b',
+                  backgroundColor: 'var(--usersite-theme-color)/3',
                   '& + button': {
                     color: 'var(--usersite-theme-color)',
                   },

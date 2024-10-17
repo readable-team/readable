@@ -12,10 +12,10 @@
 
   const recipe = cva({
     base: {
-      'display': 'block',
-      'verticalAlign': 'middle',
-      'flex': 'none',
-      'transition': 'common',
+      display: 'block',
+      verticalAlign: 'middle',
+      flex: 'none',
+      transition: 'common',
       '& *': { strokeWidth: '[2]' },
     },
     variants: {

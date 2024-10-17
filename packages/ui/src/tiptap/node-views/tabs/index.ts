@@ -190,7 +190,6 @@ export const Tabs = createNodeView(Component, {
           },
           apply: (tr, s) => {
             if (tr.docChanged) {
-              // eslint-disable-next-line unicorn/no-array-callback-reference
               s = s.map((v) => ({ pos: tr.mapping.map(v.pos), idx: v.idx }));
             }
 
@@ -229,7 +228,6 @@ export const Tabs = createNodeView(Component, {
                 continue;
               }
 
-              // eslint-disable-next-line unicorn/no-array-for-each
               node.forEach((node, offset, index) => {
                 if (index === idx) {
                   const decoration = Decoration.node(pos + offset + 1, pos + offset + 1 + node.nodeSize, {
@@ -248,7 +246,6 @@ export const Tabs = createNodeView(Component, {
                 return;
               }
 
-              // eslint-disable-next-line unicorn/no-array-for-each
               node.forEach((node, offset, index) => {
                 if (index === 0) {
                   const decoration = Decoration.node(pos + offset + 1, pos + offset + 1 + node.nodeSize, {

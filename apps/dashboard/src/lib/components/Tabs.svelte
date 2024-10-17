@@ -14,27 +14,27 @@
   {#each tabs as { title, path, selected, badge }, i (i)}
     <a
       class={css({
-        'zIndex': '10',
-        'height': '40px',
-        'paddingBottom': '4px',
-        '_selected': {
-          'borderBottomWidth': '[1.5px]',
-          'borderColor': { base: 'gray.1000', _dark: 'darkgray.100' },
-          'color': { base: 'gray.1000', _dark: 'darkgray.100' },
+        zIndex: '10',
+        height: '40px',
+        paddingBottom: '4px',
+        _selected: {
+          borderBottomWidth: '[1.5px]',
+          borderColor: { base: 'gray.1000', _dark: 'darkgray.100' },
+          color: { base: 'gray.1000', _dark: 'darkgray.100' },
           '& > span': {
             backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
           },
-          '_hover': {
+          _hover: {
             color: { base: 'gray.1000', _dark: 'darkgray.100' },
           },
         },
-        '_hover': {
-          'color': { base: 'gray.700', _dark: 'darkgray.300' },
+        _hover: {
+          color: { base: 'gray.700', _dark: 'darkgray.300' },
           '& > span': {
             backgroundColor: { base: 'gray.200', _dark: 'darkgray.900' },
           },
         },
-        'color': { base: 'gray.700', _dark: 'darkgray.300' },
+        color: { base: 'gray.700', _dark: 'darkgray.300' },
         '& > span': {
           backgroundColor: { base: 'white', _dark: 'darkgray.1000' },
         },

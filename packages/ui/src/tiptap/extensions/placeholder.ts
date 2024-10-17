@@ -85,7 +85,7 @@ export const Placeholder = Extension.create({
 
 const createDecoration = (from: number, to: number, placeholder: string) => {
   return Decoration.node(from, to, {
-    'class': css({
+    class: css({
       _before: {
         content: 'attr(data-placeholder)',
         float: '[left]',

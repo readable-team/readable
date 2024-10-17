@@ -76,7 +76,7 @@ export const CodeBlock = createNodeView<Options, Storage>(Component, {
 
   addKeyboardShortcuts() {
     return {
-      'Backspace': ({ editor }) => {
+      Backspace: ({ editor }) => {
         const { $anchor, empty } = editor.state.selection;
 
         if (!empty || $anchor.parent.type !== this.type || $anchor.parent.textContent.length > 0) {
@@ -128,7 +128,6 @@ export const CodeBlock = createNodeView<Options, Storage>(Component, {
               return getDecorations(this.editor, this.storage.highlighter, this.options.theme, tr.doc);
             }
 
-            // eslint-disable-next-line unicorn/no-array-callback-reference, unicorn/no-array-method-this-argument
             return decorationSet.map(tr.mapping, tr.doc);
           },
         },

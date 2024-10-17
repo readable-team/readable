@@ -242,7 +242,6 @@
   let connectionState: 'idle' | 'connected' | 'disconnected' = 'idle';
 
   pageContentSyncStream.on('data', ({ pageContentSyncStream: { kind, data } }) => {
-    // eslint-disable-next-line unicorn/prefer-switch
     if (kind === PageContentSyncKind.UPDATE) {
       Y.applyUpdateV2(doc, base64.parse(data), 'remote');
     } else if (kind === PageContentSyncKind.AWARENESS) {
@@ -367,16 +366,16 @@
 
     <TiptapEditor
       style={css.raw({
-        'flex': '1',
-        'color': 'text.primary',
-        'paddingBottom': '128px',
+        flex: '1',
+        color: 'text.primary',
+        paddingBottom: '128px',
 
-        'minWidth': '720px',
-        'width': 'full',
+        minWidth: '720px',
+        width: 'full',
 
-        'display': 'flex',
-        'flexDirection': 'column',
-        'alignItems': 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
 
         '& > *': {
           width: '720px',

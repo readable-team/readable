@@ -142,7 +142,7 @@ const declareEventRule = (name: string, source: string, detailType: string) => {
   const rule = new aws.cloudwatch.EventRule(name, {
     name,
     eventPattern: JSON.stringify({
-      'source': [source],
+      source: [source],
       'detail-type': [detailType],
     }),
   });

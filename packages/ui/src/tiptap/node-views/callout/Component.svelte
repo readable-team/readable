@@ -120,7 +120,7 @@
         }
       }}
       {...editor?.isEditable && {
-        'type': 'button',
+        type: 'button',
         'aria-pressed': emojiPickerOpened,
       }}
       use:anchor

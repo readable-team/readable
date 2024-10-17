@@ -57,7 +57,6 @@ export const deepMerge = <T>(source: Partial<T>, data: Partial<T>) => {
 };
 
 export const transformValue = (value: Value, variables: Variables): unknown => {
-  // eslint-disable-next-line unicorn/prefer-switch
   if (value.kind === 'Object') {
     return Object.fromEntries(value.fields.map((field) => [field.name, transformValue(field.value, variables)]));
   } else if (value.kind === 'List') {

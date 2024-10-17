@@ -2,7 +2,6 @@ import type graphql from 'graphql';
 import type { Argument, Value } from '../types';
 
 const buildValue = (value: graphql.ValueNode): Value => {
-  // eslint-disable-next-line unicorn/prefer-switch
   if (value.kind === 'Variable') {
     return { kind: 'Variable', name: value.name.value };
   } else if (value.kind === 'ListValue') {

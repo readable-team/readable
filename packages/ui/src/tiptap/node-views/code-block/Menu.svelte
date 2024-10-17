@@ -101,22 +101,22 @@
 <button
   bind:this={buttonEl}
   class={css({
-    'display': 'flex',
-    'alignItems': 'center',
-    'gap': '4px',
-    'textStyle': '14sb',
-    'paddingLeft': '10px',
-    'paddingRight': '6px',
-    'paddingY': '2px',
-    'borderWidth': '1px',
-    'borderColor': 'transparent',
-    'borderRadius': '4px',
-    'visibility': open ? 'visible' : 'hidden',
-    'color': 'text.secondary',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    textStyle: '14sb',
+    paddingLeft: '10px',
+    paddingRight: '6px',
+    paddingY: '2px',
+    borderWidth: '1px',
+    borderColor: 'transparent',
+    borderRadius: '4px',
+    visibility: open ? 'visible' : 'hidden',
+    color: 'text.secondary',
     '[data-node-view]:hover &': {
       visibility: 'visible',
     },
-    '_hover': {
+    _hover: {
       backgroundColor: 'neutral.10',
       borderColor: 'border.secondary',
     },
@@ -208,7 +208,7 @@
               {language.name}
 
               {#if node.attrs.language === language.id}
-                <Icon style={css.raw({ 'color': 'brand.400', '& *': { strokeWidth: '[2]' } })} icon={IconCheck} />
+                <Icon style={css.raw({ color: 'brand.400', '& *': { strokeWidth: '[2]' } })} icon={IconCheck} />
               {/if}
             </button>
           </li>

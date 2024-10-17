@@ -133,7 +133,7 @@ builder.mutationFields((t) => ({
             ContentType: head.ContentType,
             ContentDisposition: `attachment; filename="${fileName}"`,
             Metadata: {
-              'name': fileName,
+              name: fileName,
               'user-id': ctx.session.userId,
             },
           }),
@@ -226,7 +226,7 @@ builder.mutationFields((t) => ({
             ContentType: mimetype,
             Metadata: {
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              'name': object.Metadata!.name,
+              name: object.Metadata!.name,
               'user-id': ctx.session.userId,
             },
           }),

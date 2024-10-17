@@ -126,12 +126,12 @@
       'group',
       css(
         {
-          'display': 'flex',
-          'alignItems': 'center',
-          'borderRadius': '6px',
-          'gap': '2px',
-          'paddingRight': '4px',
-          '_hover': {
+          display: 'flex',
+          alignItems: 'center',
+          borderRadius: '6px',
+          gap: '2px',
+          paddingRight: '4px',
+          _hover: {
             backgroundColor: 'neutral.20',
           },
           '&:has(button.menu-button[aria-expanded=true])': {

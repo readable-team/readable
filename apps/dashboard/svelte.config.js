@@ -10,7 +10,7 @@ export default {
     alias: {
       '@/*': '../api/src/*',
       '$assets/*': './src/assets/*',
-      '$graphql': '.gql',
+      $graphql: '.gql',
     },
     files: {
       hooks: {

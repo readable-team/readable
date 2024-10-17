@@ -319,24 +319,24 @@
 <!-- eslint-disable svelte/no-target-blank -->
 <a
   class={flex({
-    'position': 'fixed',
-    'bottom': '24px',
-    'right': '28px',
-    'gap': '6px',
-    'paddingX': '12px',
-    'paddingY': '9px',
-    'alignItems': 'center',
-    'borderRadius': '8px',
-    'boxShadow': 'strong',
-    'backgroundColor': {
+    position: 'fixed',
+    bottom: '24px',
+    right: '28px',
+    gap: '6px',
+    paddingX: '12px',
+    paddingY: '9px',
+    alignItems: 'center',
+    borderRadius: '8px',
+    boxShadow: 'strong',
+    backgroundColor: {
       base: 'gray.1000',
       _dark: 'darkgray.100',
     },
-    'color': 'neutral.0',
+    color: 'neutral.0',
     '& svg path': {
       fill: 'neutral.0',
     },
-    'textStyle': '13b',
+    textStyle: '13b',
   })}
   href={qs.stringifyUrl({
     url: env.PUBLIC_WEBSITE_URL,

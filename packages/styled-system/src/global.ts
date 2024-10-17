@@ -16,7 +16,7 @@ export const globalCss = defineGlobalStyles({
     outline: '0 solid {colors.gray.200}',
   },
 
-  'html': {
+  html: {
     fontFamily: 'ui',
     fontFeatureSettings: '"ss18" 1',
     textSizeAdjust: '100%',
@@ -30,15 +30,15 @@ export const globalCss = defineGlobalStyles({
     letterSpacing: '-0.004em',
   },
 
-  'a': {
+  a: {
     textDecoration: 'inherit',
   },
 
-  'button': {
+  button: {
     cursor: 'pointer',
   },
 
-  'hr': {
+  hr: {
     height: '0',
   },
 
@@ -48,7 +48,7 @@ export const globalCss = defineGlobalStyles({
     height: 'auto',
   },
 
-  'input': {
+  input: {
     _disabled: {
       opacity: '100',
     },

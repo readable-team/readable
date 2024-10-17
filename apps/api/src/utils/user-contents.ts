@@ -48,7 +48,7 @@ export const persistBlobAsImage = async ({ userId, file }: PersistBlobAsImagePar
         Body: Buffer.from(buffer),
         ContentType: mimetype,
         Metadata: {
-          'name': encodeURIComponent(file.name),
+          name: encodeURIComponent(file.name),
           'user-id': userId ?? '',
         },
       }),
@@ -87,7 +87,7 @@ export const persistBlobAsFile = async ({ userId, file }: PersistBlobAsFileParam
         ContentType: mimetype,
         ContentDisposition: `attachment; filename="${encodeURIComponent(file.name)}"`,
         Metadata: {
-          'name': encodeURIComponent(file.name),
+          name: encodeURIComponent(file.name),
           'user-id': userId ?? '',
         },
       }),

@@ -198,9 +198,9 @@
           <thead>
             <tr
               class={css({
-                'textStyle': '13sb',
-                'color': 'text.tertiary',
-                'textAlign': 'left',
+                textStyle: '13sb',
+                color: 'text.tertiary',
+                textAlign: 'left',
                 '& th': {
                   borderTopWidth: '1px',
                   borderBottomWidth: '1px',
@@ -217,9 +217,9 @@
             {#each $query.team.paymentInvoices as invoice (invoice.id)}
               <tr
                 class={css({
-                  'backgroundColor': 'white',
-                  '_hover': { backgroundColor: 'neutral.10' },
-                  'cursor': 'pointer',
+                  backgroundColor: 'white',
+                  _hover: { backgroundColor: 'neutral.10' },
+                  cursor: 'pointer',
                   '& td': {
                     borderTopWidth: '1px',
                     borderBottomWidth: '1px',

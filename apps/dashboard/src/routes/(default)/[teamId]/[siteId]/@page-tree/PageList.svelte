@@ -542,7 +542,7 @@
           color: 'text.tertiary',
           height: '34px',
           _hover: {
-            'backgroundColor': 'neutral.20',
+            backgroundColor: 'neutral.20',
             '& > hr': {
               backgroundColor: 'neutral.60',
             },

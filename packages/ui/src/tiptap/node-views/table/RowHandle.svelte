@@ -102,14 +102,14 @@
   <div
     slot="button"
     class={center({
-      'display': open || hoveredRowIndex === i ? 'flex' : 'none',
+      display: open || hoveredRowIndex === i ? 'flex' : 'none',
       '.block-selection-decoration &': {
         display: 'none',
       },
-      '_hover': {
+      _hover: {
         backgroundColor: 'neutral.20',
       },
-      '_pressed': {
+      _pressed: {
         color: 'white',
         backgroundColor: '[var(--prosemirror-color-selection)]',
         borderWidth: '0',
@@ -117,14 +117,14 @@
           backgroundColor: '[var(--prosemirror-color-selection)]',
         },
       },
-      'width': '18px',
-      'height': '24px',
-      'color': 'neutral.50',
-      'borderRadius': '4px',
-      'backgroundColor': 'white',
-      'borderWidth': '1px',
-      'borderColor': 'neutral.30',
-      'boxShadow': 'normal',
+      width: '18px',
+      height: '24px',
+      color: 'neutral.50',
+      borderRadius: '4px',
+      backgroundColor: 'white',
+      borderWidth: '1px',
+      borderColor: 'neutral.30',
+      boxShadow: 'normal',
     })}
     aria-pressed={open}
     let:open

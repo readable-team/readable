@@ -21,10 +21,10 @@ type ServerContext = YogaInitialContext & {
 };
 
 type DefaultContext = {
-  'req': Request;
-  'ip'?: string;
+  req: Request;
+  ip?: string;
 
-  'loader': <T, R, S, N extends boolean = false, M extends boolean = false, RR = N extends true ? R | null : R>(
+  loader: <T, R, S, N extends boolean = false, M extends boolean = false, RR = N extends true ? R | null : R>(
     params: LoaderParams<T, R, S, N, M>,
   ) => DataLoader<T, M extends true ? RR[] : RR, string>;
   ' $loaders': Map<string, DataLoader<unknown, unknown>>;
@@ -49,10 +49,10 @@ export type Context = DefaultContext & Partial<UserContext> & Partial<SiteContex
 
 export const createContext = async ({ request, ip }: ServerContext): Promise<Context> => {
   const ctx: Context = {
-    'req': request,
+    req: request,
     ip,
 
-    'loader': <
+    loader: <
       T,
       R,
       S,

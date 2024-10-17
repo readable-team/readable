@@ -26,7 +26,6 @@ export const normalize = (storeSchema: StoreSchema, variables: Variables, data: 
     let current: Field = {};
 
     for (const selection of selections) {
-      // eslint-disable-next-line unicorn/prefer-switch
       if (selection.kind === 'TypenameField') {
         const key = makeFieldKey(selection.name, {});
         current[key] = value[selection.alias ?? selection.name];

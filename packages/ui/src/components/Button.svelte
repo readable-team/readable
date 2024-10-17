@@ -54,7 +54,7 @@
     },
     variants: {
       variant: {
-        'primary': {
+        primary: {
           color: {
             _enabled: {
               base: { base: 'white', _dark: 'white' },
@@ -76,7 +76,7 @@
             _disabled: { base: 'gray.200', _dark: 'darkgray.900' },
           },
         },
-        'secondary': {
+        secondary: {
           color: {
             _enabled: {
               base: { base: 'gray.700', _dark: 'darkgray.200' },
@@ -140,8 +140,8 @@
     },
     variants: {
       color: {
-        'primary': { color: { base: 'white', _dark: 'white' } },
-        'secondary': { color: { base: 'gray.700', _dark: 'darkgray.800' } },
+        primary: { color: { base: 'white', _dark: 'white' } },
+        secondary: { color: { base: 'gray.700', _dark: 'darkgray.800' } },
         'danger-fill': { color: { base: 'red.700', _dark: 'red.600' } },
       },
     },

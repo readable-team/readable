@@ -5,7 +5,7 @@ export const sitemap = (event: RequestEvent, paths: string[]) => {
   const doc = create({
     urlset: {
       '@xmlns': 'http://www.sitemaps.org/schemas/sitemap/0.9',
-      'url': paths.map((path) => ({ loc: `${event.url.origin}${path}` })),
+      url: paths.map((path) => ({ loc: `${event.url.origin}${path}` })),
     },
   });
 

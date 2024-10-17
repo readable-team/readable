@@ -51,7 +51,6 @@ export const buildSelectionsTSType = (
       continue;
     }
 
-    // eslint-disable-next-line unicorn/prefer-switch
     if (selection.kind === 'TypenameField') {
       literal.members.push(
         AST.b.tsPropertySignature.from({
@@ -131,7 +130,6 @@ export const buildVariablesTSType = (variables: Variable[]): recast.types.namedT
   const base = AST.b.tsTypeLiteral([]);
 
   for (const variable of variables) {
-    // eslint-disable-next-line unicorn/prefer-switch
     if (variable.kind === 'ScalarField') {
       base.members.push(
         AST.b.tsPropertySignature.from({

@@ -30,7 +30,7 @@
   let element: 'a' | 'button';
   $: element = type === 'link' ? 'a' : type;
   $: props =
-    (type === 'link' && { 'href': disabled || href, 'data-sveltekit-preload-data': false }) ||
+    (type === 'link' && { href: disabled || href, 'data-sveltekit-preload-data': false }) ||
     (type === 'button' && { type: 'button', disabled }) ||
     {};
 

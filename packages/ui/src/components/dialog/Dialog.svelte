@@ -27,10 +27,10 @@
 <dialog
   bind:this={dialogElement}
   class={css({
-    'width': 'full',
-    'height': 'full',
-    'maxWidth': '[unset]',
-    'maxHeight': '[unset]',
+    width: 'full',
+    height: 'full',
+    maxWidth: '[unset]',
+    maxHeight: '[unset]',
     '& ::backdrop': {
       display: 'none',
     },

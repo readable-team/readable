@@ -30,14 +30,14 @@
 
   <NodeViewContentEditable
     style={css.raw({
-      'paddingY': '18px',
-      'paddingX': '16px',
-      'textStyle': '14m',
-      'fontFamily': 'mono',
-      'backgroundColor': 'neutral.20',
-      'borderRadius': '4px',
-      'overflowX': 'auto',
-      'whiteSpace': 'pre-wrap',
+      paddingY: '18px',
+      paddingX: '16px',
+      textStyle: '14m',
+      fontFamily: 'mono',
+      backgroundColor: 'neutral.20',
+      borderRadius: '4px',
+      overflowX: 'auto',
+      whiteSpace: 'pre-wrap',
       '&:not(:has(.ProseMirror-trailingBreak))': {
         _after: {
           content: '""',

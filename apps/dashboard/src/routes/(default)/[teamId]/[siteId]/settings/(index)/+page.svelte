@@ -413,15 +413,15 @@
 
   <div
     class={flex({
-      'align': 'center',
-      'gap': '6px',
-      'marginTop': '10px',
-      'borderRadius': '8px',
-      'paddingX': '10px',
-      'paddingY': '8px',
-      'textStyle': '13m',
-      'color': 'text.danger',
-      'backgroundColor': 'danger.10',
+      align: 'center',
+      gap: '6px',
+      marginTop: '10px',
+      borderRadius: '8px',
+      paddingX: '10px',
+      paddingY: '8px',
+      textStyle: '13m',
+      color: 'text.danger',
+      backgroundColor: 'danger.10',
       '& b': {
         textStyle: '13b',
       },

@@ -690,7 +690,6 @@ builder.subscriptionFields((t) => ({
       return repeater;
     },
     resolve: async (payload, args) => {
-      // eslint-disable-next-line unicorn/prefer-ternary
       if (payload.scope === 'team') {
         return await db.select().from(Teams).where(eq(Teams.id, args.teamId)).then(firstOrThrow);
       } else {

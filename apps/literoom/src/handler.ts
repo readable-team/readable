@@ -81,7 +81,6 @@ export const handler = async (event: Event) => {
     });
   }
 
-  // eslint-disable-next-line unicorn/prefer-switch
   if (format === 'auto') {
     image = image.webp();
     format = 'webp';

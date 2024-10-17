@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-process-exit */
 import dayjs from 'dayjs';
 import { and, eq, lt } from 'drizzle-orm';
 import { db, Jobs } from '@/db';

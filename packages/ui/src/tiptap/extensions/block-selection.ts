@@ -98,8 +98,8 @@ export const BlockSelectionHelper = Extension.create({
                           '&:last-child': {
                             marginBottom: '-23px',
                           },
-                          'marginBottom': '[calc(var(--prosemirror-block-gap) * -1)]',
-                          'paddingBottom': '23px',
+                          marginBottom: '[calc(var(--prosemirror-block-gap) * -1)]',
+                          paddingBottom: '23px',
                         },
                       }),
                     }),
@@ -142,14 +142,12 @@ export class BlockSelection extends Selection {
   }
 
   override map(doc: Node, mapping: Mappable): Selection {
-    // eslint-disable-next-line unicorn/no-array-callback-reference
     const $head = doc.resolve(mapping.map(this.head));
 
     if (!$head.parent.inlineContent) {
       return Selection.near($head);
     }
 
-    // eslint-disable-next-line unicorn/no-array-callback-reference
     const $anchor = doc.resolve(mapping.map(this.anchor));
 
     return new BlockSelection($anchor.parent.inlineContent ? $anchor : $head, $head, this.invisible);

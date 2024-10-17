@@ -935,8 +935,6 @@ builder.mutationFields((t) => ({
 
       const { content } = state;
 
-      // 그니까 이건 Array.forEach 아니라니까 ESLint는 바보야 앨랠래
-      // eslint-disable-next-line unicorn/no-array-for-each
       content.content?.forEach((child) => {
         if (child.type === 'heading' && !child.attrs?.anchorId) {
           const anchorId = encodeURIComponent(
@@ -1082,7 +1080,6 @@ builder.mutationFields((t) => ({
         type: TeamRestrictionType.DASHBOARD_WRITE,
       });
 
-      // eslint-disable-next-line unicorn/prefer-switch
       if (input.kind === PageContentSyncKind.UPDATE) {
         pubsub.publish('page:content:sync', input.pageId, {
           kind: input.kind,

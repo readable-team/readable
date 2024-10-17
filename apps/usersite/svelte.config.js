@@ -9,7 +9,7 @@ export default {
     adapter: bun(),
     alias: {
       '@/*': '../api/src/*',
-      '$graphql': '.gql',
+      $graphql: '.gql',
     },
     files: {
       hooks: {

@@ -120,7 +120,6 @@ export const PageSearchIndexUpdateJob = defineJob('page:search:index-update', as
 
   const { state } = await db.select({ state: Pages.state }).from(Pages).where(eq(Pages.id, pageId)).then(firstOrThrow);
 
-  // eslint-disable-next-line unicorn/prefer-switch
   if (state === PageState.PUBLISHED) {
     const page = await db
       .select({
@@ -188,8 +187,6 @@ export const PageSummarizeJob = defineJob('page:summarize', async (pageId: strin
     chunks.push({ str: page.subtitle, hash: Bun.hash(page.subtitle).toString() });
   }
 
-  // 이건 Array의 forEach가 아니라구 ESLint 너가 몰알아???
-  // eslint-disable-next-line unicorn/no-array-for-each
   content.forEach((node) => {
     const text = node.textBetween(0, node.content.size, '\n');
     if (text.length > 0) {

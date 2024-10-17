@@ -46,9 +46,9 @@
 <nav class={css({ truncate: true }, style)} aria-label="Breadcrumb">
   <ol
     class={flex({
-      'align': 'center',
-      'gap': '6px',
-      'truncate': true,
+      align: 'center',
+      gap: '6px',
+      truncate: true,
       '& > li': {
         textStyle: '15r',
       },

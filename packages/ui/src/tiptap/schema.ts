@@ -114,9 +114,9 @@ const extensions = [
     HTMLAttributes: {
       class: css({
         '&:not(ul ul)': { paddingLeft: '30px' }, // ul 루트 노드
-        'paddingLeft': '15px',
-        'listStylePosition': 'outside',
-        'listStyleType': 'disc',
+        paddingLeft: '15px',
+        listStylePosition: 'outside',
+        listStyleType: 'disc',
         'ul ul&': { listStyleType: 'circle' },
         '& li + li': {
           marginTop: '4px',
@@ -132,9 +132,9 @@ const extensions = [
     HTMLAttributes: {
       class: css({
         '&:not(ol ol)': { paddingLeft: '30px' }, // ol 루트 노드
-        'paddingLeft': '15px',
-        'listStylePosition': 'outside',
-        'listStyleType': 'decimal',
+        paddingLeft: '15px',
+        listStylePosition: 'outside',
+        listStyleType: 'decimal',
         'ol ol&': { listStyleType: 'lower-alpha' },
         '& li + li': {
           marginTop: '4px',

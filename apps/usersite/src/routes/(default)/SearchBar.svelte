@@ -225,7 +225,6 @@
   let selectedResultIndex: number | null = null;
 
   $: if (browser && $searchBarOpen) {
-    // eslint-disable-next-line unicorn/prefer-top-level-await
     tick().then(() => {
       inputEl.focus();
     });
@@ -547,12 +546,12 @@
                 >
                   <h3
                     class={css({
-                      'color': 'text.primary',
-                      'textStyle': '16sb',
+                      color: 'text.primary',
+                      textStyle: '16sb',
                       '& em': {
                         color: 'var(--usersite-theme-color)',
                       },
-                      'truncate': true,
+                      truncate: true,
                     })}
                     aria-label={result.page.title}
                   >
@@ -561,12 +560,12 @@
                   {#if result.highlight?.text}
                     <p
                       class={css({
-                        'color': 'text.secondary',
-                        'textStyle': '14r',
+                        color: 'text.secondary',
+                        textStyle: '14r',
                         '& em': {
                           color: 'var(--usersite-theme-color)',
                         },
-                        'truncate': true,
+                        truncate: true,
                       })}
                       aria-label={result.highlight.text}
                     >

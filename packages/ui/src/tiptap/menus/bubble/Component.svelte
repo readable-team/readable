@@ -105,7 +105,7 @@
     },
     _pressed: {
       // theme=selected
-      'color': 'text.accent',
+      color: 'text.accent',
       '& *': { strokeWidth: '[2.5]' },
     },
     _active: {
@@ -309,7 +309,7 @@
 
             {#if activeNodeTypeId === nodeType.id}
               <Icon
-                style={css.raw({ 'marginLeft': 'auto', 'color': 'text.accent', '& *': { strokeWidth: '[2.5]' } })}
+                style={css.raw({ marginLeft: 'auto', color: 'text.accent', '& *': { strokeWidth: '[2.5]' } })}
                 icon={CheckIcon}
                 size={12}
               />
@@ -431,7 +431,7 @@
 
           {#if activeColor === name || (!activeColor && name === 'black')}
             <Icon
-              style={css.raw({ 'marginLeft': 'auto', 'color': 'text.accent', '& *': { strokeWidth: '[2.5]' } })}
+              style={css.raw({ marginLeft: 'auto', color: 'text.accent', '& *': { strokeWidth: '[2.5]' } })}
               icon={CheckIcon}
               size={12}
             />

@@ -16,7 +16,7 @@
   $$restProps;
 
   let colgroupRendered = false;
-  // eslint-disable-next-line unicorn/prefer-top-level-await
+
   tick().then(() => {
     colgroupRendered = true;
   });
@@ -77,7 +77,6 @@
     }
   }
 
-  // eslint-disable-next-line unicorn/prefer-top-level-await
   $: getRows(node);
 
   let hoveredRowIndex: number | null = null;
@@ -106,13 +105,13 @@
       '* + &': {
         marginTop: '[calc(-10px + var(--prosemirror-block-gap))]',
       },
-      'marginTop': '-10px',
-      'paddingTop': '10px',
+      marginTop: '-10px',
+      paddingTop: '10px',
       '&:last-child': {
         marginBottom: '-23px',
       },
-      'marginBottom': '[calc(var(--prosemirror-block-gap) * -1)]',
-      'paddingBottom': '23px',
+      marginBottom: '[calc(var(--prosemirror-block-gap) * -1)]',
+      paddingBottom: '23px',
 
       '.block-selection-decoration &': {
         marginTop: '0 !important',
@@ -191,16 +190,16 @@
               style:left={`${col.offsetLeft}px`}
               style:width={`${col.clientWidth}px`}
               class={flex({
-                'position': 'absolute',
-                'top': '0',
-                'width': '24px',
-                'height': '18px',
-                'translateY': '-1/2',
-                'translate': 'auto',
-                'zIndex': '10',
-                'justifyContent': 'center',
-                'alignItems': 'center',
-                'pointerEvents': hoveredColumnIndex === i ? 'auto' : 'none',
+                position: 'absolute',
+                top: '0',
+                width: '24px',
+                height: '18px',
+                translateY: '-1/2',
+                translate: 'auto',
+                zIndex: '10',
+                justifyContent: 'center',
+                alignItems: 'center',
+                pointerEvents: hoveredColumnIndex === i ? 'auto' : 'none',
                 '.block-selection-decoration &': {
                   display: 'none',
                 },

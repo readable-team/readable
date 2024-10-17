@@ -29,7 +29,7 @@
     <PlanCycleToggle defaultValue={planCycle} on:select={(cycle) => (planCycle = cycle.detail)} />
     <table
       class={css({
-        'width': 'full',
+        width: 'full',
         '& tr': { height: '50px' },
         '& td, & th': { borderBottomWidth: '1px', borderColor: 'divider.primary', paddingX: '12px' },
       })}

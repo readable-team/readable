@@ -40,7 +40,7 @@
 
   <p
     class={css({
-      'fontSize': '0',
+      fontSize: '0',
       '& > * > span': {
         fontSize: '20px',
         fontWeight: '[500]',
