@@ -26,7 +26,7 @@
     </button>
   </div>
 
-  <div class={css({ paddingX: '32px', paddingY: '24px' })}>
+  <div class={css({ paddingX: '32px', paddingY: '24px', overflow: 'auto' })}>
     <slot />
   </div>
 </Modal>

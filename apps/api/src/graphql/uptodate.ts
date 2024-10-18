@@ -14,6 +14,7 @@ type FindOutdatedContent = {
   pageId: string;
   fixes: {
     nodeId: string;
+    original: string;
     suggestion: string;
     relevance: number;
     reason: string;
@@ -29,6 +30,7 @@ FindOutdatedContent.implement({
         builder.simpleObject('FindOutdatedContentFix', {
           fields: (t) => ({
             nodeId: t.string(),
+            original: t.string(),
             suggestion: t.string(),
             relevance: t.float(),
             reason: t.string(),
@@ -92,6 +94,7 @@ builder.queryFields((t) => ({
                     z.object({
                       relevance: z.number(),
                       nodeId: z.string(),
+                      original: z.string(),
                       suggestion: z.string(),
                       reason: z.string(),
                     }),

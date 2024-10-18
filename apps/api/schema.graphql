@@ -124,6 +124,7 @@ type FindOutdatedContent {
 
 type FindOutdatedContentFix {
   nodeId: String!
+  original: String!
   reason: String!
   relevance: Float!
   suggestion: String!
