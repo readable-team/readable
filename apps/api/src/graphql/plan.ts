@@ -14,6 +14,7 @@ PlanRule.implement({
     siteLimit: t.exposeInt('siteLimit', { nullable: true }),
     pageViewLimit: t.exposeInt('pageViewLimit', { nullable: true }),
     aiSearch: t.exposeBoolean('aiSearch'),
+    themeColor: t.exposeBoolean('themeColor'),
   }),
 });
 

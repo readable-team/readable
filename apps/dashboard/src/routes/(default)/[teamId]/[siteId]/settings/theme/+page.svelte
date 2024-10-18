@@ -9,7 +9,6 @@
   import { dataSchemas } from '@/schemas';
   import { graphql } from '$graphql';
   import { LiteBadge } from '$lib/components';
-  import { isLiteOrHigher } from '$lib/svelte/stores/ui';
 
   $: query = graphql(`
     query SiteSettingsThemePage_Query($siteId: ID!) {
@@ -21,6 +20,22 @@
 
         logo {
           id
+        }
+
+        team {
+          id
+
+          plan {
+            id
+
+            plan {
+              id
+
+              rules {
+                themeColor
+              }
+            }
+          }
         }
       }
     }
@@ -96,7 +111,7 @@
   <FormField name="themeColor" label="테마 색상">
     <LiteBadge slot="label-suffix" via="site-theme-color:pro-badge" />
     <TextInput
-      disabled={!$isLiteOrHigher}
+      disabled={!$query.site.team.plan.plan.rules.themeColor}
       on:input={(e) => {
         if (e.currentTarget.value[0] !== '#') {
           e.currentTarget.value = `#${e.currentTarget.value}`;

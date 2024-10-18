@@ -394,6 +394,7 @@ type PlanRule {
   memberLimit: Int
   pageViewLimit: Int
   siteLimit: Int
+  themeColor: Boolean!
 }
 
 enum PlanType {
