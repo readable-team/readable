@@ -25,6 +25,18 @@
 
         team {
           id
+
+          plan {
+            id
+
+            plan {
+              id
+
+              rules {
+                aiSearch
+              }
+            }
+          }
         }
 
         # NOTE: maxDepth = 2
@@ -190,7 +202,7 @@
     overflowY: 'auto',
   })}
 >
-  {#if env.PUBLIC_PULUMI_STACK !== 'prod'}
+  {#if env.PUBLIC_PULUMI_STACK !== 'prod' && $site.team.plan.plan.rules.aiSearch}
     <Button
       style={css.raw({ margin: '20px', marginBottom: '0' })}
       variant="secondary"

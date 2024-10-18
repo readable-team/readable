@@ -31,13 +31,6 @@ export const assertTeamPlanRule = async <T extends keyof PlanRules>(params: GetP
   }
 
   switch (params.rule) {
-    case 'aiSearch': {
-      if (!value) {
-        throw new ReadableError({ code: 'feature_not_available' });
-      }
-      break;
-    }
-
     case 'siteLimit': {
       const siteCount = await db
         .select({ count: count(Sites.id) })
@@ -60,6 +53,13 @@ export const assertTeamPlanRule = async <T extends keyof PlanRules>(params: GetP
 
       if (memberCount >= (value as number)) {
         throw new ReadableError({ code: 'member_limit_exceeded' });
+      }
+      break;
+    }
+
+    default: {
+      if (!value) {
+        throw new ReadableError({ code: 'feature_not_available' });
       }
       break;
     }
