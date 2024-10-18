@@ -219,6 +219,24 @@ export const PageContentContributors = pgTable(
   }),
 );
 
+export const PageContentComments = pgTable('page_content_comments', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createDbId('PCCM')),
+  pageId: text('page_id')
+    .notNull()
+    .references(() => Pages.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+  userId: text('user_id')
+    .notNull()
+    .references(() => Users.id, { onUpdate: 'cascade', onDelete: 'restrict' }),
+  nodeId: text('node_id').notNull(),
+  content: text('content').notNull(),
+  state: E._PageContentCommentState('state').notNull().default('ACTIVE'),
+  createdAt: datetime('created_at')
+    .notNull()
+    .default(sql`now()`),
+});
+
 export const PageContentSnapshots = pgTable(
   'page_content_snapshots',
   {

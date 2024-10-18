@@ -105,7 +105,7 @@ export function createFloatingActions(options?: CreateFloatingActionsOptions): C
 
     if (options?.disableAutoUpdate !== true) {
       cleanupAutoUpdate?.();
-      cleanupAutoUpdate = autoUpdate(referenceElement, floatingElement, updatePosition);
+      cleanupAutoUpdate = autoUpdate(referenceElement, floatingElement, updatePosition, { animationFrame: true });
     }
 
     setTimeout(() => {

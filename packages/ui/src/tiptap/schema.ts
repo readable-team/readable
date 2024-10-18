@@ -112,7 +112,7 @@ const extensions = [
   BulletList.configure({
     HTMLAttributes: {
       class: css({
-        '&:not(ul ul)': { paddingLeft: '30px' }, // ul 루트 노드
+        '&:not(ul ul)': { paddingLeft: '[calc((100% - 720px) / 2 + 15px)]' }, // ul 루트 노드
         paddingLeft: '15px',
         listStylePosition: 'outside',
         listStyleType: 'disc',
@@ -123,14 +123,14 @@ const extensions = [
         '& p + ul': {
           marginTop: '4px',
         },
-        '& p': { paddingLeft: '4px' },
+        // '& p': { paddingLeft: '4px' },
       }),
     },
   }),
   OrderedList.configure({
     HTMLAttributes: {
       class: css({
-        '&:not(ol ol)': { paddingLeft: '30px' }, // ol 루트 노드
+        '&:not(ol ol)': { paddingLeft: '[calc((100% - 720px) / 2 + 15px)]' }, // ol 루트 노드
         paddingLeft: '15px',
         listStylePosition: 'outside',
         listStyleType: 'decimal',

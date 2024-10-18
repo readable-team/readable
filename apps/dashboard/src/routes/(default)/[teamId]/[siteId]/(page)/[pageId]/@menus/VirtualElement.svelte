@@ -1,11 +1,11 @@
 <script lang="ts">
   import { css } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import { portal } from '@readable/ui/actions';
   import { Editor } from '@tiptap/core';
   import { onMount } from 'svelte';
   import { sineIn } from 'svelte/easing';
   import { fade } from 'svelte/transition';
-  import { portal } from '../../../actions';
 
   export let editor: Editor;
   export let pos: number;
@@ -71,11 +71,11 @@
     use:portal
     transition:fade|global={{ duration: 150, easing: sineIn }}
   >
-    <div class={flex({ flex: '1', justify: 'flex-end', align: 'center', height: '[1lh]', pointerEvents: 'auto' })}>
+    <div class={flex({ flex: '1', justify: 'flex-end', align: 'center', height: '[1lh]' })}>
       <slot name="left" />
     </div>
     <div class={css({ width: '720px' })} />
-    <div class={flex({ flex: '1', justify: 'flex-start', align: 'center', height: '[1lh]', pointerEvents: 'auto' })}>
+    <div class={flex({ flex: '1', justify: 'flex-start', align: 'center', height: '[1lh]' })}>
       <slot name="right" />
     </div>
   </div>

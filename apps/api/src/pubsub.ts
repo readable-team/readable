@@ -6,6 +6,7 @@ import type { PageContentSyncKind } from '@/enums';
 
 export const pubsub = createPubSub<{
   'page:content:sync': [pageId: string, { kind: PageContentSyncKind; data: string }];
+  'page:content:comment': [pageId: string, null];
   'site:update': [siteId: string, { scope: 'page'; pageId: string } | { scope: 'site' }];
   'team:update': [teamId: string, { scope: 'member'; userId: string } | { scope: 'team' }];
 }>({

@@ -18,6 +18,13 @@ export const JobState = {
   FAILED: 'FAILED',
 } as const;
 
+export type PageContentCommentState = keyof typeof PageContentCommentState;
+export const PageContentCommentState = {
+  ACTIVE: 'ACTIVE',
+  RESOLVED: 'RESOLVED',
+  DELETED: 'DELETED',
+} as const;
+
 export type PageContentSyncKind = keyof typeof PageContentSyncKind;
 export const PageContentSyncKind = {
   UPDATE: 'UPDATE',

@@ -12,6 +12,7 @@
   import { PageContentSyncKind } from '@/enums';
   import { page } from '$app/stores';
   import { fragment, graphql } from '$graphql';
+  import MenuHandler from './@menus/Handler.svelte';
   import Breadcrumb from './Breadcrumb.svelte';
   import type { Editor } from '@tiptap/core';
   import type { Writable } from 'svelte/store';
@@ -43,9 +44,16 @@
             id
             update
           }
+
+          comments {
+            id
+            nodeId
+            content
+          }
         }
 
         ...PagePage_Breadcrumb_query
+        ...Editor_MenuHandler_query
       }
     `),
   );
@@ -126,6 +134,20 @@
 
         ... on UnfurlLinkUrl {
           url
+        }
+      }
+    }
+  `);
+
+  const pageContentCommentUpdateStream = graphql(`
+    subscription PagePage_PageContentCommentUpdateStream_Subscription($pageId: ID!) {
+      pageContentCommentUpdateStream(pageId: $pageId) {
+        id
+
+        comments {
+          id
+          nodeId
+          content
         }
       }
     }
@@ -297,6 +319,7 @@
     persistence.on('synced', () => forceSync());
 
     const unsubscribe = pageContentSyncStream.subscribe({ pageId: $query.page.id });
+    const unsubscribeComment = pageContentCommentUpdateStream.subscribe({ pageId: $query.page.id });
 
     Y.applyUpdateV2(doc, base64.parse($query.page.content.update), 'remote');
     awareness.setLocalStateField('user', {
@@ -312,6 +335,8 @@
       clearInterval(forceSyncInterval);
 
       unsubscribe();
+      unsubscribeComment();
+
       YAwareness.removeAwarenessStates(awareness, [doc.clientID], 'local');
 
       persistence.destroy();
@@ -412,3 +437,7 @@
     />
   </div>
 </div>
+
+{#if editor}
+  <MenuHandler {$query} {editor} />
+{/if}

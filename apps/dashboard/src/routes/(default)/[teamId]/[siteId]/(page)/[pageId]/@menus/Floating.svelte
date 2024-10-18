@@ -1,17 +1,16 @@
 <script lang="ts">
   import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
+  import { Icon } from '@readable/ui/components';
   import GripVerticalIcon from '~icons/lucide/grip-vertical';
   import PlusIcon from '~icons/lucide/plus';
-  import { Icon } from '../../../components';
   import type { Editor } from '@tiptap/core';
 
   export let editor: Editor;
   export let pos: number;
 
-  $: node = editor.state.doc.nodeAt(pos);
-
   const handlePlusClick = () => {
+    const node = editor.state.doc.nodeAt(pos);
     if (!node) {
       return;
     }
@@ -31,6 +30,7 @@
   };
 
   const handleGripClick = () => {
+    const node = editor.state.doc.nodeAt(pos);
     if (!node) {
       return;
     }
@@ -46,6 +46,7 @@
   };
 
   const handleDragStart = (event: DragEvent) => {
+    const node = editor.state.doc.nodeAt(pos);
     if (!node) {
       return;
     }
@@ -111,7 +112,7 @@
   };
 </script>
 
-<div class={flex({ align: 'center' })}>
+<div class={flex({ align: 'center', pointerEvents: 'auto' })}>
   <button
     class={css({ borderRadius: '6px', padding: '2px', color: 'neutral.50', _hover: { backgroundColor: 'neutral.20' } })}
     type="button"

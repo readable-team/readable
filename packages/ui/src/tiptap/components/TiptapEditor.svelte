@@ -11,7 +11,6 @@
   import { Image } from '../node-views/image';
   import { InlineImage } from '../node-views/inline-image';
   import { basicExtensions, editorExtensions } from '../schema';
-  import MenuHandler from './menus/Handler.svelte';
   import type { SystemStyleObject } from '@readable/styled-system/types';
   import type * as YAwareness from 'y-protocols/awareness';
   import type * as Y from 'yjs';
@@ -105,7 +104,3 @@
   autocorrect="off"
   spellcheck="false"
 />
-
-{#if editor}
-  <MenuHandler {editor} />
-{/if}

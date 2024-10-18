@@ -48,6 +48,7 @@ export const File = createObjectRef('File', T.Files);
 export const Image = createObjectRef('Image', T.Images);
 export const Page = createObjectRef('Page', T.Pages);
 export const PageContentContributor = createObjectRef('PageContentContributor', T.PageContentContributors);
+export const PageContentComment = createObjectRef('PageContentComment', T.PageContentComments);
 export const PageContentState = createObjectRef('PageContentState', T.PageContentStates);
 export const PaymentInvoice = createObjectRef('PaymentInvoice', T.PaymentInvoices);
 export const PaymentInvoiceItem = createObjectRef('PaymentInvoiceItem', T.PaymentInvoiceItems);

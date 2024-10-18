@@ -1,3 +1,9 @@
+input AddPageContentCommentInput {
+  content: String!
+  nodeId: String!
+  pageId: ID!
+}
+
 type Addon {
   fee: Int!
   id: ID!
@@ -200,6 +206,7 @@ enum JobState {
 }
 
 type Mutation {
+  addPageContentComment(input: AddPageContentCommentInput!): PageContentComment!
   authorizeEmail(input: AuthorizeEmailInput!): UserWithAccessToken!
   authorizeSingleSignOn(input: AuthorizeSingleSignOnInput!): UserWithAccessToken!
   createCategory(input: CreateCategoryInput!): Category!
@@ -252,6 +259,7 @@ type Mutation {
 type Page implements IPage {
   category: Category!
   children: [Page!]!
+  comments: [PageContentComment!]!
   content: PageContentState!
   contentContributor: [PageContentContributor!]!
   hasUnpublishedChanges: Boolean!
@@ -265,6 +273,20 @@ type Page implements IPage {
   slug: String!
   state: PageState!
   title: String!
+}
+
+type PageContentComment {
+  content: String!
+  createdAt: DateTime!
+  id: ID!
+  nodeId: String!
+  user: User!
+}
+
+enum PageContentCommentState {
+  ACTIVE
+  DELETED
+  RESOLVED
 }
 
 type PageContentContributor {
@@ -577,6 +599,7 @@ enum SiteState {
 union SiteUpdateStreamPayload = Page | Site
 
 type Subscription {
+  pageContentCommentUpdateStream(pageId: ID!): Page!
   pageContentSyncStream(pageId: ID!): PageContentSyncStreamPayload!
   siteCustomDomainValidationStream(siteCustomDomainId: ID!): SiteCustomDomain!
   siteUpdateStream(siteId: ID!): SiteUpdateStreamPayload!

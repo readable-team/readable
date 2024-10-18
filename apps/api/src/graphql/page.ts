@@ -13,6 +13,7 @@ import {
   db,
   first,
   firstOrThrow,
+  PageContentComments,
   PageContentContributors,
   PageContents,
   PageContentStates,
@@ -20,7 +21,7 @@ import {
   Pages,
   PageViews,
 } from '@/db';
-import { CategoryState, PageContentSyncKind, PageState, TeamRestrictionType } from '@/enums';
+import { CategoryState, PageContentCommentState, PageContentSyncKind, PageState, TeamRestrictionType } from '@/enums';
 import { ReadableError } from '@/errors';
 import { enqueueJob } from '@/jobs';
 import { pubsub } from '@/pubsub';
@@ -34,6 +35,7 @@ import {
   ICategory,
   IPage,
   Page,
+  PageContentComment,
   PageContentContributor,
   PageContentState,
   PublicCategory,
@@ -208,6 +210,19 @@ Page.implement({
           .from(PageContentContributors)
           .where(eq(PageContentContributors.pageId, page.id))
           .orderBy(desc(PageContentContributors.updatedAt));
+      },
+    }),
+
+    comments: t.field({
+      type: [PageContentComment],
+      resolve: async (page) => {
+        return await db
+          .select()
+          .from(PageContentComments)
+          .where(
+            and(eq(PageContentComments.pageId, page.id), eq(PageContentComments.state, PageContentCommentState.ACTIVE)),
+          )
+          .orderBy(asc(PageContentComments.createdAt));
       },
     }),
 
@@ -388,6 +403,17 @@ PageContentContributor.implement({
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
 
     user: t.field({ type: User, resolve: (contributor) => contributor.userId }),
+  }),
+});
+
+PageContentComment.implement({
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    nodeId: t.exposeString('nodeId'),
+    content: t.exposeString('content'),
+    createdAt: t.expose('createdAt', { type: 'DateTime' }),
+
+    user: t.field({ type: User, resolve: (comment) => comment.userId }),
   }),
 });
 
@@ -1205,6 +1231,36 @@ builder.mutationFields((t) => ({
     },
   }),
 
+  addPageContentComment: t.withAuth({ session: true }).fieldWithInput({
+    type: PageContentComment,
+    input: {
+      pageId: t.input.id(),
+      nodeId: t.input.string(),
+      content: t.input.string(),
+    },
+    resolve: async (_, { input }, ctx) => {
+      await assertPagePermission({
+        pageId: input.pageId,
+        userId: ctx.session.userId,
+      });
+
+      const comment = await db
+        .insert(PageContentComments)
+        .values({
+          pageId: input.pageId,
+          userId: ctx.session.userId,
+          nodeId: input.nodeId,
+          content: input.content,
+        })
+        .returning()
+        .then(firstOrThrow);
+
+      pubsub.publish('page:content:comment', input.pageId, null);
+
+      return comment;
+    },
+  }),
+
   updatePageView: t.withAuth({ site: true }).fieldWithInput({
     type: 'Boolean',
     input: { pageId: t.input.id(), deviceId: t.input.string() },
@@ -1288,6 +1344,26 @@ builder.subscriptionFields((t) => ({
       kind: payload.kind,
       data: base64.parse(payload.data),
     }),
+  }),
+
+  pageContentCommentUpdateStream: t.withAuth({ session: true }).field({
+    type: Page,
+    args: { pageId: t.arg.id() },
+    subscribe: async (_, args, ctx) => {
+      await assertPagePermission({
+        pageId: args.pageId,
+        userId: ctx.session.userId,
+      });
+
+      const repeater = pubsub.subscribe('page:content:comment', args.pageId);
+
+      ctx.req.signal.addEventListener('abort', () => {
+        repeater.return();
+      });
+
+      return repeater;
+    },
+    resolve: (_, args) => args.pageId,
   }),
 }));
 
