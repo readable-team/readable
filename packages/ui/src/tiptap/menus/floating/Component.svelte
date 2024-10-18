@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { css } from '@readable/styled-system/css';
+  import { css, cx } from '@readable/styled-system/css';
   import { flex } from '@readable/styled-system/patterns';
   import GripVerticalIcon from '~icons/lucide/grip-vertical';
   import PlusIcon from '~icons/lucide/plus';
@@ -85,9 +85,35 @@
     editor.commands.setTextSelection(pos);
     const child = dom.node.children[dom.offset];
 
-    event.dataTransfer.setDragImage(child, 0, 0);
+    const target = document.createElement('div');
+    target.className = cx(
+      'ProseMirror',
+      css({
+        width: '720px',
+        position: 'fixed',
+        backgroundColor: 'white',
+        overflow: 'hidden',
+
+        '& > *': {
+          width: 'full!',
+          margin: '0!',
+          padding: '0!',
+        },
+      }),
+    );
+
+    const cloned = child.cloneNode(true) as HTMLElement;
+
+    target.append(cloned);
+    document.body.append(target);
+
+    event.dataTransfer.setDragImage(target, 0, 0);
     event.dataTransfer.clearData();
     event.dataTransfer.effectAllowed = 'move';
+
+    setTimeout(() => {
+      target.remove();
+    }, 0);
 
     editor
       .chain()
