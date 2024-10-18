@@ -33,7 +33,6 @@ import { withNodeId } from './extensions/node-id';
 import { Placeholder } from './extensions/placeholder';
 import { extendNodeToNodeView } from './lib/create';
 import { BubbleMenu } from './menus/bubble';
-import { FloatingMenu } from './menus/floating';
 import { SlashMenu } from './menus/slash';
 import { Callout } from './node-views';
 import { CodeBlock } from './node-views/code-block';
@@ -312,6 +311,5 @@ export const editorExtensions = [
   Behavior,
   BlockSelectionHelper,
   BubbleMenu,
-  FloatingMenu,
   SlashMenu,
 ];

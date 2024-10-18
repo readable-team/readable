@@ -4,61 +4,34 @@
   import GripVerticalIcon from '~icons/lucide/grip-vertical';
   import PlusIcon from '~icons/lucide/plus';
   import { Icon } from '../../../components';
-  import { pluginKey as slashPluginKey } from '../slash/extension';
-  import { menuItems } from '../slash/items';
   import type { Editor } from '@tiptap/core';
-  import type { Node } from '@tiptap/pm/model';
 
   export let editor: Editor;
-  export let pos: number | null = null;
-  export let node: Node | null = null;
+  export let pos: number;
+
+  $: node = editor.state.doc.nodeAt(pos);
 
   const handlePlusClick = () => {
-    if (pos === null || node === null) {
+    if (!node) {
       return;
     }
 
-    const { state } = editor;
-
-    const block = state.doc.nodeAt(pos);
-    if (!block) {
-      return;
-    }
-
-    if (block.type.name === 'paragraph' && block.childCount === 0) {
+    if (node.type.name === 'paragraph' && node.childCount === 0) {
       editor
         .chain()
-        .setMeta(slashPluginKey, {
-          active: true,
-          range: {
-            from: pos,
-            to: pos + 1,
-          },
-          items: menuItems,
-        })
         .focus(pos + 1)
         .run();
     } else {
       editor
         .chain()
-        .insertContentAt(pos + node.nodeSize, {
-          type: 'paragraph',
-        })
-        .setMeta(slashPluginKey, {
-          active: true,
-          range: {
-            from: pos + node.nodeSize + 1,
-            to: pos + node.nodeSize + 1,
-          },
-          items: menuItems,
-        })
+        .insertContentAt(pos + node.nodeSize, { type: 'paragraph' })
         .focus(pos + node.nodeSize + 1)
         .run();
     }
   };
 
   const handleGripClick = () => {
-    if (pos === null || node === null) {
+    if (!node) {
       return;
     }
 
@@ -73,7 +46,11 @@
   };
 
   const handleDragStart = (event: DragEvent) => {
-    if (pos === null || node === null || !event.dataTransfer) {
+    if (!node) {
+      return;
+    }
+
+    if (!event.dataTransfer) {
       return;
     }
 
