@@ -6,7 +6,7 @@ import { builder } from '@/builder';
 import { db, PageContentChunks, PageContents, Pages } from '@/db';
 import { PageState } from '@/enums';
 import * as openai from '@/external/openai';
-import { fixByChangePrompt } from '@/prompt/fix-by-change';
+import { fixByChangePrompt, keywordExtractionPrompt } from '@/prompt/fix-by-change';
 import { assertSitePermission } from '@/utils/permissions';
 import { Page } from './objects';
 
@@ -55,10 +55,34 @@ builder.queryFields((t) => ({
         userId: ctx.session.userId,
       });
 
+      const keyword = await openai.client.beta.chat.completions
+        .parse({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: keywordExtractionPrompt,
+            },
+            {
+              role: 'user',
+              content: JSON.stringify({
+                change: args.query,
+              }),
+            },
+          ],
+          response_format: zodResponseFormat(
+            z.object({
+              keyword: z.string(),
+            }),
+            'keyword',
+          ),
+        }) // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .then((response) => response.choices[0].message.parsed!.keyword);
+
       const queryVector = await openai.client.embeddings
         .create({
           model: 'text-embedding-3-small',
-          input: args.query,
+          input: keyword,
         })
         .then((response) => response.data[0].embedding);
 
@@ -85,7 +109,7 @@ builder.queryFields((t) => ({
         result.map(async (page) => {
           const llmResult = await openai.client.beta.chat.completions
             .parse({
-              model: 'gpt-4o-mini',
+              model: 'gpt-4o',
               temperature: 0.5,
               max_tokens: 4096,
               response_format: zodResponseFormat(
