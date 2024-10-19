@@ -87,7 +87,7 @@
 <svelte:window on:pointermove={handlePointerMove} />
 
 {#if pos !== null}
-  <VirtualElement {editor} {pos}>
+  <VirtualElement {editor} {pos} transition>
     <Floating slot="left" {editor} {pos} />
     <svelte:fragment slot="right">
       {#if !commentsByPos.has(pos)}

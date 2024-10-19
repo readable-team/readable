@@ -9,6 +9,7 @@
 
   export let editor: Editor;
   export let pos: number;
+  export let transition = false;
 
   let nodeId: string;
 
@@ -69,7 +70,7 @@
     style:height={`${height}px`}
     class={flex({ gap: '8px', position: 'absolute', pointerEvents: 'none', zIndex: '50' })}
     use:portal
-    transition:fade|global={{ duration: 150, easing: sineIn }}
+    transition:fade|global={{ duration: transition ? 150 : 0, easing: sineIn }}
   >
     <div class={flex({ flex: '1', justify: 'flex-end', align: 'center', height: '[1lh]' })}>
       <slot name="left" />
