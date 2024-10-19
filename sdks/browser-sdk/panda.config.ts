@@ -1,7 +1,7 @@
 import { defineConfig } from '@pandacss/dev';
 import { preset } from '@readable/styled-system';
 
-const prod = !!process.env.BUILD;
+const prod = process.env.NODE_ENV === 'production';
 
 export default defineConfig({
   importMap: '@readable/styled-system',

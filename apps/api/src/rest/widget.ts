@@ -5,46 +5,19 @@ import { z } from 'zod';
 import { db, PageContentChunks, PageContents, Pages } from '@/db';
 import { PageState } from '@/enums';
 import * as openai from '@/external/openai';
-import { keywordInferencePrompt, naturalLanguageSearchPrompt } from '@/prompt/widget';
+import { keywordSearchPrompt } from '@/prompt/widget';
 
 export const widget = new Elysia({ prefix: '/widget' });
 
 widget.post(
   '/query',
   async ({ body }) => {
-    const input = body.keywords.join(' ');
-
-    const keyword = await openai.client.beta.chat.completions
-      .parse({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: keywordInferencePrompt,
-          },
-          {
-            role: 'user',
-            content: input,
-          },
-        ],
-
-        response_format: zodResponseFormat(
-          z.object({
-            keyword: z.string(),
-          }),
-          'keyword-inference',
-        ),
-      })
-      .then((response) => response.choices[0].message.parsed?.keyword);
-
-    if (!keyword) {
-      return [];
-    }
+    const keywords = body.keywords;
 
     const queryVector = await openai.client.embeddings
       .create({
         model: 'text-embedding-3-small',
-        input: keyword,
+        input: keywords.join(' '),
       })
       .then((response) => response.data[0].embedding);
 
@@ -61,9 +34,9 @@ widget.post(
       .from(PageContentChunks)
       .innerJoin(Pages, eq(Pages.id, PageContentChunks.pageId))
       .innerJoin(PageContents, eq(PageContents.pageId, PageContentChunks.pageId))
-      .where(and(eq(Pages.siteId, body.siteId), eq(Pages.state, PageState.PUBLISHED), gt(similarity, 0.35)))
+      .where(and(eq(Pages.siteId, body.siteId), eq(Pages.state, PageState.PUBLISHED), gt(similarity, 0.2)))
       .orderBy(desc(similarity))
-      .limit(10);
+      .limit(20);
 
     if (pages.length === 0) {
       return [];
@@ -71,16 +44,16 @@ widget.post(
 
     const result = await openai.client.beta.chat.completions
       .parse({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
-            content: naturalLanguageSearchPrompt,
+            content: keywordSearchPrompt,
           },
           {
             role: 'user',
             content: JSON.stringify({
-              keyword,
+              keywords,
               pages,
             }),
           },
@@ -88,9 +61,14 @@ widget.post(
 
         response_format: zodResponseFormat(
           z.object({
-            references: z.array(z.string()),
+            pages: z.array(
+              z.object({
+                id: z.string(),
+                score: z.number(),
+              }),
+            ),
           }),
-          'search-pages-by-natural-language-result',
+          'search-pages-by-keywords-result',
         ),
       })
       .then((response) => response.choices[0].message.parsed);
@@ -105,9 +83,25 @@ widget.post(
         title: PageContents.title,
       })
       .from(PageContents)
-      .where(inArray(PageContents.pageId, result.references));
+      .where(
+        inArray(
+          PageContents.pageId,
+          result.pages.map((reference) => reference.id),
+        ),
+      );
 
-    return resultPages.toSorted((a, b) => result.references.indexOf(a.id) - result.references.indexOf(b.id));
+    const sortedResultPages = resultPages.toSorted(
+      (a, b) =>
+        result.pages.findIndex((reference) => reference.id === a.id) -
+        result.pages.findIndex((reference) => reference.id === b.id),
+    );
+
+    return {
+      pages: sortedResultPages.map((page) => ({
+        ...page,
+        score: result.pages.find((reference) => reference.id === page.id)?.score,
+      })),
+    };
   },
   {
     body: t.Object({

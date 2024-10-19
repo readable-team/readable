@@ -5,6 +5,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [svelte({ preprocess: sveltePreprocess() }), icons()],
+  define: {
+    'process.env.NODE_ENV': `'${process.env.NODE_ENV}'`,
+  },
   build: {
     target: 'es2015',
     lib: {

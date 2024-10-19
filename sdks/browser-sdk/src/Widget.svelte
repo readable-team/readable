@@ -56,7 +56,11 @@
 
       lastQueriedKeywords = texts;
 
-      const resp = await fetch('https://api.rdbl.io/widget/query', {
+      const url =
+        process.env.NODE_ENV === 'production'
+          ? 'https://api.rdbl.io/widget/query'
+          : 'http://localhost:3000/widget/query';
+      const resp = await fetch(url, {
         method: 'POST',
         body: JSON.stringify({ keywords: texts, siteId }),
         headers: {
@@ -71,7 +75,7 @@
 
       const data = await resp.json();
       const pages_ = [];
-      for (const page of data) {
+      for (const page of data.pages) {
         pages_.push(page.title);
       }
 
