@@ -34,11 +34,12 @@
 
 <svelte:head>
   {#if env.PUBLIC_PULUMI_STACK !== 'prod'}
-    <!-- FIXME: env var? -->
     <script
-      data-site-id="S0000000DOCS"
-      defer
-      src={dev ? 'http://localhost:3100/script.js' : 'https://sdk.rdbl.io/script.js'}
+      async
+      src={dev
+        ? 'http://localhost:3100/script.js?siteId=S0000000DOCS'
+        : 'https://sdk.rdbl.io/script.js?siteId=S0000000DOCS'}
+      type="module"
     ></script>
   {/if}
 </svelte:head>

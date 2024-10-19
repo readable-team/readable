@@ -1,10 +1,13 @@
 <script lang="ts">
-  import { css } from '@readable/styled-system/css';
-  import { center } from '@readable/styled-system/patterns';
+  import './app.css';
+
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
+  import { css } from '$styled-system/css';
+  import { center } from '$styled-system/patterns';
 
-  export let siteId: string;
+  const scriptUrl = new URL(import.meta.url);
+  const siteId = scriptUrl.searchParams.get('siteId');
 
   let open = false;
 
@@ -56,10 +59,7 @@
 
       lastQueriedKeywords = texts;
 
-      const url =
-        process.env.NODE_ENV === 'production'
-          ? 'https://api.rdbl.io/widget/query'
-          : 'http://localhost:3000/widget/query';
+      const url = import.meta.env.PROD ? 'https://api.rdbl.io/widget/query' : 'http://localhost:3000/widget/query';
       const resp = await fetch(url, {
         method: 'POST',
         body: JSON.stringify({ keywords: texts, siteId }),
@@ -86,13 +86,8 @@
   };
 
   onMount(() => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const widget = document.querySelector('.rdbl-widget')!;
-
-    const observer = new MutationObserver((records) => {
-      if (!records.every((record) => widget.contains(record.target))) {
-        observe();
-      }
+    const observer = new MutationObserver(() => {
+      observe();
     });
 
     observer.observe(document.body, {

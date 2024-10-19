@@ -3,17 +3,16 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "vite build",
-    "build:prod": "NODE_ENV=production turbo run build",
-    "dev": "bun --watch src/server.ts",
-    "lint:typecheck": "tsc"
+    "build": "NODE_ENV=production pandacss codegen && vite build",
+    "codegen": "svelte-kit sync && pandacss codegen",
+    "dev": "NODE_ENV=development bun --watch src/server.ts",
+    "lint:svelte": "svelte-check --fail-on-warnings"
   },
   "dependencies": {
     "@readable/styled-system": "workspace:*",
     "@readable/ui": "workspace:*"
   },
   "devDependencies": {
-    "@csstools/postcss-cascade-layers": "^5.0.0",
     "@iconify-json/lucide": "^1.2.8",
     "@pandacss/dev": "^0.46.1",
     "@pulumi/aws": "^6.55.0",
@@ -21,10 +20,11 @@
     "@readable/tsconfig": "workspace:*",
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@types/bun": "^1.1.11",
-    "postcss-prefixwrap": "^1.51.0",
     "svelte": "^4.2.19",
+    "svelte-check": "^4.0.4",
     "svelte-preprocess": "^6.0.3",
     "tsx": "^4.19.1",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "vite": "^5.4.8"
   }
 }

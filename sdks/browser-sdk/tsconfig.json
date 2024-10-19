@@ -1,3 +1,8 @@
 {
-  "extends": ["@readable/tsconfig"]
+  "extends": ["@readable/tsconfig"],
+  "compilerOptions": {
+    "paths": {
+      "$styled-system/*": ["./styled-system/*"]
+    }
+  }
 }
