@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Editor } from '@tiptap/core';
   import { onMount } from 'svelte';
+  import { env } from '$env/dynamic/public';
   import { fragment, graphql } from '$graphql';
   import Comment from './Comment.svelte';
   import CommentPopover from './CommentPopover.svelte';
@@ -90,7 +91,7 @@
   <VirtualElement {editor} {pos} transition>
     <Floating slot="left" {editor} {pos} />
     <svelte:fragment slot="right">
-      {#if !commentsByPos.has(pos)}
+      {#if !commentsByPos.has(pos) && env.PUBLIC_PULUMI_STACK !== 'prod'}
         <Comment {pos} on:click={(e) => (commentOpen = e.detail)} />
       {/if}
     </svelte:fragment>
