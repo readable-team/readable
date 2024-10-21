@@ -33,9 +33,11 @@ export const fixByChangePrompt = `
 
 - "relevance" 는 변경점이 얼마나 문서와 관련이 있는지입니다. 값은 0.0과 10.0 사이, 0.1 단위의 실수이며, 일반적으로 “relevance”의 평균 값은 5.0입니다.
 - "nodeId" 는 불일치가 있는 node의 아이디입니다.
-- "original" 은 불일치가 있는 node의 원래 내용입니다. (before)
-- "suggestion" 은 불일치가 없도록 "original"을 다시 쓴 문자열입니다. (after)
+- "original" 은 불일치가 있는 node의 원래 text content입니다. (before)
+- "suggestion" 은 불일치가 없도록 "original"을 다시 쓴 text content입니다. (after)
+- "original"과 "suggestion"은 node의 JSON 구조가 아닌 text content만 출력해야 합니다.
 - "reason" 은 해당 내용을 수정하는 짧은 이유입니다.
+- 만약 수정하는 이유가 특정 내용이 반영되지 않았기 때문이라면, 문서의 내용과 명백하게 관련된 부분 외에는 fixes 배열에서 제거해야 합니다.
 - 만약 불일치가 없다면, "fixes"는 빈 배열이여야 합니다.
 - 만약 변경점이 문서의 내용과 관련이 없다면, "fixes"는 빈 배열이여야 합니다.
 - 만약 서비스 변경점으로 인한 불일치 지점이 여러 개 존재한다면, 그 모두를 node 단위로 fixes 배열에 담아야 합니다.
