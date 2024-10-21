@@ -2,7 +2,7 @@
   import { css } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
   import { createFloatingActions } from '@readable/ui/actions';
-  import { Icon } from '@readable/ui/components';
+  import { Icon, Tooltip } from '@readable/ui/components';
   import dayjs from 'dayjs';
   import { createEventDispatcher, onMount } from 'svelte';
   import ArrowUpIcon from '~icons/lucide/arrow-up';
@@ -116,76 +116,98 @@
   bind:this={popoverEl}
   class={flex({
     flexDirection: 'column',
-    gap: '12px',
-    borderRadius: '4px',
+    gap: '16px',
+    borderRadius: '12px',
     paddingX: '16px',
     paddingY: '12px',
     width: '320px',
     maxHeight: '320px',
     backgroundColor: 'white',
-    boxShadow: 'heavy',
+    boxShadow: 'strong',
     zIndex: '50',
   })}
   use:floating
 >
   {#if $comments.length > 0}
-    <div class={flex({ justify: 'flex-end' })}>
-      <button
-        class={center({
-          flex: 'none',
-          borderRadius: '4px',
-          size: '24px',
-          color: 'neutral.50',
-          _hover: { backgroundColor: 'neutral.10' },
-        })}
-        type="button"
-        on:click={onResolve}
-      >
-        <Icon icon={CircleCheckBigIcon} size={16} />
-      </button>
+    <div class={flex({ align: 'center', justify: 'space-between' })}>
+      <p class={css({ textStyle: '14sb' })}>댓글</p>
+
+      <Tooltip message="해결하기" offset={6} placement="top">
+        <button
+          class={center({
+            flex: 'none',
+            marginRight: '-2px',
+            borderRadius: '4px',
+            size: '24px',
+            color: 'text.tertiary',
+            _hover: { backgroundColor: 'neutral.20' },
+          })}
+          type="button"
+          on:click={onResolve}
+        >
+          <Icon icon={CircleCheckBigIcon} size={16} />
+        </button>
+      </Tooltip>
     </div>
   {/if}
 
-  <div class={flex({ flexGrow: '1', flexDirection: 'column', gap: '12px', overflowY: 'auto' })}>
-    {#each $comments as comment (comment.id)}
-      <div class={flex({ align: 'flex-start', gap: '8px' })}>
-        <Img
-          style={css.raw({ flex: 'none', borderRadius: 'full', size: '32px' })}
-          $image={comment.user.avatar}
-          alt={comment.user.name}
-          size={32}
-        />
-        <div class={flex({ flexGrow: '1', flexDirection: 'column' })}>
-          <div class={flex({ align: 'center', gap: '4px' })}>
-            <div class={css({ flexGrow: '1', textStyle: '13b' })}>{comment.user.name}</div>
-            <div class={css({ textStyle: '12r', color: 'neutral.50' })}>{dayjs(comment.createdAt).fromNow()}</div>
-          </div>
-          <div class={css({ textStyle: '14r' })}>{comment.content}</div>
-        </div>
-      </div>
-    {/each}
-  </div>
+  {#if $comments.length > 0}
+    <ul class={flex({ flexGrow: '1', flexDirection: 'column', align: 'flex-start', gap: '12px', overflowY: 'auto' })}>
+      {#each $comments as comment (comment.id)}
+        <li class={flex({ align: 'flex-start', gap: '8px', width: 'full' })}>
+          <Img
+            style={css.raw({
+              flex: 'none',
+              marginTop: '3px',
+              borderWidth: '1px',
+              borderColor: 'border.image',
+              borderRadius: 'full',
+              size: '24px',
+            })}
+            $image={comment.user.avatar}
+            alt={comment.user.name}
+            size={24}
+          />
 
-  <div class={flex({ gap: '8px' })}>
+          <div class={flex({ flexGrow: '1', flexDirection: 'column', gap: '4px' })}>
+            <div class={flex({ align: 'center', gap: '4px' })}>
+              <div class={css({ flexGrow: '1', textStyle: '13b' })}>{comment.user.name}</div>
+              <div class={css({ textStyle: '12r', color: 'text.tertiary' })}>{dayjs(comment.createdAt).fromNow()}</div>
+            </div>
+
+            <div class={css({ textStyle: '14m', color: 'text.secondary' })}>{comment.content}</div>
+          </div>
+        </li>
+      {/each}
+    </ul>
+  {/if}
+
+  <form class={flex({ gap: '8px' })} on:submit|preventDefault={onSubmit}>
     <input
       class={css({
         flexGrow: '1',
         borderWidth: '1px',
-        borderRadius: '4px',
-        paddingX: '8px',
+        borderRadius: '6px',
+        paddingX: '12px',
         paddingY: '4px',
         textStyle: '14r',
-        backgroundColor: 'neutral.20',
+        backgroundColor: { base: 'neutral.10', _hover: 'neutral.20', _focus: 'neutral.20' },
       })}
+      placeholder="댓글을 추가해보세요"
       type="text"
       bind:value={content}
     />
     <button
-      class={center({ flex: 'none', borderRadius: 'full', size: '32px', color: 'white', backgroundColor: 'accent.50' })}
-      type="button"
-      on:click={onSubmit}
+      class={center({
+        flex: 'none',
+        borderRadius: 'full',
+        size: '32px',
+        color: 'white',
+        backgroundColor: { base: 'accent.50', _hover: 'accent.40' },
+      })}
+      type="submit"
     >
       <Icon icon={ArrowUpIcon} size={16} />
     </button>
-  </div>
+  </form>
 </div>
