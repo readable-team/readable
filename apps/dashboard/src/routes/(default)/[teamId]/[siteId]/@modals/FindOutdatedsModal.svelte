@@ -1,15 +1,15 @@
 <script lang="ts">
   import { css, cx } from '@readable/styled-system/css';
-  import { center, flex } from '@readable/styled-system/patterns';
-  import { Button, FormField, FormProvider, Icon } from '@readable/ui/components';
+  import { flex } from '@readable/styled-system/patterns';
+  import { Button, FormField, FormProvider, Icon, Tooltip } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import diff from 'fast-diff';
   import { getContext } from 'svelte';
   import { z } from 'zod';
-  import CheckIcon from '~icons/lucide/check';
   import FileTextIcon from '~icons/lucide/file-text';
   import InfoIcon from '~icons/lucide/info';
-  import TrashIcon from '~icons/lucide/trash';
+  import MessageSquarePlusIcon from '~icons/lucide/message-square-plus';
+  import Trash2Icon from '~icons/lucide/trash-2';
   import { graphql } from '$graphql';
   import { TitledModal } from '$lib/components';
   import AiIcon from './@ai/AiIcon.svelte';
@@ -169,7 +169,6 @@
     <div
       class={flex({
         alignItems: 'center',
-        justifyContent: 'center',
         gap: '12px',
         paddingX: '18px',
         paddingY: '24px',
@@ -187,6 +186,27 @@
     </div>
   {:else if outdateds.length > 0}
     <div class={flex({ flexDirection: 'column', gap: '16px', overflow: 'auto' })}>
+      <div
+        class={flex({
+          alignItems: 'center',
+          gap: '12px',
+          paddingX: '18px',
+          paddingY: '24px',
+          borderRadius: '8px',
+          backgroundColor: 'neutral.10',
+          borderWidth: '1px',
+          borderColor: 'border.primary',
+          color: 'text.secondary',
+          textStyle: '16sb',
+        })}
+      >
+        <AiIcon variant="gradient" />
+        <p>
+          총 {outdateds.length}개의 페이지에서 낡은 콘텐츠를 찾았습니다.
+          <br />
+          수정이 필요한 지점에 수정 제안을 코멘트로 마크하거나, 무시할 수 있습니다.
+        </p>
+      </div>
       {#each outdateds as outdated (outdated.page.id)}
         <div>
           <div
@@ -269,19 +289,23 @@
                       bottom: '4px',
                       right: '4px',
                       justifyContent: 'flex-end',
-                      display: 'none',
+                      opacity: '10',
                       gap: '4px',
                       _groupHover: {
-                        display: 'flex',
+                        opacity: '100',
                       },
                     })}
                   >
-                    <Button size="sm" variant="primary" on:click={() => markSuggestion(outdated.page.id, fix)}>
-                      <Icon icon={CheckIcon} size={16} />
-                    </Button>
-                    <Button size="sm" variant="secondary" on:click={() => removeSuggestion(outdated.page.id, fix)}>
-                      <Icon icon={TrashIcon} size={16} />
-                    </Button>
+                    <Tooltip message="코멘트로 남기기" placement="top-end">
+                      <Button size="sm" variant="primary" on:click={() => markSuggestion(outdated.page.id, fix)}>
+                        <Icon icon={MessageSquarePlusIcon} size={16} />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip message="무시하기" placement="top-end">
+                      <Button size="sm" variant="secondary" on:click={() => removeSuggestion(outdated.page.id, fix)}>
+                        <Icon icon={Trash2Icon} size={16} />
+                      </Button>
+                    </Tooltip>
                   </div>
                 </div>
                 <div
@@ -303,19 +327,22 @@
       {/each}
     </div>
     <div class={flex({ justifyContent: 'flex-end', marginTop: '16px', gap: '8px' })}>
-      <Button style={css.raw({ gap: '4px' })} variant="primary" on:click={markAllSuggestions}>
-        <Icon icon={CheckIcon} size={16} />
-        <span>모두 마크하기</span>
-      </Button>
+      <Tooltip message="모든 수정 제안을 코멘트로 남기기" placement="top-end">
+        <Button style={css.raw({ gap: '4px' })} variant="primary" on:click={markAllSuggestions}>
+          <Icon icon={MessageSquarePlusIcon} size={16} />
+          <span>모두 마크하기</span>
+        </Button>
+      </Tooltip>
       <Button style={css.raw({ gap: '4px' })} variant="secondary" on:click={reset}>
-        <Icon icon={TrashIcon} size={16} />
+        <Icon icon={Trash2Icon} size={16} />
         <span>모두 무시하기</span>
       </Button>
     </div>
   {:else}
     <div
-      class={center({
+      class={flex({
         flexDirection: 'column',
+        alignItems: 'start',
         gap: '24px',
         paddingX: '18px',
         paddingY: '24px',
@@ -327,7 +354,7 @@
         textStyle: '16sb',
       })}
     >
-      <div class={flex({ alignItems: 'center', gap: '12px' })}>
+      <div class={flex({ gap: '12px' })}>
         <AiIcon variant="gray" />
         <p>축하합니다! 최신화할 콘텐츠가 없습니다.</p>
       </div>
