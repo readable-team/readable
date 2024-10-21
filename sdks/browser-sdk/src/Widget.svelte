@@ -3,11 +3,15 @@
 
   import { Readability } from '@mozilla/readability';
   import { onMount } from 'svelte';
-  import { fly } from 'svelte/transition';
+  import { fly, scale } from 'svelte/transition';
+  import IconX from '~icons/lucide/x';
   import { css } from '$styled-system/css';
   import { center, flex } from '$styled-system/patterns';
+  import { token } from '$styled-system/tokens';
+  import { Icon } from './components';
 
   const siteId = (document.currentScript as HTMLScriptElement).dataset.siteId;
+  const themeColor = token('colors.neutral.100');
 
   let open = false;
 
@@ -103,21 +107,50 @@
 </script>
 
 <button
-  class={center({
+  class={css({
     position: 'fixed',
     bottom: '32px',
     right: '32px',
-    size: '40px',
-    color: 'neutral.0',
-    backgroundColor: 'neutral.100',
-    borderRadius: 'full',
-    textStyle: '24eb',
+    size: '48px',
   })}
   type="button"
   on:click={() => (open = !open)}
-  transition:fly|global={{ y: 5 }}
+  transition:fly={{ y: 5 }}
 >
-  ?
+  {#if open}
+    <div
+      style:--widget-theme-color={themeColor}
+      class={center({
+        position: 'absolute',
+        inset: '0',
+        size: 'full',
+        color: 'neutral.30',
+        backgroundColor: 'neutral.80',
+        borderRadius: 'full',
+        boxShadow: '[0px 8px 32px 0px token(colors.neutral.100/10)]',
+      })}
+      transition:scale={{ start: 0.8 }}
+    >
+      <Icon icon={IconX} size={24} />
+    </div>
+  {:else}
+    <div
+      style:--widget-theme-color={themeColor}
+      class={center({
+        position: 'absolute',
+        inset: '0',
+        size: 'full',
+        color: 'neutral.0',
+        backgroundColor: '[var(--widget-theme-color)]',
+        borderRadius: 'full',
+        textStyle: '24eb',
+        boxShadow: '[0px 8px 32px 0px token(colors.neutral.100/10)]',
+      })}
+      transition:scale={{ start: 0.8 }}
+    >
+      ?
+    </div>
+  {/if}
 </button>
 
 {#if open}
@@ -126,17 +159,20 @@
       direction: 'column',
       gap: '4px',
       position: 'fixed',
-      bottom: '84px',
+      bottom: '92px',
       right: '32px',
       borderRadius: '16px',
       paddingX: '24px',
       paddingY: '16px',
+      width: '320px',
+      height: '160px',
+      // height: '480px',
       textStyle: '14m',
       color: 'neutral.80',
       backgroundColor: 'white',
       boxShadow: 'emphasize',
     })}
-    transition:fly|global={{ y: 5 }}
+    transition:fly={{ y: 5 }}
   >
     <div class={css({ textStyle: '14b' })}>관련 문서</div>
     {#if loadingCount > 0}

@@ -16,4 +16,13 @@ export default defineConfig({
   separator: '-',
   hash: prod,
   minify: prod,
+
+  globalVars: {
+    extend: {
+      '--widget-theme-color': {
+        syntax: '<color>',
+        inherits: true,
+      },
+    },
+  },
 });

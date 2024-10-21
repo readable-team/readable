@@ -4,14 +4,13 @@
   "type": "module",
   "scripts": {
     "build": "NODE_ENV=production pandacss codegen && vite build",
-    "codegen": "svelte-kit sync && pandacss codegen",
+    "codegen": "pandacss codegen",
     "dev": "NODE_ENV=development bun --watch src/server.ts",
     "lint:svelte": "svelte-check --fail-on-warnings"
   },
   "dependencies": {
     "@mozilla/readability": "^0.5.0",
-    "@readable/styled-system": "workspace:*",
-    "@readable/ui": "workspace:*"
+    "@readable/styled-system": "workspace:*"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.8",

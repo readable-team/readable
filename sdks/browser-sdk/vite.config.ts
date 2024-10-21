@@ -4,7 +4,13 @@ import icons from 'unplugin-icons/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [svelte(), icons()],
+  plugins: [
+    svelte(),
+    icons({
+      scale: 1,
+      compiler: 'svelte',
+    }),
+  ],
   resolve: {
     alias: {
       '$styled-system': path.resolve(import.meta.dirname, './styled-system'),
