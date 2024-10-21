@@ -6,7 +6,6 @@
   import mixpanel from 'mixpanel-browser';
   import { ReadableError } from '@/errors';
   import { goto } from '$app/navigation';
-  import { env } from '$env/dynamic/public';
   import { fragment, graphql } from '$graphql';
   import { editingCategoryId, treeOpenState } from '$lib/svelte/stores/ui';
   import FindOutdatedsModal from './@modals/FindOutdatedsModal.svelte';
@@ -190,15 +189,13 @@
     overflowY: 'auto',
   })}
 >
-  {#if env.PUBLIC_PULUMI_STACK !== 'prod'}
-    <Button
-      style={css.raw({ margin: '20px', marginBottom: '0' })}
-      variant="secondary"
-      on:click={() => (findOutdatedsModalOpen = true)}
-    >
-      콘텐츠 최신화
-    </Button>
-  {/if}
+  <Button
+    style={css.raw({ margin: '20px', marginBottom: '0' })}
+    variant="secondary"
+    on:click={() => (findOutdatedsModalOpen = true)}
+  >
+    콘텐츠 최신화
+  </Button>
 
   <nav class={flex({ flex: '1', flexDirection: 'column', overflow: 'auto' })}>
     <div
