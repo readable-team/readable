@@ -13,9 +13,10 @@ export default defineConfig({
   build: {
     target: 'es2015',
     lib: {
+      name: 'Readable',
       entry: './src/script.ts',
-      fileName: 'script',
-      formats: ['es'],
+      fileName: () => 'script.js',
+      formats: ['umd'],
     },
   },
 });

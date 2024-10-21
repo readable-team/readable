@@ -7,8 +7,7 @@
   import { css } from '$styled-system/css';
   import { center, flex } from '$styled-system/patterns';
 
-  const scriptUrl = new URL(import.meta.url);
-  const siteId = scriptUrl.searchParams.get('siteId');
+  const siteId = (document.currentScript as HTMLScriptElement).dataset.siteId;
 
   let open = false;
 

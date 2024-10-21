@@ -6,7 +6,7 @@
 
   let loaded = false;
 
-  const scriptUrl = new URL(import.meta.url);
+  const scriptUrl = (document.currentScript as HTMLScriptElement).src;
   const styleUrl = new URL('style.css', scriptUrl);
 
   onMount(() => {

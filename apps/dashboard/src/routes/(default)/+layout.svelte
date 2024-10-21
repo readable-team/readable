@@ -3,7 +3,6 @@
   import mixpanel from 'mixpanel-browser';
   import qs from 'query-string';
   import { browser, dev } from '$app/environment';
-  import { env } from '$env/dynamic/public';
   import { graphql } from '$graphql';
 
   $: query = graphql(`
@@ -33,15 +32,11 @@
 </script>
 
 <svelte:head>
-  {#if env.PUBLIC_PULUMI_STACK !== 'prod'}
-    <script
-      async
-      src={dev
-        ? 'http://localhost:3100/script.js?siteId=S0000000DOCS'
-        : 'https://sdk.rdbl.io/script.js?siteId=S0000000DOCS'}
-      type="module"
-    ></script>
-  {/if}
+  <script
+    data-site-id="S0000000DOCS"
+    defer
+    src={dev ? 'http://localhost:3100/script.js' : 'https://sdk.rdbl.io/script.js'}
+  ></script>
 </svelte:head>
 
 <div
