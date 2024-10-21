@@ -253,7 +253,7 @@
   >
     <input name="siteId" type="hidden" />
     <FormField name="domain" label="커스텀 도메인 URL">
-      <LiteBadge slot="label-suffix" via="site-custom-domain:pro-badge" />
+      <LiteBadge slot="label-suffix" via="site-custom-domain:lite-badge" />
       <TextInput
         name="domain"
         disabled={!!$query.site.customDomain || !$isLiteOrHigher}

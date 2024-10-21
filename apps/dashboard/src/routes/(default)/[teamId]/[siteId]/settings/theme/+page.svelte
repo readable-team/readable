@@ -109,7 +109,7 @@
   {form}
 >
   <FormField name="themeColor" label="테마 색상">
-    <LiteBadge slot="label-suffix" via="site-theme-color:pro-badge" />
+    <LiteBadge slot="label-suffix" via="site-theme-color:lite-badge" />
     <TextInput
       disabled={!$query.site.team.plan.plan.rules.themeColor}
       on:input={(e) => {

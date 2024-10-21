@@ -105,7 +105,7 @@
   <div class={flex({ align: 'center', justify: 'space-between', marginBottom: '24px', textStyle: '16sb' })}>
     <div class={flex({ align: 'center' })}>
       헤더 링크 버튼 사용
-      <LiteBadge disabled={!$query.site.team.plan.plan.rules.headerLink} via="site-link-button:pro-badge" />
+      <LiteBadge disabled={!$query.site.team.plan.plan.rules.headerLink} via="site-link-button:lite-badge" />
     </div>
     <Switch
       name="useSiteHeaderLink"
