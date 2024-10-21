@@ -1,6 +1,6 @@
 <script lang="ts">
   import { css, cx } from '@readable/styled-system/css';
-  import { flex } from '@readable/styled-system/patterns';
+  import { center, flex } from '@readable/styled-system/patterns';
   import { Button, FormField, FormProvider, Icon, Tooltip } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import diff from 'fast-diff';
@@ -119,7 +119,23 @@
 </script>
 
 <TitledModal style={css.raw({ width: '700px' })} bind:open>
-  <svelte:fragment slot="title">콘텐츠 최신화</svelte:fragment>
+  <svelte:fragment slot="title">
+    <div class={flex({ alignItems: 'center', gap: '8px' })}>
+      콘텐츠 최신화
+      <div
+        class={center({
+          paddingX: '8px',
+          paddingY: '4px',
+          borderRadius: 'full',
+          textStyle: '12r',
+          color: 'accent.70',
+          backgroundColor: 'accent.10',
+        })}
+      >
+        Beta
+      </div>
+    </div>
+  </svelte:fragment>
 
   {#if lastQuery === null}
     <FormProvider {context} {form}>
