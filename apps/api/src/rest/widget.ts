@@ -60,7 +60,7 @@ widget.post(
 
     const result = await openai.client.beta.chat.completions
       .parse({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',

@@ -9,6 +9,7 @@
     "lint:svelte": "svelte-check --fail-on-warnings"
   },
   "dependencies": {
+    "@mozilla/readability": "^0.5.0",
     "@readable/styled-system": "workspace:*",
     "@readable/ui": "workspace:*"
   },

@@ -15,7 +15,7 @@ REQUIREMENTS:
 TASK: Provide a list of page IDs and their relevance scores that are most relevant to the keywords
 
 INPUT:
-- keywords: Keywords extracted from the page's heading, bold text, and important phrases. It may contain irrelevant information (noise).
+- keywords: Keywords extracted from the page's heading, bold text, and important phrases. It may contain irrelevant information (noise). Repeated keywords are more important than single keywords.
 - pages: A list of pages and their contents that may be relevant to the keywords.
 
 OUTPUT:

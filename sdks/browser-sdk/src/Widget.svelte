@@ -1,6 +1,7 @@
 <script lang="ts">
   import './app.css';
 
+  import { Readability } from '@mozilla/readability';
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import { css } from '$styled-system/css';
@@ -30,6 +31,8 @@
   } | null = null;
   let lastQueriedKeywords: string[] = [];
 
+  $: pages = response?.pages.filter((page) => page.score > 0.5);
+
   $: if (open) {
     observe();
   }
@@ -44,12 +47,12 @@
       }
 
       const elements = [...document.querySelectorAll(selectors.join(','))];
-      const texts = elements
-        .map((element) => {
-          const text = element.textContent ?? '';
-          return text?.replaceAll(/\s+/g, ' ').trim();
-        })
-        .filter((text) => text.length > 0);
+      const readability = new Readability(document.cloneNode(true) as Document);
+      const article = readability.parse();
+
+      const texts = [...elements.map((element) => element.textContent), article?.title, article?.textContent]
+        .map((text) => text?.replaceAll(/\s+/g, ' ').trim())
+        .filter((text) => text?.length) as string[];
 
       if (texts.length === 0) {
         return;
@@ -139,8 +142,8 @@
     <div class={css({ textStyle: '14b' })}>관련 문서</div>
     {#if loadingCount > 0}
       로딩중...
-    {:else if response}
-      {#each response.pages as page, idx (idx)}
+    {:else if response && pages}
+      {#each pages as page, idx (idx)}
         <div>
           <a
             class={css({
