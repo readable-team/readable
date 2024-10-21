@@ -1261,6 +1261,29 @@ builder.mutationFields((t) => ({
     },
   }),
 
+  resolvePageContentComments: t.withAuth({ session: true }).fieldWithInput({
+    type: 'Boolean',
+    input: {
+      pageId: t.input.id(),
+      nodeId: t.input.string(),
+    },
+    resolve: async (_, { input }, ctx) => {
+      await assertPagePermission({
+        pageId: input.pageId,
+        userId: ctx.session.userId,
+      });
+
+      await db
+        .update(PageContentComments)
+        .set({ state: PageContentCommentState.RESOLVED })
+        .where(and(eq(PageContentComments.pageId, input.pageId), eq(PageContentComments.nodeId, input.nodeId)));
+
+      pubsub.publish('page:content:comment', input.pageId, null);
+
+      return true;
+    },
+  }),
+
   updatePageView: t.withAuth({ site: true }).fieldWithInput({
     type: 'Boolean',
     input: { pageId: t.input.id(), deviceId: t.input.string() },

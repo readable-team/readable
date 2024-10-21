@@ -233,6 +233,7 @@ type Mutation {
   publishPage(input: PublishPageInput!): Page!
   removeTeamMember(input: RemoveTeamMemberInput!): TeamMember!
   resendInvitationEmail(input: ResendInvitationEmailInput!): TeamMemberInvitation!
+  resolvePageContentComments(input: ResolvePageContentCommentsInput!): Boolean!
   revokeInvitation(input: RevokeInvitationInput!): TeamMemberInvitation!
   sendAuthorizationEmail(input: SendAuthorizationEmailInput!): Boolean!
   setSiteCustomDomain(input: SetSiteCustomDomainInput!): SiteCustomDomain!
@@ -499,6 +500,11 @@ input RemoveTeamMemberInput {
 
 input ResendInvitationEmailInput {
   invitationId: ID!
+}
+
+input ResolvePageContentCommentsInput {
+  nodeId: String!
+  pageId: ID!
 }
 
 input RevokeInvitationInput {

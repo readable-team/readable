@@ -6,6 +6,7 @@
   import dayjs from 'dayjs';
   import { createEventDispatcher, onMount } from 'svelte';
   import ArrowUpIcon from '~icons/lucide/arrow-up';
+  import CircleCheckBigIcon from '~icons/lucide/circle-check-big';
   import { fragment, graphql } from '$graphql';
   import { Img } from '$lib/components';
   import type { Editor } from '@tiptap/core';
@@ -48,6 +49,12 @@
     }
   `);
 
+  const resolvePageContentComments = graphql(`
+    mutation PagePage_ResolvePageContentComments_Mutation($input: ResolvePageContentCommentsInput!) {
+      resolvePageContentComments(input: $input)
+    }
+  `);
+
   const dispatch = createEventDispatcher<{ close: undefined }>();
   const { floating, anchor: reference } = createFloatingActions({
     placement: 'bottom-start',
@@ -84,6 +91,20 @@
     }
   };
 
+  const onResolve = async () => {
+    const node = editor.state.doc.nodeAt(pos);
+    if (!node || !node.attrs.nodeId) {
+      return;
+    }
+
+    await resolvePageContentComments({
+      pageId,
+      nodeId: node.attrs.nodeId,
+    });
+
+    dispatch('close');
+  };
+
   onMount(() => {
     reference(anchor);
   });
@@ -107,6 +128,24 @@
   })}
   use:floating
 >
+  {#if $comments.length > 0}
+    <div class={flex({ justify: 'flex-end' })}>
+      <button
+        class={center({
+          flex: 'none',
+          borderRadius: '4px',
+          size: '24px',
+          color: 'neutral.50',
+          _hover: { backgroundColor: 'neutral.10' },
+        })}
+        type="button"
+        on:click={onResolve}
+      >
+        <Icon icon={CircleCheckBigIcon} size={16} />
+      </button>
+    </div>
+  {/if}
+
   <div class={flex({ flexGrow: '1', flexDirection: 'column', gap: '12px', overflowY: 'auto' })}>
     {#each $comments as comment (comment.id)}
       <div class={flex({ align: 'flex-start', gap: '8px' })}>
