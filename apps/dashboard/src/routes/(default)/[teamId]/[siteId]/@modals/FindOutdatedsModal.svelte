@@ -4,6 +4,7 @@
   import { Button, FormField, FormProvider, Icon, Tooltip } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import diff from 'fast-diff';
+  import mixpanel from 'mixpanel-browser';
   import { getContext } from 'svelte';
   import { z } from 'zod';
   import FileTextIcon from '~icons/lucide/file-text';
@@ -60,6 +61,7 @@
       siteId: z.string(),
     }),
     mutation: async ({ query, siteId }) => {
+      mixpanel.track('site:content-renewal', { query });
       loading = true;
       lastQuery = query;
       const result = await findOutdatedContent.refetch({ query, siteId });
@@ -297,12 +299,26 @@
                     })}
                   >
                     <Tooltip message="코멘트로 남기기" placement="top-end">
-                      <Button size="sm" variant="primary" on:click={() => markSuggestion(outdated.page.id, fix)}>
+                      <Button
+                        size="sm"
+                        variant="primary"
+                        on:click={() => {
+                          mixpanel.track('site:content-renewal:mark-suggestion');
+                          markSuggestion(outdated.page.id, fix);
+                        }}
+                      >
                         <Icon icon={MessageSquarePlusIcon} size={16} />
                       </Button>
                     </Tooltip>
                     <Tooltip message="무시하기" placement="top-end">
-                      <Button size="sm" variant="secondary" on:click={() => removeSuggestion(outdated.page.id, fix)}>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        on:click={() => {
+                          mixpanel.track('site:content-renewal:ignore-suggestion');
+                          removeSuggestion(outdated.page.id, fix);
+                        }}
+                      >
                         <Icon icon={Trash2Icon} size={16} />
                       </Button>
                     </Tooltip>
@@ -328,15 +344,31 @@
     </div>
     <div class={flex({ justifyContent: 'flex-end', marginTop: '16px', gap: '8px' })}>
       <Tooltip message="모든 수정 제안을 코멘트로 남기기" placement="top-end">
-        <Button style={css.raw({ gap: '4px' })} variant="primary" on:click={markAllSuggestions}>
+        <Button
+          style={css.raw({ gap: '4px' })}
+          variant="primary"
+          on:click={() => {
+            mixpanel.track('site:content-renewal:mark-all-suggestions');
+            markAllSuggestions();
+          }}
+        >
           <Icon icon={MessageSquarePlusIcon} size={16} />
           <span>모두 마크하기</span>
         </Button>
       </Tooltip>
-      <Button style={css.raw({ gap: '4px' })} variant="secondary" on:click={reset}>
-        <Icon icon={Trash2Icon} size={16} />
-        <span>모두 무시하기</span>
-      </Button>
+      <Tooltip message="모든 수정 제안을 무시하기" placement="top-end">
+        <Button
+          style={css.raw({ gap: '4px' })}
+          variant="secondary"
+          on:click={() => {
+            mixpanel.track('site:content-renewal:ignore-all-suggestions');
+            reset();
+          }}
+        >
+          <Icon icon={Trash2Icon} size={16} />
+          <span>모두 무시하기</span>
+        </Button>
+      </Tooltip>
     </div>
   {:else}
     <div
@@ -359,7 +391,16 @@
         <p>축하합니다! 최신화할 콘텐츠가 없습니다.</p>
       </div>
 
-      <Button style={css.raw({ width: 'full' })} variant="secondary" on:click={reset}>다시 찾기</Button>
+      <Button
+        style={css.raw({ width: 'full' })}
+        variant="secondary"
+        on:click={() => {
+          mixpanel.track('site:content-renewal:restart');
+          reset();
+        }}
+      >
+        다시 찾기
+      </Button>
     </div>
   {/if}
 </TitledModal>
