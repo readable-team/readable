@@ -16,7 +16,8 @@
   caret-color: #09090b;
 
   & > * + *,
-  & [data-node-view-content-editable] > * + * {
+  & [data-node-view-content-editable] > * + *, /* callout 등 */
+  & [data-node-view-content-editable] > [role='tabpanel'] > * + * /* tabs */ {
     margin-top: var(--prosemirror-block-gap);
   }
 
