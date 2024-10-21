@@ -53,13 +53,14 @@
         maxWidth: '946px',
         maxHeight: '738px',
         boxShadow: 'strong',
+        overflow: 'hidden',
       })}
       use:scrollLock
       in:fly={{ y: 10 }}
       out:fade={{ duration: 150 }}
     >
       <div class={css({ height: 'full', overflowY: 'auto' }, style)} data-scroll-lock-ignore>
-        <section class={css({ flexGrow: '1', overflowY: 'auto' })}>
+        <section class={css({ display: 'contents' })}>
           <slot />
         </section>
       </div>

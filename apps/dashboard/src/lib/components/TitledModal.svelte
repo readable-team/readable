@@ -3,13 +3,18 @@
   import { flex } from '@readable/styled-system/patterns';
   import { Icon, Modal } from '@readable/ui/components';
   import XIcon from '~icons/lucide/x';
+  import type { SystemStyleObject } from '@readable/styled-system/types';
 
   export let open = false;
+  export let style: SystemStyleObject | undefined = undefined;
 </script>
 
-<Modal style={css.raw({ width: '600px' })} close={() => (open = false)} bind:open>
+<Modal style={css.raw({ width: '600px' }, style)} close={() => (open = false)} bind:open>
   <div
     class={flex({
+      position: 'sticky',
+      top: '0',
+      backgroundColor: 'surface.primary',
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingX: '32px',
@@ -26,7 +31,7 @@
     </button>
   </div>
 
-  <div class={css({ paddingX: '32px', paddingY: '24px', overflow: 'auto' })}>
+  <div class={css({ paddingX: '32px', paddingY: '24px' })}>
     <slot />
   </div>
 </Modal>
