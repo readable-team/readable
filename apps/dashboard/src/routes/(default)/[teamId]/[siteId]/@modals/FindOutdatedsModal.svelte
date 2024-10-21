@@ -1,13 +1,15 @@
 <script lang="ts">
-  import { css } from '@readable/styled-system/css';
+  import { css, cx } from '@readable/styled-system/css';
   import { center, flex } from '@readable/styled-system/patterns';
   import { Button, FormField, FormProvider, Icon } from '@readable/ui/components';
   import { createMutationForm } from '@readable/ui/forms';
   import diff from 'fast-diff';
   import { getContext } from 'svelte';
   import { z } from 'zod';
+  import CheckIcon from '~icons/lucide/check';
   import FileTextIcon from '~icons/lucide/file-text';
   import InfoIcon from '~icons/lucide/info';
+  import TrashIcon from '~icons/lucide/trash';
   import { graphql } from '$graphql';
   import { TitledModal } from '$lib/components';
   import AiIcon from './@ai/AiIcon.svelte';
@@ -65,6 +67,53 @@
       loading = false;
     },
   });
+
+  const addPageContentComment = graphql(`
+    mutation FindOutdatedsModal_AddPageContentComment_Mutation($input: AddPageContentCommentInput!) {
+      addPageContentComment(input: $input) {
+        id
+      }
+    }
+  `);
+
+  const removeSuggestion = async (pageId: string, fix: { nodeId: string }) => {
+    for (const outdated of outdateds) {
+      if (outdated.page.id === pageId) {
+        outdated.fixes = outdated.fixes.filter((f) => f !== fix);
+
+        if (outdated.fixes.length === 0) {
+          outdateds = outdateds.filter((o) => o !== outdated);
+        }
+      }
+    }
+
+    outdateds = outdateds;
+  };
+
+  const markSuggestion = async (
+    pageId: string,
+    fix: { nodeId: string; original: string; reason: string; suggestion: string },
+  ) => {
+    await addPageContentComment({
+      content: `"${fix.suggestion}"으로 수정해야 합니다. (${fix.reason})`,
+      pageId,
+      nodeId: fix.nodeId,
+    });
+
+    removeSuggestion(pageId, fix);
+  };
+
+  const markAllSuggestions = async () => {
+    const promises = [];
+
+    for (const outdated of outdateds) {
+      for (const fix of outdated.fixes) {
+        promises.push(markSuggestion(outdated.page.id, fix));
+      }
+    }
+
+    await Promise.all(promises);
+  };
 </script>
 
 <TitledModal style={css.raw({ width: '700px' })} bind:open>
@@ -137,7 +186,7 @@
       <AiLoading />
     </div>
   {:else if outdateds.length > 0}
-    <div class={flex({ flexDirection: 'column', gap: '16px' })}>
+    <div class={flex({ flexDirection: 'column', gap: '16px', overflow: 'auto' })}>
       {#each outdateds as outdated (outdated.page.id)}
         <div>
           <div
@@ -167,15 +216,19 @@
                 })}
               >
                 <div
-                  class={css({
-                    marginBottom: '4px',
-                    borderWidth: '1px',
-                    borderColor: 'border.secondary',
-                    backgroundColor: 'neutral.10',
-                    borderRadius: '4px',
-                    overflow: 'hidden',
-                    color: 'text.primary',
-                  })}
+                  class={cx(
+                    'group',
+                    css({
+                      position: 'relative',
+                      marginBottom: '4px',
+                      borderWidth: '1px',
+                      borderColor: 'border.secondary',
+                      backgroundColor: 'neutral.10',
+                      borderRadius: '4px',
+                      overflow: 'hidden',
+                      color: 'text.primary',
+                    }),
+                  )}
                 >
                   <div
                     class={css({
@@ -209,12 +262,33 @@
                       })
                       .join('')}
                   </div>
+
+                  <div
+                    class={flex({
+                      position: 'absolute',
+                      bottom: '4px',
+                      right: '4px',
+                      justifyContent: 'flex-end',
+                      display: 'none',
+                      gap: '4px',
+                      _groupHover: {
+                        display: 'flex',
+                      },
+                    })}
+                  >
+                    <Button size="sm" variant="primary" on:click={() => markSuggestion(outdated.page.id, fix)}>
+                      <Icon icon={CheckIcon} size={16} />
+                    </Button>
+                    <Button size="sm" variant="secondary" on:click={() => removeSuggestion(outdated.page.id, fix)}>
+                      <Icon icon={TrashIcon} size={16} />
+                    </Button>
+                  </div>
                 </div>
                 <div
                   class={flex({
                     alignItems: 'center',
                     gap: '4px',
-                    marginX: '8px',
+                    marginLeft: '2px',
                     textStyle: '14r',
                     color: 'text.secondary',
                   })}
@@ -227,6 +301,16 @@
           </div>
         </div>
       {/each}
+    </div>
+    <div class={flex({ justifyContent: 'flex-end', marginTop: '16px', gap: '8px' })}>
+      <Button style={css.raw({ gap: '4px' })} variant="primary" on:click={markAllSuggestions}>
+        <Icon icon={CheckIcon} size={16} />
+        <span>모두 마크하기</span>
+      </Button>
+      <Button style={css.raw({ gap: '4px' })} variant="secondary" on:click={reset}>
+        <Icon icon={TrashIcon} size={16} />
+        <span>모두 무시하기</span>
+      </Button>
     </div>
   {:else}
     <div

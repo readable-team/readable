@@ -14,6 +14,7 @@
     class={flex({
       position: 'sticky',
       top: '0',
+      zIndex: '10',
       backgroundColor: 'surface.primary',
       justifyContent: 'space-between',
       alignItems: 'center',
