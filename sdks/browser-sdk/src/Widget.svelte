@@ -115,7 +115,7 @@
   })}
   type="button"
   on:click={() => (open = !open)}
-  in:fly|global={{ y: 5 }}
+  transition:fly|global={{ y: 5 }}
 >
   ?
 </button>
@@ -136,11 +136,12 @@
       backgroundColor: 'white',
       boxShadow: 'emphasize',
     })}
-    in:fly|global={{ y: 5 }}
+    transition:fly|global={{ y: 5 }}
   >
     <div class={css({ textStyle: '14b' })}>관련 문서</div>
     {#if loadingCount > 0}
-      로딩중...
+      현재 페이지에서 가장 <br />
+      도움이 될 문서를 찾고 있어요...
     {:else if response && pages}
       {#each pages as page, idx (idx)}
         <div>
