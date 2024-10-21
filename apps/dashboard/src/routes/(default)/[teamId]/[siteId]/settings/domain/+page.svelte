@@ -30,7 +30,6 @@
   import { Img, LiteBadge } from '$lib/components';
   import { invokeAlert } from '$lib/components/invoke-alert';
   import TitledModal from '$lib/components/TitledModal.svelte';
-  import { isLiteOrHigher } from '$lib/svelte/stores/ui';
 
   let open = false;
 
@@ -55,6 +54,22 @@
           id
           domain
           state
+        }
+
+        team {
+          id
+
+          plan {
+            id
+
+            plan {
+              id
+
+              rules {
+                customDomain
+              }
+            }
+          }
         }
       }
     }
@@ -253,10 +268,14 @@
   >
     <input name="siteId" type="hidden" />
     <FormField name="domain" label="커스텀 도메인 URL">
-      <LiteBadge slot="label-suffix" via="site-custom-domain:lite-badge" />
+      <LiteBadge
+        slot="label-suffix"
+        disabled={!$query.site.team.plan.plan.rules.customDomain}
+        via="site-custom-domain:lite-badge"
+      />
       <TextInput
         name="domain"
-        disabled={!!$query.site.customDomain || !$isLiteOrHigher}
+        disabled={!!$query.site.customDomain || !$query.site.team.plan.plan.rules.customDomain}
         placeholder="docs.example.com"
       />
     </FormField>

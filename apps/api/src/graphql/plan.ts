@@ -16,6 +16,7 @@ PlanRule.implement({
     aiSearch: t.exposeBoolean('aiSearch'),
     themeColor: t.exposeBoolean('themeColor'),
     headerLink: t.exposeBoolean('headerLink'),
+    customDomain: t.exposeBoolean('customDomain'),
   }),
 });
 

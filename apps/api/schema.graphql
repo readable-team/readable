@@ -414,6 +414,7 @@ type Plan {
 
 type PlanRule {
   aiSearch: Boolean!
+  customDomain: Boolean!
   headerLink: Boolean!
   memberLimit: Int
   pageViewLimit: Int
