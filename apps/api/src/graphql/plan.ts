@@ -15,6 +15,7 @@ PlanRule.implement({
     pageViewLimit: t.exposeInt('pageViewLimit', { nullable: true }),
     aiSearch: t.exposeBoolean('aiSearch'),
     themeColor: t.exposeBoolean('themeColor'),
+    headerLink: t.exposeBoolean('headerLink'),
   }),
 });
 

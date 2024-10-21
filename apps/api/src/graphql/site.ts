@@ -260,10 +260,11 @@ PublicSite.implement({
     }),
 
     aiSearchEnabled: t.boolean({
-      resolve: async (site) => {
+      resolve: async (site, _, ctx) => {
         return await getTeamPlanRule({
           teamId: site.teamId,
           rule: 'aiSearch',
+          ctx,
         });
       },
     }),
@@ -271,7 +272,17 @@ PublicSite.implement({
     headerLink: t.field({
       type: SiteHeaderLink,
       nullable: true,
-      resolve: async (site) => {
+      resolve: async (site, _, ctx) => {
+        const headerLinkAvailability = await getTeamPlanRule({
+          teamId: site.teamId,
+          rule: 'headerLink',
+          ctx,
+        });
+
+        if (!headerLinkAvailability) {
+          return null;
+        }
+
         return await db
           .select()
           .from(SiteHeaderLinks)

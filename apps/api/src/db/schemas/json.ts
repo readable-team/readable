@@ -6,6 +6,7 @@ export type PlanRules = {
   themeColor: boolean;
   customDomain: boolean;
   aiSearch: boolean;
+  headerLink: boolean;
   addonsAvailable: string[];
 };
 
@@ -17,5 +18,6 @@ export const defaultPlanRules: PlanRules = {
   themeColor: false,
   customDomain: false,
   aiSearch: false,
+  headerLink: false,
   addonsAvailable: [],
 };

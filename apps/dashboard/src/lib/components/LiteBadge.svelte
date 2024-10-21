@@ -9,9 +9,10 @@
 
   export let via: string;
   export let style: SystemStyleObject | undefined = undefined;
+  export let disabled: boolean | undefined = undefined;
 </script>
 
-{#if !$isLiteOrHigher}
+{#if disabled === undefined ? !$isLiteOrHigher : disabled}
   <button
     class={css(
       {

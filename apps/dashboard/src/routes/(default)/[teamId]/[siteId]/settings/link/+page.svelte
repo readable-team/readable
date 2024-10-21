@@ -11,7 +11,6 @@
   import { graphql } from '$graphql';
   import { LiteBadge } from '$lib/components';
   import { invokeAlert } from '$lib/components/invoke-alert';
-  import { isLiteOrHigher } from '$lib/svelte/stores/ui';
 
   let useSiteHeaderLink = false;
 
@@ -26,6 +25,22 @@
           label
           url
           state
+        }
+
+        team {
+          id
+
+          plan {
+            id
+
+            plan {
+              id
+
+              rules {
+                headerLink
+              }
+            }
+          }
         }
       }
     }
@@ -90,11 +105,11 @@
   <div class={flex({ align: 'center', justify: 'space-between', marginBottom: '24px', textStyle: '16sb' })}>
     <div class={flex({ align: 'center' })}>
       헤더 링크 버튼 사용
-      <LiteBadge via="site-link-button:pro-badge" />
+      <LiteBadge disabled={!$query.site.team.plan.plan.rules.headerLink} via="site-link-button:pro-badge" />
     </div>
     <Switch
       name="useSiteHeaderLink"
-      disabled={!$isLiteOrHigher}
+      disabled={!$query.site.team.plan.plan.rules.headerLink}
       bind:checked={useSiteHeaderLink}
       on:change={(e) => {
         if (!e.currentTarget.checked) {
@@ -127,10 +142,16 @@
     <input name="siteId" type="hidden" />
 
     <FormField name="label" style={css.raw({ marginBottom: '24px' })} label="버튼 텍스트">
-      <TextInput disabled={!$isLiteOrHigher || !useSiteHeaderLink} placeholder="서비스 바로가기" />
+      <TextInput
+        disabled={!$query.site.team.plan.plan.rules.headerLink || !useSiteHeaderLink}
+        placeholder="서비스 바로가기"
+      />
     </FormField>
     <FormField name="url" label="URL">
-      <TextInput disabled={!$isLiteOrHigher || !useSiteHeaderLink} placeholder="app.example.com" />
+      <TextInput
+        disabled={!$query.site.team.plan.plan.rules.headerLink || !useSiteHeaderLink}
+        placeholder="app.example.com"
+      />
     </FormField>
 
     <div class={flex({ align: 'center', justify: 'flex-end', gap: '8px', marginTop: '8px' })}>
