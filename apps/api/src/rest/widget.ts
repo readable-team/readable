@@ -2,8 +2,9 @@ import { and, cosineDistance, desc, eq, gt, inArray, sql } from 'drizzle-orm';
 import Elysia, { t } from 'elysia';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
-import { db, PageContentChunks, PageContents, Pages } from '@/db';
-import { PageState } from '@/enums';
+import { db, firstOrThrow, PageContentChunks, PageContents, Pages, Sites } from '@/db';
+import { PageState, SiteState } from '@/enums';
+import { env } from '@/env';
 import * as openai from '@/external/openai';
 import { keywordSearchPrompt } from '@/prompt/widget';
 
@@ -12,6 +13,14 @@ export const widget = new Elysia({ prefix: '/widget' });
 widget.post(
   '/query',
   async ({ body }) => {
+    const site = await db
+      .select({ id: Sites.id, name: Sites.name, slug: Sites.slug })
+      .from(Sites)
+      .where(and(eq(Sites.id, body.siteId), eq(Sites.state, SiteState.ACTIVE)))
+      .then(firstOrThrow);
+
+    const siteUrl = `https://${site.slug}.${env.USERSITE_DEFAULT_HOST}`;
+
     const keywords = body.keywords;
 
     const queryVector = await openai.client.embeddings
@@ -34,12 +43,19 @@ widget.post(
       .from(PageContentChunks)
       .innerJoin(Pages, eq(Pages.id, PageContentChunks.pageId))
       .innerJoin(PageContents, eq(PageContents.pageId, PageContentChunks.pageId))
-      .where(and(eq(Pages.siteId, body.siteId), eq(Pages.state, PageState.PUBLISHED), gt(similarity, 0.2)))
+      .where(and(eq(Pages.siteId, site.id), eq(Pages.state, PageState.PUBLISHED), gt(similarity, 0.2)))
       .orderBy(desc(similarity))
       .limit(20);
 
     if (pages.length === 0) {
-      return [];
+      return {
+        site: {
+          id: site.id,
+          name: site.name,
+          url: siteUrl,
+        },
+        pages: [],
+      };
     }
 
     const result = await openai.client.beta.chat.completions
@@ -74,7 +90,14 @@ widget.post(
       .then((response) => response.choices[0].message.parsed);
 
     if (!result) {
-      return [];
+      return {
+        site: {
+          id: site.id,
+          name: site.name,
+          url: siteUrl,
+        },
+        pages: [],
+      };
     }
 
     const resultPages = await db
@@ -97,6 +120,11 @@ widget.post(
     );
 
     return {
+      site: {
+        id: site.id,
+        name: site.name,
+        url: siteUrl,
+      },
       pages: sortedResultPages.map((page) => ({
         ...page,
         score: result.pages.find((reference) => reference.id === page.id)?.score,

@@ -4,7 +4,7 @@
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import { css } from '$styled-system/css';
-  import { center } from '$styled-system/patterns';
+  import { center, flex } from '$styled-system/patterns';
 
   const scriptUrl = new URL(import.meta.url);
   const siteId = scriptUrl.searchParams.get('siteId');
@@ -23,8 +23,11 @@
     '[role="tab"][aria-selected="true"]',
   ];
 
-  let loading = false;
-  let pages: string[] = [];
+  let loadingCount = 0;
+  let response: {
+    site: { id: string; name: string; url: string };
+    pages: { id: string; title: string; score: number }[];
+  } | null = null;
   let lastQueriedKeywords: string[] = [];
 
   $: if (open) {
@@ -33,12 +36,12 @@
 
   const observe = async () => {
     try {
+      loadingCount += 1;
+
       // NOTE: 위젯이 열려있지 않으면 쿼리하지 않도록 임시 처리
       if (!open) {
         return;
       }
-
-      loading = true;
 
       const elements = [...document.querySelectorAll(selectors.join(','))];
       const texts = elements
@@ -73,15 +76,9 @@
         return;
       }
 
-      const data = await resp.json();
-      const pages_ = [];
-      for (const page of data.pages) {
-        pages_.push(page.title);
-      }
-
-      pages = pages_;
+      response = await resp.json();
     } finally {
-      loading = false;
+      loadingCount -= 1;
     }
   };
 
@@ -123,22 +120,48 @@
 
 {#if open}
   <div
-    class={css({
+    class={flex({
+      direction: 'column',
+      gap: '4px',
       position: 'fixed',
-      bottom: '72px',
+      bottom: '84px',
       right: '32px',
-      backgroundColor: 'neutral.20',
+      borderRadius: '16px',
+      paddingX: '24px',
+      paddingY: '16px',
+      textStyle: '14m',
+      color: 'neutral.80',
+      backgroundColor: 'white',
+      boxShadow: 'emphasize',
     })}
     in:fly|global={{ y: 5 }}
   >
-    {#if loading}
+    <div class={css({ textStyle: '14b' })}>관련 문서</div>
+    {#if loadingCount > 0}
       로딩중...
-    {:else}
-      {#each pages as page, idx (idx)}
-        <div>{page}</div>
+    {:else if response}
+      {#each response.pages as page, idx (idx)}
+        <div>
+          <a
+            class={css({
+              textDecoration: 'underline',
+              textUnderlineOffset: '4px',
+              _hover: {
+                color: 'neutral.100',
+              },
+            })}
+            href={`${response.site.url}/go/${page.id}`}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {page.title}
+          </a>
+        </div>
       {:else}
         결과 없음
       {/each}
+    {:else}
+      결과 없음
     {/if}
   </div>
 {/if}
