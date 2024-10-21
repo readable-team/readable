@@ -99,14 +99,24 @@ const extensions = [
       }),
     },
   }),
-  Blockquote.extend({ content: 'paragraph+' }).configure({
-    HTMLAttributes: {
-      class: css({
-        borderLeftWidth: '3px',
-        borderLeftColor: 'neutral.30',
-        paddingLeft: '25px',
-        color: 'text.primary',
-      }),
+  Blockquote.extend({ content: 'paragraph+' }).extend({
+    renderHTML({ HTMLAttributes }) {
+      return [
+        'div',
+        {},
+        [
+          'blockquote',
+          mergeAttributes(HTMLAttributes, {
+            class: css({
+              borderLeftWidth: '3px',
+              borderLeftColor: 'neutral.30',
+              paddingLeft: '25px',
+              color: 'text.primary',
+            }),
+          }),
+          0,
+        ],
+      ];
     },
   }),
   BulletList.configure({
