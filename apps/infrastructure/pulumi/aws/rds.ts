@@ -70,7 +70,7 @@ const instance = new aws.rds.ClusterInstance('readable-1', {
   identifier: 'readable-1',
 
   engine: 'aurora-postgresql',
-  instanceClass: 'db.r7g.large',
+  instanceClass: 'db.t4g.medium',
 
   availabilityZone: subnets.private.az1.availabilityZone,
   caCertIdentifier: 'rds-ca-ecc384-g1',

@@ -15,7 +15,7 @@ const cluster = new aws.elasticache.ReplicationGroup('readable', {
   engine: 'redis',
   engineVersion: '7.1',
 
-  nodeType: 'cache.r7g.large',
+  nodeType: 'cache.t4g.micro',
 
   // clusterMode: 'enabled',
   numNodeGroups: 1,
