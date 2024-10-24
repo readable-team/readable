@@ -27,7 +27,6 @@
   import { goto } from '$app/navigation';
   import { graphql } from '$graphql';
   import { Img, TitledModal } from '$lib/components';
-  import { isPro } from '$lib/svelte/stores/ui';
 
   let createSiteOpen = false;
 
@@ -47,6 +46,18 @@
           logo {
             id
             ...Img_image
+          }
+        }
+
+        plan {
+          id
+
+          plan {
+            id
+
+            rules {
+              siteLimit
+            }
           }
         }
       }
@@ -100,7 +111,7 @@
         사이트
         <span class={css({ color: 'text.tertiary' })}>{$query.team.sites.length}</span>
       </h1>
-      {#if $isPro}
+      {#if typeof $query.team.plan.plan.rules.siteLimit !== 'number' || $query.team.plan.plan.rules.siteLimit > $query.team.sites.length}
         <Button style={css.raw({ gap: '6px' })} size="sm" type="button" on:click={() => (createSiteOpen = true)}>
           <span>만들기</span>
           <Icon icon={PlusIcon} size={16} />
